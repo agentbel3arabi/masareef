@@ -79,9 +79,17 @@ async def bulk_categorize_transactions(
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
     """Bulk categorize transactions."""
-    updated = await transaction_service.bulk_categorize(
-        session, household_id, data.ids, data.category_id
-    )
+    try:
+        updated = await transaction_service.bulk_categorize(
+            session, household_id, data.ids, data.category_id
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="INVALID_CATEGORY", message=str(e))
+            ).model_dump(),
+        )
     return SuccessResponse(data={"updated": updated})
 
 

@@ -57,6 +57,7 @@ async def create_transfer(
     cat_q = select(Category).where(
         Category.name_en == "Transfer",
         Category.is_predefined.is_(True),
+        Category.is_active.is_(True),
     )
     cat_result = await session.execute(cat_q)
     transfer_cat = cat_result.scalar_one_or_none()

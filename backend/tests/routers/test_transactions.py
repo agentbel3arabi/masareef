@@ -188,3 +188,23 @@ async def test_bulk_delete(client):
     )
     assert bulk_resp.status_code == 200
     assert bulk_resp.json()["data"]["deleted"] == 3
+
+
+@pytest.mark.asyncio
+async def test_bulk_categorize(client):
+    """Bulk categorize should update transaction categories and return count."""
+    acct_id = await _create_account(client)
+    cat_id = await _create_category(client, "Bulk Cat")
+    ids = []
+    for _ in range(3):
+        tx = await _create_tx(client, acct_id)
+        ids.append(tx["id"])
+    resp = await client.post(
+        "/api/v1/transactions/bulk/categorize",
+        json={
+            "ids": ids,
+            "category_id": cat_id,
+        },
+    )
+    assert resp.status_code == 200
+    assert resp.json()["data"]["updated"] == 3

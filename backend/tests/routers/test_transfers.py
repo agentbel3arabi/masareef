@@ -156,3 +156,20 @@ async def test_list_transfers(client):
     assert "to_account" in item
     assert "source_amount" in item
     assert "target_amount" in item
+
+
+@pytest.mark.asyncio
+async def test_same_currency_transfer_rejects_fx_rate(client):
+    """Providing fx_rate for same-currency transfer should return 400."""
+    from_id, to_id = await _create_accounts(client)
+    resp = await client.post(
+        "/api/v1/transfers",
+        json={
+            "from_account_id": from_id,
+            "to_account_id": to_id,
+            "amount_minor": 500000,
+            "date": "2026-03-20",
+            "fx_rate_minor_units": 485000,
+        },
+    )
+    assert resp.status_code == 400

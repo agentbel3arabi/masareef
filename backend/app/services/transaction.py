@@ -29,6 +29,9 @@ async def create_transaction(
     if account is None or not account.is_active or account.household_id != household_id:
         raise ValueError(f"Account {data.account_id} not found")
 
+    if data.category_id is not None:
+        await validate_category_access(session, data.category_id, household_id)
+
     signed = compute_balance_delta(data.amount_minor, data.type)
 
     tx = Transaction(
@@ -37,7 +40,7 @@ async def create_transaction(
         date=data.date,
         description=data.description,
         amount_minor=signed,
-        currency=data.currency,
+        currency=account.currency,
         type=data.type,
         category_id=data.category_id,
         notes=data.notes,
@@ -79,6 +82,10 @@ async def update_transaction(
     old_applies = bool(tx.applies_to_balance)
 
     update_fields = data.model_dump(exclude_unset=True)
+
+    category_id = update_fields.get("category_id")
+    if category_id is not None:
+        await validate_category_access(session, category_id, tx.household_id)
 
     # Determine new signed amount before mutating the model.
     new_amount_minor: int | None = update_fields.get("amount_minor")
@@ -305,6 +312,7 @@ async def bulk_categorize(
     category_id: int,
 ) -> int:
     """Bulk categorize transactions. Returns count updated."""
+    await validate_category_access(session, category_id, household_id)
     count = 0
     for tx_id in ids:
         tx = await get_transaction(session, household_id, tx_id)
