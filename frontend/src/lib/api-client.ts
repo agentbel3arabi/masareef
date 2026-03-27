@@ -20,17 +20,18 @@ interface ApiError {
 }
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
   const supabase = createClient();
   const { data: { session } } = await supabase.auth.getSession();
 
-  if (!session?.access_token) {
-    return {};
+  if (session?.access_token) {
+    headers.Authorization = `Bearer ${session.access_token}`;
   }
 
-  return {
-    Authorization: `Bearer ${session.access_token}`,
-    "Content-Type": "application/json",
-  };
+  return headers;
 }
 
 export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
@@ -38,8 +39,12 @@ export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
   const res = await fetch(`${API_BASE}${path}`, { headers });
 
   if (!res.ok) {
-    const error: ApiError = await res.json();
-    throw new Error(error.error?.message || `API error: ${res.status}`);
+    let message = `API error: ${res.status}`;
+    try {
+      const error: ApiError = await res.json();
+      message = error.error?.message || message;
+    } catch {}
+    throw new Error(message);
   }
 
   return res.json();
@@ -54,8 +59,12 @@ export async function apiPost<T>(path: string, body: unknown): Promise<ApiRespon
   });
 
   if (!res.ok) {
-    const error: ApiError = await res.json();
-    throw new Error(error.error?.message || `API error: ${res.status}`);
+    let message = `API error: ${res.status}`;
+    try {
+      const error: ApiError = await res.json();
+      message = error.error?.message || message;
+    } catch {}
+    throw new Error(message);
   }
 
   return res.json();
@@ -70,8 +79,12 @@ export async function apiPut<T>(path: string, body: unknown): Promise<ApiRespons
   });
 
   if (!res.ok) {
-    const error: ApiError = await res.json();
-    throw new Error(error.error?.message || `API error: ${res.status}`);
+    let message = `API error: ${res.status}`;
+    try {
+      const error: ApiError = await res.json();
+      message = error.error?.message || message;
+    } catch {}
+    throw new Error(message);
   }
 
   return res.json();
@@ -85,7 +98,11 @@ export async function apiDelete(path: string): Promise<void> {
   });
 
   if (!res.ok && res.status !== 204) {
-    const error: ApiError = await res.json();
-    throw new Error(error.error?.message || `API error: ${res.status}`);
+    let message = `API error: ${res.status}`;
+    try {
+      const error: ApiError = await res.json();
+      message = error.error?.message || message;
+    } catch {}
+    throw new Error(message);
   }
 }
