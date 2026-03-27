@@ -19,6 +19,6 @@ def test_settings_cors_origins_parsed_from_comma_separated():
         SUPABASE_URL="https://test.supabase.co",
         SUPABASE_ANON_KEY="test-anon-key",
         SUPABASE_SERVICE_ROLE_KEY="test-service-key",
-        CORS_ORIGINS="http://localhost:3000,https://masareef.app",
+        CORS_ORIGINS="http://localhost:3000,https://masareef.app",  # type: ignore[arg-type]
     )
     assert settings.CORS_ORIGINS == ["http://localhost:3000", "https://masareef.app"]
