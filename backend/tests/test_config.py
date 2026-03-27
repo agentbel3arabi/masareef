@@ -7,6 +7,7 @@ def test_settings_loads_defaults():
         SUPABASE_URL="https://test.supabase.co",
         SUPABASE_ANON_KEY="test-anon-key",
         SUPABASE_SERVICE_ROLE_KEY="test-service-key",
+        SUPABASE_JWT_SECRET="test-jwt-secret",
     )
     assert settings.APP_ENV == "development"
     assert settings.CORS_ORIGINS == ["http://localhost:3000"]
