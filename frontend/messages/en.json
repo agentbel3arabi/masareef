@@ -1,0 +1,43 @@
+{
+  "common": {
+    "appName": "Masareef",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search...",
+    "noResults": "No results found",
+    "confirm": "Confirm"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "accounts": "Accounts",
+    "transactions": "Transactions",
+    "transfers": "Transfers",
+    "debts": "Debts",
+    "budgets": "Budgets",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "addAccount": "Add Account",
+    "bankAccount": "Bank Account",
+    "creditCard": "Credit Card",
+    "cashWallet": "Cash Wallet",
+    "digitalWallet": "Digital Wallet",
+    "financingApp": "Financing App",
+    "balance": "Balance",
+    "available": "Available"
+  }
+}

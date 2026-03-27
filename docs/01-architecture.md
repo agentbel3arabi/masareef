@@ -5,7 +5,7 @@
 ```
 ┌─────────────────────────────────────────┐
 │           Next.js Frontend              │
-│  TypeScript · shadcn/ui · Tailwind v4   │
+│  TypeScript · shadcn/ui · Tailwind v3   │
 │  react-plotly.js · TanStack Query       │
 │  Supabase Client (auth + realtime)      │
 └──────────────────┬──────────────────────┘
