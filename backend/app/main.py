@@ -36,6 +36,11 @@ app.add_middleware(
 )
 
 
+from app.routers import accounts
+
+app.include_router(accounts.router)
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "version": "0.1.0"}
