@@ -11,7 +11,6 @@ from app.models.transaction import Transaction, TransactionSplit
 from app.schemas.transaction import SplitItem, TransactionCreate, TransactionUpdate
 from app.services.balance import compute_balance_delta
 
-
 # ---------------------------------------------------------------------------
 # Core CRUD
 # ---------------------------------------------------------------------------
@@ -113,9 +112,7 @@ async def soft_delete_transaction(
 ) -> None:
     """Soft-delete a transaction, reverse its balance contribution, hard-delete splits."""
     # Hard-delete splits first (TransactionSplit has no is_active column).
-    await session.execute(
-        delete(TransactionSplit).where(TransactionSplit.transaction_id == tx.id)
-    )
+    await session.execute(delete(TransactionSplit).where(TransactionSplit.transaction_id == tx.id))
 
     # Reverse account balance if transaction was contributing.
     if tx.applies_to_balance:
@@ -269,6 +266,16 @@ async def bulk_delete(
             await soft_delete_transaction(session, tx)
             count += 1
     return count
+
+
+async def categorize_transaction(
+    session: AsyncSession,
+    tx: Transaction,
+    category_id: int,
+) -> None:
+    """Set category on a transaction."""
+    tx.category_id = category_id
+    await session.flush()
 
 
 async def bulk_categorize(
