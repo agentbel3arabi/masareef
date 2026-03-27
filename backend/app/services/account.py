@@ -100,9 +100,13 @@ async def compute_displayed_balance(
     session: AsyncSession,
     account: Account,
 ) -> int:
-    """Compute displayed balance: seed + sum of active transactions."""
+    """Compute displayed balance: seed + sum of active transactions.
+
+    See also: balance.py:compute_displayed_balance (pure Python variant for testing).
+    """
     q = select(func.coalesce(func.sum(Transaction.amount_minor), 0)).where(
         Transaction.account_id == account.id,
+        Transaction.household_id == account.household_id,
         Transaction.is_active == True,  # noqa: E712
         Transaction.applies_to_balance == True,  # noqa: E712
     )
@@ -117,7 +121,7 @@ async def reconcile_account(
     session: AsyncSession,
     account: Account,
     actual_balance: int,
-    notes: str | None = None,
+    notes: str | None = None,  # TODO: persist to reconciliation history table when created
 ) -> int:
     """Reconcile: adjust seed balance so displayed_balance = actual_balance.
 

@@ -4,6 +4,8 @@
 def compute_displayed_balance(seed_balance_minor: int, transaction_amounts: list[int]) -> int:
     """Compute displayed balance from seed + sum of signed transaction amounts.
 
+    See also: account.py:compute_displayed_balance (async DB query variant for production).
+
     Args:
         seed_balance_minor: The account's seed balance (accounts.balance_minor).
         transaction_amounts: List of signed amounts from active transactions
