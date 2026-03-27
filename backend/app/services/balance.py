@@ -30,4 +30,6 @@ def compute_balance_delta(amount_minor: int, tx_type: str) -> int:
     """
     if tx_type == "debit":
         return -abs(amount_minor)
-    return abs(amount_minor)
+    if tx_type == "credit":
+        return abs(amount_minor)
+    raise ValueError(f"Unsupported transaction type: {tx_type!r}. Expected 'debit' or 'credit'.")
