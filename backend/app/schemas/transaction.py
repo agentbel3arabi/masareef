@@ -1,5 +1,4 @@
-from datetime import date
-from typing import Optional
+import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -7,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class TransactionCreate(BaseModel):
     account_id: int
-    date: date
+    date: datetime.date
     description: str = ""
     amount_minor: int  # Always positive — backend computes sign from type
     type: str  # "debit" or "credit"
@@ -19,7 +18,7 @@ class TransactionCreate(BaseModel):
 
 
 class TransactionUpdate(BaseModel):
-    date: Optional[date] = None  # noqa: UP045 — field name shadows type; `date | None` fails at runtime
+    date: datetime.date | None = None
     description: str | None = None
     amount_minor: int | None = None
     type: str | None = None
@@ -62,7 +61,7 @@ class CategoryEmbedded(BaseModel):
 class TransactionResponse(BaseModel):
     id: int
     account_id: int
-    date: date
+    date: datetime.date
     description: str
     amount_minor: int
     currency: str

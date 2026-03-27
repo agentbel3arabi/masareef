@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from pydantic import ValidationError
 
@@ -9,7 +11,7 @@ from app.schemas.transfer import TransferCreate
 def test_transaction_create_requires_amount_minor_integer():
     data = TransactionCreate(
         account_id=1,
-        date="2026-03-20",
+        date=date(2026, 3, 20),
         amount_minor=125000,
         type="debit",
         currency="EGP",
@@ -21,7 +23,7 @@ def test_transaction_create_rejects_float_amount():
     with pytest.raises(ValidationError):
         TransactionCreate(
             account_id=1,
-            date="2026-03-20",
+            date=date(2026, 3, 20),
             amount_minor=1250.50,  # type: ignore[arg-type]
             type="debit",
             currency="EGP",
@@ -38,7 +40,7 @@ def test_transfer_create_requires_two_accounts():
         from_account_id=1,
         to_account_id=3,
         amount_minor=500000,
-        date="2026-03-20",
+        date=date(2026, 3, 20),
     )
     assert data.from_account_id != data.to_account_id
 
