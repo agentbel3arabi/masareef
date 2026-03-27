@@ -78,7 +78,17 @@ jobs:
           SUPABASE_ANON_KEY: placeholder
           SUPABASE_SERVICE_ROLE_KEY: placeholder
         run: |
-          uv run python -c "import asyncio; from app.seed import seed_categories; from app.database import async_session_factory; asyncio.run((lambda: None)())" || true
+          uv run python -c "
+          import asyncio
+          from app.seed import seed_categories
+          from app.database import async_session_factory
+
+          async def main():
+              async with async_session_factory() as session:
+                  await seed_categories(session)
+
+          asyncio.run(main())
+          " || true
 
       # ── Node.js / Frontend ───────────────────────────────────────
       - name: Enable corepack (pnpm)
@@ -106,5 +116,4 @@ jobs:
       - name: Install Python Playwright
         working-directory: backend
         run: |
-          uv add --dev playwright
-          uv run playwright install --with-deps chromium
+          uvx playwright install --with-deps chromium
