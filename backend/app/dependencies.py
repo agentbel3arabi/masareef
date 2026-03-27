@@ -82,9 +82,7 @@ async def get_household_id(
 ) -> uuid.UUID:
     """Resolve user_id to their household_id."""
     result = await session.execute(
-        select(HouseholdMember.household_id).where(
-            HouseholdMember.user_id == user_id
-        )
+        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id)
     )
     household_id = result.scalar_one_or_none()
     if not household_id:

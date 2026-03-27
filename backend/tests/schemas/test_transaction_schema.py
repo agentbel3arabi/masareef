@@ -1,9 +1,9 @@
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.transaction import TransactionCreate, SplitItem
-from app.schemas.transfer import TransferCreate
 from app.schemas.category import CategoryCreate
+from app.schemas.transaction import SplitItem, TransactionCreate
+from app.schemas.transfer import TransferCreate
 
 
 def test_transaction_create_requires_amount_minor_integer():

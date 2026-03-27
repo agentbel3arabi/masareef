@@ -15,9 +15,7 @@ def test_success_response_with_list():
 
 
 def test_error_response_shape():
-    err = ErrorResponse(
-        error=ErrorDetail(code="VALIDATION_ERROR", message="bad input")
-    )
+    err = ErrorResponse(error=ErrorDetail(code="VALIDATION_ERROR", message="bad input"))
     dumped = err.model_dump()
     assert dumped["error"]["code"] == "VALIDATION_ERROR"
     assert dumped["error"]["message"] == "bad input"

@@ -1,4 +1,4 @@
-from app.services.balance import compute_displayed_balance, compute_balance_delta
+from app.services.balance import compute_balance_delta, compute_displayed_balance
 
 
 def test_compute_displayed_balance_basic():

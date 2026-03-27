@@ -1,4 +1,4 @@
-from app.services.money import CURRENCIES, format_amount, minor_to_major, major_to_minor
+from app.services.money import CURRENCIES, format_amount, major_to_minor, minor_to_major
 
 
 def test_format_amount_egp():

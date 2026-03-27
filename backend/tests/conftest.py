@@ -3,9 +3,8 @@ import uuid
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.dependencies import get_current_user, get_household_id, get_db_session
+from app.dependencies import get_current_user, get_household_id
 from app.main import app
-
 
 TEST_USER_ID = uuid.uuid4()
 TEST_HOUSEHOLD_ID = uuid.uuid4()
