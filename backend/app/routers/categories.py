@@ -1,13 +1,17 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
-from app.models.category import Category
 from app.schemas.category import CategoryCreate, CategoryResponse, CategoryUpdate
-from app.schemas.common import PaginationMeta, SuccessResponse
+from app.schemas.common import (
+    ErrorDetail,
+    ErrorResponse,
+    PaginationMeta,
+    SuccessResponse,
+)
+from app.services import category as category_service
 
 router = APIRouter(prefix="/api/v1/categories", tags=["categories"])
 
@@ -21,25 +25,9 @@ async def list_categories(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ):
-    q = select(Category).where(
-        (Category.household_id == household_id) | (Category.household_id.is_(None))
+    categories, total = await category_service.list_categories(
+        session, household_id, type, active_only, page, page_size
     )
-    count_q = select(func.count(Category.id)).where(
-        (Category.household_id == household_id) | (Category.household_id.is_(None))
-    )
-
-    if active_only:
-        q = q.where(Category.is_active == True)  # noqa: E712
-        count_q = count_q.where(Category.is_active == True)  # noqa: E712
-    if type:
-        q = q.where(Category.type == type)
-        count_q = count_q.where(Category.type == type)
-
-    total = (await session.execute(count_q)).scalar_one()
-    q = q.order_by(Category.sort_order).offset((page - 1) * page_size).limit(page_size)
-    result = await session.execute(q)
-    categories = result.scalars().all()
-
     items = [CategoryResponse.model_validate(cat).model_dump() for cat in categories]
     return SuccessResponse(
         data=items,
@@ -53,17 +41,7 @@ async def create_category(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ):
-    category = Category(
-        household_id=household_id,
-        name_en=data.name_en,
-        name_ar=data.name_ar,
-        type=data.type,
-        icon=data.icon,
-        color=data.color,
-        is_predefined=False,
-    )
-    session.add(category)
-    await session.flush()
+    category = await category_service.create_category(session, household_id, data)
     return SuccessResponse(data=CategoryResponse.model_validate(category).model_dump())
 
 
@@ -74,27 +52,15 @@ async def update_category(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ):
-    q = select(Category).where(
-        Category.id == category_id,
-        Category.is_active == True,  # noqa: E712
-        (Category.household_id == household_id) | (Category.household_id.is_(None)),
-    )
-    result = await session.execute(q)
-    category = result.scalar_one_or_none()
+    category = await category_service.get_category(session, household_id, category_id)
     if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
-
-    update_data = data.model_dump(exclude_unset=True)
-
-    # Predefined categories: only icon and color are editable
-    if category.is_predefined:
-        allowed = {"icon", "color"}
-        update_data = {k: v for k, v in update_data.items() if k in allowed}
-
-    for field, value in update_data.items():
-        setattr(category, field, value)
-    await session.flush()
-
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Category not found")
+            ).model_dump(),
+        )
+    category = await category_service.update_category(session, category, data)
     return SuccessResponse(data=CategoryResponse.model_validate(category).model_dump())
 
 
@@ -104,17 +70,18 @@ async def delete_category(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ):
-    q = select(Category).where(
-        Category.id == category_id,
-        Category.is_active == True,  # noqa: E712
-        (Category.household_id == household_id) | (Category.household_id.is_(None)),
-    )
-    result = await session.execute(q)
-    category = result.scalar_one_or_none()
+    category = await category_service.get_category(session, household_id, category_id)
     if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
-    if category.is_predefined:
-        raise HTTPException(status_code=403, detail="Cannot delete predefined categories")
-
-    category.is_active = False
-    await session.flush()
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Category not found")
+            ).model_dump(),
+        )
+    try:
+        await category_service.soft_delete_category(session, category)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ErrorResponse(error=ErrorDetail(code="FORBIDDEN", message=str(e))).model_dump(),
+        )
