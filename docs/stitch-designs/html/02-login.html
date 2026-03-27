@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-secondary-fixed": "#0b1c30",
+                "on-primary-container": "#f7fff2",
+                "primary": "#006b2c",
+                "tertiary-fixed-dim": "#ffb2bf",
+                "surface-bright": "#faf8ff",
+                "background": "#faf8ff",
+                "on-primary": "#ffffff",
+                "surface-container-low": "#f2f3ff",
+                "tertiary-fixed": "#ffd9de",
+                "surface-container-lowest": "#ffffff",
+                "on-error": "#ffffff",
+                "surface-tint": "#006e2d",
+                "primary-container": "#00873a",
+                "on-primary-fixed": "#002109",
+                "on-secondary-container": "#54647a",
+                "on-tertiary-fixed": "#3f0016",
+                "surface-variant": "#dae2fd",
+                "secondary-fixed": "#d3e4fe",
+                "surface": "#faf8ff",
+                "inverse-surface": "#283044",
+                "primary-fixed-dim": "#62df7d",
+                "on-primary-fixed-variant": "#005320",
+                "inverse-primary": "#62df7d",
+                "inverse-on-surface": "#eef0ff",
+                "tertiary-container": "#c74668",
+                "on-error-container": "#93000a",
+                "outline-variant": "#bdcaba",
+                "secondary-container": "#d0e1fb",
+                "secondary": "#505f76",
+                "primary-fixed": "#7ffc97",
+                "on-tertiary-container": "#fffbff",
+                "on-tertiary": "#ffffff",
+                "on-surface-variant": "#3e4a3d",
+                "surface-container-highest": "#dae2fd",
+                "surface-dim": "#d2d9f4",
+                "on-secondary-fixed-variant": "#38485d",
+                "error": "#ba1a1a",
+                "error-container": "#ffdad6",
+                "outline": "#6e7b6c",
+                "tertiary": "#a72d51",
+                "on-surface": "#131b2e",
+                "surface-container-high": "#e2e7ff",
+                "on-background": "#131b2e",
+                "on-tertiary-fixed-variant": "#8a143c",
+                "secondary-fixed-dim": "#b7c8e1",
+                "on-secondary": "#ffffff",
+                "surface-container": "#eaedff"
+              },
+              fontFamily: {
+                "headline": ["Inter", "Noto Sans Arabic"],
+                "body": ["Inter", "Noto Sans Arabic"],
+                "label": ["Inter", "Noto Sans Arabic"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bg-atelier-gradient {
+            background: linear-gradient(145deg, #006b2c 0%, #0f172a 100%);
+        }
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Top Navigation Anchor (Manual Suppression: Hidden on Login per Rules) -->
+<main class="min-h-screen flex flex-col md:flex-row">
+<!-- Left Panel: Brand & Identity -->
+<section class="relative w-full md:w-1/2 bg-atelier-gradient flex flex-col justify-center px-12 py-20 overflow-hidden">
+<div class="absolute inset-0 bg-pattern opacity-40"></div>
+<div class="relative z-10 max-w-lg mx-auto md:mx-0">
+<!-- Branding -->
+<div class="mb-12">
+<h1 class="text-6xl font-extrabold text-white font-headline mb-2 leading-none" dir="rtl">مصاريف</h1>
+<p class="text-3xl font-light text-white/80 tracking-tight font-headline">Masareef</p>
+</div>
+<!-- Taglines -->
+<div class="space-y-4 mb-16">
+<h2 class="text-2xl font-medium text-white leading-tight">Your money, your language, your rules.</h2>
+<h2 class="text-2xl font-medium text-white/90 leading-tight" dir="rtl">فلوسك، بلغتك، بقواعدك</h2>
+</div>
+<!-- Features -->
+<div class="space-y-8">
+<div class="flex items-start gap-4 group">
+<div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+</div>
+<div>
+<p class="text-white font-semibold text-lg">Multi-Currency Mastery</p>
+<p class="text-white/60 text-sm">Track spending across EGP, USD, SAR effortlessly.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 group">
+<div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<p class="text-white font-semibold text-lg">Instant Import</p>
+<p class="text-white/60 text-sm">Import bank statements in just 3 clicks.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 group">
+<div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" data-icon="family_history">family_history</span>
+</div>
+<div>
+<p class="text-white font-semibold text-lg">Family Finances</p>
+<p class="text-white/60 text-sm">Manage global family budgets in one shared space.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Subtle Decorative Element -->
+<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl"></div>
+</section>
+<!-- Right Panel: Authentication Form -->
+<section class="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-24 py-12 relative">
+<!-- Top Controls -->
+<div class="absolute top-8 right-8 flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-secondary hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+</div>
+<div class="max-w-md w-full mx-auto">
+<header class="mb-10">
+<h3 class="text-4xl font-bold text-on-surface tracking-tight mb-3">Sign In</h3>
+<p class="text-secondary text-lg">Welcome back. Enter your credentials to continue.</p>
+</header>
+<form class="space-y-6">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-on-surface-variant ml-1">Email address</label>
+<input class="w-full px-4 py-3.5 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all outline-none text-on-surface" placeholder="name@example.com" type="email"/>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-on-surface-variant ml-1">Password</label>
+<div class="relative">
+<input class="w-full px-4 py-3.5 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all outline-none text-on-surface" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Actions Row -->
+<div class="flex items-center justify-between py-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary transition-all" type="checkbox"/>
+<span class="text-sm text-secondary group-hover:text-on-surface transition-colors">Remember me</span>
+</label>
+<a class="text-sm font-bold text-primary hover:text-primary-container transition-colors" href="#">Forgot password?</a>
+</div>
+<!-- Primary Action -->
+<button class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-white font-bold rounded-xl shadow-lg shadow-primary/20 active:scale-[0.98] transition-all hover:brightness-110" type="submit">
+                        Sign In
+                    </button>
+<!-- Divider -->
+<div class="relative py-4">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-surface-container-high"></div>
+</div>
+<div class="relative flex justify-center">
+<span class="bg-white px-4 text-sm text-secondary">or</span>
+</div>
+</div>
+<!-- Social Login -->
+<button class="w-full py-4 flex items-center justify-center gap-3 border border-outline-variant rounded-xl hover:bg-surface-container-low transition-all font-medium text-on-surface" type="button">
+<img alt="Google" class="w-5 h-5" data-alt="Google logo colorful G icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNGUp_LcuRGsCvLJ8ZOFscqSLg3CEUMaKuL25NPauJvDrP3iFwdAY6oSNFk3NI0Fy2ZCrX3mA57QAze3GQj73P385Omr5Q35a9V4tscc9TFjzTOazDL0TMOrttCmBlFhQvFdRmVfQWKVVpdwNfsPom9lYUkZ45Fur73S53yD7t5aWRkRA5N_wJgK4V_RPBYNOQw8rNLUz_MZOuY1LEo3-Y-rG1tGyENqahgs5nCpNhd0tDQJL-d6U8IrtTcizCEkFf-LjYLZdIgF0"/>
+                        Continue with Google
+                    </button>
+</form>
+<footer class="mt-12 text-center space-y-8">
+<p class="text-secondary">
+                        Don't have an account? 
+                        <a class="text-primary font-bold hover:underline decoration-2 underline-offset-4 ml-1" href="#">Sign up</a>
+</p>
+<!-- Language Toggle -->
+<div class="flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-secondary pt-8">
+<button class="text-primary">EN</button>
+<span class="h-3 w-[1px] bg-outline-variant"></span>
+<button class="hover:text-primary transition-colors">AR</button>
+</div>
+</footer>
+</div>
+</section>
+</main>
+<!-- Footer Anchor (Strict Implementation from JSON) -->
+<footer class="fixed bottom-0 w-full flex justify-between items-center px-8 py-4 bg-slate-50 dark:bg-slate-950 z-50 pointer-events-none md:pointer-events-auto">
+<div class="text-[10px] uppercase tracking-wider font-['Inter'] text-slate-400 dark:text-slate-500 opacity-80">
+            © 2024 Masareef Financial Atelier. All rights reserved.
+        </div>
+<div class="flex gap-6">
+<a class="text-[10px] uppercase tracking-wider font-['Inter'] text-slate-400 dark:text-slate-500 hover:text-emerald-600 underline transition-opacity opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-[10px] uppercase tracking-wider font-['Inter'] text-slate-400 dark:text-slate-500 hover:text-emerald-600 underline transition-opacity opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="text-[10px] uppercase tracking-wider font-['Inter'] text-slate-400 dark:text-slate-500 hover:text-emerald-600 underline transition-opacity opacity-80 hover:opacity-100" href="#">Help Center</a>
+</div>
+</footer>
+</body></html>

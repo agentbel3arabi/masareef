@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed": "#3f0016",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "primary": "#006b2c",
+              "tertiary-container": "#c74668",
+              "on-primary-fixed-variant": "#005320",
+              "inverse-primary": "#62df7d",
+              "primary-fixed-dim": "#62df7d",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#b7c8e1",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed": "#0b1c30",
+              "outline-variant": "#bdcaba",
+              "secondary": "#505f76",
+              "primary-container": "#00873a",
+              "surface-container-highest": "#dae2fd",
+              "on-background": "#131b2e",
+              "tertiary-fixed": "#ffd9de",
+              "surface-variant": "#dae2fd",
+              "on-tertiary-container": "#fffbff",
+              "on-primary-fixed": "#002109",
+              "outline": "#6e7b6c",
+              "on-surface-variant": "#3e4a3d",
+              "on-secondary-fixed-variant": "#38485d",
+              "on-primary": "#ffffff",
+              "surface-container": "#eaedff",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#131b2e",
+              "on-secondary-container": "#54647a",
+              "surface-dim": "#d2d9f4",
+              "background": "#faf8ff",
+              "surface-container-low": "#f2f3ff",
+              "secondary-container": "#d0e1fb",
+              "primary-fixed": "#7ffc97",
+              "surface-bright": "#faf8ff",
+              "surface-container-high": "#e2e7ff",
+              "surface": "#faf8ff",
+              "inverse-on-surface": "#eef0ff",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "tertiary": "#a72d51",
+              "error": "#ba1a1a",
+              "surface-container-lowest": "#ffffff",
+              "surface-tint": "#006e2d",
+              "secondary-fixed": "#d3e4fe",
+              "inverse-surface": "#283044",
+              "on-primary-container": "#f7fff2"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic"],
+              "body": ["Inter", "Noto Sans Arabic"],
+              "label": ["Inter", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .tonal-shift { background-color: #f2f3ff; }
+        .no-shadows { box-shadow: none !important; }
+        .glass-panel { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.7); }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface antialiased">
+<div class="flex h-screen overflow-hidden">
+<!-- Main App SideNavBar (Shared Component 1) -->
+<aside class="flex flex-col h-full p-4 h-screen w-64 border-r-0 tonal-shift bg-slate-100 dark:bg-slate-800/50 flat no-shadows font-['Inter'] antialiased text-sm">
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
+</div>
+<div>
+<h1 class="text-xl font-black tracking-tight text-emerald-900 dark:text-emerald-50 leading-none">Masareef</h1>
+<p class="text-[10px] text-emerald-700/60 font-medium tracking-widest uppercase mt-1">The Financial Atelier</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-emerald-50/50 transition-colors scale-98 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-emerald-50/50 transition-colors scale-98 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span>Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-emerald-50/50 transition-colors scale-98 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-emerald-50/50 transition-colors scale-98 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 font-semibold shadow-sm rounded-lg scale-98 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 px-2">
+<div class="flex items-center gap-3 p-2 bg-white/50 rounded-xl">
+<img alt="User profile" class="w-8 h-8 rounded-full bg-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARrsHjzCMsMqHFal4wTEK-6tMl8M-UTxfCzQItMYfRhbm41UEzSPaKqJk1j9a43TSVLFMOlpqaV5vjBRe4A_cCNy7sPi5XSNRVWo7-I0dKul4Kos5FwiZh83cO6JfNFVEKe9PDm8J8nBgw7MSGbS8lImF82_9M4QyEnwphzUcZ5x9v-uKnvUG2zP8gmKnrEaKjl5JdH4f4sqeDFyBWNOOcuHzRFTd-p-XCU0QoJOAOf1Lwvp6x6O7G70pClo3CrRGB3KtyLnXOZro"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold truncate">Ziad Al-Mansour</p>
+<p class="text-[10px] text-secondary truncate">Premium Member</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Settings Context SideNavBar (Shared Component 2) -->
+<aside class="flex flex-col h-full py-8 px-6 h-screen w-56 border-r-0 tonal-layering bg-slate-100 dark:bg-slate-950 flat font-['Inter'] text-xs font-medium uppercase tracking-wider">
+<h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 normal-case mb-8">Settings</h2>
+<nav class="space-y-6">
+<a class="flex items-center gap-3 text-slate-400 dark:text-slate-500 pl-2 hover:text-slate-700 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">tune</span>
+<span>General</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 dark:text-slate-500 pl-2 hover:text-slate-700 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">shield_lock</span>
+<span>Security</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 dark:text-slate-500 pl-2 hover:text-slate-700 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">notifications_none</span>
+<span>Notifications</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-700 dark:text-emerald-400 border-r-2 border-emerald-600 dark:border-emerald-400 pl-2 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">database</span>
+<span>Data &amp; Billing</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto bg-[#f8fafc] p-8 lg:p-12">
+<div class="max-w-4xl mx-auto space-y-12">
+<!-- Page Header (Shared Component 3 Logic Mapping) -->
+<header class="flex justify-between items-center w-full mb-8">
+<div>
+<h2 class="text-3xl font-black tracking-tight text-on-surface">Data Management &amp; Billing</h2>
+<p class="text-secondary mt-1 body-md">Take full control of your atelier's digital fingerprint and subscription.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Settings Content Card -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-10 shadow-[0_12px_40px_rgba(19,27,46,0.04)]">
+<!-- Section 1: Export Your Data -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="title-sm font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">ios_share</span>
+                                Export Your Data
+                            </h3>
+<span class="label-sm font-semibold text-secondary px-3 py-1 bg-surface-container-low rounded-full">Last export Mar 20, 2026</span>
+</div>
+<p class="text-secondary body-md">Download a complete archive of your transactions, accounts, and financial history.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<button class="group p-6 bg-surface rounded-2xl border-2 border-transparent hover:border-primary-container/20 hover:bg-primary-container/5 transition-all text-left">
+<div class="w-10 h-10 rounded-lg bg-emerald-50 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">data_object</span>
+</div>
+<span class="block font-bold text-on-surface">JSON Format</span>
+<span class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 block">Developer Friendly</span>
+</button>
+<button class="group p-6 bg-surface rounded-2xl border-2 border-transparent hover:border-primary-container/20 hover:bg-primary-container/5 transition-all text-left">
+<div class="w-10 h-10 rounded-lg bg-emerald-50 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">table_chart</span>
+</div>
+<span class="block font-bold text-on-surface">Excel Spreadsheet</span>
+<span class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 block">Accounting Style</span>
+</button>
+<button class="group p-6 bg-surface rounded-2xl border-2 border-transparent hover:border-primary-container/20 hover:bg-primary-container/5 transition-all text-left">
+<div class="w-10 h-10 rounded-lg bg-emerald-50 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">csv</span>
+</div>
+<span class="block font-bold text-on-surface">CSV Archive</span>
+<span class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 block">Universal Format</span>
+</button>
+</div>
+</section>
+<!-- Section 2: Import from Other Apps -->
+<section class="mt-12 pt-12 border-t border-surface-container-low space-y-6">
+<h3 class="title-sm font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">input</span>
+                            Import from Other Apps
+                        </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-5 bg-surface-container-low/50 rounded-2xl flex items-center justify-between opacity-70">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">fire_extinguisher</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Firefly III</p>
+<span class="text-[10px] bg-surface-container-high px-2 py-0.5 rounded text-secondary-fixed-variant">Coming soon</span>
+</div>
+</div>
+<button class="px-4 py-2 border border-outline-variant text-outline rounded-lg text-xs font-bold cursor-not-allowed" disabled="">Connect</button>
+</div>
+<div class="p-5 bg-surface-container-low/50 rounded-2xl flex items-center justify-between opacity-70">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">account_balance</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">YNAB</p>
+<span class="text-[10px] bg-surface-container-high px-2 py-0.5 rounded text-secondary-fixed-variant">Coming soon</span>
+</div>
+</div>
+<button class="px-4 py-2 border border-outline-variant text-outline rounded-lg text-xs font-bold cursor-not-allowed" disabled="">Connect</button>
+</div>
+</div>
+</section>
+<!-- Section 3: Danger Zone -->
+<section class="mt-12 pt-12 border-t border-surface-container-low">
+<div class="bg-error-container/10 border-2 border-dashed border-error/20 rounded-2xl p-8">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<h3 class="title-sm font-black text-error uppercase tracking-wider">Danger Zone</h3>
+</div>
+<p class="text-secondary body-md mb-8">Irreversible actions. Please proceed with extreme caution. These actions cannot be undone.</p>
+<div class="flex flex-wrap gap-4">
+<button class="px-6 py-3 border border-error text-error rounded-xl font-bold text-sm hover:bg-error/5 transition-colors">
+                                    Delete All Transactions
+                                </button>
+<button class="px-6 py-3 bg-error text-white rounded-xl font-bold text-sm shadow-lg shadow-error/20 hover:bg-error/90 transition-colors">
+                                    Reset All Data
+                                </button>
+<button class="px-6 py-3 bg-error/30 text-white rounded-xl font-bold text-sm cursor-not-allowed opacity-50" disabled="">
+                                    Delete Household
+                                </button>
+</div>
+</div>
+</section>
+<!-- Divider -->
+<div class="h-2 bg-surface-container-low rounded-full my-16"></div>
+<!-- Section 4: Current Plan -->
+<section class="space-y-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h3 class="headline-md font-black text-on-surface">Subscription &amp; Billing</h3>
+<p class="text-secondary body-md">You are currently using the premium financial experience.</p>
+</div>
+<div class="text-right">
+<span class="block text-[10px] text-secondary font-bold uppercase tracking-tighter">Current Plan</span>
+<span class="text-4xl font-black text-primary">99 EGP<span class="text-lg font-medium text-secondary">/mo</span></span>
+</div>
+</div>
+<div class="border-2 border-primary rounded-3xl p-8 bg-primary/5 relative overflow-hidden">
+<div class="absolute top-4 right-4 bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Active Plan</div>
+<div class="flex items-center gap-4 mb-8">
+<div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/30">
+<span class="material-symbols-outlined text-3xl">workspace_premium</span>
+</div>
+<div>
+<h4 class="text-2xl font-black text-on-surface">Premium Atelier</h4>
+<p class="text-primary-container font-semibold">Unlimited Access • Priority Support</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12 mb-10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface font-medium">Unlimited Multi-Currency Accounts</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface font-medium">AI-Powered Receipt Scanning</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface font-medium">Shared Household Collaboration</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface font-medium">Real-time Bank Synchronisation</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface font-medium">Advanced Predictive Analytics</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface font-medium">Early Access to New Beta Features</span>
+</div>
+</div>
+<button class="w-full md:w-auto px-8 py-4 border-2 border-primary text-primary font-black rounded-2xl hover:bg-primary hover:text-white transition-all">
+                                Manage Subscription
+                            </button>
+</div>
+</section>
+<!-- Section 5: Usage This Month -->
+<section class="mt-16 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="title-sm font-bold text-on-surface">Usage This Month</h3>
+<p class="text-xs text-secondary font-medium">Next charge: <span class="text-on-surface font-bold">April 12, 2026</span></p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Members Card -->
+<div class="bg-surface-container-low rounded-2xl p-6">
+<div class="flex justify-between items-center mb-4">
+<span class="label-sm font-bold uppercase tracking-widest text-secondary">Members</span>
+<span class="text-on-surface font-black">6 / 10</span>
+</div>
+<div class="w-full h-2 bg-white rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 60%"></div>
+</div>
+<p class="text-[10px] text-primary font-bold mt-2 uppercase">Healthy</p>
+</div>
+<!-- Scanned Pages Card -->
+<div class="bg-surface-container-low rounded-2xl p-6">
+<div class="flex justify-between items-center mb-4">
+<span class="label-sm font-bold uppercase tracking-widest text-secondary">Scanned Pages</span>
+<span class="text-on-surface font-black">12 / 100</span>
+</div>
+<div class="w-full h-2 bg-white rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 12%"></div>
+</div>
+<p class="text-[10px] text-primary font-bold mt-2 uppercase">Optimal</p>
+</div>
+<!-- Storage Card -->
+<div class="bg-surface-container-low rounded-2xl p-6">
+<div class="flex justify-between items-center mb-4">
+<span class="label-sm font-bold uppercase tracking-widest text-secondary">Storage</span>
+<span class="text-on-surface font-black">4.5 / 100 GB</span>
+</div>
+<div class="w-full h-2 bg-white rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 4.5%"></div>
+</div>
+<p class="text-[10px] text-primary font-bold mt-2 uppercase">Minimal Use</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Signature Component: The Luminous Insight -->
+<div class="tertiary-container text-white rounded-[2rem] p-8 relative overflow-hidden shadow-2xl shadow-tertiary/20">
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-20 -mt-20 rounded-full"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+<div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-4xl">lightbulb</span>
+</div>
+<div class="flex-1">
+<h4 class="text-2xl font-black mb-2">Did you know?</h4>
+<p class="opacity-90 leading-relaxed font-medium">Exporting your data monthly and storing it in a secure vault is the best way to maintain a truly sovereign financial legacy. Use our Excel format for advanced pivot analysis.</p>
+</div>
+<div class="shrink-0 glass-panel px-6 py-4 rounded-2xl">
+<button class="text-tertiary-container font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                                Download Guide
+                                <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

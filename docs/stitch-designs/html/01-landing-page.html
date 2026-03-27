@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef | Your Money, Your Language, Your Rules</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#d0e1fb",
+              "surface-dim": "#d2d9f4",
+              "secondary-fixed-dim": "#b7c8e1",
+              "on-primary-fixed": "#002109",
+              "inverse-surface": "#283044",
+              "outline-variant": "#bdcaba",
+              "on-secondary-container": "#54647a",
+              "surface-container-highest": "#dae2fd",
+              "on-secondary-fixed": "#0b1c30",
+              "on-primary-fixed-variant": "#005320",
+              "surface-variant": "#dae2fd",
+              "on-secondary-fixed-variant": "#38485d",
+              "error-container": "#ffdad6",
+              "surface-container": "#eaedff",
+              "on-tertiary": "#ffffff",
+              "on-tertiary-fixed": "#3f0016",
+              "primary": "#006b2c",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "error": "#ba1a1a",
+              "tertiary-container": "#c74668",
+              "surface-container-low": "#f2f3ff",
+              "surface-tint": "#006e2d",
+              "tertiary": "#a72d51",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "secondary": "#505f76",
+              "on-tertiary-container": "#fffbff",
+              "primary-fixed": "#7ffc97",
+              "inverse-primary": "#62df7d",
+              "secondary-fixed": "#d3e4fe",
+              "primary-container": "#00873a",
+              "tertiary-fixed": "#ffd9de",
+              "background": "#faf8ff",
+              "on-background": "#131b2e",
+              "inverse-on-surface": "#eef0ff",
+              "surface-container-high": "#e2e7ff",
+              "surface-bright": "#faf8ff",
+              "on-secondary": "#ffffff",
+              "surface": "#faf8ff",
+              "on-primary": "#ffffff",
+              "outline": "#6e7b6c",
+              "on-error": "#ffffff",
+              "on-primary-container": "#f7fff2",
+              "on-surface-variant": "#3e4a3d",
+              "primary-fixed-dim": "#62df7d",
+              "on-surface": "#131b2e",
+              "on-error-container": "#93000a"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic", "sans-serif"],
+              "body": ["Inter", "Noto Sans Arabic", "sans-serif"],
+              "label": ["Inter", "Noto Sans Arabic", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+        background-color: #faf8ff;
+        color: #131b2e;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+      }
+      .gradient-primary {
+        background: linear-gradient(145deg, #006b2c 0%, #00873a 100%);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md no-line tonal-shift bg-slate-50/50">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16">
+<div class="flex items-center gap-8">
+<img alt="Masareef Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ug7XXYonMsAaTjkigHPOqFJjP1kFGU-gq6O--ZO-daQ5HxMcGnEkpD8MHMBPGXzirnM5LT_Epr4VoT7WAf9LmVqyrr0vzgxcNgb3OzjucKzCn4yd6rmj8EWFxYWP8AC-yYlc4P6DaQp2JD1Dd80Y6-WEMW_U7xNncp6GLN2HJj8p8GEOKrQyn0QZz4IyByRcgZreAeASCAsH6H0ncEaStjwoJPLo_4obJIK8IT7kOjWyYf3oDIl9zgx_0084IqG8lmLTsmKLZXMrw"/>
+<div class="hidden md:flex items-center gap-6 font-['Inter','Noto_Sans_Arabic'] text-sm font-medium">
+<a class="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors" href="#features">Features</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors" href="#pricing">Pricing</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors" href="#about">About</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">language</span>
+</button>
+<button class="hidden sm:block text-slate-600 font-medium px-4 py-2 hover:bg-slate-100 rounded-lg transition-colors">Sign In</button>
+<button class="gradient-primary text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-transform active:scale-95 duration-200">Get Started Free</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-20 px-6 overflow-hidden">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Fintech for the MENA region
+                </div>
+<h1 class="text-5xl lg:text-7xl font-extrabold text-on-background leading-[1.1] tracking-tight font-headline">
+                    Your money,<br/>your language,<br/><span class="text-primary">your rules.</span>
+</h1>
+<p class="text-2xl font-bold text-primary font-headline" dir="rtl">
+                    فلوسك، بلغتك، بقواعدك
+                </p>
+<p class="text-lg text-secondary max-w-lg leading-relaxed font-body">
+                    The first personal finance app built for Egyptian and MENA families. Track spending, manage debts, monitor your Gam3eya, and forecast your cash flow — all in Arabic.
+                </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="gradient-primary text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-emerald-900/10 transition-all active:scale-95">Get Started Free</button>
+<button class="bg-surface-container-high text-on-surface px-8 py-4 rounded-xl font-bold text-lg transition-all hover:bg-surface-container-highest">See Demo</button>
+</div>
+</div>
+<div class="relative lg:h-[600px] flex items-center justify-center">
+<!-- Dashboard Mockup Glass Effect -->
+<div class="relative w-full aspect-video lg:aspect-square bg-surface-container-low rounded-3xl p-4 shadow-2xl border border-white/40 overflow-hidden transform lg:rotate-2">
+<div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+<img class="w-full h-full object-cover rounded-2xl opacity-90 mix-blend-multiply" data-alt="Financial dashboard with charts and tables" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbpojgciKA-PdWAZvMUa_EdOeY_aG0QucBG00ZBkXaGMwmwoipGsy5i3EK3ReULTKrTwWfUmxM5-VTrVZdbbhZ26FsspUN1gMBV9EIM0jjy_yc6TgYIbYLat8lhqobqWQ8nfB2ETan6Uk-mV5VsFNIPfHzBAF1q_MoRZ5WAsVYFqqaHismgGmX41VKT4x4p2BPGSjM4QTY07YC7l95Fp9b-s-6BozbdwcS8p1gB_NbuL4uHaI2T_SNL7kkjezgM4fosL4P9yy7XY0"/>
+<div class="absolute top-8 left-8 right-8 glass-card p-6 rounded-2xl shadow-xl border border-white/50">
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="text-xs text-secondary font-bold uppercase tracking-widest">Total Balance</p>
+<h3 class="text-3xl font-extrabold tracking-tight">EGP 142,500.00</h3>
+</div>
+<div class="text-emerald-600 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12%
+                            </div>
+</div>
+<div class="space-y-4">
+<div class="h-2 w-full bg-emerald-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 w-3/4"></div>
+</div>
+<div class="flex justify-between text-xs font-medium text-secondary">
+<span>Monthly Savings Goal</span>
+<span>75% Achieved</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Elements -->
+<div class="absolute -bottom-6 -left-6 glass-card p-4 rounded-xl shadow-xl border border-white/50 hidden md:block">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase">Gam3eya</p>
+<p class="text-sm font-bold">Payout: July 1st</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-24 px-6 bg-surface-container-low" id="features">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-20">
+<h2 class="text-3xl lg:text-5xl font-extrabold tracking-tight mb-6">Built for the way you handle money</h2>
+<p class="text-secondary text-lg leading-relaxed">No more forcing your local financial habits into western apps. Masareef is designed specifically for the unique needs of the MENA market.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Feature Cards -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">account_balance</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Smart Bank Import</h3>
+<p class="text-secondary leading-relaxed">Simply upload your bank PDF or CSV. Our system parses Egyptian bank statements perfectly, no manual entry required.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<h3 class="text-xl font-bold mb-3">AI Categorization</h3>
+<p class="text-secondary leading-relaxed">Powered by LLMs to understand local merchant names in both Arabic and English for precise spending charts.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">payments</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Debts &amp; Installments</h3>
+<p class="text-secondary leading-relaxed">Manage your ValU, Sympl, and bank loans with automated amortization schedules and payment reminders.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">handshake</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Gam3eya Tracking</h3>
+<p class="text-secondary leading-relaxed">Manage rotating savings clubs with ease. Know when it's your turn and keep everyone accountable in one place.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">real_estate_agent</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Asset Management</h3>
+<p class="text-secondary leading-relaxed">Track your real estate value, gold prices, and high-interest certificates (شهادات) in real-time.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-700 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">family_restroom</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Family Finance</h3>
+<p class="text-secondary leading-relaxed">Share household budgets with your partner. Unified tracking for collaborative financial planning.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-24 px-6 overflow-hidden">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-3xl lg:text-5xl font-extrabold tracking-tight mb-20 text-center">Three steps to clarity</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Connector Line -->
+<div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-emerald-100 -z-10"></div>
+<div class="text-center space-y-6">
+<div class="w-24 h-24 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto text-3xl font-bold shadow-xl border-8 border-white">1</div>
+<h3 class="text-2xl font-bold">Import Data</h3>
+<p class="text-secondary leading-relaxed">Upload statements or connect securely. We support all major regional institutions.</p>
+</div>
+<div class="text-center space-y-6">
+<div class="w-24 h-24 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto text-3xl font-bold shadow-xl border-8 border-white">2</div>
+<h3 class="text-2xl font-bold">AI Categorize</h3>
+<p class="text-secondary leading-relaxed">Our AI identifies your spending habits across local grocers, bills, and lifestyle.</p>
+</div>
+<div class="text-center space-y-6">
+<div class="w-24 h-24 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto text-3xl font-bold shadow-xl border-8 border-white">3</div>
+<h3 class="text-2xl font-bold">See Full Picture</h3>
+<p class="text-secondary leading-relaxed">Get a comprehensive dashboard showing your net worth, debts, and future forecasts.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-24 px-6 bg-surface-container-low" id="pricing">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="text-3xl lg:text-5xl font-extrabold tracking-tight mb-4">Pricing that fits your life</h2>
+<p class="text-secondary">Start for free, upgrade when you're ready to master your money.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Free Tier -->
+<div class="bg-surface-container-lowest p-10 rounded-3xl flex flex-col justify-between border border-transparent">
+<div>
+<h3 class="text-xl font-bold mb-2">Free</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-extrabold">EGP 0</span>
+<span class="text-secondary text-sm">/forever</span>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> 1 member access
+                            </li>
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Manual CSV import
+                            </li>
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Basic spending charts
+                            </li>
+</ul>
+</div>
+<button class="w-full py-4 rounded-xl font-bold bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors">Start for Free</button>
+</div>
+<!-- Premium Tier -->
+<div class="bg-surface-container-lowest p-10 rounded-3xl flex flex-col justify-between border-2 border-emerald-500 relative transform lg:scale-105 shadow-2xl">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full">Most Popular</div>
+<div>
+<h3 class="text-xl font-bold mb-2 text-emerald-700">Premium</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-extrabold">EGP 99</span>
+<span class="text-secondary text-sm">/mo</span>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Up to 5 household members
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Smart AI categorization
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Gam3eya tracker
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Telegram notifications
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Debt management tools
+                            </li>
+</ul>
+</div>
+<button class="w-full py-4 rounded-xl font-bold gradient-primary text-white shadow-lg active:scale-95 transition-transform">Go Premium</button>
+</div>
+<!-- Business Tier -->
+<div class="bg-surface-container-lowest p-10 rounded-3xl flex flex-col justify-between">
+<div>
+<h3 class="text-xl font-bold mb-2">Business</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-extrabold">EGP 249</span>
+<span class="text-secondary text-sm">/mo</span>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Unlimited households
+                            </li>
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Up to 25 members
+                            </li>
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> API access &amp; Exports
+                            </li>
+<li class="flex items-center gap-3 text-secondary">
+<span class="material-symbols-outlined text-emerald-600">check_circle</span> Dedicated accountant view
+                            </li>
+</ul>
+</div>
+<button class="w-full py-4 rounded-xl font-bold bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors">Contact Sales</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-24 px-6">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-3xl lg:text-5xl font-extrabold tracking-tight mb-16 text-center">Trusted by thousands of families</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="p-8 rounded-3xl bg-surface-container-low relative">
+<span class="material-symbols-outlined text-emerald-200 text-6xl absolute top-6 right-6 select-none opacity-50">format_quote</span>
+<p class="text-lg italic mb-8 relative z-10">"Finally an app that understands Gam3eya. It’s hard to track rotating cash without it. Masareef makes it simple."</p>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of Mohamed from Cairo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3OkCsEUtZiKMCHw4qM5D2M3MHNeP2ZaWtW35hJ5dhXegON7fYEeT8umtoaraANj0Vdb44jDKZiTPebgEFkSld_5bTRtyURnFKGGWsBSNgiT9TRsyXHT8GOn-DzmT013RxFSUW14rmY2fc1fYDR_wl72unwFljIhDBLFiBZiSVWVWt6e9nP-LhZsMS6SvK5jIw1E3SlNqEi5Kg_tQSDF9yWdyFpoyh2_CG0ooaeki2uGex4K60UyKuF2wUbj8ecxsc-cipFsERsuQ"/>
+<div>
+<p class="font-bold">Mohamed</p>
+<p class="text-xs text-secondary">Cairo, Egypt</p>
+</div>
+</div>
+</div>
+<div class="p-8 rounded-3xl bg-surface-container-low relative">
+<span class="material-symbols-outlined text-emerald-200 text-6xl absolute top-6 right-6 select-none opacity-50">format_quote</span>
+<p class="text-lg italic mb-8 relative z-10">"Replaced my messy Google Sheets with this. The AI categorization for Fawry and bank transactions is scary accurate."</p>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of Sara from Alexandria" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPdTqdBgEEsFpH7Z-GexzhI68CydQgNxJ8IPFmb7J2Ra8Y1pv30k2xBLM6y23e8WkdZYcFWxZiT4lu2dwr3cdrzc0mYPruFq3gGXDzRxAktcQghAbVfMHa_Le-KR5HamK31exm6Z2TQxwmH-RqV--NqgZQc43XOuCGZtp-HqkphFeUwowwYzsPQMqcQFBz3lpd9cp4bbNbziVsCF1X5gHpLnt0degJk1JrK2xGPK_Vndt_qZsVmAalWSSNgvkrPUdRg50xZmCxsEY"/>
+<div>
+<p class="font-bold">Sara</p>
+<p class="text-xs text-secondary">Alexandria, Egypt</p>
+</div>
+</div>
+</div>
+<div class="p-8 rounded-3xl bg-surface-container-low relative">
+<span class="material-symbols-outlined text-emerald-200 text-6xl absolute top-6 right-6 select-none opacity-50">format_quote</span>
+<p class="text-lg italic mb-8 relative z-10">"My wife and I track together now. It's the only app that handles multiple currencies and local debt schedules correctly."</p>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of Ahmed from Riyadh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg2fJOzcm1NMtCa6V6Yguk-09j-fCl6qhf796lTwk5-jTp6kAWmprkmNW8rSXaIyYJITlhT_soTxZrFDbbNW7iavQOZd1P7Fg44hJV1eiyLXMZ7gxaBzjNmLbGw5u4v5QRitXRfFBZKAPlLNUBUa4pOjl_Cb4RbwE371Fr3QUx25pNQij5lkN-GM_hzUvcb_FiXgOFbw54vXykda7Ue_xkNbqUF0eAWYUMhPqIIu8HjkfPcblGUkeVMpBWYXMiTZ9ybNnMeqDIfKc"/>
+<div>
+<p class="font-bold">Ahmed</p>
+<p class="text-xs text-secondary">Riyadh, KSA</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Component: Luminous Insight -->
+<section class="py-24 px-6">
+<div class="max-w-5xl mx-auto rounded-[2.5rem] p-1 lg:p-2 bg-gradient-to-br from-emerald-100 to-primary-container/20">
+<div class="bg-surface-container-lowest rounded-[2rem] overflow-hidden flex flex-col md:flex-row items-stretch">
+<div class="p-12 md:w-3/5 space-y-6">
+<h2 class="text-3xl font-extrabold tracking-tight">Financial literacy in your pocket.</h2>
+<p class="text-secondary leading-relaxed">Join 50,000+ users who have already saved an average of EGP 4,200 per month just by tracking their expenses clearly.</p>
+<div class="pt-4">
+<button class="gradient-primary text-white px-8 py-4 rounded-xl font-bold shadow-lg">Join the Waitlist</button>
+</div>
+</div>
+<div class="md:w-2/5 bg-tertiary-container relative flex items-center justify-center min-h-[300px] md:min-h-full">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="Close up of Egyptian pound coins and notes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-ZW7Wpf44kABfFB8NxwHde75SPYvtOm7fa-Zkp1dw_Y2CNFaS-LnJtHTwCl9Qv5QVtdfA0CZisBA_sgX5mVte4txdb9PfbEShL4gQO6QP2hVx5CM0vtkPZoVha11LMcyeosfqctDMFZY7Bn5Me6XD7bJ3Fclm7QdfwJ1EGt_KCaAH3n_7Npf-fp8vWh6CrY4Znj3rsGAH7UyH7Kd7wLUhtyoLaV01CdswgxP2SpdtuR8Id0ibOKVIi-YHDi8_No7GlDnUn1Vr8qA"/>
+<div class="relative glass-card p-6 rounded-2xl mx-6 border border-white/40 shadow-2xl">
+<p class="text-on-tertiary-container font-bold text-center">"Wealth is not about how much you make, but how much you keep."</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full py-12 px-6 mt-20 tonal-layering bg-slate-50 on white-base">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 max-w-7xl mx-auto">
+<div class="space-y-6">
+<img alt="Masareef Logo" class="w-[140px] h-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ug7XXYonMsAaTjkigHPOqFJjP1kFGU-gq6O--ZO-daQ5HxMcGnEkpD8MHMBPGXzirnM5LT_Epr4VoT7WAf9LmVqyrr0vzgxcNgb3OzjucKzCn4yd6rmj8EWFxYWP8AC-yYlc4P6DaQp2JD1Dd80Y6-WEMW_U7xNncp6GLN2HJj8p8GEOKrQyn0QZz4IyByRcgZreAeASCAsH6H0ncEaStjwoJPLo_4obJIK8IT7kOjWyYf3oDIl9zgx_0084IqG8lmLTsmKLZXMrw"/>
+<p class="text-slate-500 font-['Inter','Noto_Sans_Arabic'] text-sm leading-relaxed">The premier financial operating system for the MENA household. Built with care in Egypt for the modern Arab world.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-600 shadow-sm hover:text-emerald-600 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-600 shadow-sm hover:text-emerald-600 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="font-bold mb-6">Product</h4>
+<ul class="space-y-4 font-['Inter','Noto_Sans_Arabic'] text-sm text-slate-500">
+<li><a class="hover:text-slate-900 transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-slate-900 transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-slate-900 transition-colors" href="#">Gam3eya Tracker</a></li>
+<li><a class="hover:text-slate-900 transition-colors" href="#">Debt Calculator</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6">Company</h4>
+<ul class="space-y-4 font-['Inter','Noto_Sans_Arabic'] text-sm text-slate-500">
+<li><a class="hover:text-slate-900 transition-colors" href="#">About</a></li>
+<li><a class="hover:text-slate-900 transition-colors" href="#">Contact</a></li>
+<li><a class="hover:text-slate-900 transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-slate-900 transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h4 class="font-bold">Newsletter</h4>
+<p class="text-sm text-slate-500">Get local financial tips directly in your inbox.</p>
+<div class="flex gap-2">
+<input class="bg-white border-0 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500 w-full" placeholder="Your email" type="email"/>
+<button class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-sm">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-200">
+<p class="font-['Inter','Noto_Sans_Arabic'] text-xs text-slate-500 text-center">© 2024 Masareef. Made with ❤️ in Egypt</p>
+</div>
+</footer>
+</body></html>

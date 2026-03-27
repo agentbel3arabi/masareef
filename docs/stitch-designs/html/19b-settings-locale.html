@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Language &amp; Locale Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface-variant": "#3e4a3d",
+                        "background": "#faf8ff",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002109",
+                        "tertiary-container": "#c74668",
+                        "on-tertiary-container": "#fffbff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#a72d51",
+                        "tertiary-fixed": "#ffd9de",
+                        "secondary-container": "#d0e1fb",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#f7fff2",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "secondary": "#505f76",
+                        "inverse-surface": "#283044",
+                        "on-background": "#131b2e",
+                        "surface-variant": "#dae2fd",
+                        "on-surface": "#131b2e",
+                        "secondary-fixed": "#d3e4fe",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d2d9f4",
+                        "on-error": "#ffffff",
+                        "surface": "#faf8ff",
+                        "surface-tint": "#006e2d",
+                        "surface-bright": "#faf8ff",
+                        "inverse-primary": "#62df7d",
+                        "outline": "#6e7b6c",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed-variant": "#005320",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-container-low": "#f2f3ff",
+                        "primary-fixed-dim": "#62df7d",
+                        "surface-container-high": "#e2e7ff",
+                        "on-tertiary-fixed": "#3f0016",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#bdcaba",
+                        "primary": "#006b2c",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "primary-fixed": "#7ffc97",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eaedff",
+                        "primary-container": "#00873a"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "Noto Sans Arabic"],
+                        "body": ["Inter", "Noto Sans Arabic"],
+                        "label": ["Inter", "Noto Sans Arabic"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', 'Noto Sans Arabic', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex">
+<!-- SideNavBar (Main App Sidebar) -->
+<aside class="h-screen w-72 flex flex-col fixed left-0 top-0 bg-[#F2F3FF] dark:bg-slate-900 shadow-[0_12px_40px_rgba(19,27,46,0.06)] py-8 pl-6 pr-0 z-50">
+<div class="mb-10 pl-4">
+<h1 class="text-2xl font-black text-[#131B2E] dark:text-white tracking-tight">Masareef <span class="block text-sm font-normal text-secondary opacity-70">مصاريف</span></h1>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 py-3 px-4 text-[#505F76] dark:text-slate-400 hover:bg-[#FFFFFF]/50 dark:hover:bg-slate-800/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-[#505F76] dark:text-slate-400 hover:bg-[#FFFFFF]/50 dark:hover:bg-slate-800/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-[#505F76] dark:text-slate-400 hover:bg-[#FFFFFF]/50 dark:hover:bg-slate-800/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-medium">Budgets</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-[#505F76] dark:text-slate-400 hover:bg-[#FFFFFF]/50 dark:hover:bg-slate-800/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-[#16A34A] dark:text-[#62DF7D] font-bold bg-[#FFFFFF] dark:bg-slate-800 rounded-l-3xl shadow-sm translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pr-6">
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+                Upgrade Plan
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-72 flex-1 flex min-h-screen">
+<!-- Secondary Settings Sidebar -->
+<nav class="w-64 bg-surface-container-low p-6 flex flex-col gap-1 border-r border-outline-variant/10">
+<h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-6 px-3">Settings</h2>
+<div class="flex flex-col gap-0.5">
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors" href="#">General</a>
+<a class="px-3 py-2 rounded-lg text-sm font-bold text-primary bg-surface-container-lowest shadow-sm flex items-center justify-between" href="#">
+                    Locale
+                    <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">Categories</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">AI Provider</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">Import Templates</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">Notifications</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">Household &amp; Members</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">People</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">Data Management</a>
+<a class="px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors" href="#">Billing</a>
+</div>
+</nav>
+<!-- Content Card Area -->
+<div class="flex-1 p-10 max-w-5xl mx-auto">
+<header class="mb-10">
+<h1 class="text-3xl font-extrabold text-on-surface tracking-tight mb-2">Language &amp; Locale</h1>
+<p class="text-secondary body-md">Customize how dates, numbers, and text appear across the app.</p>
+</header>
+<div class="space-y-12">
+<!-- Section 1: Language -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4">Language</h3>
+<div class="grid grid-cols-2 gap-4">
+<button class="group relative flex flex-col p-5 bg-surface-container-lowest rounded-xl border-2 border-primary shadow-md text-left transition-all">
+<span class="material-symbols-outlined text-primary mb-3" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-bold text-on-surface">English</span>
+<span class="text-sm text-secondary">Default System Language</span>
+<div class="absolute top-4 right-4 text-xs font-bold text-primary/40">US/UK</div>
+</button>
+<button class="group flex flex-col p-5 bg-surface-container-lowest rounded-xl border-2 border-transparent hover:border-outline-variant/30 shadow-sm text-left transition-all">
+<span class="material-symbols-outlined text-outline-variant mb-3">language</span>
+<span class="font-bold text-on-surface font-['Noto_Sans_Arabic']">العربية</span>
+<span class="text-sm text-secondary font-['Noto_Sans_Arabic']">اللغة العربية الرسمية</span>
+</button>
+</div>
+</section>
+<!-- Section 2: Calendar System -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4">Calendar System</h3>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center gap-4 p-4 bg-surface-container-lowest rounded-xl border-2 border-primary shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+<div class="text-left">
+<span class="block font-bold text-on-surface">Gregorian</span>
+<span class="text-xs text-secondary">Western Standard</span>
+</div>
+</button>
+<button class="flex items-center gap-4 p-4 bg-surface-container-lowest rounded-xl border-2 border-transparent hover:border-outline-variant/30 shadow-sm transition-all">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">event</span>
+</div>
+<div class="text-left">
+<span class="block font-bold text-on-surface font-['Noto_Sans_Arabic']">Hijri (الهجري)</span>
+<span class="text-xs text-secondary">Islamic Lunar</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Section 3: Number Format -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-widest text-secondary mb-4">Number Format</h3>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex flex-col p-5 bg-surface-container-lowest rounded-xl border-2 border-primary shadow-sm text-left">
+<span class="text-2xl font-black text-on-surface mb-1">1,250,000.00</span>
+<span class="text-xs font-bold text-primary uppercase">Western Arabic</span>
+</button>
+<button class="flex flex-col p-5 bg-surface-container-lowest rounded-xl border-2 border-transparent hover:border-outline-variant/30 shadow-sm text-left transition-all">
+<span class="text-2xl font-black text-on-surface mb-1 font-['Noto_Sans_Arabic'] tracking-tighter">١٬٢٥٠٬٠٠٠٫٠٠</span>
+<span class="text-xs font-bold text-secondary uppercase">Arabic-Indic</span>
+</button>
+</div>
+</section>
+<!-- Dropdowns Grid -->
+<div class="grid grid-cols-2 gap-x-12 gap-y-8">
+<!-- Section 4: Date Format -->
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-widest text-secondary">Date Format</label>
+<div class="relative">
+<select class="w-full h-12 px-4 bg-surface-container-low border-none rounded-xl appearance-none text-on-surface font-medium focus:ring-2 focus:ring-primary-fixed-dim transition-all">
+<option selected="">DD/MM/YYYY</option>
+<option>MM/DD/YYYY</option>
+<option>YYYY-MM-DD</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-3 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<!-- Section 5: First Day of Week -->
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-widest text-secondary">First Day of Week</label>
+<div class="relative">
+<select class="w-full h-12 px-4 bg-surface-container-low border-none rounded-xl appearance-none text-on-surface font-medium focus:ring-2 focus:ring-primary-fixed-dim transition-all">
+<option selected="">Saturday</option>
+<option>Sunday</option>
+<option>Monday</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-3 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<!-- Section 6: Timezone -->
+<div class="flex flex-col gap-2 col-span-2">
+<label class="text-xs font-bold uppercase tracking-widest text-secondary">Timezone</label>
+<div class="relative flex items-center group">
+<select class="w-full h-14 pl-12 pr-4 bg-surface-container-low border-none rounded-xl appearance-none text-on-surface font-medium focus:ring-2 focus:ring-primary-fixed-dim transition-all">
+<option selected="">Africa/Cairo (UTC+2)</option>
+<option>Europe/London (UTC+0)</option>
+<option>America/New_York (UTC-5)</option>
+<option>Asia/Dubai (UTC+4)</option>
+</select>
+<span class="material-symbols-outlined absolute left-4 text-primary">location_on</span>
+<span class="material-symbols-outlined absolute right-4 top-4 pointer-events-none text-secondary">expand_more</span>
+<div class="absolute right-12 flex items-center gap-1.5 py-1 px-3 bg-primary/10 rounded-full border border-primary/20">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-tight">Auto-detected</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Live Preview -->
+<div class="mt-8 pt-8 border-t border-outline-variant/10">
+<div class="bg-surface-container-low rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary text-lg">visibility</span>
+<span class="text-xs font-bold text-secondary uppercase tracking-widest">Live Preview</span>
+</div>
+<p class="text-sm font-medium text-on-surface bg-surface-container-lowest px-4 py-3 rounded-lg border border-outline-variant/10 shadow-sm">
+<span class="opacity-50">Today:</span> 23/03/2026 <span class="mx-2 opacity-20">|</span>
+<span class="opacity-50">Amount:</span> 1,250,000.00 EGP <span class="mx-2 opacity-20">|</span>
+<span class="opacity-50">Language:</span> English (LTR)
+                            </p>
+</div>
+<button class="shrink-0 bg-primary bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-10 h-14 rounded-xl shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3">
+                            Save Preferences
+                            <span class="material-symbols-outlined">save</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB Suppression Logic: Not rendering FAB on settings screen per instructions -->
+</body></html>

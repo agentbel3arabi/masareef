@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#e2e7ff",
+              "on-surface": "#131b2e",
+              "surface": "#faf8ff",
+              "primary-container": "#00873a",
+              "on-primary-fixed": "#002109",
+              "on-background": "#131b2e",
+              "on-tertiary-container": "#fffbff",
+              "error": "#ba1a1a",
+              "on-tertiary-fixed": "#3f0016",
+              "surface-container-highest": "#dae2fd",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "primary-fixed-dim": "#62df7d",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-bright": "#faf8ff",
+              "inverse-surface": "#283044",
+              "surface-container": "#eaedff",
+              "inverse-primary": "#62df7d",
+              "surface-dim": "#d2d9f4",
+              "on-secondary-fixed-variant": "#38485d",
+              "on-error": "#ffffff",
+              "outline-variant": "#bdcaba",
+              "on-primary-container": "#f7fff2",
+              "secondary": "#505f76",
+              "inverse-on-surface": "#eef0ff",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "secondary-fixed-dim": "#b7c8e1",
+              "primary-fixed": "#7ffc97",
+              "primary": "#006b2c",
+              "outline": "#6e7b6c",
+              "on-surface-variant": "#3e4a3d",
+              "surface-container-low": "#f2f3ff",
+              "secondary-container": "#d0e1fb",
+              "on-primary-fixed-variant": "#005320",
+              "background": "#faf8ff",
+              "secondary-fixed": "#d3e4fe",
+              "on-error-container": "#93000a",
+              "surface-variant": "#dae2fd",
+              "surface-tint": "#006e2d",
+              "on-secondary-fixed": "#0b1c30",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c74668",
+              "tertiary-fixed": "#ffd9de",
+              "tertiary": "#a72d51",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-container": "#54647a",
+              "on-secondary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic"],
+              "body": ["Inter", "Noto Sans Arabic"],
+              "label": ["Inter", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .empty-state-card {
+            box-shadow: 0 12px 40px rgba(19, 27, 46, 0.04);
+        }
+        .btn-gradient {
+            background: linear-gradient(145deg, #006b2c 0%, #00873a 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased">
+<!-- 2x2 Quadrant Container -->
+<div class="grid grid-cols-2 grid-rows-2 h-screen w-full overflow-hidden">
+<!-- Top-Left: Dashboard Quadrant -->
+<div class="relative flex bg-white border-r border-b border-surface-container overflow-hidden">
+<!-- SideNavBar Simulation -->
+<aside class="flex flex-col h-full py-8 px-4 w-60 bg-slate-50 border-r border-transparent">
+<div class="mb-10 px-2">
+<span class="text-xl font-bold text-slate-900 tracking-tight">Masareef</span>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">The Financial Atelier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 text-emerald-700 font-semibold bg-white rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-emerald-700">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600 transition-colors">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="text-sm">Accounts</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600 transition-colors">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-sm">Transactions</span>
+</div>
+</nav>
+</aside>
+<!-- Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center p-8 bg-white">
+<div class="max-w-md text-center">
+<div class="mb-8 flex justify-center">
+<div class="w-32 h-32 flex items-center justify-center rounded-full bg-surface-container-low">
+<span class="material-symbols-outlined text-6xl text-emerald-600" style="font-variation-settings: 'wght' 200;">monitoring</span>
+</div>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface mb-3">Your financial dashboard awaits</h2>
+<p class="text-secondary body-md mb-8">Add your first account and import a bank statement to see your full financial picture.</p>
+<div class="flex flex-col gap-3">
+<button class="btn-gradient text-on-primary font-medium py-3 px-6 rounded-lg shadow-sm transition-transform active:scale-95">Add Your First Account</button>
+<button class="bg-surface-container-low text-on-surface font-medium py-3 px-6 rounded-lg hover:bg-surface-container-high transition-colors">Import a Statement</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Top-Right: Accounts Quadrant -->
+<div class="relative flex bg-white border-b border-surface-container overflow-hidden">
+<!-- SideNavBar Simulation -->
+<aside class="flex flex-col h-full py-8 px-4 w-60 bg-slate-50 border-r border-transparent">
+<div class="mb-10 px-2">
+<span class="text-xl font-bold text-slate-900 tracking-tight">Masareef</span>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-emerald-700 font-semibold bg-white rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-emerald-700">account_balance</span>
+<span class="text-sm">Accounts</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-sm">Transactions</span>
+</div>
+</nav>
+</aside>
+<!-- Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center p-8 bg-white">
+<div class="max-w-md text-center">
+<div class="mb-8 flex justify-center">
+<div class="w-32 h-32 flex items-center justify-center rounded-full bg-surface-container-low">
+<span class="material-symbols-outlined text-6xl text-emerald-600" style="font-variation-settings: 'wght' 200;">account_balance_wallet</span>
+</div>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface mb-3">No accounts yet</h2>
+<p class="text-secondary body-md mb-8">Add your bank accounts, credit cards, and wallets to start tracking your money.</p>
+<button class="btn-gradient text-on-primary font-medium py-3 px-8 rounded-lg shadow-sm w-full md:w-auto transition-transform active:scale-95">+ Add Account</button>
+</div>
+</main>
+</div>
+<!-- Bottom-Left: Transactions Quadrant -->
+<div class="relative flex bg-white border-r border-surface-container overflow-hidden">
+<!-- SideNavBar Simulation -->
+<aside class="flex flex-col h-full py-8 px-4 w-60 bg-slate-50 border-r border-transparent">
+<div class="mb-10 px-2">
+<span class="text-xl font-bold text-slate-900 tracking-tight">Masareef</span>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="text-sm">Accounts</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-emerald-700 font-semibold bg-white rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-emerald-700">receipt_long</span>
+<span class="text-sm">Transactions</span>
+</div>
+</nav>
+</aside>
+<!-- Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center p-8 bg-white">
+<div class="max-w-md text-center">
+<div class="mb-8 flex justify-center">
+<div class="w-32 h-32 flex items-center justify-center rounded-full bg-surface-container-low">
+<span class="material-symbols-outlined text-6xl text-emerald-600" style="font-variation-settings: 'wght' 200;">receipt</span>
+</div>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface mb-3">No transactions recorded</h2>
+<p class="text-secondary body-md mb-8">Import a bank statement or manually add your first transaction.</p>
+<div class="flex flex-col gap-3">
+<button class="btn-gradient text-on-primary font-medium py-3 px-6 rounded-lg shadow-sm transition-transform active:scale-95">Import Statement</button>
+<button class="bg-surface-container-low text-on-surface font-medium py-3 px-6 rounded-lg hover:bg-surface-container-high transition-colors">+ Add Transaction</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Bottom-Right: Debts Quadrant -->
+<div class="relative flex bg-white overflow-hidden">
+<!-- SideNavBar Simulation -->
+<aside class="flex flex-col h-full py-8 px-4 w-60 bg-slate-50 border-r border-transparent">
+<div class="mb-10 px-2">
+<span class="text-xl font-bold text-slate-900 tracking-tight">Masareef</span>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="text-sm">Accounts</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-emerald-700 font-semibold bg-white rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-emerald-700">money_off</span>
+<span class="text-sm">Debts</span>
+</div>
+</nav>
+</aside>
+<!-- Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center p-8 bg-white">
+<div class="max-w-md text-center">
+<div class="mb-8 flex justify-center">
+<div class="w-32 h-32 flex items-center justify-center rounded-full bg-surface-container-low">
+<span class="material-symbols-outlined text-6xl text-emerald-600" style="font-variation-settings: 'wght' 200;">link_off</span>
+</div>
+</div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface mb-3">No debts tracked</h2>
+<p class="text-secondary body-md mb-8">Track your loans, installment plans, and P2P debts to see your full payoff timeline.</p>
+<div class="flex flex-col gap-3">
+<button class="btn-gradient text-on-primary font-medium py-3 px-6 rounded-lg shadow-sm transition-transform active:scale-95">+ Add Loan</button>
+<button class="bg-surface-container-low text-on-surface font-medium py-3 px-6 rounded-lg hover:bg-surface-container-high transition-colors">+ Add Installment</button>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Floating Global Info Badge -->
+<div class="fixed bottom-6 right-6 bg-on-surface text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg opacity-80 z-50 pointer-events-none uppercase tracking-widest">
+        State Concept Grid
+    </div>
+</body></html>

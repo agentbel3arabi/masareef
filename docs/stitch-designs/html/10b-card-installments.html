@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Debts - Card Installments | The Financial Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#eef0ff",
+              "secondary-container": "#d0e1fb",
+              "primary-container": "#00873a",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "on-tertiary-container": "#fffbff",
+              "on-surface": "#131b2e",
+              "on-secondary": "#ffffff",
+              "surface-dim": "#d2d9f4",
+              "secondary-fixed-dim": "#b7c8e1",
+              "primary-fixed": "#7ffc97",
+              "surface-variant": "#dae2fd",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "on-secondary-fixed-variant": "#38485d",
+              "on-secondary-container": "#54647a",
+              "on-background": "#131b2e",
+              "inverse-surface": "#283044",
+              "on-surface-variant": "#3e4a3d",
+              "secondary-fixed": "#d3e4fe",
+              "on-primary-fixed": "#002109",
+              "primary-fixed-dim": "#62df7d",
+              "outline-variant": "#bdcaba",
+              "primary": "#006b2c",
+              "tertiary-fixed": "#ffd9de",
+              "surface-container-highest": "#dae2fd",
+              "on-primary-fixed-variant": "#005320",
+              "on-secondary-fixed": "#0b1c30",
+              "error": "#ba1a1a",
+              "background": "#faf8ff",
+              "inverse-primary": "#62df7d",
+              "surface-bright": "#faf8ff",
+              "on-primary-container": "#f7fff2",
+              "on-primary": "#ffffff",
+              "surface-container-high": "#e2e7ff",
+              "on-error": "#ffffff",
+              "tertiary-container": "#c74668",
+              "surface-container-low": "#f2f3ff",
+              "tertiary": "#a72d51",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#6e7b6c",
+              "surface-container": "#eaedff",
+              "secondary": "#505f76",
+              "surface-tint": "#006e2d",
+              "on-tertiary-fixed": "#3f0016",
+              "on-error-container": "#93000a",
+              "error-container": "#ffdad6",
+              "surface": "#faf8ff",
+              "on-tertiary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "10px", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', 'Noto Sans Arabic', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#FAF8FF] dark:bg-[#131B2E] flex flex-col p-6 space-y-2 shadow-[12px_0_40px_rgba(19,27,46,0.04)] z-50">
+<div class="mb-8">
+<h1 class="text-lg font-black text-[#131B2E] dark:text-[#FAF8FF] tracking-tighter">Financial Atelier</h1>
+<p class="text-[10px] uppercase tracking-widest text-secondary font-bold opacity-60">Institutional Wealth</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="text-sm font-medium">Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-sm font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span class="text-sm font-medium">Forecasting</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-[#16A34A] text-white rounded-lg shadow-lg shadow-[#16A34A]/20 scale-[1.02] transform transition-all" href="#">
+<span class="material-symbols-outlined">credit_score</span>
+<span class="text-sm font-semibold">Debts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">group_work</span>
+<span class="text-sm font-medium">Gam3eya</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-sm font-medium">Assets</span>
+</a>
+</nav>
+<div class="pt-6 mt-6 border-t border-outline-variant/10 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:bg-[#F2F3FF] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 p-10 max-w-7xl mx-auto">
+<!-- Page Header & Tabs -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex-1">
+<h2 class="text-3xl font-extrabold text-on-surface tracking-tight mb-6">Debt Portfolio</h2>
+<div class="flex items-center gap-8 border-b-0">
+<button class="pb-3 text-sm font-medium text-secondary hover:text-primary transition-colors border-b-2 border-transparent">Loans</button>
+<button class="pb-3 text-sm font-bold text-primary border-b-2 border-primary">Card Installments</button>
+<button class="pb-3 text-sm font-medium text-secondary hover:text-primary transition-colors border-b-2 border-transparent">Store Installments</button>
+<button class="pb-3 text-sm font-medium text-secondary hover:text-primary transition-colors border-b-2 border-transparent">P2P</button>
+</div>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Add Plan
+            </button>
+</header>
+<!-- Credit Card Utilization Summary -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+<!-- HSBC Visa -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm flex items-center justify-between group hover:shadow-md transition-shadow">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">credit_card</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">HSBC Visa</h3>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-error uppercase tracking-wider">High</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase">Monthly</p>
+<p class="text-xl font-black">4,500 <span class="text-xs font-medium text-secondary">EGP</span></p>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase">Committed</p>
+<p class="text-xl font-black">85,000 <span class="text-xs font-medium text-secondary">EGP</span></p>
+</div>
+</div>
+<div class="pt-2 border-t border-outline-variant/10">
+<p class="text-[10px] text-secondary font-medium">Limit: 100,000 EGP</p>
+</div>
+</div>
+<div class="relative flex flex-col items-center">
+<svg class="w-24 h-24 transform -rotate-90">
+<circle class="text-surface-container-low" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-error" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="37.68" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col pt-1">
+<span class="text-lg font-black leading-none">85%</span>
+</div>
+</div>
+</div>
+<!-- CIB Mastercard -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm flex items-center justify-between group hover:shadow-md transition-shadow">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">credit_card</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">CIB Mastercard</h3>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary uppercase tracking-wider">Healthy</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase">Monthly</p>
+<p class="text-xl font-black">1,200 <span class="text-xs font-medium text-secondary">EGP</span></p>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase">Committed</p>
+<p class="text-xl font-black">14,400 <span class="text-xs font-medium text-secondary">EGP</span></p>
+</div>
+</div>
+<div class="pt-2 border-t border-outline-variant/10">
+<p class="text-[10px] text-secondary font-medium">Limit: 100,000 EGP</p>
+</div>
+</div>
+<div class="relative flex flex-col items-center">
+<svg class="w-24 h-24 transform -rotate-90">
+<circle class="text-surface-container-low" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="215.02" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col pt-1">
+<span class="text-lg font-black leading-none">14.4%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Detailed Plan Breakdown -->
+<div class="space-y-12">
+<!-- HSBC Group -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<h4 class="text-lg font-bold text-on-surface">HSBC Visa</h4>
+<span class="text-sm font-medium text-secondary">— 3 active plans</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Plan 1 -->
+<div class="bg-surface-container-low p-5 rounded-lg border-l-4 border-primary grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+<div class="md:col-span-1">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Product</p>
+<p class="font-bold text-on-surface">iPhone 16 Pro</p>
+<span class="inline-block mt-1 px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded">ACTIVE</span>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Monthly</p>
+<p class="font-black">4,500 <span class="text-[10px] font-normal">EGP</span></p>
+<p class="text-[10px] text-secondary mt-1">Total: 54,000</p>
+</div>
+<div class="md:col-span-2">
+<div class="flex justify-between items-end mb-1">
+<p class="text-[10px] text-secondary font-bold uppercase">Progress</p>
+<p class="text-[10px] font-bold text-primary">3 / 12 Months</p>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[25%] rounded-full"></div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Remaining</p>
+<p class="font-black text-on-surface">40,500 <span class="text-[10px] font-normal">EGP</span></p>
+</div>
+</div>
+<!-- Plan 2 -->
+<div class="bg-surface-container-low p-5 rounded-lg border-l-4 border-primary grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+<div class="md:col-span-1">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Product</p>
+<p class="font-bold text-on-surface">Samsung TV</p>
+<span class="inline-block mt-1 px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded">ACTIVE</span>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Monthly</p>
+<p class="font-black">1,500 <span class="text-[10px] font-normal">EGP</span></p>
+<p class="text-[10px] text-secondary mt-1">Total: 18,000</p>
+</div>
+<div class="md:col-span-2">
+<div class="flex justify-between items-end mb-1">
+<p class="text-[10px] text-secondary font-bold uppercase">Progress</p>
+<p class="text-[10px] font-bold text-primary">5 / 12 Months</p>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[42%] rounded-full"></div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Remaining</p>
+<p class="font-black text-on-surface">10,500 <span class="text-[10px] font-normal">EGP</span></p>
+</div>
+</div>
+<!-- Plan 3 -->
+<div class="bg-surface-container-low p-5 rounded-lg border-l-4 border-primary grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+<div class="md:col-span-1">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Product</p>
+<p class="font-bold text-on-surface">Laptop HP</p>
+<span class="inline-block mt-1 px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded">ACTIVE</span>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Monthly</p>
+<p class="font-black">1,083 <span class="text-[10px] font-normal">EGP</span></p>
+<p class="text-[10px] text-secondary mt-1">Total: 13,000</p>
+</div>
+<div class="md:col-span-2">
+<div class="flex justify-between items-end mb-1">
+<p class="text-[10px] text-secondary font-bold uppercase">Progress</p>
+<p class="text-[10px] font-bold text-primary">2 / 12 Months</p>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[17%] rounded-full"></div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Remaining</p>
+<p class="font-black text-on-surface">10,834 <span class="text-[10px] font-normal">EGP</span></p>
+</div>
+</div>
+</div>
+</section>
+<!-- CIB Group -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<h4 class="text-lg font-bold text-on-surface">CIB Mastercard</h4>
+<span class="text-sm font-medium text-secondary">— 1 active plan</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-low p-5 rounded-lg border-l-4 border-primary grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+<div class="md:col-span-1">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Product</p>
+<p class="font-bold text-on-surface">Air Conditioner</p>
+<span class="inline-block mt-1 px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded">ACTIVE</span>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Monthly</p>
+<p class="font-black">1,200 <span class="text-[10px] font-normal">EGP</span></p>
+<p class="text-[10px] text-secondary mt-1">Total: 14,400</p>
+</div>
+<div class="md:col-span-2">
+<div class="flex justify-between items-end mb-1">
+<p class="text-[10px] text-secondary font-bold uppercase">Progress</p>
+<p class="text-[10px] font-bold text-primary">1 / 12 Months</p>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[8%] rounded-full"></div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Remaining</p>
+<p class="font-black text-on-surface">13,200 <span class="text-[10px] font-normal">EGP</span></p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Grand Total Summary -->
+<footer class="mt-16 bg-surface-container p-8 rounded-xl flex items-center justify-between border border-outline-variant/30">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 bg-surface-container-lowest rounded-full flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-3xl">insights</span>
+</div>
+<div>
+<h5 class="text-sm font-semibold text-secondary uppercase tracking-tight">Total Monthly Installment Commitment</h5>
+<p class="text-3xl font-black text-on-surface">8,283 <span class="text-lg font-bold text-secondary">EGP/month</span></p>
+</div>
+</div>
+<div class="text-right">
+<span class="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md shadow-primary/10">across 4 active plans</span>
+</div>
+</footer>
+</main>
+</body></html>

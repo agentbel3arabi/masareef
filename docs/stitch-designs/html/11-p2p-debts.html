@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - P2P Debts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "surface-dim": "#d2d9f4",
+                "primary-container": "#00873a",
+                "error": "#ba1a1a",
+                "tertiary-container": "#c74668",
+                "primary-fixed-dim": "#62df7d",
+                "on-tertiary-fixed": "#3f0016",
+                "surface": "#faf8ff",
+                "on-error-container": "#93000a",
+                "inverse-on-surface": "#eef0ff",
+                "secondary-container": "#d0e1fb",
+                "tertiary": "#a72d51",
+                "surface-container-lowest": "#ffffff",
+                "surface-container": "#eaedff",
+                "on-tertiary": "#ffffff",
+                "error-container": "#ffdad6",
+                "on-tertiary-fixed-variant": "#8a143c",
+                "surface-variant": "#dae2fd",
+                "surface-bright": "#faf8ff",
+                "on-secondary-fixed-variant": "#38485d",
+                "on-surface": "#131b2e",
+                "on-background": "#131b2e",
+                "surface-container-low": "#f2f3ff",
+                "primary": "#006b2c",
+                "secondary-fixed-dim": "#b7c8e1",
+                "surface-container-high": "#e2e7ff",
+                "surface-tint": "#006e2d",
+                "on-primary-fixed-variant": "#005320",
+                "secondary-fixed": "#d3e4fe",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#0b1c30",
+                "background": "#faf8ff",
+                "on-surface-variant": "#3e4a3d",
+                "tertiary-fixed": "#ffd9de",
+                "outline": "#6e7b6c",
+                "primary-fixed": "#7ffc97",
+                "inverse-surface": "#283044",
+                "inverse-primary": "#62df7d",
+                "on-primary-container": "#f7fff2",
+                "on-secondary": "#ffffff",
+                "tertiary-fixed-dim": "#ffb2bf",
+                "on-primary": "#ffffff",
+                "on-tertiary-container": "#fffbff",
+                "surface-container-highest": "#dae2fd",
+                "on-secondary-container": "#54647a",
+                "on-primary-fixed": "#002109",
+                "secondary": "#505f76",
+                "outline-variant": "#bdcaba"
+              },
+              fontFamily: {
+                "headline": ["Inter", "Noto Sans Arabic"],
+                "body": ["Inter", "Noto Sans Arabic"],
+                "label": ["Inter", "Noto Sans Arabic"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #DAE2FD; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen flex overflow-hidden">
+<!-- Sidebar (Shared Component: SideNavBar) -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-[#F2F3FF] p-4 gap-2 shrink-0">
+<div class="flex items-center gap-3 px-2 py-4 mb-4">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary-container/20">
+                M
+            </div>
+<div>
+<h1 class="text-lg font-black text-[#131B2E]">Masareef</h1>
+<p class="text-[10px] uppercase tracking-widest text-secondary font-bold opacity-70">Financial Atelier</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Navigation items from JSON -->
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#505F76] hover:bg-white/50 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-medium text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#505F76] hover:bg-white/50 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-medium text-sm">Wallets</span>
+</a>
+<!-- ACTIVE TAB: Debts -->
+<a class="flex items-center gap-3 px-4 py-2.5 bg-white text-[#16A34A] rounded-lg shadow-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="handshake">handshake</span>
+<span class="font-medium text-sm">Debts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#505F76] hover:bg-white/50 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors" data-icon="payments">payments</span>
+<span class="font-medium text-sm">Budgets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-[#505F76] hover:bg-white/50 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors" data-icon="track_changes">track_changes</span>
+<span class="font-medium text-sm">Goals</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 space-y-1">
+<button class="w-full bg-primary text-white py-3 px-4 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all mb-4 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                Add Transaction
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-[#505F76] hover:bg-white/50 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="help">help</span>
+<span class="font-medium text-sm">Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error-container/20 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="logout">logout</span>
+<span class="font-medium text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+<!-- TopAppBar (Shared Component Logic) -->
+<header class="flex justify-between items-center w-full px-8 py-6 bg-surface shrink-0">
+<div class="flex items-center gap-4">
+<h2 class="text-2xl font-bold text-on-surface tracking-tight">Debts</h2>
+<!-- Sub-Navigation / Tabs -->
+<nav class="flex gap-1 bg-surface-container-low p-1 rounded-xl ml-4">
+<button class="px-5 py-1.5 text-sm font-medium text-secondary hover:text-on-surface transition-colors">Loans</button>
+<button class="px-5 py-1.5 text-sm font-medium text-secondary hover:text-on-surface transition-colors">Card Installments</button>
+<button class="px-5 py-1.5 text-sm font-medium text-secondary hover:text-on-surface transition-colors">Store Installments</button>
+<!-- ACTIVE TAB -->
+<button class="px-5 py-1.5 text-sm font-semibold text-primary bg-white shadow-sm rounded-lg border-b-2 border-primary">P2P</button>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary hover:bg-primary-container text-white px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="person_add">person_add</span>
+                    Add Person
+                </button>
+<button class="p-2.5 text-secondary hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-white shadow-sm overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up professional headshot of a person" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_qnl3oxD94XYwq9w6bt9m5sF5prc3XjaTvPnfXWP2zL7Jka2x8xlvuPyAXne_HXUiAxs4gE0LB2fkj-xJWtnq-XPzZ4d4CpY6Clr2nO79r39CGU1LcTe3aj7fmymsQNFI05aMCbQIRNukRUExDmLwnp3wVtCcyo0Y_NN6TM3d8QAWRMtu4sM62SdoB4O7xpsKB7yewHQjyAdD-hQYOk2TEKIuuaTcfj7nnB1SSkiHpc827MZdARXKaCLXeYWsoWItTc5UCBBTyb8"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto px-8 pb-12 custom-scrollbar">
+<div class="max-w-5xl mx-auto space-y-6">
+<!-- Expanded Person Card: Ahmed Hassan -->
+<section class="bg-surface-container-lowest rounded-[1.5rem] shadow-[0_12px_40px_rgba(19,27,46,0.04)] overflow-hidden border border-surface-container animate-in fade-in slide-in-from-bottom-4 duration-500">
+<!-- Card Header -->
+<div class="p-6 flex items-center justify-between border-b border-surface-container-low">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xl">
+                                AH
+                            </div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-xl font-bold text-on-surface">Ahmed Hassan</h3>
+<span class="px-3 py-0.5 bg-secondary-fixed text-on-secondary-fixed text-[11px] font-bold rounded-full uppercase tracking-wider">Family</span>
+</div>
+<div class="flex items-center gap-3 text-secondary text-sm">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base" data-icon="call">call</span>
+                                        0123-456-7890
+                                    </span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<div class="p-8 space-y-8">
+<!-- Balance Summary Sub-card -->
+<div class="bg-surface-container-low rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="space-y-2 border-r border-outline-variant/20 pr-4">
+<label class="text-[10px] font-bold uppercase tracking-widest text-secondary block">EGP Summary</label>
+<div class="flex flex-col">
+<span class="text-xs text-secondary">You lent 10,000</span>
+<span class="text-xs text-secondary">Ahmed paid 5,000</span>
+<p class="text-sm font-bold text-primary mt-1">Ahmed owes you 5,000</p>
+</div>
+</div>
+<div class="space-y-2 border-r border-outline-variant/20 pr-4">
+<label class="text-[10px] font-bold uppercase tracking-widest text-secondary block">USD Summary</label>
+<div class="flex flex-col">
+<span class="text-xs text-secondary">You borrowed $200</span>
+<span class="text-xs text-secondary">You paid $0</span>
+<p class="text-sm font-bold text-error mt-1">You owe $200</p>
+</div>
+</div>
+<div class="flex flex-col justify-center">
+<label class="text-[10px] font-bold uppercase tracking-widest text-secondary block mb-1">Total Net (EGP)</label>
+<p class="text-2xl font-black text-primary">Ahmed owes you 3,000 EGP</p>
+</div>
+</div>
+<!-- Debts Detail List -->
+<div class="space-y-4">
+<h4 class="text-sm font-bold text-on-surface uppercase tracking-wider">Active Engagements</h4>
+<!-- Debt Item 1 -->
+<div class="bg-white rounded-xl border border-surface-container p-6 shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary-fixed text-on-primary-fixed rounded-lg">
+<span class="material-symbols-outlined" data-icon="arrow_outward">arrow_outward</span>
+</div>
+<div>
+<h5 class="font-bold text-on-surface">Loan to Ahmed</h5>
+<span class="text-[10px] font-black bg-primary-fixed text-primary px-2 py-0.5 rounded uppercase">Lent</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xl font-black text-on-surface">10,000 EGP</p>
+<p class="text-xs text-secondary">Total Amount</p>
+</div>
+</div>
+<!-- Repayment Timeline -->
+<div class="relative pl-4 space-y-6 before:absolute before:left-5 before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant/30">
+<div class="relative flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-2.5 h-2.5 rounded-full bg-primary z-10 shadow-[0_0_0_4px_white]"></div>
+<div>
+<p class="text-sm font-bold">5,000 EGP</p>
+<p class="text-xs text-secondary">Jan 1, 2026</p>
+</div>
+</div>
+<span class="text-primary font-bold text-xs flex items-center gap-1 bg-primary-fixed/30 px-3 py-1 rounded-full">
+                                            Paid <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+</span>
+</div>
+<div class="relative flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-2.5 h-2.5 rounded-full bg-error z-10 shadow-[0_0_0_4px_white]"></div>
+<div>
+<p class="text-sm font-bold">3,000 EGP</p>
+<p class="text-xs text-secondary">Mar 1, 2026</p>
+</div>
+</div>
+<span class="text-error font-bold text-xs bg-error-container/40 px-3 py-1 rounded-full">Overdue 5 days</span>
+</div>
+<div class="relative flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant z-10 shadow-[0_0_0_4px_white]"></div>
+<div>
+<p class="text-sm font-bold">2,000 EGP</p>
+<p class="text-xs text-secondary">May 1, 2026</p>
+</div>
+</div>
+<span class="text-secondary font-bold text-xs px-3 py-1 rounded-full border border-surface-container">Upcoming</span>
+</div>
+</div>
+<div class="mt-8 flex justify-end">
+<button class="border-2 border-primary text-primary px-6 py-2 rounded-xl font-bold text-sm hover:bg-primary-fixed transition-colors">
+                                        Record Payment
+                                    </button>
+</div>
+</div>
+<!-- Debt Item 2 -->
+<div class="bg-white rounded-xl border border-surface-container p-6 shadow-sm">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-error-container text-on-error-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="call_received">call_received</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h5 class="font-bold text-on-surface">Borrowed from Ahmed</h5>
+<span class="text-[10px] font-black bg-error-container text-error px-2 py-0.5 rounded uppercase">Borrowed</span>
+</div>
+<p class="text-xs text-secondary mt-1">Due: Jun 1, 2026 — Upcoming</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xl font-black text-on-surface">$200 USD</p>
+</div>
+</div>
+</div>
+<button class="w-full py-4 rounded-xl border-2 border-dashed border-surface-container text-primary font-bold text-sm hover:bg-surface-container-low transition-all flex items-center justify-center gap-2 mt-4">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                                Add Debt
+                            </button>
+</div>
+</div>
+</section>
+<!-- Collapsed Person Card: Sara Mohamed -->
+<section class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-5 hover:border-primary-fixed-dim transition-all cursor-pointer group">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-bold text-lg">
+                                SM
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-on-surface">Sara Mohamed</h3>
+<span class="px-3 py-0.5 bg-tertiary-container/10 text-tertiary font-bold text-[10px] rounded-full uppercase">Friend</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-sm font-black text-error">Net: You owe 1,500 EGP</p>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:translate-y-0.5 transition-transform" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</section>
+<!-- "Luminous Insight" Component from Design System -->
+<div class="bg-tertiary-container rounded-[2rem] p-8 text-white relative overflow-hidden mt-12 shadow-2xl shadow-tertiary-container/20">
+<div class="relative z-10 max-w-lg">
+<h4 class="text-2xl font-black mb-2">Build Trust with Timely Payments</h4>
+<p class="text-white/80 text-sm leading-relaxed mb-6">Keeping track of personal debts helps maintain healthy relationships. Masareef automatically reminds you and your friends when installments are due.</p>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1/3 bg-white/10 backdrop-blur-md flex items-center justify-between px-8">
+<span class="text-sm font-medium">Want to automate these reminders?</span>
+<button class="bg-white text-tertiary px-6 py-2 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-surface-bright transition-colors">
+                            Enable Pro
+                        </button>
+</div>
+<!-- Decorative Element -->
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute top-8 right-8 text-white/20">
+<span class="material-symbols-outlined text-[120px] scale-150 rotate-12" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Supressed as per logic for Focused Screen) -->
+</body></html>

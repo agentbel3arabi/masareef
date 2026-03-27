@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#38485d",
+              "primary": "#006b2c",
+              "surface": "#faf8ff",
+              "surface-variant": "#dae2fd",
+              "on-surface": "#131b2e",
+              "secondary": "#505f76",
+              "tertiary-fixed": "#ffd9de",
+              "primary-fixed-dim": "#62df7d",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed": "#0b1c30",
+              "error": "#ba1a1a",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-container-highest": "#dae2fd",
+              "secondary-fixed": "#d3e4fe",
+              "outline": "#6e7b6c",
+              "secondary-fixed-dim": "#b7c8e1",
+              "surface-bright": "#faf8ff",
+              "tertiary": "#a72d51",
+              "background": "#faf8ff",
+              "on-tertiary-fixed": "#3f0016",
+              "on-primary-fixed": "#002109",
+              "surface-dim": "#d2d9f4",
+              "on-primary-container": "#f7fff2",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "surface-tint": "#006e2d",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "surface-container-high": "#e2e7ff",
+              "surface-container": "#eaedff",
+              "primary-container": "#00873a",
+              "on-primary-fixed-variant": "#005320",
+              "inverse-on-surface": "#eef0ff",
+              "primary-fixed": "#7ffc97",
+              "on-background": "#131b2e",
+              "on-tertiary-container": "#fffbff",
+              "inverse-surface": "#283044",
+              "secondary-container": "#d0e1fb",
+              "outline-variant": "#bdcaba",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f2f3ff",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "on-secondary-container": "#54647a",
+              "inverse-primary": "#62df7d",
+              "tertiary-container": "#c74668",
+              "on-surface-variant": "#3e4a3d"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic"],
+              "body": ["Inter", "Noto Sans Arabic"],
+              "label": ["Inter", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .arab-font { font-family: 'Noto Sans Arabic', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed-dim">
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#F2F3FF] flex flex-col py-8 px-4 gap-y-2 z-50">
+<div class="mb-8 px-2">
+<h1 class="text-xl font-bold text-[#131B2E] flex items-center gap-2">
+<span>Masareef</span>
+<span class="arab-font text-sm font-medium opacity-60">مصاريف</span>
+</h1>
+<p class="text-xs text-[#505F76] mt-1 italic">Premium Atelier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#505F76] hover:text-green-600 transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-green-700 font-bold border-r-4 border-green-600 bg-white font-['Inter'] text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span>Forecasting</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#505F76] hover:text-green-600 transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#505F76] hover:text-green-600 transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Budgets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#505F76] hover:text-green-600 transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant/10 pt-4">
+<button class="w-full bg-primary-container text-on-primary py-2.5 rounded-lg text-sm font-bold mb-4 shadow-sm active:scale-95 transition-transform">
+                Upgrade Plan
+            </button>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#505F76] hover:text-green-600 transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#505F76] hover:text-green-600 transition-all font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<main class="ml-64 min-h-screen pb-12">
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 left-64 right-0 z-40 bg-[#FAF8FF]/60 backdrop-blur-md flex justify-between items-center px-8 h-16 w-auto">
+<div class="flex items-center gap-4">
+<h2 class="font-headline font-semibold text-lg text-[#131B2E]">Financial Forecast</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary scale-75" data-icon="search">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search data..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<div class="mt-20 px-8 space-y-8">
+<!-- Alert Banner -->
+<section class="bg-error-container text-on-error-container p-4 rounded-xl flex items-center gap-4 shadow-sm border-l-4 border-error">
+<span class="material-symbols-outlined text-error" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex-1">
+<p class="font-bold text-sm">Your balance may go negative in August 2026.</p>
+<p class="text-xs opacity-80">Review your upcoming expenses and recurring rules to avoid overdraft fees.</p>
+</div>
+<button class="bg-error text-white px-4 py-1.5 rounded-lg text-xs font-bold active:scale-95 transition-all">Review Now</button>
+</section>
+<!-- Summary Row -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_12px_40px_rgba(19,27,46,0.04)] flex flex-col justify-between h-32 relative overflow-hidden group">
+<div class="flex justify-between items-start">
+<span class="text-secondary font-label text-xs tracking-wider uppercase">Monthly Net</span>
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="trending_up">trending_up</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-black text-primary">+2,500</span>
+<span class="text-xs font-bold text-secondary">EGP</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_12px_40px_rgba(19,27,46,0.04)] flex flex-col justify-between h-32">
+<div class="flex justify-between items-start">
+<span class="text-secondary font-label text-xs tracking-wider uppercase">Debt-Free Date</span>
+<span class="material-symbols-outlined text-secondary/40" data-icon="calendar_today">calendar_today</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-black text-on-surface">Jan 2030</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_12px_40px_rgba(19,27,46,0.04)] flex flex-col justify-between h-32 border-b-4 border-error">
+<div class="flex justify-between items-start">
+<span class="text-secondary font-label text-xs tracking-wider uppercase">Negative Months</span>
+<span class="material-symbols-outlined text-error" data-icon="error" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-3xl font-black text-error">1</span>
+<div class="bg-error-container text-error text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">August '26</div>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Cash Flow Projection -->
+<div class="lg:col-span-8 bg-surface-container-lowest p-8 rounded-[2rem] shadow-[0_12px_40px_rgba(19,27,46,0.04)]">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h3 class="text-xl font-bold text-on-surface">12-Month Cash Flow Projection</h3>
+<p class="text-secondary text-sm">Estimated income vs scheduled expenses</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span class="text-xs text-secondary font-medium">Income</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="text-xs text-secondary font-medium">Expenses</span>
+</div>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-4 px-2 relative">
+<!-- August Highlight -->
+<div class="absolute inset-y-0 left-[66.6%] w-[8%] bg-error/5 rounded-t-lg -z-10"></div>
+<!-- Simplified Visual Chart Bars -->
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[80%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[60%] rounded-t-sm"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[75%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[65%] rounded-t-sm"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">FEB</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[85%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[55%] rounded-t-sm"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[80%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[60%] rounded-t-sm"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">APR</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[90%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[50%] rounded-t-sm"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">MAY</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[70%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[75%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">JUN</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[70%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[70%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">JUL</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[60%] rounded-t-sm"></div>
+<div class="w-2.5 bg-error h-[95%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-error mt-3 font-black">AUG</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[80%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[60%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">SEP</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[80%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[60%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">OCT</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[85%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[65%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">NOV</span>
+</div>
+<div class="flex-1 flex flex-col items-center group h-full justify-end">
+<div class="flex gap-1 h-full items-end">
+<div class="w-2.5 bg-primary-container h-[95%] rounded-t-sm"></div>
+<div class="w-2.5 bg-tertiary h-[55%] rounded-t-sm border-t-2 border-dashed border-white"></div>
+</div>
+<span class="text-[10px] text-secondary mt-3 font-bold">DEC</span>
+</div>
+<!-- Balance Overlay Line Mockup -->
+<div class="absolute bottom-[40%] left-0 right-0 border-t-2 border-primary-fixed-dim/40 h-0 pointer-events-none">
+<div class="absolute -right-2 top-0 -translate-y-1/2 bg-primary-fixed-dim text-[8px] px-1 rounded text-on-primary-fixed font-bold">BALANCE LINE</div>
+</div>
+</div>
+</div>
+<!-- Debt Payoff Timelines -->
+<div class="lg:col-span-4 bg-surface-container-lowest p-8 rounded-[2rem] shadow-[0_12px_40px_rgba(19,27,46,0.04)]">
+<h3 class="text-xl font-bold text-on-surface mb-2">Debt Payoff Timelines</h3>
+<p class="text-secondary text-sm mb-8">Estimated completion by debt type</p>
+<div class="space-y-8">
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-semibold">Car Loan</span>
+<span class="text-xs text-secondary font-bold uppercase tracking-widest">Aug 2027</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-[#38485d] w-[65%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-semibold">iPhone 15 Pro</span>
+<span class="text-xs text-secondary font-bold uppercase tracking-widest">Oct 2024</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-[#006b2c] w-[92%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-semibold">Store Plan</span>
+<span class="text-xs text-secondary font-bold uppercase tracking-widest">Jan 2030</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-[#a72d51] w-[35%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-12 bg-surface-container-low p-4 rounded-xl border-t border-white">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb">lightbulb</span>
+<span class="text-xs font-medium leading-relaxed">Increasing your Car Loan payment by <span class="font-bold text-primary">500 EGP</span> will save 4 months of interest.</span>
+</div>
+</div>
+</div>
+<!-- Recurring Rules Section -->
+<div class="lg:col-span-12 bg-surface-container-lowest p-8 rounded-[2rem] shadow-[0_12px_40px_rgba(19,27,46,0.04)]">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-xl font-bold text-on-surface">Recurring Rules</h3>
+<button class="text-primary font-bold text-sm flex items-center gap-2 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
+                            Add New Rule
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="border-b border-surface-container-low">
+<tr>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-secondary">Label</th>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-secondary text-right">Amount</th>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-secondary text-center">Frequency</th>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-secondary text-center">Next Date</th>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-secondary text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="py-4 font-bold text-on-surface">Salary</td>
+<td class="py-4 text-right font-black text-primary">+45,000 EGP</td>
+<td class="py-4 text-center text-sm font-medium text-secondary">Monthly</td>
+<td class="py-4 text-center text-sm font-medium text-on-surface">25 Jun 2024</td>
+<td class="py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined text-xl" data-icon="edit">edit</span></button>
+<button class="p-2 text-secondary hover:text-error transition-colors"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="py-4 font-bold text-on-surface">Rent</td>
+<td class="py-4 text-right font-black text-error">-8,500 EGP</td>
+<td class="py-4 text-center text-sm font-medium text-secondary">Monthly</td>
+<td class="py-4 text-center text-sm font-medium text-on-surface">01 Jul 2024</td>
+<td class="py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined text-xl" data-icon="edit">edit</span></button>
+<button class="p-2 text-secondary hover:text-error transition-colors"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="py-4 font-bold text-on-surface">Freelance Income</td>
+<td class="py-4 text-right font-black text-primary">+12,000 EGP</td>
+<td class="py-4 text-center text-sm font-medium text-secondary">Quarterly</td>
+<td class="py-4 text-center text-sm font-medium text-on-surface">15 Aug 2024</td>
+<td class="py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined text-xl" data-icon="edit">edit</span></button>
+<button class="p-2 text-secondary hover:text-error transition-colors"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="py-4 font-bold text-on-surface">Netflix</td>
+<td class="py-4 text-right font-black text-error">-250 EGP</td>
+<td class="py-4 text-center text-sm font-medium text-secondary">Monthly</td>
+<td class="py-4 text-center text-sm font-medium text-on-surface">12 Jul 2024</td>
+<td class="py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined text-xl" data-icon="edit">edit</span></button>
+<button class="p-2 text-secondary hover:text-error transition-colors"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/30 transition-colors">
+<td class="py-4 font-bold text-on-surface">Gym Subscription</td>
+<td class="py-4 text-right font-black text-error">-1,200 EGP</td>
+<td class="py-4 text-center text-sm font-medium text-secondary">Monthly</td>
+<td class="py-4 text-center text-sm font-medium text-on-surface">20 Jun 2024</td>
+<td class="py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined text-xl" data-icon="edit">edit</span></button>
+<button class="p-2 text-secondary hover:text-error transition-colors"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

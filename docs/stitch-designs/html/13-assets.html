@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Atelier | Assets Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#eef0ff",
+                        "primary-fixed": "#7ffc97",
+                        "on-primary-container": "#f7fff2",
+                        "on-secondary-container": "#54647a",
+                        "outline-variant": "#bdcaba",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffd9de",
+                        "background": "#faf8ff",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#131b2e",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#c74668",
+                        "secondary": "#505f76",
+                        "surface-container-highest": "#dae2fd",
+                        "surface": "#faf8ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#005320",
+                        "inverse-primary": "#62df7d",
+                        "surface-container": "#eaedff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "on-surface-variant": "#3e4a3d",
+                        "surface-container-low": "#f2f3ff",
+                        "primary-fixed-dim": "#62df7d",
+                        "secondary-container": "#d0e1fb",
+                        "primary": "#006b2c",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-dim": "#d2d9f4",
+                        "surface-variant": "#dae2fd",
+                        "inverse-surface": "#283044",
+                        "surface-bright": "#faf8ff",
+                        "tertiary": "#a72d51",
+                        "error": "#ba1a1a",
+                        "outline": "#6e7b6c",
+                        "secondary-fixed": "#d3e4fe",
+                        "surface-tint": "#006e2d",
+                        "on-tertiary-fixed": "#3f0016",
+                        "primary-container": "#00873a",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "on-primary-fixed": "#002109",
+                        "on-surface": "#131b2e"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "Noto Sans Arabic"],
+                        "body": ["Inter", "Noto Sans Arabic"],
+                        "label": ["Inter", "Noto Sans Arabic"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .content-separation-by-tonal-shift {
+            background-color: #F2F3FF;
+        }
+        body {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface antialiased">
+<div class="flex min-h-screen">
+<!-- SideNavBar - JSON Execution -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 py-8 px-4 bg-[#FFFFFF] border-r-0 z-50">
+<div class="mb-10 px-4">
+<h1 class="text-xl font-bold text-[#131B2E]">The Atelier</h1>
+<p class="text-xs text-secondary tracking-wider uppercase font-medium">Wealth Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:text-[#131B2E] hover:bg-[#FFFFFF]/50 transition-colors duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<!-- Assets (Active State Logic) -->
+<a class="flex items-center gap-3 px-4 py-3 text-[#131B2E] font-semibold border-r-4 border-[#16A34A] bg-[#F2F3FF] transition-all rounded-l-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-medium">Assets</span>
+</a>
+<!-- Transactions (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:text-[#131B2E] hover:bg-[#FFFFFF]/50 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+<span class="font-medium">Transactions</span>
+</a>
+<!-- Reports (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:text-[#131B2E] hover:bg-[#FFFFFF]/50 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">leaderboard</span>
+<span class="font-medium">Reports</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:text-[#131B2E] hover:bg-[#FFFFFF]/50 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 pt-4 border-t border-surface-container">
+<button class="w-full flex items-center justify-center gap-2 py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-sm hover:opacity-90 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">add</span>
+<span>Add Asset</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen">
+<!-- TopNavBar - JSON Execution -->
+<header class="sticky top-0 z-40 bg-[#FAF8FF]/60 backdrop-blur-md flex items-center justify-between px-8 py-4 w-full">
+<div class="flex items-center gap-4">
+<span class="text-lg font-black tracking-tighter text-[#131B2E]">Masareef</span>
+</div>
+<div class="hidden md:flex items-center bg-surface-container-low px-4 py-2 rounded-full w-96 border border-transparent focus-within:bg-white focus-within:border-outline-variant/20 transition-all">
+<span class="material-symbols-outlined text-secondary mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-secondary" placeholder="Search your assets..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-secondary hover:text-on-surface transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-2 border-l border-outline-variant/20">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold leading-none">Ahmad Khalid</p>
+<p class="text-[10px] text-secondary">Premium Client</p>
+</div>
+<img class="w-9 h-9 rounded-full bg-surface-container-high object-cover shadow-sm" data-alt="User profile avatar smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqqnlex6gHtgo0sGtzSkPNA0zSlS69itC83b2WvfTakJOLWKLY4LvuYWmIUnqTLu5OyMLPuhyOsNkJjl9Ckr2l7RUJXyu0ciEvq4NA4nLSv5aY1AErNJC85vkSdu8U2ZYcfuhV6py_q7QxCPs5HIblny3h4vwDE6U4vzS7uj5PLOzU5PLzLjxLP-Q_ENdGKc6UbNvwGUijmkCvxcQfV2G9k_SFKOPTDkt0ufUr_wuS1m7dwGkgI4pinNHayndl2ghSFyyitS-OABQ"/>
+</div>
+</div>
+</header>
+<div class="px-8 py-8 space-y-8 max-w-7xl mx-auto">
+<!-- Portfolio Header Section -->
+<section class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(19,27,46,0.06)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="space-y-2">
+<p class="text-sm font-medium text-secondary uppercase tracking-widest">Net Worth Portfolio</p>
+<div class="flex items-baseline gap-4">
+<h2 class="text-4xl md:text-5xl font-black text-[#0F172A] tracking-tighter">4,375,000 <span class="text-2xl font-bold">EGP</span></h2>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                +32.5% overall
+                            </span>
+</div>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all active:scale-95 shadow-md shadow-primary/20 flex items-center gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+                            Add Asset
+                        </button>
+<button class="border border-outline-variant text-on-surface px-6 py-3 rounded-xl font-bold hover:bg-surface-container-low transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined">sync</span>
+                            Fetch Prices
+                        </button>
+</div>
+</section>
+<!-- Filter Tabs Section -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-6 py-2 bg-primary text-white rounded-full font-semibold whitespace-nowrap shadow-sm">All</button>
+<button class="px-6 py-2 bg-surface-container-low text-secondary hover:text-on-surface rounded-full font-semibold transition-colors whitespace-nowrap">Real Estate</button>
+<button class="px-6 py-2 bg-surface-container-low text-secondary hover:text-on-surface rounded-full font-semibold transition-colors whitespace-nowrap">Gold</button>
+<button class="px-6 py-2 bg-surface-container-low text-secondary hover:text-on-surface rounded-full font-semibold transition-colors whitespace-nowrap">Silver</button>
+<button class="px-6 py-2 bg-surface-container-low text-secondary hover:text-on-surface rounded-full font-semibold transition-colors whitespace-nowrap">Vehicles</button>
+<button class="px-6 py-2 bg-surface-container-low text-secondary hover:text-on-surface rounded-full font-semibold transition-colors whitespace-nowrap">Certificates</button>
+<button class="px-6 py-2 bg-surface-container-low text-secondary hover:text-on-surface rounded-full font-semibold transition-colors whitespace-nowrap">Other</button>
+</div>
+<!-- Assets Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Asset Card 1: Real Estate -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-[#E2E8F0] shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-3xl">home</span>
+</div>
+<div>
+<h3 class="text-xl font-extrabold text-[#0F172A]">Apartment Maadi</h3>
+<p class="text-xs font-medium text-secondary">Real Estate • Cairo, EG</p>
+</div>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-black">+35.7% ROI</span>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-low rounded-xl">
+<p class="text-[10px] uppercase font-bold text-secondary tracking-widest mb-1">Current Value</p>
+<p class="text-2xl font-black text-[#0F172A]">3,500,000 <span class="text-sm font-bold opacity-60">EGP</span></p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-3 border border-outline-variant/20 rounded-lg">
+<p class="text-[10px] font-bold text-secondary mb-1">Ownership</p>
+<p class="text-sm font-black">2,580,000</p>
+</div>
+<div class="p-3 border border-outline-variant/20 rounded-lg">
+<p class="text-[10px] font-bold text-secondary mb-1">Operating</p>
+<p class="text-sm font-black">10,000</p>
+</div>
+</div>
+<div class="flex justify-between items-center pt-2 text-xs">
+<span class="text-secondary">Purchase Price</span>
+<span class="font-bold text-on-surface">2,500,000 EGP</span>
+</div>
+</div>
+</div>
+<!-- Asset Card 2: Gold -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-[#E2E8F0] shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-[#FFFAF0] rounded-xl flex items-center justify-center text-[#B45309] group-hover:bg-[#FEF3C7] transition-colors">
+<span class="material-symbols-outlined text-3xl">auto_awesome</span>
+</div>
+<div>
+<h3 class="text-xl font-extrabold text-[#0F172A]">21K Gold</h3>
+<p class="text-xs font-medium text-secondary">Commodity • 250g</p>
+</div>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-black">+50.0% ROI</span>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-low rounded-xl border-l-4 border-[#B45309]">
+<p class="text-[10px] uppercase font-bold text-secondary tracking-widest mb-1">Live Market Value</p>
+<p class="text-2xl font-black text-[#0F172A]">75,000 <span class="text-sm font-bold opacity-60">EGP</span></p>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-base">schedule</span>
+<span class="text-[11px] font-bold">Price updated 2h ago</span>
+</div>
+<div class="pt-4 flex justify-between items-center text-xs">
+<span class="text-secondary">Weight Unit Price</span>
+<span class="font-bold text-on-surface">3,000 EGP/g</span>
+</div>
+</div>
+</div>
+<!-- Asset Card 3: Vehicle -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-[#E2E8F0] shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-secondary group-hover:text-[#131B2E] transition-colors">
+<span class="material-symbols-outlined text-3xl">directions_car</span>
+</div>
+<div>
+<h3 class="text-xl font-extrabold text-[#0F172A]">Hyundai Tucson 2024</h3>
+<p class="text-xs font-medium text-secondary">Transport • NX4</p>
+</div>
+</div>
+<span class="bg-error/10 text-error px-3 py-1 rounded-full text-xs font-black">-25.5% ROI</span>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-low rounded-xl">
+<p class="text-[10px] uppercase font-bold text-secondary tracking-widest mb-1">Estimated Resale</p>
+<p class="text-2xl font-black text-[#0F172A]">900,000 <span class="text-sm font-bold opacity-60">EGP</span></p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-3 border border-outline-variant/20 rounded-lg">
+<p class="text-[10px] font-bold text-secondary mb-1">Maintenance</p>
+<p class="text-sm font-black">15,400</p>
+</div>
+<div class="p-3 border border-outline-variant/20 rounded-lg">
+<p class="text-[10px] font-bold text-secondary mb-1">Insurance</p>
+<p class="text-sm font-black">22,000</p>
+</div>
+</div>
+<div class="flex justify-between items-center pt-2 text-xs">
+<span class="text-secondary">Initial Purchase</span>
+<span class="font-bold text-on-surface">1,200,000 EGP</span>
+</div>
+</div>
+</div>
+<!-- Add New Asset Ghost Card -->
+<div class="border-2 border-dashed border-outline-variant/30 rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-3 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all group">
+<div class="w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center text-secondary group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Add New Asset</p>
+<p class="text-xs text-secondary">Diversify your portfolio further</p>
+</div>
+</div>
+</div>
+<!-- Luminous Insight Signature Component -->
+<section class="mt-12 bg-tertiary-container text-white p-8 rounded-2xl overflow-hidden relative shadow-xl shadow-tertiary/20">
+<div class="relative z-10 md:w-2/3">
+<h4 class="text-2xl font-black mb-4 tracking-tight">Strategy Atelier: Gold Hedge</h4>
+<p class="text-white/80 leading-relaxed mb-6 font-medium">Your portfolio is currently 85% exposed to the EGP. Financial specialists suggest increasing your Gold holdings by 15% to buffer against inflation trends observed in the last quarter.</p>
+<button class="bg-white text-tertiary px-8 py-3 rounded-xl font-bold hover:bg-surface-container-high transition-all">View Suggested Allocation</button>
+</div>
+<!-- Abstract Background Shape -->
+<div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-white/10 to-transparent flex items-center justify-center">
+<span class="material-symbols-outlined text-[160px] opacity-10">insights</span>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

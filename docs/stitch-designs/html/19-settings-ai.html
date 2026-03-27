@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Categorization Settings - The Financial Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#0b1c30",
+              "on-secondary-container": "#54647a",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#a72d51",
+              "tertiary-fixed": "#ffd9de",
+              "tertiary-container": "#c74668",
+              "error-container": "#ffdad6",
+              "outline": "#6e7b6c",
+              "primary-fixed": "#7ffc97",
+              "primary": "#006b2c",
+              "secondary-fixed-dim": "#b7c8e1",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "surface-variant": "#dae2fd",
+              "surface-tint": "#006e2d",
+              "secondary-fixed": "#d3e4fe",
+              "on-error-container": "#93000a",
+              "on-primary-fixed-variant": "#005320",
+              "background": "#faf8ff",
+              "secondary-container": "#d0e1fb",
+              "surface-container-low": "#f2f3ff",
+              "on-surface-variant": "#3e4a3d",
+              "on-error": "#ffffff",
+              "surface-dim": "#d2d9f4",
+              "on-secondary-fixed-variant": "#38485d",
+              "surface-container": "#eaedff",
+              "inverse-primary": "#62df7d",
+              "inverse-surface": "#283044",
+              "surface-bright": "#faf8ff",
+              "on-tertiary": "#ffffff",
+              "inverse-on-surface": "#eef0ff",
+              "secondary": "#505f76",
+              "outline-variant": "#bdcaba",
+              "on-primary-container": "#f7fff2",
+              "on-tertiary-container": "#fffbff",
+              "error": "#ba1a1a",
+              "primary-container": "#00873a",
+              "on-primary-fixed": "#002109",
+              "on-background": "#131b2e",
+              "surface": "#faf8ff",
+              "surface-container-high": "#e2e7ff",
+              "on-surface": "#131b2e",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#62df7d",
+              "surface-container-highest": "#dae2fd",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "on-tertiary-fixed": "#3f0016"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active {
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<div class="flex h-screen overflow-hidden">
+<!-- Main Sidebar (Shared Component: SideNavBar) -->
+<aside class="flex flex-col h-full p-4 gap-2 bg-slate-50 border-r-0 w-64 shrink-0 transition-colors duration-200 ease-in-out font-['Inter'] text-sm">
+<div class="mb-8 px-2">
+<h1 class="text-xl font-bold tracking-tight text-slate-900">The Atelier</h1>
+<p class="text-xs text-slate-500 font-medium">Institutional Grade</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Forecasting</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Budgets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span>Assets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+<span>Import</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-emerald-700 font-semibold bg-white shadow-sm rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 flex items-center gap-3 px-2">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="User profile avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtzkldr5gVr4REIid2dNRk4ORL91SPNBTA69XNJB3GfJO7WNoKLhjdcHiis3TaCcdmsvxCQ7EEFXtdLtnqmYa8bedv12y8sAZ6vRTrv5GNletKwmcjYNQVrKCfCThN9ZGCDRelxdYmYhDqI1C1-nrN6huFBUhx_TZhqmGom0cD5leHh5zCw8xWTWXIT-wqWkedVg1-tfBnaXyBo13FTiBdgjNQ-jDLp8D0MQ8gI9aqbhodNRvqsMlDHWIFZ3QuRiyK93HfdtFxrkw"/>
+<div class="overflow-hidden">
+<p class="text-xs font-semibold truncate text-slate-900">Premium Account</p>
+<p class="text-[10px] text-slate-500 truncate">ID: AT-94021</p>
+</div>
+</div>
+</aside>
+<!-- Secondary Sidebar (Settings Categories) -->
+<aside class="w-60 bg-[#F8FAFC] flex flex-col p-6 shrink-0 border-r border-slate-100">
+<h2 class="text-label-sm font-bold uppercase tracking-widest text-secondary mb-6 px-2">Settings</h2>
+<nav class="space-y-1">
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">General</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Locale</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Categories</a>
+<a class="block px-2 py-1.5 text-sm font-semibold text-primary bg-white/50 rounded-md sidebar-active transition-colors" href="#">AI Provider</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Import Templates</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Notifications</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Household &amp; Members</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">People</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Data Management</a>
+<a class="block px-2 py-1.5 text-sm text-secondary hover:text-on-surface transition-colors" href="#">Billing</a>
+</nav>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-12 bg-surface">
+<div class="max-w-4xl mx-auto">
+<header class="mb-10 flex justify-between items-start">
+<div>
+<h2 class="text-headline-md font-bold text-on-surface tracking-tight mb-2">AI Categorization</h2>
+<p class="text-secondary body-md">Configure the AI provider for automatic transaction categorization.</p>
+</div>
+</header>
+<!-- Settings Card Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-8 space-y-10">
+<!-- Primary Provider Section -->
+<section>
+<div class="flex items-center gap-2 mb-6">
+<span class="w-1.5 h-6 bg-primary rounded-full"></span>
+<h3 class="text-title-sm font-bold text-on-surface uppercase tracking-wider">Primary Provider</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-[11px] font-bold uppercase text-secondary tracking-wide">Provider</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg py-3 px-4 appearance-none focus:ring-2 focus:ring-primary/20 text-sm">
+<option>Claude (Anthropic)</option>
+<option>OpenAI</option>
+<option>Gemini</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-[11px] font-bold uppercase text-secondary tracking-wide">API Key</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="sk-ant-••••••••" type="password" value="sk-ant-1234567890abcdef"/>
+<button class="absolute right-3 top-2.5 text-secondary hover:text-on-surface">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+</div>
+<div class="md:col-span-2 space-y-2">
+<label class="block text-[11px] font-bold uppercase text-secondary tracking-wide">Model ID</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary/20 text-sm font-mono" type="text" value="claude-sonnet-4-5-20241022"/>
+</div>
+</div>
+</section>
+<!-- Fallback Provider Section -->
+<section class="pt-10 border-t border-slate-50">
+<div class="flex items-center gap-2 mb-6">
+<span class="w-1.5 h-6 bg-secondary-fixed-dim rounded-full"></span>
+<h3 class="text-title-sm font-bold text-on-surface uppercase tracking-wider">Fallback Provider</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-[11px] font-bold uppercase text-secondary tracking-wide">Provider</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg py-3 px-4 appearance-none focus:ring-2 focus:ring-primary/20 text-sm">
+<option>Ollama (Local)</option>
+<option>Groq</option>
+<option>Mistral</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-[11px] font-bold uppercase text-secondary tracking-wide">Endpoint URL</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary/20 text-sm" type="text" value="http://localhost:11434"/>
+</div>
+<div class="md:col-span-2 space-y-2">
+<label class="block text-[11px] font-bold uppercase text-secondary tracking-wide">Model</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary/20 text-sm font-mono" type="text" value="llama3.1"/>
+</div>
+</div>
+</section>
+<!-- Collapsed Section -->
+<section class="border-t border-slate-50">
+<button class="w-full py-6 flex items-center justify-between text-secondary hover:text-on-surface transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">cloud</span>
+<span class="text-sm font-semibold uppercase tracking-widest">Azure OpenAI</span>
+</div>
+<span class="material-symbols-outlined">add</span>
+</button>
+</section>
+<!-- Behavior Section -->
+<section class="pt-4 space-y-6">
+<h3 class="text-title-sm font-bold text-on-surface uppercase tracking-wider">Behavior</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+<div>
+<p class="text-sm font-semibold text-on-surface">Auto-categorize on import</p>
+<p class="text-[11px] text-secondary">Automatically process new transactions from bank imports.</p>
+</div>
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors focus:outline-none">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-white transition-transform"></span>
+</button>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+<div>
+<p class="text-sm font-semibold text-on-surface">Auto-categorize manual transactions</p>
+<p class="text-[11px] text-secondary">Apply AI logic as you type manual entries.</p>
+</div>
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors focus:outline-none">
+<span class="inline-block h-4 w-4 translate-x-1 transform rounded-full bg-white transition-transform"></span>
+</button>
+</div>
+</div>
+</section>
+<!-- Bottom Actions -->
+<footer class="pt-10 flex items-center justify-between border-t border-slate-100">
+<div class="flex items-center gap-4">
+<button class="px-5 py-2.5 rounded-lg border-2 border-outline-variant text-on-surface text-sm font-semibold hover:bg-surface-container-low transition-all">
+                                Test Connection
+                            </button>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[11px] font-bold uppercase tracking-tight">Connected — 850ms latency</span>
+</div>
+</div>
+<button class="px-8 py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-100 transition-all">
+                            Save Changes
+                        </button>
+</footer>
+</div>
+</div>
+</main>
+</div>
+</body></html>
