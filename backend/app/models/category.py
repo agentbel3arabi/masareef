@@ -2,11 +2,14 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Text, func
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, SoftDeleteMixin
 from app.models.enums import CategoryType
+
+_enum_values = lambda e: [x.value for x in e]  # noqa: E731
 
 
 class Category(SoftDeleteMixin, Base):
@@ -18,7 +21,9 @@ class Category(SoftDeleteMixin, Base):
     )
     name_en: Mapped[str] = mapped_column(Text, nullable=False)
     name_ar: Mapped[str | None] = mapped_column(Text, nullable=True)
-    type: Mapped[CategoryType] = mapped_column(nullable=False)
+    type: Mapped[CategoryType] = mapped_column(
+        SAEnum(CategoryType, values_callable=_enum_values, create_type=False), nullable=False
+    )
     icon: Mapped[str | None] = mapped_column(Text, nullable=True)
     color: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_predefined: Mapped[bool] = mapped_column(

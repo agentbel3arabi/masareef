@@ -23,44 +23,31 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     """Create all Phase 1 tables."""
 
-    # --- Create PostgreSQL enum types ---
-    accounttype = sa.Enum(
-        "bank_account",
-        "credit_card",
-        "cash_wallet",
-        "digital_wallet",
-        "financing_app",
-        name="accounttype",
-        create_type=False,
-    )
-    accounttype.create(op.get_bind(), checkfirst=True)
-
-    transactiontype = sa.Enum(
-        "debit",
-        "credit",
-        name="transactiontype",
-        create_type=False,
-    )
-    transactiontype.create(op.get_bind(), checkfirst=True)
-
-    categorytype = sa.Enum(
-        "expense",
-        "income",
-        "special",
-        name="categorytype",
-        create_type=False,
-    )
-    categorytype.create(op.get_bind(), checkfirst=True)
-
-    householdrole = sa.Enum(
-        "admin",
-        "member",
-        "viewer",
-        "child",
-        name="householdrole",
-        create_type=False,
-    )
-    householdrole.create(op.get_bind(), checkfirst=True)
+    # --- Create PostgreSQL enum types (using raw SQL for Supabase pooler compatibility) ---
+    op.execute(sa.text("""
+        DO $$ BEGIN
+            CREATE TYPE accounttype AS ENUM ('bank_account', 'credit_card', 'cash_wallet', 'digital_wallet', 'financing_app');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$
+    """))
+    op.execute(sa.text("""
+        DO $$ BEGIN
+            CREATE TYPE transactiontype AS ENUM ('debit', 'credit');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$
+    """))
+    op.execute(sa.text("""
+        DO $$ BEGIN
+            CREATE TYPE categorytype AS ENUM ('expense', 'income', 'special');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$
+    """))
+    op.execute(sa.text("""
+        DO $$ BEGIN
+            CREATE TYPE householdrole AS ENUM ('admin', 'member', 'viewer', 'child');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$
+    """))
 
     # --- 1. households ---
     op.create_table(
@@ -384,7 +371,7 @@ def downgrade() -> None:
     op.drop_table("households")
 
     # Drop enum types
-    sa.Enum(name="householdrole", create_type=False).drop(op.get_bind(), checkfirst=True)
-    sa.Enum(name="categorytype", create_type=False).drop(op.get_bind(), checkfirst=True)
-    sa.Enum(name="transactiontype", create_type=False).drop(op.get_bind(), checkfirst=True)
-    sa.Enum(name="accounttype", create_type=False).drop(op.get_bind(), checkfirst=True)
+    op.execute(sa.text("DROP TYPE IF EXISTS householdrole"))
+    op.execute(sa.text("DROP TYPE IF EXISTS categorytype"))
+    op.execute(sa.text("DROP TYPE IF EXISTS transactiontype"))
+    op.execute(sa.text("DROP TYPE IF EXISTS accounttype"))

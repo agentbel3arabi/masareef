@@ -13,11 +13,14 @@ from sqlalchemy import (
     Text,
     func,
 )
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 from app.models.enums import TransactionType
+
+_enum_values = lambda e: [x.value for x in e]  # noqa: E731
 
 
 class Transaction(TimestampMixin, SoftDeleteMixin, Base):
@@ -38,7 +41,9 @@ class Transaction(TimestampMixin, SoftDeleteMixin, Base):
     description: Mapped[str] = mapped_column(Text, server_default="")
     amount_minor: Mapped[int] = mapped_column(BigInteger, nullable=False)
     currency: Mapped[str] = mapped_column(Text, nullable=False)
-    type: Mapped[TransactionType] = mapped_column(nullable=False)
+    type: Mapped[TransactionType] = mapped_column(
+        SAEnum(TransactionType, values_callable=_enum_values, create_type=False), nullable=False
+    )
     category_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("categories.id"), nullable=True
     )
