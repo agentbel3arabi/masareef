@@ -8,8 +8,8 @@ from alembic import context
 from app.config import Settings
 from app.models.base import Base
 
-# Import all models here so Alembic can detect them
-# (Models will be added as they are created in subsequent units)
+# Import all models so Alembic can detect them
+import app.models  # noqa: F401
 
 config = context.config
 
