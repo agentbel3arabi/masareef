@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Import Transactions - Masareef</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed": "#ffd9de",
+                        "tertiary-container": "#c74668",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#54647a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#a72d51",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-primary-fixed-variant": "#005320",
+                        "background": "#faf8ff",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container-low": "#f2f3ff",
+                        "on-surface-variant": "#3e4a3d",
+                        "surface-variant": "#dae2fd",
+                        "surface-tint": "#006e2d",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "outline": "#6e7b6c",
+                        "primary-fixed": "#7ffc97",
+                        "primary": "#006b2c",
+                        "outline-variant": "#bdcaba",
+                        "on-primary-container": "#f7fff2",
+                        "inverse-on-surface": "#eef0ff",
+                        "secondary": "#505f76",
+                        "surface-container": "#eaedff",
+                        "inverse-primary": "#62df7d",
+                        "inverse-surface": "#283044",
+                        "surface-bright": "#faf8ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d2d9f4",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-tertiary-fixed": "#3f0016",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#62df7d",
+                        "surface-container-highest": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "primary-container": "#00873a",
+                        "on-primary-fixed": "#002109",
+                        "on-background": "#131b2e",
+                        "surface": "#faf8ff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface": "#131b2e",
+                        "on-tertiary-container": "#fffbff",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- SideNavBar Shell -->
+<aside class="hidden md:flex flex-col h-full py-8 px-4 h-screen w-64 fixed left-0 top-0 bg-[#F2F3FF] dark:bg-slate-900 z-50">
+<div class="mb-10 px-2">
+<h1 class="text-2xl font-black text-[#131B2E] dark:text-white leading-tight">Masareef</h1>
+<p class="text-xs font-medium text-secondary opacity-70">The Financial Atelier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+                Accounts
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                Transactions
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+                Forecasting
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="money_off">money_off</span>
+                Debts
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Gam3eya
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-white/50 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Assets
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-700 dark:text-emerald-400 font-bold border-r-4 border-emerald-600 dark:border-emerald-400 bg-white dark:bg-slate-800 transition-all text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+                Import
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/20">
+<button class="w-full mb-6 bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Transaction
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600 transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-emerald-600 transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Shell (Mobile only) -->
+<header class="md:hidden flex justify-between items-center px-6 py-4 w-full bg-[#FAF8FF] dark:bg-slate-950 sticky top-0 z-40">
+<div class="text-xl font-bold text-[#131B2E] dark:text-slate-100">Masareef</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-500" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBxfkc748cW7xk65ZegYtOQMJAffkRcuAr_I0CW5hPp4euIJBbkwKvZ10H_wgI9tUXjJf1wpeo87hyz_pNxPToR5gof3yiuwYqpRjvKpHH1Hu8-QAfj90hCIIuRKhJv-k-7EQ3ZlN3b6HPhMQdWFTtfL5x4syOMN44fIoYRHA4CLHm7vp2CtIj0w-OEWnkOr8ybLbVdZ0jHJw608BJg54HTxmZSeIYunOXRMUKeSAwzten7iK9c8CjtFBysVleJhYqr7zECUA7SnQ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 p-6 md:p-12 lg:p-16 max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h2 class="text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight mb-2">Import Data</h2>
+<p class="text-secondary text-lg">Streamline your accounting by uploading bank statements directly.</p>
+</div>
+</div>
+<!-- 4-Step Progress Indicator -->
+<div class="mb-12">
+<div class="flex items-center justify-between relative max-w-4xl mx-auto">
+<!-- Progress Line Background -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-surface-container-high -translate-y-1/2 z-0"></div>
+<!-- Step 1: Upload (Active) -->
+<div class="relative z-10 flex flex-col items-center gap-3 group">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold ring-8 ring-background">1</div>
+<span class="text-sm font-bold text-primary">Upload</span>
+</div>
+<!-- Step 2: Map Columns -->
+<div class="relative z-10 flex flex-col items-center gap-3 group">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold ring-8 ring-background">2</div>
+<span class="text-sm font-medium text-on-surface-variant">Map Columns</span>
+</div>
+<!-- Step 3: Preview -->
+<div class="relative z-10 flex flex-col items-center gap-3 group">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold ring-8 ring-background">3</div>
+<span class="text-sm font-medium text-on-surface-variant">Preview</span>
+</div>
+<!-- Step 4: Done -->
+<div class="relative z-10 flex flex-col items-center gap-3 group">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold ring-8 ring-background">4</div>
+<span class="text-sm font-medium text-on-surface-variant">Done</span>
+</div>
+</div>
+</div>
+<!-- Main Upload Card -->
+<section class="max-w-4xl mx-auto mb-12">
+<div class="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-[0_12px_40px_rgba(19,27,46,0.04)]">
+<!-- Drag and Drop Zone -->
+<div class="border-2 border-dashed border-outline-variant/40 rounded-3xl p-10 md:p-16 flex flex-col items-center text-center group hover:border-primary/50 hover:bg-surface-container-low transition-all duration-300 mb-10 cursor-pointer">
+<div class="w-20 h-20 rounded-full bg-primary-container/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Drag your bank statement here or click to browse</h3>
+<p class="text-secondary max-w-sm">Supported formats: CSV, Excel (.xlsx), PDF - Max 10MB.</p>
+</div>
+<!-- Target Account Selection -->
+<div class="max-w-md mx-auto">
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2 px-1">Target Account</label>
+<div class="relative group">
+<select class="w-full bg-surface-container-low border-none rounded-xl py-4 px-5 text-on-surface font-medium appearance-none focus:ring-2 focus:ring-surface-tint/20 transition-all">
+<option value="">Select account to import to...</option>
+<option value="cib">CIB Savings</option>
+<option value="hsbc">HSBC Current</option>
+<option value="cash">Cash Wallet</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="mt-12 flex justify-center">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                        Process File
+                    </button>
+</div>
+</div>
+</section>
+<!-- Saved Templates Section -->
+<section class="max-w-4xl mx-auto">
+<div class="flex items-center justify-between mb-6">
+<h4 class="text-lg font-bold text-on-surface">Saved Templates</h4>
+<button class="text-primary font-bold text-sm hover:underline">Manage All</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Template Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex items-center justify-between hover:bg-surface transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">CIB Savings CSV</p>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary mt-1">
+                                AUTO-APPLIED
+                            </span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant">more_vert</span>
+</div>
+<!-- Template Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex items-center justify-between hover:bg-surface transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">table_chart</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">HSBC Egypt Excel</p>
+<p class="text-xs text-secondary">Last used 2 days ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant">more_vert</span>
+</div>
+</div>
+</section>
+<!-- Footer Note -->
+<footer class="mt-16 text-center border-t border-outline-variant/10 pt-8">
+<p class="text-sm text-secondary">
+                Scanned PDFs require Premium plan. <a class="text-primary font-bold ml-1" href="#">Upgrade →</a>
+</p>
+</footer>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest/80 backdrop-blur-md flex justify-around items-center py-4 px-2 border-t border-outline-variant/10 z-50">
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-medium">Txns</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+<span class="text-[10px] font-bold">Import</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-[10px] font-medium">Groups</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</nav>
+</body></html>

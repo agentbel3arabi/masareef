@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#c74668",
+              "on-primary-container": "#f7fff2",
+              "on-secondary": "#ffffff",
+              "tertiary": "#a72d51",
+              "on-tertiary-fixed": "#3f0016",
+              "on-tertiary": "#ffffff",
+              "outline-variant": "#bdcaba",
+              "on-error-container": "#93000a",
+              "primary-fixed": "#7ffc97",
+              "surface-container-low": "#f2f3ff",
+              "surface-container-high": "#e2e7ff",
+              "on-background": "#131b2e",
+              "on-primary-fixed": "#002109",
+              "primary-container": "#00873a",
+              "error": "#ba1a1a",
+              "on-secondary-container": "#54647a",
+              "on-surface-variant": "#3e4a3d",
+              "surface-container-highest": "#dae2fd",
+              "on-error": "#ffffff",
+              "surface-bright": "#faf8ff",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "secondary-fixed-dim": "#b7c8e1",
+              "outline": "#6e7b6c",
+              "surface-variant": "#dae2fd",
+              "background": "#faf8ff",
+              "inverse-on-surface": "#eef0ff",
+              "primary": "#006b2c",
+              "on-tertiary-container": "#fffbff",
+              "on-primary": "#ffffff",
+              "secondary-container": "#d0e1fb",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "secondary": "#505f76",
+              "on-surface": "#131b2e",
+              "surface-dim": "#d2d9f4",
+              "inverse-surface": "#283044",
+              "error-container": "#ffdad6",
+              "surface-tint": "#006e2d",
+              "surface": "#faf8ff",
+              "on-secondary-fixed": "#0b1c30",
+              "secondary-fixed": "#d3e4fe",
+              "surface-container": "#eaedff",
+              "primary-fixed-dim": "#62df7d",
+              "tertiary-fixed": "#ffd9de",
+              "inverse-primary": "#62df7d",
+              "on-primary-fixed-variant": "#005320",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed-variant": "#38485d"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic"],
+              "body": ["Inter", "Noto Sans Arabic"],
+              "label": ["Inter", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .arabic-text { font-family: 'Noto Sans Arabic', sans-serif; }
+        .branded-gradient {
+            background: linear-gradient(145deg, #131b2e 0%, #006b2c 100%);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background antialiased min-h-screen flex flex-col">
+<main class="flex-grow flex flex-col md:flex-row">
+<!-- Left Panel: Branded Area -->
+<section class="hidden md:flex md:w-5/12 branded-gradient relative overflow-hidden flex-col justify-between p-12 text-white">
+<!-- Decorative Pattern Overlay -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" data-alt="Subtle geometric cube pattern overlay" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQWPkxskczRhTh4dv9GXbWOnJSOgzIu6v6_w8a-4IrX8aUwyIdABTRjAhVWSbptqYK731lQ8NNSGQGrd1G5HNMDkL3S94E9c8TxsUbiyFTcp28gkFqvvrLWVZgHllUvnlZi_QimRCBf5zVO3_Vl8PDscngAokPB6_VGs4xap9p0RtcgQ92mrk1NNmj0wRTo9FAVTECIt8hYiBUsYNXJBfAG6Sg7tigtwJzueesIZm--I6yfhz-8MoD1TYSBNxTnaWm_uX7yNJPabg');"></div>
+<div class="relative z-10">
+<div class="flex flex-col gap-2">
+<h1 class="arabic-text text-6xl font-bold tracking-tight">مصاريف</h1>
+<span class="text-3xl font-extrabold tracking-tighter font-headline">Masareef</span>
+</div>
+<div class="mt-8 space-y-2">
+<p class="text-xl font-medium opacity-90">Your money, your language, your rules.</p>
+<p class="arabic-text text-xl font-medium opacity-90 text-right md:text-left" dir="rtl">فلوسك، بلغتك، بقواعدك</p>
+</div>
+</div>
+<div class="relative z-10 space-y-8">
+<div class="flex items-start gap-4">
+<div class="p-2 bg-white/10 rounded-lg">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</div>
+<div>
+<p class="font-semibold">Track spending across currencies</p>
+<p class="text-sm opacity-70">Manage EGP, USD, and SAR effortlessly.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="p-2 bg-white/10 rounded-lg">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<p class="font-semibold">Import bank statements</p>
+<p class="text-sm opacity-70">Automatic categorization in just 3 clicks.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="p-2 bg-white/10 rounded-lg">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+</div>
+<div>
+<p class="font-semibold">Manage family finances</p>
+<p class="text-sm opacity-70">Collaborate and save together in one place.</p>
+</div>
+</div>
+</div>
+<div class="relative z-10 text-xs opacity-50 uppercase tracking-widest font-label">
+                © 2024 Masareef. Financial Atelier v2.0
+            </div>
+</section>
+<!-- Right Panel: Registration Form -->
+<section class="flex-grow md:w-7/12 bg-surface flex items-center justify-center p-6 md:p-12">
+<div class="w-full max-w-md space-y-8">
+<!-- Top Actions -->
+<div class="absolute top-6 right-6 flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors text-secondary">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+</div>
+<!-- Header -->
+<div class="space-y-2">
+<h2 class="text-4xl font-extrabold text-on-surface tracking-tight font-headline">Create Account</h2>
+<p class="text-secondary body-md">Start tracking your finances for free.</p>
+</div>
+<!-- Form -->
+<form class="space-y-5" onsubmit="return false;">
+<div class="space-y-1.5">
+<label class="label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Full name</label>
+<input class="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-surface-tint focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="John Doe" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Email address</label>
+<input class="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-surface-tint focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="name@company.com" type="email"/>
+</div>
+<div class="space-y-1.5">
+<label class="label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Password</label>
+<div class="relative">
+<input class="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-surface-tint focus:bg-surface-container-lowest transition-all" type="password" value="SuperSecret123!"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-primary" type="button">
+<span class="material-symbols-outlined" data-icon="visibility_off">visibility_off</span>
+</button>
+</div>
+<!-- Strength Indicator -->
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden mt-2">
+<div class="h-full w-full bg-primary-container rounded-full"></div>
+</div>
+<p class="text-[10px] text-primary-container font-medium uppercase mt-1">Strong Password</p>
+</div>
+<div class="space-y-1.5">
+<label class="label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Confirm password</label>
+<input class="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-surface-tint focus:bg-surface-container-lowest transition-all" placeholder="••••••••" type="password"/>
+</div>
+<!-- Language Selector -->
+<div class="space-y-1.5">
+<label class="label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Preferred Language</label>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-3 border-2 border-primary-container bg-surface-container-lowest rounded-lg font-semibold text-primary" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                English
+                            </button>
+<button class="py-3 border-2 border-transparent bg-surface-container-low rounded-lg font-semibold text-secondary hover:bg-surface-container-high transition-colors arabic-text" type="button">
+                                العربية
+                            </button>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-3 py-2">
+<input class="mt-1 rounded text-primary focus:ring-primary border-outline-variant" id="terms" type="checkbox"/>
+<label class="text-sm text-secondary leading-snug" for="terms">
+                            I agree to the <a class="text-on-primary-fixed-variant font-semibold hover:underline" href="#">Terms of Service</a> and <a class="text-on-primary-fixed-variant font-semibold hover:underline" href="#">Privacy Policy</a>
+</label>
+</div>
+<!-- CTA -->
+<button class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-lg shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                        Create Account
+                    </button>
+</form>
+<!-- Divider -->
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-outline-variant/30"></div>
+<span class="flex-shrink mx-4 text-xs font-bold uppercase tracking-widest text-outline">or</span>
+<div class="flex-grow border-t border-outline-variant/30"></div>
+</div>
+<!-- Social Sign Up -->
+<button class="w-full py-3 flex items-center justify-center gap-3 border border-outline-variant rounded-lg font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+<img alt="" class="w-5 h-5" data-alt="Google G icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhxmtsRnWdtpHRTHpBpjxFa3Sm23QaYcXQdFBfFwWuNrAoKCnyWkbNdkaCT_b4-wV7MofP4TEq88kUM7wqVAWtfN6yEDc7WQkpx2MjoItL0xaNFwBD2pDKr9zdckqECpokiXZ3IPdtIUc7ghc-UG7cQn5oGyBS5YPu8YKT6aO9CRI8wmcDlTjaKS6SF8r7FK75LtIf4ZOYbjNkzuyFkQP1GVGsKDxmwlKjuosle9U3DTBKepqGthlYi2XZ8BUNjLhf2KBwLkY2Bdk"/>
+                    Sign up with Google
+                </button>
+<!-- Footer Links -->
+<div class="text-center pt-4">
+<p class="text-sm text-secondary">
+                        Already have an account? 
+                        <a class="text-primary font-bold hover:underline ml-1" href="#">Sign in</a>
+</p>
+<div class="mt-8 p-4 bg-surface-container-low rounded-xl">
+<p class="text-[11px] text-on-surface-variant leading-relaxed text-center italic">
+                            Free plan includes unlimited accounts, transactions, and basic dashboard. No credit card required.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Language Toggle Floating -->
+<div class="fixed bottom-6 right-6 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-outline-variant/20 z-50">
+<div class="flex items-center gap-3 text-[11px] font-bold tracking-tighter">
+<button class="text-primary">EN</button>
+<span class="text-outline-variant opacity-50">|</span>
+<button class="text-secondary hover:text-on-surface arabic-text">AR</button>
+</div>
+</div>
+<!-- Footer (Only relevant links from JSON) -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full py-8 border-t border-outline-variant/10">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<p class="text-xs font-medium uppercase tracking-wider text-slate-400">© 2024 Masareef. Your money, your language, your rules.</p>
+<nav class="flex gap-6">
+<a class="text-xs font-medium uppercase tracking-wider text-slate-400 hover:text-emerald-600 transition-all" href="#">Terms of Service</a>
+<a class="text-xs font-medium uppercase tracking-wider text-slate-400 hover:text-emerald-600 transition-all" href="#">Privacy Policy</a>
+<a class="text-xs font-medium uppercase tracking-wider text-slate-400 hover:text-emerald-600 transition-all" href="#">Contact Support</a>
+</nav>
+</div>
+</footer>
+</body></html>

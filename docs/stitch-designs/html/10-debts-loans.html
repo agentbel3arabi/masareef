@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Debts Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Noto+Sans+Arabic:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#faf8ff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary-fixed": "#3f0016",
+                        "primary-fixed-dim": "#62df7d",
+                        "tertiary": "#a72d51",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container": "#eaedff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#00873a",
+                        "surface-dim": "#d2d9f4",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#c74668",
+                        "surface-container-low": "#f2f3ff",
+                        "primary": "#006b2c",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-tint": "#006e2d",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#faf8ff",
+                        "surface-variant": "#dae2fd",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-surface": "#131b2e",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed": "#ffd9de",
+                        "outline": "#6e7b6c",
+                        "inverse-primary": "#62df7d",
+                        "primary-fixed": "#7ffc97",
+                        "inverse-surface": "#283044",
+                        "on-primary-container": "#f7fff2",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-fixed-variant": "#005320",
+                        "on-error": "#ffffff",
+                        "background": "#faf8ff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-surface-variant": "#3e4a3d",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed": "#002109",
+                        "outline-variant": "#bdcaba",
+                        "secondary": "#505f76",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-highest": "#dae2fd"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased">
+<div class="flex h-screen overflow-hidden bg-surface">
+<!-- Shared Component: SideNavBar -->
+<div class="relative flex h-auto min-h-screen w-[280px] flex-col bg-surface-container-lowest border-r border-outline-variant/20 overflow-y-auto">
+<div class="flex flex-col gap-4 p-4">
+<div class="flex gap-3 items-center px-3 py-2">
+<div class="bg-primary-container aspect-square rounded-full size-10 flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-on-surface text-base font-medium leading-normal">Masareef</h1>
+<p class="text-secondary text-sm font-normal leading-normal">Personal Finance</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-4">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="text-secondary" data-icon="house" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">house</span>
+</div>
+<p class="text-on-surface text-sm font-medium leading-normal">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="text-secondary" data-icon="list" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">list</span>
+</div>
+<p class="text-on-surface text-sm font-medium leading-normal">Transactions</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="text-secondary" data-icon="chart_pie_slice" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">pie_chart</span>
+</div>
+<p class="text-on-surface text-sm font-medium leading-normal">Budgets</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-low">
+<div class="text-primary" data-icon="credit_card" data-size="24px" data-weight="fill">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">credit_card</span>
+</div>
+<p class="text-primary font-medium text-sm leading-normal">Debts</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors mt-auto">
+<div class="text-secondary" data-icon="gear" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-on-surface text-sm font-medium leading-normal">Settings</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-screen overflow-y-auto bg-surface">
+<div class="max-w-[1200px] w-full mx-auto p-8 space-y-8">
+<!-- Header -->
+<header class="flex flex-wrap items-end justify-between gap-6">
+<div class="flex flex-col gap-2">
+<h2 class="text-[3.5rem] leading-[1.1] tracking-[-0.02em] font-bold text-on-surface">Debts Management</h2>
+<p class="text-[1rem] leading-[1.4] text-secondary">Track and manage your loans and installments</p>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg px-6 py-3 font-medium text-sm flex items-center gap-2 hover:shadow-[0_12px_40px_rgba(19,27,46,0.06)] transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Add Loan
+                    </button>
+</header>
+<!-- Navigation Tabs -->
+<nav class="flex border-b border-surface-container-high mb-8">
+<button class="px-6 py-4 border-b-2 border-primary text-primary font-medium text-sm">
+                        Loans
+                    </button>
+<button class="px-6 py-4 border-b-2 border-transparent text-secondary hover:text-on-surface font-medium text-sm transition-colors">
+                        Card Installments
+                    </button>
+<button class="px-6 py-4 border-b-2 border-transparent text-secondary hover:text-on-surface font-medium text-sm transition-colors">
+                        Store Installments
+                    </button>
+<button class="px-6 py-4 border-b-2 border-transparent text-secondary hover:text-on-surface font-medium text-sm transition-colors">
+                        P2P
+                    </button>
+</nav>
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-3">
+<h3 class="text-base font-medium text-secondary">Monthly Debt Payments</h3>
+<p class="text-[2rem] leading-tight font-bold text-on-surface">15,250 <span class="text-xl font-normal text-secondary">EGP</span></p>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<h3 class="text-base font-medium text-secondary">Total Active Loans Remaining</h3>
+<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-full text-xs font-medium">3 loans</span>
+</div>
+<p class="text-[2rem] leading-tight font-bold text-on-surface">850,000 <span class="text-xl font-normal text-secondary">EGP</span></p>
+</div>
+</div>
+<!-- Expanded Loan Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6 shadow-[0_12px_40px_rgba(19,27,46,0.02)]">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<h4 class="text-xl font-bold text-on-surface">Car Loan — CIB</h4>
+<span class="bg-primary-fixed-dim/20 text-primary-container px-2.5 py-1 rounded-full text-xs font-medium border border-primary-fixed-dim/30">Active</span>
+<span class="bg-surface-container-high text-on-secondary-container px-2.5 py-1 rounded-full text-xs font-medium">14.5% APR</span>
+</div>
+</div>
+<button class="text-secondary hover:text-on-surface p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+<div class="flex flex-col gap-1">
+<span class="text-xs text-secondary uppercase tracking-wider font-medium">Principal</span>
+<span class="text-sm font-semibold text-on-surface">500,000 EGP</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-secondary uppercase tracking-wider font-medium">Monthly</span>
+<span class="text-sm font-semibold text-on-surface">11,750 EGP</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-secondary uppercase tracking-wider font-medium">Remaining</span>
+<span class="text-sm font-semibold text-on-surface">359,000 EGP</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-secondary uppercase tracking-wider font-medium">Start</span>
+<span class="text-sm font-semibold text-on-surface">Jan 2025</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-secondary uppercase tracking-wider font-medium">Payoff</span>
+<span class="text-sm font-semibold text-on-surface">Jan 2030</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-2 border-t border-surface-container-high">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-secondary">Progress</span>
+<span class="text-sm font-bold text-primary">28% paid</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 28%"></div>
+</div>
+</div>
+<!-- Yellow Suggestion Card (Luminous Insight styling adaptation) -->
+<div class="bg-[#FFF8E1] rounded-lg p-4 flex items-center justify-between mt-2 border border-[#FFE082]/30">
+<div class="flex items-center gap-3">
+<div class="bg-[#FFECB3] p-2 rounded-full text-[#F57F17]">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<p class="text-sm font-medium text-on-surface">Match found: transaction <span class="font-bold">-11,750 EGP</span> on Mar 16 from CIB Savings</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-sm font-medium text-secondary hover:text-on-surface px-3 py-1.5">Dismiss</button>
+<button class="text-sm font-medium bg-primary text-on-primary px-4 py-1.5 rounded-lg hover:bg-primary-container transition-colors">Link Payment</button>
+</div>
+</div>
+<!-- Amortization Schedule -->
+<div class="mt-4">
+<h5 class="text-sm font-semibold text-on-surface mb-3 flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                            Amortization Schedule
+                            <span class="material-symbols-outlined text-[20px]">expand_less</span>
+</h5>
+<div class="bg-surface-container-low rounded-lg overflow-hidden">
+<table class="w-full text-left text-sm">
+<thead class="bg-surface-container-high/50 text-secondary text-xs uppercase tracking-wider">
+<tr>
+<th class="px-4 py-3 font-medium">Installment</th>
+<th class="px-4 py-3 font-medium">Date</th>
+<th class="px-4 py-3 font-medium text-right">Amount</th>
+<th class="px-4 py-3 font-medium text-center">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface">#12</td>
+<td class="px-4 py-3 text-secondary">Feb 2026</td>
+<td class="px-4 py-3 text-right font-medium text-on-surface">11,750 EGP</td>
+<td class="px-4 py-3 text-center">
+<span class="bg-primary-fixed-dim/20 text-primary-container px-2.5 py-1 rounded-full text-xs font-medium border border-primary-fixed-dim/30">Paid</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface">#13</td>
+<td class="px-4 py-3 text-secondary">Mar 2026</td>
+<td class="px-4 py-3 text-right font-medium text-on-surface">11,750 EGP</td>
+<td class="px-4 py-3 text-center">
+<span class="bg-primary-fixed-dim/20 text-primary-container px-2.5 py-1 rounded-full text-xs font-medium border border-primary-fixed-dim/30">Paid</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface">#14</td>
+<td class="px-4 py-3 text-secondary">Apr 2026</td>
+<td class="px-4 py-3 text-right font-medium text-on-surface">11,750 EGP</td>
+<td class="px-4 py-3 text-center">
+<span class="bg-surface-container-high text-secondary px-2.5 py-1 rounded-full text-xs font-medium border border-outline-variant/30">Upcoming</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Collapsed Loan Card -->
+<div class="bg-surface-container-low rounded-xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-surface-container-high/50 transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-lowest p-3 rounded-lg text-secondary shadow-sm">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h4 class="text-base font-bold text-on-surface">Personal Loan — HSBC</h4>
+<span class="bg-primary-fixed-dim/20 text-primary-container px-2 py-0.5 rounded-full text-[10px] font-medium border border-primary-fixed-dim/30">Active</span>
+<span class="text-xs text-secondary">16% APR</span>
+</div>
+<div class="flex items-center gap-2 text-sm">
+<span class="text-secondary">Remaining:</span>
+<span class="font-semibold text-on-surface">180,000 EGP</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6 w-full md:w-auto">
+<div class="flex flex-col gap-1 w-full md:w-32">
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium text-secondary">Progress</span>
+<span class="text-xs font-bold text-primary">15%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 15%"></div>
+</div>
+</div>
+<button class="text-secondary hover:text-on-surface p-1 rounded-full">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

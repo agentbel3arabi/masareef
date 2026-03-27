@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Financing Apps</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "surface-dim": "#d2d9f4",
+              "secondary-container": "#d0e1fb",
+              "on-secondary-fixed-variant": "#38485d",
+              "error": "#ba1a1a",
+              "surface-tint": "#006e2d",
+              "on-error-container": "#93000a",
+              "on-tertiary-fixed": "#3f0016",
+              "surface-container-high": "#e2e7ff",
+              "secondary-fixed-dim": "#b7c8e1",
+              "on-surface": "#131b2e",
+              "tertiary-fixed": "#ffd9de",
+              "inverse-primary": "#62df7d",
+              "outline-variant": "#bdcaba",
+              "primary": "#006b2c",
+              "on-primary-container": "#f7fff2",
+              "on-secondary-fixed": "#0b1c30",
+              "secondary": "#505f76",
+              "surface-container-low": "#f2f3ff",
+              "on-primary-fixed": "#002109",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "on-tertiary": "#ffffff",
+              "on-primary-fixed-variant": "#005320",
+              "primary-container": "#00873a",
+              "background": "#faf8ff",
+              "outline": "#6e7b6c",
+              "on-secondary-container": "#54647a",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-surface-variant": "#3e4a3d",
+              "secondary-fixed": "#d3e4fe",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#eef0ff",
+              "surface-bright": "#faf8ff",
+              "primary-fixed-dim": "#62df7d",
+              "tertiary-container": "#c74668",
+              "surface-variant": "#dae2fd",
+              "on-background": "#131b2e",
+              "inverse-surface": "#283044",
+              "on-secondary": "#ffffff",
+              "primary-fixed": "#7ffc97",
+              "on-tertiary-container": "#fffbff",
+              "surface": "#faf8ff",
+              "tertiary": "#a72d51",
+              "surface-container": "#eaedff",
+              "surface-container-highest": "#dae2fd"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic"],
+              "body": ["Inter", "Noto Sans Arabic"],
+              "label": ["Inter", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', 'Noto Sans Arabic', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="h-screen w-64 border-r-0 flex flex-col p-4 bg-slate-50 dark:bg-slate-900 font-['Inter'] antialiased sticky top-0">
+<div class="flex items-center gap-3 px-2 mb-10">
+<img alt="Masareef Brand Logo" class="w-8 h-8 rounded-lg" data-alt="Masareef brand logo minimalist icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdBd_xLTgbzh2I_qckldIG6gF_qnilaBxDrIamfRP2j5fE62JWOejGXV72-0_c2grIr8NwZkeRry3molsIYKj8hJcztpy9n8jlBfthw0cnPeTThKkZ_GDMdWqMpfjZ8YrccBZ_HMMdFauspzYwbH_R_PWpEaoWtCsrjli_pmUk6xRB0Ik9dIKOPQI5bXMbRXsI9Nt4aGOGY9ZWZ__d5KH1U1W2GoP6qoCtn3obOHxcccV3mF6P5X4XKmb7RH667uP4pPuw_ynUwRU"/>
+<div>
+<h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Masareef</h1>
+<p class="text-[10px] uppercase tracking-widest text-secondary font-bold">The Financial Atelier</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<!-- Active State Logic: Debts -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-emerald-700 dark:text-emerald-400 font-semibold bg-white dark:bg-slate-800 shadow-sm rounded-lg active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-sm">Debts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-sm font-medium">Insights</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200/50 flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-bold text-on-surface truncate">User Profile</p>
+<p class="text-[10px] text-secondary truncate">Premium Atelier Member</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar (Execution from JSON) -->
+<header class="flex items-center justify-between w-full px-8 py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md sticky top-0 z-10">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 pb-2 hover:text-emerald-500 dark:hover:text-emerald-300 transition-all font-['Inter'] text-sm font-medium" href="#">Loans</a>
+<a class="text-slate-500 dark:text-slate-400 pb-2 hover:text-emerald-500 dark:hover:text-emerald-300 transition-all font-['Inter'] text-sm font-medium" href="#">Card Installments</a>
+<!-- Active State Logic: Financing Apps -->
+<a class="text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-600 pb-2 font-['Inter'] text-sm font-bold" href="#">Financing Apps</a>
+<a class="text-slate-500 dark:text-slate-400 pb-2 hover:text-emerald-500 dark:hover:text-emerald-300 transition-all font-['Inter'] text-sm font-medium" href="#">Store Installments</a>
+<a class="text-slate-500 dark:text-slate-400 pb-2 hover:text-emerald-500 dark:hover:text-emerald-300 transition-all font-['Inter'] text-sm font-medium" href="#">P2P</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-sm">add</span>
+                    Add Plan
+                </button>
+<div class="h-6 w-px bg-slate-200 mx-2"></div>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-8 space-y-10">
+<!-- Summary Horizontal Row -->
+<section>
+<h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary mb-6 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+                    Providers Overview
+                </h2>
+<div class="flex gap-6 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
+<!-- ValU Card -->
+<div class="min-w-[320px] bg-surface-container-lowest rounded-xl p-6 flex items-start justify-between shadow-sm border border-slate-100">
+<div class="space-y-4">
+<div>
+<h3 class="text-lg font-bold text-on-surface">ValU (ڤاليو)</h3>
+<p class="text-xs text-secondary font-medium">2 Active Plans</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-secondary uppercase tracking-wider font-bold">Monthly Commitment</p>
+<p class="text-2xl font-black text-on-surface">2,500 <span class="text-xs font-medium">EGP</span></p>
+</div>
+<div class="flex gap-4 pt-2">
+<div>
+<p class="text-[10px] text-secondary font-bold">Used</p>
+<p class="text-sm font-bold">35,000</p>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold">Available</p>
+<p class="text-sm font-bold text-primary">15,000</p>
+</div>
+</div>
+</div>
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-orange-400" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="64.08" stroke-width="6"></circle>
+</svg>
+<span class="absolute text-sm font-bold text-orange-600">70%</span>
+</div>
+</div>
+<!-- Souhoola Card -->
+<div class="min-w-[320px] bg-surface-container-lowest rounded-xl p-6 flex items-start justify-between shadow-sm border border-slate-100">
+<div class="space-y-4">
+<div>
+<h3 class="text-lg font-bold text-on-surface">Souhoola (سهولة)</h3>
+<p class="text-xs text-secondary font-medium">1 Active Plan</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-secondary uppercase tracking-wider font-bold">Monthly Commitment</p>
+<p class="text-2xl font-black text-on-surface">1,250 <span class="text-xs font-medium">EGP</span></p>
+</div>
+<div class="flex gap-4 pt-2">
+<div>
+<p class="text-[10px] text-secondary font-bold">Used</p>
+<p class="text-sm font-bold">15,000</p>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold">Available</p>
+<p class="text-sm font-bold text-primary">15,000</p>
+</div>
+</div>
+</div>
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-emerald-500" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="106.8" stroke-width="6"></circle>
+</svg>
+<span class="absolute text-sm font-bold text-emerald-600">50%</span>
+</div>
+</div>
+<!-- Sympl Card -->
+<div class="min-w-[320px] bg-surface-container-low/50 rounded-xl p-6 flex items-start justify-between border border-dashed border-slate-200">
+<div class="space-y-4 opacity-60">
+<div>
+<h3 class="text-lg font-bold text-on-surface">Sympl (سيمبل)</h3>
+<p class="text-xs text-secondary font-medium">No Active Plans</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-secondary uppercase tracking-wider font-bold">Monthly Commitment</p>
+<p class="text-2xl font-black text-on-surface">0 <span class="text-xs font-medium">EGP</span></p>
+</div>
+<div class="flex gap-4 pt-2">
+<div>
+<p class="text-[10px] text-secondary font-bold">Used</p>
+<p class="text-sm font-bold">0</p>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-bold">Available</p>
+<p class="text-sm font-bold">20,000</p>
+</div>
+</div>
+</div>
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+</svg>
+<span class="absolute text-sm font-bold text-slate-400">0%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Detailed Plans Section -->
+<section class="space-y-8">
+<h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                    Installment Breakdown
+                </h2>
+<!-- ValU Group -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-on-surface-variant flex items-center gap-2">
+                            ValU — 2 active plans (ڤاليو)
+                        </h3>
+<span class="h-px flex-1 bg-slate-100 mx-4"></span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<!-- Plan 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-slate-50 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-on-surface">iPhone 16 Pro</h4>
+<p class="text-xs text-secondary">at B.TECH</p>
+</div>
+<div class="text-right">
+<p class="text-lg font-black text-on-surface">1,500 <span class="text-[10px] text-secondary">/mo</span></p>
+<p class="text-[10px] font-bold text-emerald-600">Active</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-secondary">
+<span>PROGRESS (4/12 MONTHS)</span>
+<span>33%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full w-[33%]"></div>
+</div>
+</div>
+<div class="flex justify-between items-end pt-2">
+<div class="text-[10px] font-bold text-secondary uppercase tracking-tight">
+                                    Total: 18,000 EGP
+                                </div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase">Remaining Balance</p>
+<p class="text-sm font-black text-on-surface">12,000 EGP</p>
+</div>
+</div>
+</div>
+<!-- Plan 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-slate-50 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-on-surface">Washing Machine</h4>
+<p class="text-xs text-secondary">at B.TECH</p>
+</div>
+<div class="text-right">
+<p class="text-lg font-black text-on-surface">1,000 <span class="text-[10px] text-secondary">/mo</span></p>
+<p class="text-[10px] font-bold text-emerald-600">Active</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-secondary">
+<span>PROGRESS (6/12 MONTHS)</span>
+<span>50%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full w-[50%]"></div>
+</div>
+</div>
+<div class="flex justify-between items-end pt-2">
+<div class="text-[10px] font-bold text-secondary uppercase tracking-tight">
+                                    Total: 12,000 EGP
+                                </div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase">Remaining Balance</p>
+<p class="text-sm font-black text-on-surface">6,000 EGP</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Souhoola Group -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-on-surface-variant flex items-center gap-2">
+                            Souhoola — 1 active plan (سهولة)
+                        </h3>
+<span class="h-px flex-1 bg-slate-100 mx-4"></span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-slate-50 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-on-surface">Air Conditioner</h4>
+<p class="text-xs text-secondary">at Samsung Store</p>
+</div>
+<div class="text-right">
+<p class="text-lg font-black text-on-surface">1,250 <span class="text-[10px] text-secondary">/mo</span></p>
+<p class="text-[10px] font-bold text-emerald-600">Active</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-secondary">
+<span>PROGRESS (2/12 MONTHS)</span>
+<span>17%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full w-[17%]"></div>
+</div>
+</div>
+<div class="flex justify-between items-end pt-2">
+<div class="text-[10px] font-bold text-secondary uppercase tracking-tight">
+                                    Total: 15,000 EGP
+                                </div>
+<div class="text-right">
+<p class="text-[10px] text-secondary font-bold uppercase">Remaining Balance</p>
+<p class="text-sm font-black text-on-surface">12,500 EGP</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sympl Group -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold text-on-surface-variant flex items-center gap-2 opacity-50">
+                            Sympl — No active plans (سيمبل)
+                        </h3>
+<span class="h-px flex-1 bg-slate-100 mx-4 opacity-50"></span>
+</div>
+<div class="py-10 text-center border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
+<span class="material-symbols-outlined text-4xl text-slate-300 mb-3">receipt_long</span>
+<p class="text-sm text-secondary font-medium">You don't have any active installment plans with Sympl yet.</p>
+<button class="mt-4 text-primary text-xs font-bold hover:underline">Explore Financing Options</button>
+</div>
+</div>
+</section>
+<!-- Bottom Summary Card (Luminous Insight pattern) -->
+<section class="pt-6">
+<div class="bg-surface-container-highest rounded-[1.5rem] p-8 relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8 border border-white/40 shadow-xl">
+<!-- Abstract Background Pattern -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="absolute bottom-0 left-0 w-48 h-48 bg-tertiary/5 rounded-full blur-2xl -ml-16 -mb-16"></div>
+<div class="relative z-0 space-y-2">
+<h2 class="text-2xl font-black text-on-surface tracking-tight">BNPL Summary Commitment</h2>
+<p class="text-secondary text-sm max-w-sm">Consolidated view of your current monthly financing obligations and total outstanding balance.</p>
+</div>
+<div class="relative z-0 flex gap-12 text-center md:text-right">
+<div>
+<p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Monthly commitment</p>
+<p class="text-3xl font-black text-primary">3,750 <span class="text-sm">EGP</span></p>
+</div>
+<div class="w-px h-12 bg-slate-200/50 self-center hidden md:block"></div>
+<div>
+<p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Total Remaining</p>
+<p class="text-3xl font-black text-on-surface">30,500 <span class="text-sm">EGP</span></p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

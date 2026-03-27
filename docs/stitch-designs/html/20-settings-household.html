@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-surface": "#283044",
+                        "primary-container": "#00873a",
+                        "on-primary-fixed-variant": "#005320",
+                        "inverse-on-surface": "#eef0ff",
+                        "primary-fixed": "#7ffc97",
+                        "on-background": "#131b2e",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-container": "#eaedff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bdcaba",
+                        "secondary-container": "#d0e1fb",
+                        "tertiary-container": "#c74668",
+                        "on-surface-variant": "#3e4a3d",
+                        "surface-container-low": "#f2f3ff",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "on-secondary-container": "#54647a",
+                        "inverse-primary": "#62df7d",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#505f76",
+                        "tertiary-fixed": "#ffd9de",
+                        "on-surface": "#131b2e",
+                        "surface": "#faf8ff",
+                        "surface-variant": "#dae2fd",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "primary": "#006b2c",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#62df7d",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#a72d51",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-highest": "#dae2fd",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline": "#6e7b6c",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "surface-tint": "#006e2d",
+                        "surface-dim": "#d2d9f4",
+                        "on-primary-container": "#f7fff2",
+                        "on-primary-fixed": "#002109",
+                        "background": "#faf8ff",
+                        "on-tertiary-fixed": "#3f0016"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "Noto Sans Arabic"],
+                        "body": ["Inter", "Noto Sans Arabic"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Main Navigation Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col bg-[#FAF8FF] dark:bg-slate-950 font-['Inter'] text-sm antialiased z-30">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<div>
+<h1 class="text-xl font-bold text-[#131B2E] dark:text-white tracking-tight">The Atelier</h1>
+<p class="text-xs text-secondary opacity-70">Premium Finance</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#505F76] dark:text-slate-400 hover:bg-[#F2F3FF] dark:hover:bg-slate-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#505F76] dark:text-slate-400 hover:bg-[#F2F3FF] dark:hover:bg-slate-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span>Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#505F76] dark:text-slate-400 hover:bg-[#F2F3FF] dark:hover:bg-slate-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#505F76] dark:text-slate-400 hover:bg-[#F2F3FF] dark:hover:bg-slate-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="insert_chart">insert_chart</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#131B2E] dark:text-white font-semibold border-r-4 border-[#16A34A] bg-[#F2F3FF] dark:bg-slate-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3 p-2">
+<img alt="User profile photo" class="w-10 h-10 rounded-full bg-surface-container" data-alt="Close up of a professional male designer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4zbHMvWxQkGbT6pLbTn3xrLz2riBk3xF3oS7I87y-YFUkWq4IDQaUcxqmRPwyO-ZZnYDKaRnYSJKr37sY64D-yhA79telz9IvBinkO6MZEeX4jVO1bxbD5Kfu3ptX07QAqtK_uk4eto6Zkr8VUQd9Zk1AJCB5JC7KSRlb7-rqChzCk308ttQ2V48YgQrVXubmdmD1iDrHRTMepEubR6A3GhmiNrI3iSZwzcBcylZD2_CmoKG1W95CAku17VKrvshQ0KbX55s3Wj0"/>
+<div class="flex-1 overflow-hidden">
+<p class="font-semibold text-on-surface truncate">Mohamed Al-Masri</p>
+<p class="text-[10px] text-secondary uppercase tracking-widest">Premium Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Secondary Navigation Sidebar (Settings) -->
+<aside class="fixed left-64 top-0 h-full w-60 flex flex-col bg-[#F2F3FF] dark:bg-slate-900 font-['Inter'] text-sm tracking-wide z-20">
+<div class="p-8 pb-4">
+<h2 class="text-lg font-medium text-[#131B2E] dark:text-white">Settings</h2>
+<p class="text-xs text-[#505F76] dark:text-slate-500">Manage preferences</p>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#16A34A] dark:text-emerald-400 font-bold scale-95 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Household</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#505F76] dark:text-slate-500 hover:text-[#131B2E] dark:hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Members</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#505F76] dark:text-slate-500 hover:text-[#131B2E] dark:hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+<span>Roles &amp; Permissions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#505F76] dark:text-slate-500 hover:text-[#131B2E] dark:hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>Activity Log</span>
+</a>
+</nav>
+</aside>
+<!-- Content Area -->
+<main class="ml-[504px] min-h-screen pt-16 pb-12 px-12">
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 left-[504px] h-16 flex justify-between items-center px-8 z-20 bg-[#FAF8FF]/60 dark:bg-slate-950/60 backdrop-blur-md shadow-sm dark:shadow-none transition-opacity">
+<div class="flex items-center gap-4">
+<h3 class="text-[#131B2E] dark:text-white text-lg font-black font-['Inter']">Masareef <span class="font-['Noto_Sans_Arabic'] font-normal ml-2">مصاريف</span></h3>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-secondary text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-md text-sm w-64 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all" placeholder="Search settings..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-secondary hover:opacity-80 transition-opacity">notifications</button>
+<button class="material-symbols-outlined text-secondary hover:opacity-80 transition-opacity">help_outline</button>
+</div>
+</header>
+<div class="max-w-5xl mx-auto space-y-10 pt-8">
+<!-- Header Section -->
+<section class="flex justify-between items-end">
+<div>
+<h2 class="text-3xl font-extrabold text-on-surface tracking-tight">Household &amp; Members</h2>
+<p class="text-secondary body-md mt-1">Manage your family group, roles, and collaborative financial settings.</p>
+</div>
+<div class="bg-primary-container text-on-primary px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">verified</span>
+                    Verified Household
+                </div>
+</section>
+<!-- Household Details Card -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(19,27,46,0.04)] p-8">
+<h4 class="text-on-surface font-semibold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">family_history</span>
+                    General Information
+                </h4>
+<div class="flex flex-wrap items-end gap-6">
+<div class="flex-1 min-w-[280px]">
+<label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Household Name</label>
+<input class="w-full bg-surface-container-low border-none rounded-md p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all" type="text" value="Al-Masri Family"/>
+</div>
+<div class="w-48">
+<label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Base Currency</label>
+<select class="w-full bg-surface-container-low border-none rounded-md p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all">
+<option selected="" value="EGP">EGP - Egyptian Pound</option>
+<option value="USD">USD - US Dollar</option>
+<option value="EUR">EUR - Euro</option>
+<option value="SAR">SAR - Saudi Riyal</option>
+</select>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-8 py-3 rounded-md font-semibold text-sm hover:opacity-90 transition-opacity">
+                        Save Changes
+                    </button>
+</div>
+</section>
+<!-- Members Table -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(19,27,46,0.04)] overflow-hidden">
+<div class="p-8 border-b border-surface-container-low flex justify-between items-center">
+<h4 class="text-on-surface font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">groups</span>
+                        Family Members
+                    </h4>
+<span class="text-xs font-medium text-secondary bg-surface-container-low px-3 py-1 rounded-full">4 / 10 Seats Used</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-8 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Member</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Role</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Email Address</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Joined Date</th>
+<th class="px-8 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<!-- Mohamed -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<img alt="Mohamed" class="w-9 h-9 rounded-full ring-2 ring-primary/10" data-alt="Portrait of a smiling male professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0fnr0lz65-ci01JqUw7E4fYPnGSHmQC0r2Xz8pYfNogwBd0OMMZsdvLuVZgLs8QybYNUgaDU02UZKnJilQ5qhBZadBEdVEGzSnoYUBhyi-5GVVrJQi7gZ1XQgHhGt0lhOCaggZ65tTyoT6XwxUjsAKwziRxyR8W48UaBc6FGShjlDc6Ho-EFUgf5Td1r7uXTAy5qDiBAfJ7D5CEyjUcoskc01gg9f4xOZC0ewyXqU_CkA31_AVsYIpVihIF4toxOaTQtMrYP19_U"/>
+<span class="font-semibold text-on-surface">Mohamed</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-primary/20">Admin</span>
+</td>
+<td class="px-6 py-5 text-sm text-secondary">mohamed@email.com</td>
+<td class="px-6 py-5 text-sm text-secondary">Jan 15, 2026</td>
+<td class="px-8 py-5 text-right">
+<button class="text-secondary hover:text-on-surface material-symbols-outlined p-2 rounded-lg hover:bg-surface-container transition-colors">more_horiz</button>
+</td>
+</tr>
+<!-- Sara -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<img alt="Sara" class="w-9 h-9 rounded-full ring-2 ring-blue-500/10" data-alt="Portrait of a professional female with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzQ1RxMOV-j4cPx1AAWwJFFLyQLT1EgjkAJfieG_JL2Fwj0_19hth94nlM8bgn_qy8rw9hnhvT4trB0oWDmfjDxidzqMKN24YWYgVwH7_bte-teVydNhHSFF31axkfKM2Px55Jc7mseEpMl58ANUuOALnrj2rD4pSCq2yK1MPDyJOyErUKLvWjVrafJIZ9ud2YGrQY8au9lxN-XrpytrhpUd94FQAw_TC1WYdcAlt8jMpJhRHvB-f3uleeBVuej5SlfvLfgIjPgCw"/>
+<span class="font-semibold text-on-surface">Sara</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-blue-200">Member</span>
+</td>
+<td class="px-6 py-5 text-sm text-secondary">sara@email.com</td>
+<td class="px-6 py-5 text-sm text-secondary">Jan 16, 2026</td>
+<td class="px-8 py-5 text-right">
+<button class="text-secondary hover:text-on-surface material-symbols-outlined p-2 rounded-lg hover:bg-surface-container transition-colors">more_horiz</button>
+</td>
+</tr>
+<!-- Ahmed Jr -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<img alt="Ahmed Jr" class="w-9 h-9 rounded-full ring-2 ring-purple-500/10" data-alt="Cartoon avatar of a young boy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4h0ePWupXImdCJGCRuaJsPQrA2g5Ynl7U6ONCjd0_kCltTrfCKvDn4BFIJqzL8O3DQabfc0gEr0ZGHYN9xuG2CWKqsQjc4YJ21MOP4tuQ9GWKfaLMHjmSBHUx-QECxuaUZiOUSJVdbznI9NvBOjJFVKHSPwQsxpgYi9qQxZfJm3udVUs3NMOywPQJ81P7BY9cK-rdKuTCit2f_wZ_m5_JLYyBqFv5iOyncHhnVM3ORKIvEmy3dhOJWnMz_0UHN-I_K_83KOBI2N0"/>
+<div>
+<div class="font-semibold text-on-surface">Ahmed Jr</div>
+<div class="flex items-center gap-1 text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded mt-0.5 border border-purple-100 uppercase">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">link</span>
+                                                Allowance Account
+                                            </div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-purple-50 text-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-purple-200">Child</span>
+</td>
+<td class="px-6 py-5 text-sm text-secondary">ahmed@email.com</td>
+<td class="px-6 py-5 text-sm text-secondary">Feb 1, 2026</td>
+<td class="px-8 py-5 text-right">
+<button class="text-secondary hover:text-on-surface material-symbols-outlined p-2 rounded-lg hover:bg-surface-container transition-colors">more_horiz</button>
+</td>
+</tr>
+<!-- Uncle Khaled -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<img alt="Uncle Khaled" class="w-9 h-9 rounded-full ring-2 ring-slate-200" data-alt="Portrait of an older man with white beard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkljsGEyEfx-96M7chuu5OaZv5VoAVPiHHRfA73FRgKMwBJN6u7Zr3uWUglyI-pNSHSog51zSP9udCHW8HaatL5tn5tXmMsdSqUsgTTKKJdf9YZfH_5qyaDgXLpigI2RR8BJskudQOfjNklQQQPDFhvKDtLdjAAXcaozT_5_2qTqc2UWh5kC3KmyCCD1fghv3DaVmOywdAU_S1vj0F0cfAzWkTi2jHtlTiUlYt--8EN5q5fXIbSN-kx1gISiMM3OhNGuxJXxwMVso"/>
+<span class="font-semibold text-on-surface">Uncle Khaled</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-surface-container text-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-outline-variant/20">Viewer</span>
+</td>
+<td class="px-6 py-5 text-sm text-secondary">khaled@email.com</td>
+<td class="px-6 py-5 text-sm text-secondary">Mar 1, 2026</td>
+<td class="px-8 py-5 text-right">
+<button class="text-secondary hover:text-on-surface material-symbols-outlined p-2 rounded-lg hover:bg-surface-container transition-colors">more_horiz</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Invite & Activity Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Invite Section -->
+<section class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(19,27,46,0.04)] p-8">
+<h4 class="text-on-surface font-semibold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">person_add</span>
+                        Invite New Member
+                    </h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Email Address</label>
+<input class="w-full bg-surface-container-low border-none rounded-md p-3 text-sm" placeholder="example@email.com" type="email"/>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Display Name</label>
+<input class="w-full bg-surface-container-low border-none rounded-md p-3 text-sm" placeholder="e.g. Grandma" type="text"/>
+</div>
+<div class="md:col-span-2 flex items-end gap-4">
+<div class="flex-1">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1.5">Role Type</label>
+<select class="w-full bg-surface-container-low border-none rounded-md p-3 text-sm">
+<option selected="" value="member">Member (Standard access)</option>
+<option value="viewer">Viewer (Read only)</option>
+<option value="child">Child (Restricted &amp; Linked)</option>
+</select>
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-md font-bold text-sm hover:bg-primary-container transition-colors shadow-lg shadow-primary/10">
+                                Send Invite
+                            </button>
+</div>
+</div>
+<div class="pt-6 border-t border-surface-container-low">
+<p class="text-xs font-semibold text-secondary mb-3">Or share an invitation code:</p>
+<div class="flex items-center gap-3">
+<div class="flex-1 bg-surface-container-low font-mono text-on-surface font-bold text-lg p-3 rounded-md tracking-widest flex items-center justify-between">
+                                ABC123
+                                <button class="material-symbols-outlined text-primary hover:scale-110 transition-transform cursor-pointer">content_copy</button>
+</div>
+<div class="text-[10px] text-secondary leading-tight italic max-w-[120px]">
+                                This code expires in 24 hours. Use once.
+                            </div>
+</div>
+</div>
+</section>
+<!-- Recent Activity -->
+<section class="bg-surface-container-low/50 rounded-xl p-8 border border-surface-container-low">
+<div class="flex items-center justify-between mb-6">
+<h4 class="text-on-surface font-semibold text-sm">Recent Activity</h4>
+<button class="material-symbols-outlined text-secondary text-sm">unfold_less</button>
+</div>
+<div class="space-y-6">
+<!-- Activity Item -->
+<div class="flex gap-3">
+<img alt="Sara" class="w-8 h-8 rounded-full flex-shrink-0" data-alt="Avatar of female user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmbBuLBzEuI08Ef5aDvq_kK7rDbpUg8lTm4mGiTPW1qwIfQ79F0WdaIftqpTLa-sAWi2JJ9pXH2_VcJBKBZMKPMwRbXX33FWUfR6d2vmnMd6aDSTsZwPyu8lZfX8zO9phwBsFcubKXWeAFCMaP5NI0mKWQFwrCyd6QY2HqZz_GkF2OxCHwLlpGD04emRXpB8nKmA-68M934q0RqzqiKrr67eizrAlRFj9tjNrQcqkvKT4NUlbwFypaD3AsEJkAs3wupGueWTq_Suk"/>
+<div class="space-y-1">
+<p class="text-xs text-on-surface leading-tight"><span class="font-bold">Sara</span> created a new transaction in <span class="text-primary font-medium">Groceries</span>.</p>
+<p class="text-[10px] text-secondary font-medium">2h ago</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-3">
+<img alt="Mohamed" class="w-8 h-8 rounded-full flex-shrink-0" data-alt="Avatar of male user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXFkJknCBS3ih8TSuFoOxX-KqZ6AvSYCkAdPPjqD0NiLRDtv2VwlXuiWt4UMEoEqXG2u--9Pd0ydgovRto_2Wwq_LbF0YOWEYb__2Q8WmhZ4pjRdDZ30xa7RkV8Wn0Mzk7lJKS4cLtVQSDNY8ayte1gMhuqSWcbYFWnD7Il5T9Da36jb5X9xGPFMjBF_SDgWcDacSHNLtP5CDMut-sv-L0UYxL3UkMvNZDv5iq_Vw30EDmSeu3mcDBJQGPiDgBDFIfJnPwJecIX6A"/>
+<div class="space-y-1">
+<p class="text-xs text-on-surface leading-tight"><span class="font-bold">Mohamed</span> updated household base currency.</p>
+<p class="text-[10px] text-secondary font-medium">5h ago</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white flex-shrink-0">
+<span class="material-symbols-outlined text-sm">person_add</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-on-surface leading-tight"><span class="font-bold">Invite</span> was sent to <span class="italic">Uncle Khaled</span>.</p>
+<p class="text-[10px] text-secondary font-medium">1d ago</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-3">
+<img alt="Ahmed" class="w-8 h-8 rounded-full flex-shrink-0" data-alt="Avatar of young user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI28BIqcGZ_ZQhUMWTfDOlMaOkaTfQNQ3KmkNl4wb0sevsiygMzxd86L1P4ywlP-pyrMBwMienXDUxgeaedaaZS6YlquXDhV6vQLcXNdz7aut_t848QyY_3qQtKi4--0zOguEO0YOVnXUi4NdbntM9EcwXzLBe5rFhKLce9jnem8_P30igkpQlXMWgdbnYU9mqMwqws9JAAXHyRiAWE9hJzB3OoYPL9ATBXOHe984XfRLZ8yPTR9qWr8YAMsq_VPUVLoiNGX2BosE"/>
+<div class="space-y-1">
+<p class="text-xs text-on-surface leading-tight"><span class="font-bold">Ahmed Jr</span> reached his weekly allowance limit.</p>
+<p class="text-[10px] text-secondary font-medium">2d ago</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-2 text-[11px] font-bold text-secondary uppercase tracking-widest border border-outline-variant/30 rounded-lg hover:bg-surface-container transition-colors">
+                        View Full Audit Log
+                    </button>
+</section>
+</div>
+<!-- Signature Component: Luminous Insight -->
+<section class="bg-tertiary-container rounded-xl overflow-hidden text-white flex relative group">
+<div class="p-8 md:p-12 flex-1 relative z-10">
+<h5 class="text-2xl font-bold mb-2">Did you know?</h5>
+<p class="max-w-md opacity-90 text-sm leading-relaxed mb-6">Families who use collaborative tracking reduce "mystery spending" by up to 24% in the first quarter. Use Roles &amp; Permissions to delegate specific budget oversight to each member.</p>
+<div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold border border-white/20 hover:bg-white/20 cursor-pointer transition-all">
+                        Learn about Permission Nodes
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<div class="hidden md:flex items-center justify-center p-8 opacity-40 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<!-- Glass overlay bottom -->
+<div class="absolute bottom-0 left-0 right-0 h-12 bg-white/5 backdrop-blur-sm"></div>
+</section>
+</div>
+</main>
+</body></html>

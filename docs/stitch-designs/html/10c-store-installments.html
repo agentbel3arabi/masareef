@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Store Installments</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#d2d9f4",
+                        "on-secondary-container": "#54647a",
+                        "surface-container": "#eaedff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#131b2e",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#d0e1fb",
+                        "primary-fixed": "#7ffc97",
+                        "background": "#faf8ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface": "#faf8ff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#a72d51",
+                        "inverse-surface": "#283044",
+                        "surface-tint": "#006e2d",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-container": "#f7fff2",
+                        "on-tertiary-fixed": "#3f0016",
+                        "tertiary-container": "#c74668",
+                        "on-primary-fixed-variant": "#005320",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "primary": "#006b2c",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "primary-fixed-dim": "#62df7d",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#62df7d",
+                        "primary-container": "#00873a",
+                        "secondary": "#505f76",
+                        "outline-variant": "#bdcaba",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-container-highest": "#dae2fd",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "outline": "#6e7b6c",
+                        "on-surface-variant": "#3e4a3d",
+                        "tertiary-fixed": "#ffd9de",
+                        "surface-variant": "#dae2fd",
+                        "on-tertiary-container": "#fffbff",
+                        "on-primary-fixed": "#002109",
+                        "on-background": "#131b2e",
+                        "on-primary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar (Authority: JSON & Design System) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#F2F3FF] flex flex-col p-6 shadow-[12px_0_40px_rgba(19,27,46,0.03)] z-50">
+<div class="text-lg font-black text-[#131B2E] mb-8">Masareef</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="text-sm font-medium">Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-sm font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span class="text-sm font-medium">Forecasting</span>
+</a>
+<!-- Active State: Debts -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white text-[#16A34A] font-bold rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm">Debts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Gam3eya</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-sm font-medium">Assets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#505F76] hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="text-sm font-medium">Import</span>
+</a>
+</nav>
+<div class="mt-auto flex items-center gap-3 pt-6 border-t border-outline-variant/20">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<img alt="User Profile" data-alt="User profile avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXKQaaiPfxTq0w4Voq8taorI92wkBFyUId6lZtYF5qK8DDA1jjDibGtJfEIUApcFhH4ahqEr0raTr0vKV2sZvqKabGIveaADnMYTv4qaqkgpD-W1EY78YuNSJv4NOyRYSlhG45v8Vxf7aqsCOHIhMQWXTMO4dDS-aWlO9dHwXGJQIbqaIx5sjVPNUmyss4cPjC8S91HGi4DzHH08l8li3K-WWLik5VOkSCdZW1HD3Xf5Vn9LWUZTnoNBTs5oEP4aV0jbRxEnf5_3o"/>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">The Financial Atelier</p>
+<p class="text-[10px] text-secondary">Premium Management</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-8 min-h-screen overflow-y-auto">
+<!-- Top Navigation & Actions -->
+<header class="flex justify-between items-end mb-10">
+<div>
+<h1 class="text-3xl font-extrabold text-on-surface tracking-tight mb-2">Debt Management</h1>
+<p class="text-secondary body-md">Track your liabilities and installment plans across all vendors.</p>
+</div>
+<div class="flex gap-4">
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container transition-colors rounded-full">notifications</button>
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container transition-colors rounded-full">translate</button>
+</div>
+</header>
+<!-- Horizontal Tabs & FAB-style Action -->
+<div class="flex items-center justify-between border-b border-outline-variant/20 mb-8">
+<nav class="flex gap-8">
+<button class="pb-4 text-sm font-medium text-secondary hover:text-on-surface transition-colors">Loans</button>
+<button class="pb-4 text-sm font-medium text-secondary hover:text-on-surface transition-colors">Card Installments</button>
+<button class="pb-4 text-sm font-bold text-primary border-b-2 border-primary">Store Installments</button>
+<button class="pb-4 text-sm font-medium text-secondary hover:text-on-surface transition-colors">P2P</button>
+</nav>
+<button class="mb-3 px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+                Add Plan
+            </button>
+</div>
+<!-- Summary Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Monthly Store Payments</p>
+<h2 class="text-3xl font-black text-on-surface">5,833 <span class="text-lg font-medium text-secondary">EGP/mo</span></h2>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/20 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Active Store Plans</p>
+<div class="flex items-baseline gap-3">
+<h2 class="text-3xl font-black text-on-surface">3 Plans</h2>
+<span class="text-secondary text-sm">Remaining: 115,000 EGP</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">inventory</span>
+</div>
+</div>
+</div>
+<!-- Active Store Installment Plans -->
+<section class="space-y-6 mb-12">
+<h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                Active Installment Plans
+            </h3>
+<!-- Plan 1 -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center border border-outline-variant/10">
+<img alt="B.TECH" class="rounded" data-alt="B.TECH Merchant Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDks9mI6eemPSS7czk4YPAFzH7cVUsCYBNobiQTQTelXu9fGP0j09Lmg8Dd2tj38ILEv86BcwosTOD9h5cuJ59tJ44JtRv34Nmk69Oybfa4TksKjV2bkEimh2_wjYZz747nop8kM49LgPEklCZeFZWgshXBUFXVYqZpgCec7s64HvLZfLw2c_BPqEFN8Bz17IE_juV6eXMOYICuCL_GWM8C0H8o8FF5WsrjA-FWr1-w_Sukzi8QfT6AB23iGTeJGA9ppIZbYX-pcG0"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-bold text-on-surface">B.TECH — Washing Machine</h4>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">0% Interest</span>
+</div>
+<p class="text-sm text-secondary">Merchant: B.TECH • Account: CIB Savings</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-secondary uppercase mb-1">Monthly Payment</p>
+<p class="text-xl font-black text-primary">1,500 EGP</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8 mb-6">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Total Amount</p>
+<p class="text-sm font-bold text-on-surface">18,000 EGP</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Duration</p>
+<p class="text-sm font-bold text-on-surface">12 Months</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Remaining</p>
+<p class="text-sm font-bold text-on-surface">9,000 EGP</p>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-medium text-secondary">Progress: 6/12 Months</span>
+<span class="text-xs font-bold text-primary">50%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 50%"></div>
+</div>
+</div>
+</div>
+<!-- Plan 2 -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center border border-outline-variant/10">
+<img alt="IKEA" class="rounded" data-alt="IKEA Merchant Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNfEInhok_pMV3xd13LlSy9AY1fsGmcIbrURHNUz6QK6ityw8Y4KqEoPukaqatNIB_EEdH6tWiUEFNWgSGYyxMeglW9HzbxFAA52fba0T5kDCyS2FYPUCPv1MDSeEvfRSECi44duScvMl2lp6vIyJa-QyUvzR85-7LV2cUBX4aImS5sq59X-laFc8qQjEaW0kPoLrqiUAmj6hhKVEnXEzlmLUovJtX05ZS3q98qP0Ig0n4Bk8HrWLYz1alPpeDXCtHPU4PXnkyKpk"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-bold text-on-surface">IKEA — Bedroom Set</h4>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">0% Interest</span>
+</div>
+<p class="text-sm text-secondary">Merchant: IKEA • Account: HSBC Current</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-secondary uppercase mb-1">Monthly Payment</p>
+<p class="text-xl font-black text-primary">2,500 EGP</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8 mb-6">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Total Amount</p>
+<p class="text-sm font-bold text-on-surface">45,000 EGP</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Duration</p>
+<p class="text-sm font-bold text-on-surface">18 Months</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Remaining</p>
+<p class="text-sm font-bold text-on-surface">37,500 EGP</p>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-medium text-secondary">Progress: 3/18 Months</span>
+<span class="text-xs font-bold text-primary">16%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 16%"></div>
+</div>
+</div>
+</div>
+<!-- Plan 3 -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center border border-outline-variant/10">
+<img alt="Jumia" class="rounded" data-alt="Jumia Merchant Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBdnm8HRLArUHNoKPeZIpOXpd8jrzfyxK3XPhlcgbhwR1220sC2o3fB5pqoopgS0H9UlbqsygDXTipDx5xzVpFv-P8lXx3XLI9C9Yyl5Tc8s0fz9a-rDsedHz3pZCjsPW1YwTvvoz1jD4YubIxdusCnWYrnuQpWCVn-J7wZz4ABOtrcCuqa3X33-a2ju-qEpjTSRakqD0p0TOSQ_oOP4K1h67gd6E-f0YyXFLl7XmX4GaPuzre86ikbjlYaSNZ401wlf9K_XJSsGI"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-bold text-on-surface">Jumia — Refrigerator</h4>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">0% Interest</span>
+</div>
+<p class="text-sm text-secondary">Merchant: Jumia • Account: CIB Savings</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-secondary uppercase mb-1">Monthly Payment</p>
+<p class="text-xl font-black text-primary">1,833 EGP</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8 mb-6">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Total Amount</p>
+<p class="text-sm font-bold text-on-surface">22,000 EGP</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Duration</p>
+<p class="text-sm font-bold text-on-surface">12 Months</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-secondary uppercase mb-1">Remaining</p>
+<p class="text-sm font-bold text-on-surface">14,668 EGP</p>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-medium text-secondary">Progress: 4/12 Months</span>
+<span class="text-xs font-bold text-primary">33%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 33%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Completed Plans Section -->
+<section class="mb-12">
+<button class="w-full flex items-center justify-between p-4 bg-surface-container-low rounded-xl mb-4 text-on-surface hover:bg-surface-container transition-colors">
+<span class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">task_alt</span>
+                    Completed Plans (2)
+                </span>
+<span class="material-symbols-outlined text-secondary">expand_more</span>
+</button>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container-lowest/60 border border-outline-variant/10 rounded-xl flex justify-between items-center opacity-70">
+<div>
+<h5 class="text-sm font-bold text-secondary">B.TECH — Microwave</h5>
+<p class="text-xs text-secondary/60">6,000 EGP total paid</p>
+</div>
+<span class="text-[10px] font-bold text-primary border border-primary/30 px-2 py-0.5 rounded">Completed ✓</span>
+</div>
+<div class="p-4 bg-surface-container-lowest/60 border border-outline-variant/10 rounded-xl flex justify-between items-center opacity-70">
+<div>
+<h5 class="text-sm font-bold text-secondary">Samsung Store — Phone Case</h5>
+<p class="text-xs text-secondary/60">1,800 EGP total paid</p>
+</div>
+<span class="text-[10px] font-bold text-primary border border-primary/30 px-2 py-0.5 rounded">Completed ✓</span>
+</div>
+</div>
+</section>
+<!-- Bottom Summary Sticky Card -->
+<footer class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">info</span>
+</div>
+<p class="text-sm font-medium text-secondary">
+                Total remaining across all active store plans: <span class="text-on-surface font-bold">61,168 EGP</span>
+<span class="mx-3 text-outline-variant">|</span>
+                Paid off: <span class="text-on-surface font-bold">2 plans worth 7,800 EGP</span>
+</p>
+</footer>
+</main>
+</body></html>

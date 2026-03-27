@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Financial Reports</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-surface-variant": "#3e4a3d",
+                "on-secondary-container": "#54647a",
+                "tertiary-fixed-dim": "#ffb2bf",
+                "secondary-fixed-dim": "#b7c8e1",
+                "outline": "#6e7b6c",
+                "surface-variant": "#dae2fd",
+                "background": "#faf8ff",
+                "surface-container-highest": "#dae2fd",
+                "on-error": "#ffffff",
+                "surface-bright": "#faf8ff",
+                "tertiary": "#a72d51",
+                "on-tertiary-fixed": "#3f0016",
+                "on-tertiary": "#ffffff",
+                "primary-fixed": "#7ffc97",
+                "outline-variant": "#bdcaba",
+                "on-error-container": "#93000a",
+                "tertiary-container": "#c74668",
+                "on-primary-container": "#f7fff2",
+                "on-secondary": "#ffffff",
+                "primary-container": "#00873a",
+                "error": "#ba1a1a",
+                "on-primary-fixed": "#002109",
+                "surface-container-low": "#f2f3ff",
+                "surface-container-high": "#e2e7ff",
+                "on-background": "#131b2e",
+                "tertiary-fixed": "#ffd9de",
+                "surface-container": "#eaedff",
+                "primary-fixed-dim": "#62df7d",
+                "surface-tint": "#006e2d",
+                "surface": "#faf8ff",
+                "on-secondary-fixed": "#0b1c30",
+                "error-container": "#ffdad6",
+                "secondary-fixed": "#d3e4fe",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed-variant": "#38485d",
+                "inverse-primary": "#62df7d",
+                "on-primary-fixed-variant": "#005320",
+                "primary": "#006b2c",
+                "secondary-container": "#d0e1fb",
+                "on-tertiary-fixed-variant": "#8a143c",
+                "on-tertiary-container": "#fffbff",
+                "on-primary": "#ffffff",
+                "inverse-on-surface": "#eef0ff",
+                "secondary": "#505f76",
+                "on-surface": "#131b2e",
+                "surface-dim": "#d2d9f4",
+                "inverse-surface": "#283044"
+              },
+              fontFamily: {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .report-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(19, 27, 46, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-[#FAF8FF] dark:bg-slate-950 flex flex-col border-r border-transparent z-50">
+<div class="p-6 flex flex-col gap-1">
+<span class="text-lg font-black text-[#131B2E] dark:text-white">Masareef</span>
+<span class="text-[10px] uppercase tracking-widest text-secondary font-bold">Financial Atelier</span>
+</div>
+<nav class="flex-1 px-2 py-4">
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-medium text-sm">Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-medium text-sm">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="timeline">timeline</span>
+<span class="font-medium text-sm">Forecasting</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-medium text-sm">Budgets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-medium text-sm">Assets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-emerald-700 dark:text-emerald-400 font-bold border-r-4 border-emerald-600 dark:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-medium text-sm">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-[#F2F3FF] dark:hover:bg-slate-900 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="file_upload">file_upload</span>
+<span class="font-medium text-sm">Import</span>
+</a>
+</div>
+</nav>
+<div class="mt-auto p-4 flex items-center gap-3 border-t border-outline-variant/10">
+<img alt="User profile" class="w-8 h-8 rounded-full bg-surface-container-high" data-alt="User avatar placeholder circular" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5Qlnd2vub8eRmJZ8srU_KZ6OYFNPm2c5bzqYV0PDcD_-SOoIzE5kyd7Ty63qgyTy2l0XwToRla9FwXAURXcXUNqhl2Qgz-Eyua98T_wrIoDsDUpDHtysFv233csD94t7bk_zpiL3Lu0v8SnpcfSkglpyjNfLARc5PPHSufvc6TrhjpU4iYpnNTT28NT0SikI7GABoIoLYuggZIajHPk1AVrlU_b4cW1ucTDRD6oD-VPhTqf-5xSElWiopLR_AzxduNvmd74qFsN8"/>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-on-surface">Omar Selim</span>
+<span class="text-[10px] text-secondary">Premium Plan</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 p-10 bg-surface">
+<!-- Header Section -->
+<header class="mb-12 flex justify-between items-end">
+<div>
+<h1 class="text-[2.5rem] font-extrabold text-on-surface tracking-tight leading-none mb-3">Reports</h1>
+<p class="text-secondary text-lg max-w-2xl font-medium">Generate and export financial reports for any time period.</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-container-high text-on-surface px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-surface-container transition-colors">
+                    Schedule Report
+                </button>
+</div>
+</header>
+<!-- Reports Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+<!-- Card 1: Income & Expense -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined text-2xl" data-icon="bar_chart">bar_chart</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Income &amp; Expense</h3>
+<p class="text-secondary text-sm line-clamp-1">Monthly breakdown of all income and expenses by category</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Card 2: Category Deep Dive -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined text-2xl" data-icon="label">label</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Category Deep Dive</h3>
+<p class="text-secondary text-sm line-clamp-1">Single category analysis with spending trends and year-over-year comparison</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Card 3: Net Worth -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined text-2xl" data-icon="payments">payments</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Net Worth</h3>
+<p class="text-secondary text-sm line-clamp-1">Current and historical net worth with account, asset, and debt breakdown</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Card 4: Debt Summary -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+<span class="material-symbols-outlined text-2xl" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Debt Summary</h3>
+<p class="text-secondary text-sm line-clamp-1">All debts with payment history, amortization, and payoff projections</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Card 5: Account Statement -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-2xl" data-icon="assignment">assignment</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Account Statement</h3>
+<p class="text-secondary text-sm line-clamp-1">Bank-statement-style report with running balance for a single account</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Card 6: Asset Report -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
+<span class="material-symbols-outlined text-2xl" data-icon="home_work">home_work</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Asset Report</h3>
+<p class="text-secondary text-sm line-clamp-1">Portfolio overview with ownership costs, operating costs, and ROI</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Card 7: Gam3eya Report -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[10px] border border-outline-variant/20 flex flex-col justify-between h-48">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined text-2xl" data-icon="handshake">handshake</span>
+</div>
+<div>
+<h3 class="text-on-surface text-lg font-bold leading-tight mb-1">Gam3eya Report</h3>
+<p class="text-secondary text-sm line-clamp-1">Contribution and payout summary for all active and completed Gam3eyas</p>
+</div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<div class="flex gap-3 text-secondary/60">
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-500" data-icon="picture_as_pdf">picture_as_pdf</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-emerald-600" data-icon="description">description</span>
+<span class="material-symbols-outlined text-xl cursor-pointer hover:text-blue-700" data-icon="table_chart">table_chart</span>
+</div>
+<button class="text-primary font-bold px-6 py-2 rounded-lg border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all text-sm">
+                        Generate
+                    </button>
+</div>
+</div>
+<!-- Empty Placeholder to fill grid or Add Custom -->
+<div class="group cursor-pointer p-6 rounded-[10px] border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center h-48 hover:border-primary/40 hover:bg-primary/[0.02] transition-all">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary mb-3 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</div>
+<span class="text-sm font-bold text-on-surface/60 group-hover:text-primary transition-colors">Custom Report</span>
+</div>
+</div>
+<!-- Luminous Insight Component -->
+<section class="mt-16 bg-tertiary-container rounded-xl p-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
+<div class="relative z-10 flex-1">
+<span class="inline-block px-3 py-1 bg-on-tertiary-container/10 rounded-full text-[10px] font-black uppercase tracking-wider text-on-tertiary-fixed-variant mb-4">Financial Insight</span>
+<h2 class="text-2xl font-black text-on-tertiary-fixed mb-2">Automate your year-end tax preparation.</h2>
+<p class="text-on-tertiary-fixed-variant max-w-lg opacity-80">Our intelligent reporting engine can now auto-categorize your deductible expenses based on local tax laws. Save up to 12 hours of manual filing.</p>
+</div>
+<div class="relative z-10">
+<button class="bg-white/20 backdrop-blur-md border border-white/30 text-on-tertiary-fixed font-bold px-8 py-4 rounded-xl hover:bg-white/30 transition-all">
+                    Enable Tax Mode
+                </button>
+</div>
+<!-- Decorative circle -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-on-tertiary-container/5 rounded-full"></div>
+<div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+</section>
+</main>
+</body></html>

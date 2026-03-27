@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#131b2e",
+                        "surface-variant": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "primary-fixed": "#7ffc97",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-fixed-variant": "#005320",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-container-highest": "#dae2fd",
+                        "background": "#faf8ff",
+                        "surface-tint": "#006e2d",
+                        "surface-bright": "#faf8ff",
+                        "surface": "#faf8ff",
+                        "outline": "#6e7b6c",
+                        "on-secondary-container": "#54647a",
+                        "secondary": "#505f76",
+                        "on-tertiary-container": "#fffbff",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f3ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "secondary-container": "#d0e1fb",
+                        "surface-dim": "#d2d9f4",
+                        "primary": "#006b2c",
+                        "on-background": "#131b2e",
+                        "inverse-primary": "#62df7d",
+                        "on-secondary-fixed": "#0b1c30",
+                        "tertiary-fixed": "#ffd9de",
+                        "on-primary-fixed": "#002109",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "surface-container": "#eaedff",
+                        "primary-fixed-dim": "#62df7d",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary-container": "#00873a",
+                        "tertiary-container": "#c74668",
+                        "tertiary": "#a72d51",
+                        "on-tertiary-fixed": "#3f0016",
+                        "on-surface-variant": "#3e4a3d",
+                        "on-primary-container": "#f7fff2",
+                        "outline-variant": "#bdcaba",
+                        "on-error-container": "#93000a"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "Noto Sans Arabic"],
+                        "body": ["Inter", "Noto Sans Arabic"],
+                        "label": ["Inter", "Noto Sans Arabic"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-primary-gradient {
+            background: linear-gradient(145deg, #006B2C 0%, #00873A 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface overflow-hidden">
+<!-- Background Dashboard (Dimmed) -->
+<div class="fixed inset-0 z-0 flex flex-col blur-[2px] brightness-75 grayscale-[20%] transition-all">
+<!-- Top Bar -->
+<header class="bg-[#FAF8FF]/60 backdrop-blur-md flex justify-between items-center px-6 py-4 w-full fixed top-0 z-40">
+<div class="flex items-center gap-4">
+<span class="font-['Inter'] font-semibold text-[1.75rem] tracking-tight text-[#006B2C]">Masareef</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-[#505F76]">notifications</span>
+<span class="material-symbols-outlined text-[#505F76]">account_circle</span>
+</div>
+</header>
+<main class="mt-20 px-8 grid grid-cols-12 gap-6 p-6">
+<!-- Mock Dashboard Content -->
+<div class="col-span-8 space-y-8">
+<div class="h-64 bg-surface-container-low rounded-xl"></div>
+<div class="grid grid-cols-2 gap-6">
+<div class="h-40 bg-surface-container-low rounded-xl"></div>
+<div class="h-40 bg-surface-container-low rounded-xl"></div>
+</div>
+</div>
+<div class="col-span-4 h-full bg-surface-container-low rounded-xl"></div>
+</main>
+</div>
+<!-- Overlay Backdrop -->
+<div class="fixed inset-0 bg-on-surface/20 backdrop-blur-sm z-50"></div>
+<!-- Side Slide-out Panel (The Atelier Transfer Sheet) -->
+<div class="fixed right-0 top-0 h-full w-full max-w-[440px] bg-white shadow-[0_12px_40px_rgba(19,27,46,0.1)] z-[60] flex flex-col animate-slide-in overflow-hidden">
+<!-- Header -->
+<div class="flex items-center justify-between px-6 py-5 border-b border-surface-container">
+<h2 class="font-headline font-semibold text-lg text-on-surface">Transfer Between Accounts</h2>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-secondary">close</span>
+</button>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-6 py-8 space-y-8">
+<!-- Account Flow Section -->
+<div class="relative space-y-4">
+<!-- From Section -->
+<div class="p-4 rounded-xl bg-surface-container-low space-y-2">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">From</label>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline font-medium text-on-surface">CIB Savings</span>
+<span class="text-sm text-secondary">Balance: 235,000.00 EGP</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-surface-container text-[10px] font-bold rounded text-on-secondary-container">EGP</span>
+<span class="material-symbols-outlined text-secondary">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Direction Arrow Divider -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+<div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-on-secondary-container text-2xl" style="font-variation-settings: 'FILL' 1;">arrow_downward</span>
+</div>
+</div>
+<!-- To Section -->
+<div class="p-4 rounded-xl bg-surface-container-low space-y-2">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">To</label>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline font-medium text-on-surface">Cash Wallet</span>
+<span class="text-sm text-secondary">Balance: 8,500.00 EGP</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-surface-container text-[10px] font-bold rounded text-on-secondary-container">EGP</span>
+<span class="material-symbols-outlined text-secondary">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Amount Input -->
+<div class="space-y-4">
+<div class="space-y-1.5">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Amount</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-5 font-headline font-bold text-3xl text-on-surface focus:ring-2 focus:ring-primary transition-all pr-16" type="text" value="5,000.00"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2">
+<span class="font-bold text-primary">EGP</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+<p class="text-xs text-primary font-medium">CIB Savings after: 230,000 EGP</p>
+<p class="text-xs text-primary font-medium">Cash after: 13,500 EGP</p>
+</div>
+</div>
+</div>
+<!-- Date and Description -->
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1.5">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Date</label>
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center justify-between">
+<span class="text-sm font-medium">23/03/2026</span>
+<span class="material-symbols-outlined text-secondary text-lg">calendar_today</span>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Type</label>
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center justify-between">
+<span class="text-sm font-medium">Internal</span>
+<span class="material-symbols-outlined text-secondary text-lg">sync_alt</span>
+</div>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Description</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary resize-none" placeholder="e.g., ATM withdrawal, salary split..." rows="2"></textarea>
+</div>
+<!-- Cross-Currency Alert & Info -->
+<div class="space-y-4 pt-4">
+<div class="bg-secondary-container/30 border border-secondary-container/50 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-on-secondary-container">info</span>
+<p class="text-sm font-medium text-on-secondary-container">Cross-currency transfer: EGP → USD</p>
+</div>
+<div class="grid grid-cols-2 gap-4 items-end">
+<div class="space-y-1.5">
+<label class="font-label text-xs text-on-surface-variant font-semibold uppercase tracking-wider">FX Rate</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary" type="text" value="50.25"/>
+</div>
+</div>
+<div class="pb-1">
+<span class="px-3 py-1.5 bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold rounded-full">Latest rate: 50.25</span>
+</div>
+</div>
+<!-- Preview Card (The Atelier Luminous Insight Style) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-surface-container p-5 relative">
+<div class="flex justify-between items-center relative z-10">
+<div class="space-y-1">
+<span class="text-[10px] uppercase tracking-widest text-secondary font-bold">Sending</span>
+<p class="font-headline font-bold text-lg">10,000.00 EGP</p>
+</div>
+<span class="material-symbols-outlined text-secondary">arrow_forward</span>
+<div class="space-y-1 text-right">
+<span class="text-[10px] uppercase tracking-widest text-secondary font-bold">Receiving</span>
+<p class="font-headline font-bold text-lg text-primary">199.00 USD</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Spacer for sticky footer -->
+<div class="h-10"></div>
+</div>
+<!-- Sticky Footer -->
+<div class="mt-auto border-t border-surface-container p-6 bg-white flex items-center gap-4">
+<button class="flex-1 py-4 text-sm font-bold text-on-secondary-container rounded-xl hover:bg-surface-container-low transition-colors">Cancel</button>
+<button class="flex-[2] py-4 text-sm font-bold text-white rounded-xl bg-primary-gradient shadow-md active:scale-95 transition-all">Transfer</button>
+</div>
+</div>
+<!-- Right Side Sidebar (Financial Atelier Shared Component) -->
+<div class="fixed right-0 h-full w-80 z-50 bg-[#FFFFFF] flex flex-col p-6 space-y-4 hidden md:flex translate-x-full">
+<div class="flex flex-col mb-8">
+<span class="text-lg font-bold text-[#131B2E]">Financial Atelier</span>
+<span class="text-xs text-[#505F76]">Premium Management</span>
+</div>
+<nav class="flex-1 space-y-2">
+<div class="flex items-center gap-3 p-3 text-[#505F76] hover:bg-[#F2F3FF] transition-all rounded-lg">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-[#F2F3FF] text-[#006B2C] font-bold rounded-lg transition-all">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-medium text-sm">Transfers</span>
+</div>
+<div class="flex items-center gap-3 p-3 text-[#505F76] hover:bg-[#F2F3FF] transition-all rounded-lg">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-medium text-sm">Investments</span>
+</div>
+</nav>
+<button class="w-full bg-primary-gradient py-4 rounded-xl text-white font-bold text-sm shadow-md">
+            New Transfer
+        </button>
+</div>
+</body></html>

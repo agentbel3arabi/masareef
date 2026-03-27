@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masareef - Household Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00873a",
+              "background": "#faf8ff",
+              "outline": "#6e7b6c",
+              "on-secondary-container": "#54647a",
+              "on-surface-variant": "#3e4a3d",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "secondary-fixed": "#d3e4fe",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#eef0ff",
+              "surface-bright": "#faf8ff",
+              "primary-fixed-dim": "#62df7d",
+              "on-background": "#131b2e",
+              "inverse-surface": "#283044",
+              "tertiary-container": "#c74668",
+              "surface-variant": "#dae2fd",
+              "on-secondary": "#ffffff",
+              "primary-fixed": "#7ffc97",
+              "on-tertiary-container": "#fffbff",
+              "tertiary": "#a72d51",
+              "surface": "#faf8ff",
+              "surface-container": "#eaedff",
+              "surface-container-highest": "#dae2fd",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed-dim": "#ffb2bf",
+              "surface-dim": "#d2d9f4",
+              "on-secondary-fixed-variant": "#38485d",
+              "secondary-container": "#d0e1fb",
+              "error": "#ba1a1a",
+              "surface-tint": "#006e2d",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e2e7ff",
+              "on-tertiary-fixed": "#3f0016",
+              "tertiary-fixed": "#ffd9de",
+              "inverse-primary": "#62df7d",
+              "secondary-fixed-dim": "#b7c8e1",
+              "on-surface": "#131b2e",
+              "primary": "#006b2c",
+              "on-primary-container": "#f7fff2",
+              "outline-variant": "#bdcaba",
+              "secondary": "#505f76",
+              "on-secondary-fixed": "#0b1c30",
+              "surface-container-low": "#f2f3ff",
+              "on-primary-fixed": "#002109",
+              "on-tertiary-fixed-variant": "#8a143c",
+              "on-tertiary": "#ffffff",
+              "on-primary-fixed-variant": "#005320"
+            },
+            fontFamily: {
+              "headline": ["Inter", "Noto Sans Arabic"],
+              "body": ["Inter", "Noto Sans Arabic"],
+              "label": ["Inter", "Noto Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .bg-dot-pattern {
+        background-image: radial-gradient(#BDCABA 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+        opacity: 0.15;
+      }
+      .atelier-gradient-btn {
+        background: linear-gradient(145deg, #006B2C 0%, #00873A 100%);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Background Decoration -->
+<div class="absolute inset-0 pointer-events-none z-0">
+<div class="absolute inset-0 bg-gradient-to-br from-white to-surface-container-low"></div>
+<div class="absolute inset-0 bg-dot-pattern"></div>
+</div>
+<!-- Header Section -->
+<header class="relative z-10 w-full max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<!-- Brand Logo from JSON Identity: مصاريف -->
+<span class="font-['Noto_Sans_Arabic'] text-3xl font-bold text-on-background flex items-center">
+<span class="text-primary">مـ</span>صاريف
+            </span>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors text-secondary">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-12">
+<!-- Onboarding Progress (Mapping SideNavBar labels & logic into centered stepper) -->
+<nav class="mb-10 w-full max-w-2xl">
+<div class="flex items-center justify-between relative">
+<!-- Connector Line -->
+<div class="absolute top-5 left-0 w-full h-0.5 bg-outline-variant/20 -z-10"></div>
+<div class="absolute top-5 left-0 w-1/4 h-0.5 bg-primary -z-10"></div>
+<!-- Step 1: Active (Household) -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary ring-4 ring-background">
+<span class="material-symbols-outlined text-xl" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<span class="text-[0.6875rem] font-semibold text-primary uppercase tracking-wider">Household</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary ring-4 ring-background">
+<span class="material-symbols-outlined text-xl" data-icon="person">person</span>
+</div>
+<span class="text-[0.6875rem] font-medium text-secondary uppercase tracking-wider">Account</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary ring-4 ring-background">
+<span class="material-symbols-outlined text-xl" data-icon="payments">payments</span>
+</div>
+<span class="text-[0.6875rem] font-medium text-secondary uppercase tracking-wider">Import Data</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary ring-4 ring-background">
+<span class="material-symbols-outlined text-xl" data-icon="check_circle">check_circle</span>
+</div>
+<span class="text-[0.6875rem] font-medium text-secondary uppercase tracking-wider">Preferences</span>
+</div>
+</div>
+</nav>
+<!-- Focused Setup Card -->
+<div class="w-full max-w-xl bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(19,27,46,0.06)] p-8 md:p-12 border border-outline-variant/20">
+<div class="mb-8 text-center md:text-left">
+<h1 class="text-2xl md:text-3xl font-bold text-on-background tracking-tight mb-2">Welcome! Let's set up your household</h1>
+<p class="text-secondary text-body-md">This will only take a minute.</p>
+</div>
+<form class="space-y-8">
+<!-- Field 1: Household Name -->
+<div class="space-y-2">
+<label class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest block ml-1">Household Name</label>
+<input class="w-full px-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all text-on-surface placeholder:text-secondary/50" placeholder="e.g., My Finances, Al-Masri Family" type="text"/>
+</div>
+<!-- Field 2: Base Currency -->
+<div class="space-y-3">
+<label class="text-[0.6875rem] font-bold text-on-surface-variant uppercase tracking-widest block ml-1">Base Currency</label>
+<div class="grid grid-cols-3 gap-3">
+<!-- Option 1: Selected -->
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-primary bg-primary/5 text-primary group transition-all" type="button">
+<span class="material-symbols-outlined mb-1" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-bold text-lg">EGP</span>
+<span class="text-[10px] uppercase opacity-70">Pound</span>
+</button>
+<!-- Option 2 -->
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-transparent bg-surface-container-low text-secondary hover:bg-surface-container transition-all" type="button">
+<div class="w-6 h-6 mb-1"></div>
+<span class="font-bold text-lg text-on-surface">USD</span>
+<span class="text-[10px] uppercase opacity-70">Dollar</span>
+</button>
+<!-- Option 3 -->
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-transparent bg-surface-container-low text-secondary hover:bg-surface-container transition-all" type="button">
+<div class="w-6 h-6 mb-1"></div>
+<span class="font-bold text-lg text-on-surface">SAR</span>
+<span class="text-[10px] uppercase opacity-70">Riyal</span>
+</button>
+</div>
+<div class="flex justify-end mt-2">
+<button class="flex items-center gap-1 text-sm font-semibold text-on-primary-fixed-variant hover:underline" type="button">
+<span>Other</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4 flex flex-col items-center gap-6">
+<button class="w-full atelier-gradient-btn text-on-primary py-4 px-8 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all" type="submit">
+<span>Continue</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-sm text-secondary">
+                        Already have an account? 
+                        <a class="text-primary font-bold hover:underline" href="#">Sign in</a>
+</p>
+</div>
+</form>
+</div>
+<!-- Footer Skip Link -->
+<div class="mt-8">
+<a class="text-secondary/60 text-xs font-medium hover:text-primary transition-colors flex items-center gap-1" href="#">
+                Skip setup, go to dashboard
+                <span class="material-symbols-outlined text-xs" data-icon="arrow_right_alt">arrow_right_alt</span>
+</a>
+</div>
+</main>
+<!-- Visual Polish: Soft Decorative Shapes -->
+<div class="fixed top-[20%] -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="fixed bottom-[10%] -right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+</body></html>
