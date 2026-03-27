@@ -1,5 +1,5 @@
+import datetime as dt
 import uuid
-from datetime import date, datetime
 
 from sqlalchemy import (
     BigInteger,
@@ -37,7 +37,7 @@ class Transaction(TimestampMixin, SoftDeleteMixin, Base):
         UUID(as_uuid=True), ForeignKey("households.id"), nullable=False
     )
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
-    date: Mapped[date] = mapped_column(Date, nullable=False)
+    date: Mapped[dt.date] = mapped_column(Date, nullable=False)
     description: Mapped[str] = mapped_column(Text, server_default="")
     amount_minor: Mapped[int] = mapped_column(BigInteger, nullable=False)
     currency: Mapped[str] = mapped_column(Text, nullable=False)
@@ -77,7 +77,7 @@ class TransactionSplit(Base):
     )
     amount_minor: Mapped[int] = mapped_column(BigInteger, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
+    created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
