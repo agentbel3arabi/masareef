@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     Integer,
     Text,
     func,
@@ -21,6 +22,12 @@ from app.models.enums import TransactionType
 
 class Transaction(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "transactions"
+    __table_args__ = (
+        Index("ix_transactions_household_account", "household_id", "account_id"),
+        Index("ix_transactions_household_date", "household_id", "date"),
+        Index("ix_transactions_household_category", "household_id", "category_id"),
+        Index("ix_transactions_dedup", "account_id", "date", "amount_minor", "description"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     household_id: Mapped[uuid.UUID] = mapped_column(

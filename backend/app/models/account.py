@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 
-from sqlalchemy import BigInteger, Date, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, CheckConstraint, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -11,6 +11,16 @@ from app.models.enums import AccountType
 
 class Account(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "accounts"
+    __table_args__ = (
+        CheckConstraint(
+            "billing_cycle_day >= 1 AND billing_cycle_day <= 31",
+            name="ck_accounts_billing_cycle_day",
+        ),
+        CheckConstraint(
+            "payment_due_day >= 1 AND payment_due_day <= 31",
+            name="ck_accounts_payment_due_day",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     household_id: Mapped[uuid.UUID] = mapped_column(
