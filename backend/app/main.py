@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
-from app.routers import accounts
+from app.routers import accounts, categories
 
 # Load settings — will use .env file at runtime
 try:
@@ -38,6 +38,7 @@ app.add_middleware(
 
 
 app.include_router(accounts.router)
+app.include_router(categories.router)
 
 
 @app.get("/health")
