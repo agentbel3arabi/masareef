@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from sqlalchemy import inspect
 
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
