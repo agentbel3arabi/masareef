@@ -81,6 +81,40 @@ chore(deps): bump pydantic to 2.7.1
 
 ---
 
+## Playwright MCP (Browser Testing)
+
+Playwright MCP is **enabled by default** — no extra configuration needed. It gives you browser automation tools restricted to localhost.
+
+### Using Playwright MCP for Validation
+
+1. Start both dev servers:
+```bash
+cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+cd frontend && NEXT_PUBLIC_API_URL=http://localhost:8000 pnpm dev &
+sleep 10
+```
+
+2. Use Playwright MCP tools to navigate to `http://localhost:3000` and interact with the app.
+
+3. Verify:
+   - Pages load without errors
+   - RTL layout is correct (Arabic text, sidebar on right)
+   - Forms submit and data appears
+   - Dark/light mode toggle works
+   - Balance updates after creating/deleting transactions
+
+### Running E2E Tests
+
+```bash
+# Python E2E tests (requires running dev servers)
+cd backend && uv run pytest tests/e2e/ -v
+
+# Frontend E2E (if using Playwright for frontend)
+cd frontend && pnpm exec playwright test
+```
+
+---
+
 ## Do Not
 
 - Modify `docs/02-data-models.md` unless the issue explicitly requires a schema change
