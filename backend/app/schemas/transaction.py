@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import date
 from typing import Optional
 from uuid import UUID
@@ -21,7 +19,7 @@ class TransactionCreate(BaseModel):
 
 
 class TransactionUpdate(BaseModel):
-    date: Optional[date] = None  # noqa: UP045 Field shadowing requires Optional instead of |
+    date: Optional[date] = None  # noqa: UP045 — field name shadows type; `date | None` fails at runtime
     description: str | None = None
     amount_minor: int | None = None
     type: str | None = None
