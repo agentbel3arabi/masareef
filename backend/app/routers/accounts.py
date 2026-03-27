@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.models.account import Account
 from app.schemas.account import AccountCreate, AccountResponse, AccountUpdate, ReconcileRequest
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.services import account as account_service
@@ -11,22 +12,23 @@ from app.services import account as account_service
 router = APIRouter(prefix="/api/v1/accounts", tags=["accounts"])
 
 
-def _account_to_response(account: object, displayed_balance: int) -> AccountResponse:
+def _account_to_response(account: Account, displayed_balance: int) -> AccountResponse:
     """Build an AccountResponse from an Account ORM object."""
-    acct_type = account.type  # type: ignore[union-attr]
+    # SQLite stores enum values as plain strings; PostgreSQL returns AccountType enum instances
+    acct_type = account.type
     return AccountResponse(
-        id=account.id,  # type: ignore[union-attr]
-        name=account.name,  # type: ignore[union-attr]
+        id=account.id,
+        name=account.name,
         type=acct_type.value if hasattr(acct_type, "value") else acct_type,
-        currency=account.currency,  # type: ignore[union-attr]
-        balance_minor=account.balance_minor,  # type: ignore[union-attr]
+        currency=account.currency,
+        balance_minor=account.balance_minor,
         displayed_balance_minor=displayed_balance,
-        institution=account.institution,  # type: ignore[union-attr]
-        credit_limit=account.credit_limit,  # type: ignore[union-attr]
-        billing_cycle_day=account.billing_cycle_day,  # type: ignore[union-attr]
-        payment_due_day=account.payment_due_day,  # type: ignore[union-attr]
-        opened_at=account.opened_at,  # type: ignore[union-attr]
-        is_active=account.is_active,  # type: ignore[union-attr]
+        institution=account.institution,
+        credit_limit=account.credit_limit,
+        billing_cycle_day=account.billing_cycle_day,
+        payment_due_day=account.payment_due_day,
+        opened_at=account.opened_at,
+        is_active=account.is_active,
     )
 
 
@@ -37,9 +39,8 @@ async def list_accounts(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
-    accounts, total = await account_service.list_accounts(
-        session, household_id, page, page_size
-    )
+    accounts, total = await account_service.list_accounts(session, household_id, page, page_size)
+    # TODO: batch balance computation to avoid N+1 queries
     items = []
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)

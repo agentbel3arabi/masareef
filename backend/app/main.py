@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
+from app.routers import accounts
 
 # Load settings — will use .env file at runtime
 try:
@@ -35,8 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-from app.routers import accounts
 
 app.include_router(accounts.router)
 

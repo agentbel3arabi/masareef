@@ -8,9 +8,9 @@ from app.dependencies import get_current_user, get_db_session, get_household_id
 from app.main import app
 
 # Import all models so Base.metadata knows about every table
-from app.models import Base  # noqa: F401
 from app.models import (  # noqa: F401
     Account,
+    Base,  # noqa: F401
     Category,
     ExchangeRate,
     Household,
@@ -24,9 +24,7 @@ TEST_HOUSEHOLD_ID = uuid.uuid4()
 
 # In-memory SQLite for fast tests
 test_engine = create_async_engine("sqlite+aiosqlite://", echo=False)
-TestSessionLocal = async_sessionmaker(
-    test_engine, class_=AsyncSession, expire_on_commit=False
-)
+TestSessionLocal = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 @pytest.fixture(autouse=True)
