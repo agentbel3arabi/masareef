@@ -63,6 +63,38 @@ async def test_delete_custom_category(client):
 
 
 @pytest.mark.asyncio
+async def test_update_predefined_category_restricts_fields(client):
+    """Predefined categories only allow icon and color updates."""
+    from app.models.category import Category
+    from tests.conftest import TestSessionLocal
+
+    async with TestSessionLocal() as session:
+        cat = Category(
+            household_id=None,
+            name_en="Groceries",
+            name_ar="بقالة",
+            type="expense",
+            is_predefined=True,
+            sort_order=1,
+            icon="cart",
+            color="#FF0000",
+        )
+        session.add(cat)
+        await session.commit()
+        cat_id = cat.id
+
+    # Try to update name_en and icon — only icon should change
+    update_resp = await client.put(
+        f"/api/v1/categories/{cat_id}",
+        json={"name_en": "Renamed", "icon": "basket"},
+    )
+    assert update_resp.status_code == 200
+    data = update_resp.json()["data"]
+    assert data["name_en"] == "Groceries"  # name should NOT change
+    assert data["icon"] == "basket"  # icon should change
+
+
+@pytest.mark.asyncio
 async def test_delete_predefined_category_fails(client):
     """Predefined categories cannot be deleted -- should return 403."""
     # First seed a predefined category directly via the DB
