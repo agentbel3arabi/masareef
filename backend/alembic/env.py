@@ -4,12 +4,11 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+# Import all models so Alembic can detect them
+import app.models  # noqa: F401
 from alembic import context
 from app.config import Settings
 from app.models.base import Base
-
-# Import all models here so Alembic can detect them
-# (Models will be added as they are created in subsequent units)
 
 config = context.config
 
@@ -19,7 +18,9 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 settings = Settings()  # type: ignore[call-arg]
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Use direct connection for migrations (pooler port 6543 can't handle DDL)
+db_url = settings.DIRECT_DATABASE_URL or settings.DATABASE_URL
+config.set_main_option("sqlalchemy.url", db_url)
 
 
 def run_migrations_offline() -> None:

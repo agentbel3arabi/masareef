@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str
     SUPABASE_SERVICE_ROLE_KEY: str
     DATABASE_URL: str
+    DIRECT_DATABASE_URL: str | None = None
 
     # App
     APP_ENV: str = "development"
