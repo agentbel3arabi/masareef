@@ -176,9 +176,7 @@ async def seed_categories(session) -> int:
 
     from app.models.category import Category
 
-    existing = await session.execute(
-        select(Category).where(Category.is_predefined == True)  # noqa: E712
-    )
+    existing = await session.execute(select(Category).where(Category.is_predefined.is_(True)))
     if existing.scalars().first() is not None:
         return 0
 

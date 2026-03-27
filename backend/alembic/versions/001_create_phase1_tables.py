@@ -23,31 +23,43 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     """Create all Phase 1 tables."""
 
+    # Ensure pgcrypto is available for gen_random_uuid()
+    op.execute(sa.text("CREATE EXTENSION IF NOT EXISTS pgcrypto"))
+
     # --- Create PostgreSQL enum types (using raw SQL for Supabase pooler compatibility) ---
-    op.execute(sa.text("""
-        DO $$ BEGIN
-            CREATE TYPE accounttype AS ENUM ('bank_account', 'credit_card', 'cash_wallet', 'digital_wallet', 'financing_app');
-        EXCEPTION WHEN duplicate_object THEN NULL;
-        END $$
-    """))
-    op.execute(sa.text("""
+    op.execute(
+        sa.text(
+            "DO $$ BEGIN"
+            " CREATE TYPE accounttype AS ENUM"
+            " ('bank_account','credit_card','cash_wallet','digital_wallet','financing_app');"
+            " EXCEPTION WHEN duplicate_object THEN NULL;"
+            " END $$"
+        )
+    )
+    op.execute(
+        sa.text("""
         DO $$ BEGIN
             CREATE TYPE transactiontype AS ENUM ('debit', 'credit');
         EXCEPTION WHEN duplicate_object THEN NULL;
         END $$
-    """))
-    op.execute(sa.text("""
+    """)
+    )
+    op.execute(
+        sa.text("""
         DO $$ BEGIN
             CREATE TYPE categorytype AS ENUM ('expense', 'income', 'special');
         EXCEPTION WHEN duplicate_object THEN NULL;
         END $$
-    """))
-    op.execute(sa.text("""
+    """)
+    )
+    op.execute(
+        sa.text("""
         DO $$ BEGIN
             CREATE TYPE householdrole AS ENUM ('admin', 'member', 'viewer', 'child');
         EXCEPTION WHEN duplicate_object THEN NULL;
         END $$
-    """))
+    """)
+    )
 
     # --- 1. households ---
     op.create_table(
