@@ -47,4 +47,3 @@ jobs:
           SUPABASE_ANON_KEY: placeholder
           SUPABASE_SERVICE_ROLE_KEY: placeholder
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
-          APP_ENV: testing
