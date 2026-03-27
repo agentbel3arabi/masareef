@@ -77,7 +77,8 @@ jobs:
           SUPABASE_URL: https://placeholder.supabase.co
           SUPABASE_ANON_KEY: placeholder
           SUPABASE_SERVICE_ROLE_KEY: placeholder
-        run: uv run python -c "import asyncio; from app.seed import seed_categories; from app.database import async_session_factory; asyncio.run((lambda: None)())" || true
+        run: |
+          uv run python -c "import asyncio; from app.seed import seed_categories; from app.database import async_session_factory; asyncio.run((lambda: None)())" || true
 
       # ── Node.js / Frontend ───────────────────────────────────────
       - name: Enable corepack (pnpm)
