@@ -69,7 +69,7 @@ Load only what's relevant. **Do not load all files at once.**
 | ------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
 | Backend: new feature           | `CLAUDE.md` + `01-architecture.md` + feature spec                                                | `02-data-models.md` if schema work involved    |
 | Backend: database / migration  | `CLAUDE.md` + `02-data-models.md` + feature spec                                                 | —                                              |
-| Frontend: new page / component | `CLAUDE.md` + feature spec + `guides/09-design-tokens.md` + matching `stitch-designs/html/` file | `04-user-flows.md` if flow unclear             |
+| Frontend: new page / component | `CLAUDE.md` + feature spec + `guides/09-design-tokens.md` + matching `stitch-designs/html/` file | `04-user-flows.md` if flow unclear; `guides/10-brand-assets.md` if placing logos |
 | Backend: API endpoint          | `CLAUDE.md` + `01-architecture.md` + feature spec                                                | `02-data-models.md` for query patterns         |
 | Testing                        | `CLAUDE.md` + `guides/08-testing.md` + feature spec                                              | —                                              |
 | Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md`                                                 | —                                              |
@@ -356,87 +356,10 @@ Two separate workflow files in `.github/workflows/`, each with path filtering so
 
 ## J — GitHub Copilot Coding Agent
 
-### Overview
+Copilot configuration lives in `.github/COPILOT-INSTRUCTIONS.md` (primary) and `.github/AGENTS.md` (tooling rules). Issue template: `.github/ISSUE_TEMPLATE/feature.md`. PR template: `.github/pull_request_template.md`.
 
-The project uses **GitHub Copilot Enterprise**. When assigned to a GitHub issue, the coding agent autonomously creates a branch, implements the feature following the repo's conventions, and opens a PR for review.
-
-### Configuration Files
-
-**`.github/COPILOT-INSTRUCTIONS.md`** — primary instruction file, auto-loaded by Copilot on every task:
-- Full tech stack (Python 3.12, FastAPI async, Pydantic V2, async SQLAlchemy, uv; Next.js 14.2.x App Router, TypeScript strict, shadcn/ui, Tailwind, pnpm)
-- All coding conventions from Section D (money rules, soft-delete, RLS, naming, error envelopes)
-- Where to find schemas (`02-data-models.md`) and API contracts (feature files)
-- CI checks that must pass before the PR is ready
-
-**`.github/AGENTS.md`** — supplementary file covering tooling and file-placement rules:
-- Branch naming and commit style (Section G)
-- File placement (backend: `app/`, frontend: `app/`)
-- Prohibited commands (`npm install`, `pip install`)
-- How to run tests and build before pushing
-
-### Issue Template
-
-`.github/ISSUE_TEMPLATE/feature.md` — write issues in this structure so Copilot produces accurate output:
-
-```
-## Problem Statement
-## Requirements
-## Acceptance Criteria
-## Technical Notes (files, schema refs, API contract)
-## Testing Instructions
-```
-
-### Copilot Agent Workflow
-
-```
-1. Create issue using the feature template
-2. Assign issue to Copilot (GitHub UI → assign → Copilot)
-3. Copilot creates branch + opens PR automatically
-4. GitHub Actions CI runs (backend and/or frontend pipeline)
-5. If checks fail → Copilot auto-fixes or flags for human
-6. Request Copilot PR review (automated inline review)
-7. Human review + approval
-8. Squash merge to main; head branch auto-deleted
-```
-
-### PR Template
-
-`.github/pull_request_template.md` includes:
-- Description + `Closes #N` issue link
-- Checklist: tests added, lint passes, build passes, Arabic strings covered
-- Testing steps for reviewers
-- Screenshots section (UI changes)
-- Breaking changes note
+Workflow: create issue → assign to Copilot → Copilot opens PR → CI runs → human review → squash merge.
 
 ## K — Brand Assets (Logos)
 
-The `logos/` directory contains all Masareef brand marks in two formats:
-
-- **SVG** (`logos/svg/`) — preferred for all web usage (scalable, smaller payload)
-- **PNG** (`logos/png/`) — raster fallback with `@1x` and `@3x` variants
-
-### Directory Structure
-
-Each format has three background variants:
-
-| Variant       | Use When                                      |
-| ------------- | --------------------------------------------- |
-| `dark/`       | Placing logo on a dark background             |
-| `light/`      | Placing logo on a light background            |
-| `transparent/`| Overlaying on images, gradients, or any surface. Includes `-white` versions for dark surfaces |
-
-### Logo Types
-
-| File prefix    | Shape                        | Use For                                      |
-| -------------- | ---------------------------- | -------------------------------------------- |
-| `favicon`      | Small square icon            | Browser tab, bookmarks, PWA icon, `<link rel="icon">` |
-| `icon`         | Standalone mark/symbol       | App icon, avatar, social media profile       |
-| `horizontal`   | Mark + wordmark side by side | Navbar, header, email signature              |
-| `stacked`      | Mark + wordmark vertically   | Splash screen, login page, marketing         |
-
-### Usage Rules
-
-- **Always use SVG** for in-app rendering; use PNG only for contexts that require raster (email, social OG images, favicon `.ico` generation)
-- **Never scale PNG `@1x` up** — use `@3x` when a larger raster is needed
-- **Match the background variant** to the surface — do not place a `light/` logo on a dark background
-- For the Next.js frontend, reference logos via `next/image` with appropriate `width`/`height` and `alt="Masareef"` / `alt="مصاريف"`
+Logo files are in `logos/` (SVG preferred, PNG fallback). Full usage guide: [`docs/guides/10-brand-assets.md`](./docs/guides/10-brand-assets.md). Load that file when placing logos in the frontend.
