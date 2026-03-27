@@ -1,7 +1,7 @@
 import enum
 
 
-class AccountType(str, enum.Enum):
+class AccountType(enum.StrEnum):
     BANK_ACCOUNT = "bank_account"
     CREDIT_CARD = "credit_card"
     CASH_WALLET = "cash_wallet"
@@ -9,18 +9,18 @@ class AccountType(str, enum.Enum):
     FINANCING_APP = "financing_app"
 
 
-class TransactionType(str, enum.Enum):
+class TransactionType(enum.StrEnum):
     DEBIT = "debit"
     CREDIT = "credit"
 
 
-class CategoryType(str, enum.Enum):
+class CategoryType(enum.StrEnum):
     EXPENSE = "expense"
     INCOME = "income"
     SPECIAL = "special"
 
 
-class HouseholdRole(str, enum.Enum):
+class HouseholdRole(enum.StrEnum):
     ADMIN = "admin"
     MEMBER = "member"
     VIEWER = "viewer"

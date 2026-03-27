@@ -11,9 +11,20 @@ def test_account_has_required_columns():
     mapper = inspect(Account)
     column_names = {c.key for c in mapper.column_attrs}
     required = {
-        "id", "household_id", "name", "type", "currency", "balance_minor",
-        "institution", "credit_limit", "billing_cycle_day", "payment_due_day",
-        "opened_at", "is_active", "created_at", "updated_at",
+        "id",
+        "household_id",
+        "name",
+        "type",
+        "currency",
+        "balance_minor",
+        "institution",
+        "credit_limit",
+        "billing_cycle_day",
+        "payment_due_day",
+        "opened_at",
+        "is_active",
+        "created_at",
+        "updated_at",
     }
     assert required.issubset(column_names)
 

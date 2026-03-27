@@ -19,9 +19,7 @@ class Account(TimestampMixin, SoftDeleteMixin, Base):
     name: Mapped[str] = mapped_column(Text, nullable=False)
     type: Mapped[AccountType] = mapped_column(nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
-    balance_minor: Mapped[int] = mapped_column(
-        BigInteger, nullable=False, server_default="0"
-    )
+    balance_minor: Mapped[int] = mapped_column(BigInteger, nullable=False, server_default="0")
     institution: Mapped[str | None] = mapped_column(Text, nullable=True)
     credit_limit: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     billing_cycle_day: Mapped[int | None] = mapped_column(Integer, nullable=True)

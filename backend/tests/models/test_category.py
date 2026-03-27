@@ -11,8 +11,17 @@ def test_category_has_required_columns():
     mapper = inspect(Category)
     column_names = {c.key for c in mapper.column_attrs}
     required = {
-        "id", "household_id", "name_en", "name_ar", "type",
-        "icon", "color", "is_predefined", "is_active", "sort_order", "created_at",
+        "id",
+        "household_id",
+        "name_en",
+        "name_ar",
+        "type",
+        "icon",
+        "color",
+        "is_predefined",
+        "is_active",
+        "sort_order",
+        "created_at",
     }
     assert required.issubset(column_names)
 

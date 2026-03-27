@@ -13,12 +13,13 @@ class Household(Base):
     __tablename__ = "households"
 
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, server_default=func.gen_random_uuid()
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        server_default=func.gen_random_uuid(),
     )
     name: Mapped[str] = mapped_column(Text, nullable=False)
-    base_currency: Mapped[str] = mapped_column(
-        String(3), nullable=False, server_default="EGP"
-    )
+    base_currency: Mapped[str] = mapped_column(String(3), nullable=False, server_default="EGP")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -31,17 +32,16 @@ class HouseholdMember(Base):
     __table_args__ = (UniqueConstraint("household_id", "user_id"),)
 
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, server_default=func.gen_random_uuid()
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        server_default=func.gen_random_uuid(),
     )
     household_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("households.id"), nullable=False
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), nullable=False
-    )
-    role: Mapped[HouseholdRole] = mapped_column(
-        nullable=False, default=HouseholdRole.MEMBER
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    role: Mapped[HouseholdRole] = mapped_column(nullable=False, default=HouseholdRole.MEMBER)
     display_name: Mapped[str] = mapped_column(Text, nullable=False)
     joined_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()

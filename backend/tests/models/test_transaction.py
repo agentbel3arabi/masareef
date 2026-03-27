@@ -11,12 +11,26 @@ def test_transaction_has_required_columns():
     mapper = inspect(Transaction)
     column_names = {c.key for c in mapper.column_attrs}
     required = {
-        "id", "household_id", "account_id", "date", "description",
-        "amount_minor", "currency", "type", "category_id",
-        "import_batch_id", "notes", "exchange_rate_at_time",
-        "fx_rate_minor_units", "is_active", "applies_to_balance",
-        "transfer_id", "ai_categorized", "ai_confidence",
-        "created_at", "updated_at",
+        "id",
+        "household_id",
+        "account_id",
+        "date",
+        "description",
+        "amount_minor",
+        "currency",
+        "type",
+        "category_id",
+        "import_batch_id",
+        "notes",
+        "exchange_rate_at_time",
+        "fx_rate_minor_units",
+        "is_active",
+        "applies_to_balance",
+        "transfer_id",
+        "ai_categorized",
+        "ai_confidence",
+        "created_at",
+        "updated_at",
     }
     assert required.issubset(column_names)
 

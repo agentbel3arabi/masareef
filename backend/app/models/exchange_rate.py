@@ -8,9 +8,7 @@ from app.models.base import Base
 
 class ExchangeRate(Base):
     __tablename__ = "exchange_rates"
-    __table_args__ = (
-        UniqueConstraint("date", "from_currency", "to_currency"),
-    )
+    __table_args__ = (UniqueConstraint("date", "from_currency", "to_currency"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)

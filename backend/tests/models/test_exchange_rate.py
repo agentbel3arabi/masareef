@@ -11,8 +11,14 @@ def test_exchange_rate_has_required_columns():
     mapper = inspect(ExchangeRate)
     column_names = {c.key for c in mapper.column_attrs}
     required = {
-        "id", "date", "from_currency", "to_currency",
-        "rate_scaled", "is_forecast", "source", "fetched_at",
+        "id",
+        "date",
+        "from_currency",
+        "to_currency",
+        "rate_scaled",
+        "is_forecast",
+        "source",
+        "fetched_at",
     }
     assert required.issubset(column_names)
 

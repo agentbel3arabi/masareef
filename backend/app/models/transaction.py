@@ -26,9 +26,7 @@ class Transaction(TimestampMixin, SoftDeleteMixin, Base):
     household_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("households.id"), nullable=False
     )
-    account_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("accounts.id"), nullable=False
-    )
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
     date: Mapped[date] = mapped_column(Date, nullable=False)
     description: Mapped[str] = mapped_column(Text, server_default="")
     amount_minor: Mapped[int] = mapped_column(BigInteger, nullable=False)
@@ -37,18 +35,14 @@ class Transaction(TimestampMixin, SoftDeleteMixin, Base):
     category_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("categories.id"), nullable=True
     )
-    import_batch_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), nullable=True
-    )
+    import_batch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     exchange_rate_at_time: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     fx_rate_minor_units: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     applies_to_balance: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default="true"
     )
-    transfer_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), nullable=True
-    )
+    transfer_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     gam3eya_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     asset_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     ai_categorized: Mapped[bool | None] = mapped_column(
