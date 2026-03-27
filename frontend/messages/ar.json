@@ -1,0 +1,43 @@
+{
+  "common": {
+    "appName": "مصاريف",
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "search": "بحث...",
+    "noResults": "لا توجد نتائج",
+    "confirm": "تأكيد"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "accounts": "الحسابات",
+    "transactions": "المعاملات",
+    "transfers": "التحويلات",
+    "debts": "الديون",
+    "budgets": "الميزانيات",
+    "settings": "الإعدادات"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟"
+  },
+  "accounts": {
+    "title": "الحسابات",
+    "addAccount": "إضافة حساب",
+    "bankAccount": "حساب بنكي",
+    "creditCard": "بطاقة ائتمان",
+    "cashWallet": "محفظة نقدية",
+    "digitalWallet": "محفظة إلكترونية",
+    "financingApp": "تطبيق تمويل",
+    "balance": "الرصيد",
+    "available": "المتاح"
+  }
+}
