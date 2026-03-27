@@ -156,7 +156,81 @@ Do not open a PR unless all applicable checks pass.
 
 ---
 
-## 13. What NOT to Do
+## 13. Playwright MCP — Visual Validation & E2E Testing
+
+Playwright MCP is enabled by default for this repository. Use it to validate UI changes by interacting with the running app in the browser.
+
+### Starting Dev Servers
+
+Before using Playwright MCP, start both servers:
+```bash
+# Terminal 1: Backend API (port 8000)
+cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+
+# Terminal 2: Frontend (port 3000)
+cd frontend && NEXT_PUBLIC_API_URL=http://localhost:8000 pnpm dev &
+
+# Wait for servers to be ready
+sleep 10
+```
+
+### What to Validate with Playwright MCP
+
+After implementing UI changes, use Playwright MCP to verify:
+
+1. **Page loads correctly** — navigate to the relevant page, check for errors
+2. **RTL layout** — Arabic text flows right-to-left, sidebar on the right side
+3. **Dark mode** — toggle theme, verify all components render correctly in both modes
+4. **Data flows** — create an account → add transaction → verify balance updates
+5. **Forms work** — fill and submit forms, verify success/error states
+6. **Responsive layout** — resize viewport, verify mobile vs desktop layouts
+
+### Playwright MCP Tips
+
+- Use **accessibility snapshots** (default) rather than screenshots for element interaction
+- Use `getByRole()`, `getByText()`, `getByTestId()` for stable locators
+- Playwright MCP is restricted to **localhost only** — this is expected
+- Always wait for network requests to complete before asserting on page content
+
+### Writing Playwright E2E Tests (Python)
+
+The backend test suite includes E2E tests using Python Playwright (`backend/tests/e2e/`):
+
+```python
+# backend/tests/e2e/test_accounts_flow.py
+import pytest
+from playwright.async_api import async_playwright
+
+@pytest.mark.asyncio
+async def test_accounts_page_loads():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.goto("http://localhost:3000/accounts")
+        await page.wait_for_selector("h1")
+        title = await page.text_content("h1")
+        assert "الحسابات" in title or "Accounts" in title
+        await browser.close()
+```
+
+---
+
+## 14. CSS Logical Properties (RTL/LTR)
+
+Physical directional CSS classes are **strictly forbidden**. The app must work in both RTL (Arabic) and LTR (English).
+
+| BANNED | USE INSTEAD |
+|--------|-------------|
+| `pl-4`, `pr-4` | `ps-4`, `pe-4` |
+| `ml-2`, `mr-2` | `ms-2`, `me-2` |
+| `left-0`, `right-0` | `start-0`, `end-0` |
+| `text-left`, `text-right` | `text-start`, `text-end` |
+| `border-l`, `border-r` | `border-s`, `border-e` |
+| `rounded-l`, `rounded-r` | `rounded-s`, `rounded-e` |
+
+---
+
+## 15. What NOT to Do
 
 - Never use floats for money
 - Never hard-delete user data

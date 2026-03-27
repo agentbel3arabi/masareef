@@ -1,12 +1,19 @@
 ---
 name: Feature
-about: New feature or enhancement — use this template for GitHub Copilot agent assignments
+about: Feature implementation for Masareef — use for Copilot agent or manual work
 title: "feat(<scope>): <short description>"
 labels: feature
 assignees: ''
 ---
 
-## Problem Statement
+## Context
+
+<!-- Which phase/unit does this belong to? Link the plan file. -->
+- Phase: N
+- Work unit: unit-X
+- Plan: `docs/superpowers/plans/phase-N/unit-X.md`
+
+## Description
 
 <!-- What needs to be built and why? Be specific. -->
 
@@ -42,6 +49,12 @@ assignees: ''
 - All queries must include `household_id`
 - Soft-delete: set `is_active = FALSE`, never hard-delete
 - Arabic + English strings required for any UI copy
+
+## Required Reading
+
+<!-- List the docs the implementer should read before starting -->
+- `CLAUDE.md`
+- `docs/03-features/xxx.md`
 
 ## Testing Instructions
 

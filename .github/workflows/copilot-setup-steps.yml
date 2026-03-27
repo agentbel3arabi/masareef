@@ -1,0 +1,119 @@
+name: "Copilot Setup Steps"
+
+# This workflow runs BEFORE Copilot coding agent starts working on any task.
+# It installs dependencies and prepares the dev environment so Copilot can
+# build, test, and use Playwright MCP (browser automation) to validate the app.
+#
+# Playwright MCP is enabled by default for Copilot coding agent and is
+# restricted to localhost only. The dev servers started here will be accessible
+# to the agent via Playwright MCP tools.
+#
+# Docs: https://docs.github.com/en/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 30
+
+    services:
+      # Supabase-compatible PostgreSQL for backend tests
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: masareef_test
+        ports:
+          - 54322:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # ── Python / Backend ─────────────────────────────────────────
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync
+
+      - name: Run backend migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:54322/masareef_test
+          SUPABASE_URL: https://placeholder.supabase.co
+          SUPABASE_ANON_KEY: placeholder
+          SUPABASE_SERVICE_ROLE_KEY: placeholder
+        run: uv run alembic upgrade head
+
+      - name: Seed test data
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:54322/masareef_test
+          SUPABASE_URL: https://placeholder.supabase.co
+          SUPABASE_ANON_KEY: placeholder
+          SUPABASE_SERVICE_ROLE_KEY: placeholder
+        run: |
+          uv run python -c "
+          import asyncio
+          from app.seed import seed_categories
+          from app.database import async_session_factory
+
+          async def main():
+              async with async_session_factory() as session:
+                  await seed_categories(session)
+
+          asyncio.run(main())
+          " || true
+
+      # ── Node.js / Frontend ───────────────────────────────────────
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      # ── Playwright ───────────────────────────────────────────────
+      # Install Playwright browsers so Copilot can use Playwright MCP
+      # to interact with the running app for visual validation and E2E testing
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: pnpm exec playwright install --with-deps chromium
+
+      # Also install Python Playwright for backend E2E tests
+      - name: Install Python Playwright
+        working-directory: backend
+        run: |
+          uvx playwright install --with-deps chromium
