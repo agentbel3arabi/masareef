@@ -1,5 +1,6 @@
 """Transfer business logic. No HTTP awareness."""
 
+import datetime
 import uuid
 from typing import Any
 
@@ -154,8 +155,8 @@ async def list_transfers(
     household_id: uuid.UUID,
     *,
     account_id: int | None = None,
-    date_from: str | None = None,
-    date_to: str | None = None,
+    date_from: datetime.date | None = None,
+    date_to: datetime.date | None = None,
     page: int = 1,
     page_size: int = 50,
 ) -> tuple[list[dict[str, Any]], int]:
@@ -199,6 +200,7 @@ async def list_transfers(
         # Find credit leg via transfer_id
         credit_q = select(Transaction).where(
             Transaction.transfer_id == debit.transfer_id,
+            Transaction.household_id == household_id,
             Transaction.type == "credit",
             Transaction.is_active.is_(True),
         )

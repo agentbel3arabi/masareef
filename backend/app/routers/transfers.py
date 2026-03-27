@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -56,8 +57,8 @@ async def delete_transfer(
 @router.get("")
 async def list_transfers(
     account_id: int | None = Query(None),
-    date_from: str | None = Query(None),
-    date_to: str | None = Query(None),
+    date_from: datetime.date | None = Query(None),
+    date_to: datetime.date | None = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),

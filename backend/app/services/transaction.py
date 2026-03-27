@@ -1,5 +1,6 @@
 """Transaction business logic. No HTTP awareness."""
 
+import datetime
 import uuid
 from typing import Any
 
@@ -7,6 +8,7 @@ from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
+from app.models.category import Category
 from app.models.transaction import Transaction, TransactionSplit
 from app.schemas.transaction import SplitItem, TransactionCreate, TransactionUpdate
 from app.services.balance import compute_balance_delta
@@ -22,6 +24,11 @@ async def create_transaction(
     data: TransactionCreate,
 ) -> Transaction:
     """Create a transaction, compute signed amount, update account balance."""
+    # Validate account exists, is active, and belongs to this household.
+    account = await session.get(Account, data.account_id)
+    if account is None or not account.is_active or account.household_id != household_id:
+        raise ValueError(f"Account {data.account_id} not found")
+
     signed = compute_balance_delta(data.amount_minor, data.type)
 
     tx = Transaction(
@@ -41,9 +48,7 @@ async def create_transaction(
     session.add(tx)
 
     # Update account balance immediately so running balance stays accurate.
-    account = await session.get(Account, data.account_id)
-    if account is not None:
-        account.balance_minor += signed
+    account.balance_minor += signed
 
     await session.flush()
     return tx
@@ -145,8 +150,8 @@ async def list_transactions(
     q_search: str | None = None,
     tx_type: str | None = None,
     category_id: int | None = None,
-    date_from: str | None = None,
-    date_to: str | None = None,
+    date_from: datetime.date | None = None,
+    date_to: datetime.date | None = None,
     amount_min: int | None = None,
     amount_max: int | None = None,
     has_category: bool | None = None,
@@ -268,12 +273,27 @@ async def bulk_delete(
     return count
 
 
+async def validate_category_access(
+    session: AsyncSession,
+    category_id: int,
+    household_id: uuid.UUID,
+) -> None:
+    """Raise ValueError if category is not accessible to household."""
+    cat = await session.get(Category, category_id)
+    if cat is None or not cat.is_active:
+        raise ValueError(f"Category {category_id} not found")
+    if not cat.is_predefined and cat.household_id != household_id:
+        raise ValueError(f"Category {category_id} not found")
+
+
 async def categorize_transaction(
     session: AsyncSession,
     tx: Transaction,
     category_id: int,
+    household_id: uuid.UUID,
 ) -> None:
     """Set category on a transaction."""
+    await validate_category_access(session, category_id, household_id)
     tx.category_id = category_id
     await session.flush()
 

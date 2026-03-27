@@ -20,6 +20,16 @@ async def _create_account(client) -> int:
     return resp.json()["data"]["id"]
 
 
+async def _create_category(client, name: str = "Test Category") -> int:
+    """Create a custom category and return its id."""
+    resp = await client.post(
+        "/api/v1/categories",
+        json={"name_en": name, "name_ar": "فئة", "type": "expense"},
+    )
+    assert resp.status_code == 201, resp.text
+    return resp.json()["data"]["id"]
+
+
 async def _create_tx(client, account_id: int, amount_minor: int = 50000) -> dict:
     """Create a debit transaction and return response data."""
     resp = await client.post(
@@ -121,6 +131,8 @@ async def test_list_transactions_with_filters(client):
 async def test_split_transaction(client):
     """Split a 100000-minor debit into two categories totalling 100000; expect 200."""
     account_id = await _create_account(client)
+    cat_a = await _create_category(client, "Groceries")
+    cat_b = await _create_category(client, "Transport")
     tx = await _create_tx(client, account_id, amount_minor=100000)
     tx_id = tx["id"]
 
@@ -128,8 +140,8 @@ async def test_split_transaction(client):
         f"/api/v1/transactions/{tx_id}/split",
         json={
             "splits": [
-                {"category_id": 1, "amount_minor": 60000},
-                {"category_id": 2, "amount_minor": 40000},
+                {"category_id": cat_a, "amount_minor": 60000},
+                {"category_id": cat_b, "amount_minor": 40000},
             ]
         },
     )
@@ -142,6 +154,8 @@ async def test_split_transaction(client):
 async def test_split_validation_sum_mismatch(client):
     """Split amounts that don't sum to tx amount should return 400."""
     account_id = await _create_account(client)
+    cat_a = await _create_category(client, "Groceries")
+    cat_b = await _create_category(client, "Transport")
     tx = await _create_tx(client, account_id, amount_minor=100000)
     tx_id = tx["id"]
 
@@ -149,8 +163,8 @@ async def test_split_validation_sum_mismatch(client):
         f"/api/v1/transactions/{tx_id}/split",
         json={
             "splits": [
-                {"category_id": 1, "amount_minor": 60000},
-                {"category_id": 2, "amount_minor": 30000},  # sum = 90000 ≠ 100000
+                {"category_id": cat_a, "amount_minor": 60000},
+                {"category_id": cat_b, "amount_minor": 30000},  # sum = 90000 != 100000
             ]
         },
     )

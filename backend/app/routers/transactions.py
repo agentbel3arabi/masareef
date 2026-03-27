@@ -1,5 +1,6 @@
 """Transaction HTTP router. No business logic — delegates to transaction_service."""
 
+import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -95,8 +96,8 @@ async def list_transactions(
     q: str | None = Query(None, description="Full-text search on description and notes"),
     type: str | None = Query(None, description="Filter by 'debit' or 'credit'"),
     category_id: int | None = Query(None),
-    date_from: str | None = Query(None, description="ISO date, inclusive"),
-    date_to: str | None = Query(None, description="ISO date, inclusive"),
+    date_from: datetime.date | None = Query(None, description="ISO date, inclusive"),
+    date_to: datetime.date | None = Query(None, description="ISO date, inclusive"),
     amount_min: int | None = Query(None),
     amount_max: int | None = Query(None),
     has_category: bool | None = Query(None),
@@ -139,7 +140,15 @@ async def create_transaction(
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
     """Create a new transaction and update the account balance."""
-    tx = await transaction_service.create_transaction(session, household_id, data)
+    try:
+        tx = await transaction_service.create_transaction(session, household_id, data)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+            ).model_dump(),
+        )
     return SuccessResponse(data=_tx_to_response(tx).model_dump())
 
 
@@ -216,6 +225,20 @@ async def split_transaction(
             ).model_dump(),
         )
 
+    # Validate all category IDs exist and are accessible to the household
+    try:
+        for item in data.splits:
+            await transaction_service.validate_category_access(
+                session, item.category_id, household_id
+            )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="INVALID_CATEGORY", message=str(e))
+            ).model_dump(),
+        )
+
     splits = await transaction_service.create_splits(session, transaction_id, data.splits)
 
     result = [
@@ -242,5 +265,15 @@ async def categorize_transaction(
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
     if not tx:
         raise _not_found()
-    await transaction_service.categorize_transaction(session, tx, data.category_id)
+    try:
+        await transaction_service.categorize_transaction(
+            session, tx, data.category_id, household_id
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+            ).model_dump(),
+        )
     return SuccessResponse(data=_tx_to_response(tx).model_dump())
