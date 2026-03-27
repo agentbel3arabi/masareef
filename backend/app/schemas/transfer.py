@@ -24,12 +24,22 @@ class TransferResponse(BaseModel):
     target_amount: int
 
 
+class TransferAccountSummary(BaseModel):
+    """Embedded account info for transfer list display."""
+
+    id: int
+    name: str
+    currency: str
+
+    model_config = {"from_attributes": True}
+
+
 class TransferListItem(BaseModel):
     transfer_id: UUID
     date: date
     description: str
-    from_account: dict
-    to_account: dict
+    from_account: TransferAccountSummary
+    to_account: TransferAccountSummary
     source_amount: int
     target_amount: int
     fx_rate_minor_units: int | None = None

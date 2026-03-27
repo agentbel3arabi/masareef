@@ -15,7 +15,7 @@ security = HTTPBearer(auto_error=False)
 
 try:
     _settings = Settings()  # type: ignore[call-arg]
-    _supabase_jwt_secret = _settings.SUPABASE_ANON_KEY
+    _supabase_jwt_secret = _settings.SUPABASE_JWT_SECRET
 except Exception:
     _supabase_jwt_secret = ""
 
@@ -42,26 +42,17 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def get_current_user(
-    token: str = "",
     credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> uuid.UUID:
     """Extract user_id from Supabase JWT Bearer token."""
-    raw_token = ""
-    if isinstance(credentials, HTTPAuthorizationCredentials):
-        raw_token = credentials.credentials
-    elif token and token.startswith("Bearer "):
-        raw_token = token[7:]
-    elif token:
-        raw_token = token
-
-    if not raw_token:
+    if not credentials:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing authentication token",
         )
 
     try:
-        payload = decode_jwt(raw_token)
+        payload = decode_jwt(credentials.credentials)
         user_id = payload.get("sub")
         if not user_id:
             raise HTTPException(
