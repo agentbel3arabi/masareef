@@ -1,5 +1,7 @@
 import pytest
 
+from app.models.category import Category
+
 
 @pytest.mark.asyncio
 async def test_list_categories_returns_paginated(client):
@@ -63,25 +65,21 @@ async def test_delete_custom_category(client):
 
 
 @pytest.mark.asyncio
-async def test_update_predefined_category_restricts_fields(client):
+async def test_update_predefined_category_restricts_fields(client, db_session):
     """Predefined categories only allow icon and color updates."""
-    from app.models.category import Category
-    from tests.conftest import TestSessionLocal
-
-    async with TestSessionLocal() as session:
-        cat = Category(
-            household_id=None,
-            name_en="Groceries",
-            name_ar="بقالة",
-            type="expense",
-            is_predefined=True,
-            sort_order=1,
-            icon="cart",
-            color="#FF0000",
-        )
-        session.add(cat)
-        await session.commit()
-        cat_id = cat.id
+    cat = Category(
+        household_id=None,
+        name_en="Groceries",
+        name_ar="بقالة",
+        type="expense",
+        is_predefined=True,
+        sort_order=1,
+        icon="cart",
+        color="#FF0000",
+    )
+    db_session.add(cat)
+    await db_session.commit()
+    cat_id = cat.id
 
     # Try to update name_en and icon — only icon should change
     update_resp = await client.put(
@@ -95,24 +93,19 @@ async def test_update_predefined_category_restricts_fields(client):
 
 
 @pytest.mark.asyncio
-async def test_delete_predefined_category_fails(client):
+async def test_delete_predefined_category_fails(client, db_session):
     """Predefined categories cannot be deleted -- should return 403."""
-    # First seed a predefined category directly via the DB
-    from app.models.category import Category
-    from tests.conftest import TestSessionLocal
-
-    async with TestSessionLocal() as session:
-        cat = Category(
-            household_id=None,
-            name_en="Salary",
-            name_ar="راتب",
-            type="income",
-            is_predefined=True,
-            sort_order=1,
-        )
-        session.add(cat)
-        await session.commit()
-        cat_id = cat.id
+    cat = Category(
+        household_id=None,
+        name_en="Salary",
+        name_ar="راتب",
+        type="income",
+        is_predefined=True,
+        sort_order=1,
+    )
+    db_session.add(cat)
+    await db_session.commit()
+    cat_id = cat.id
 
     delete_resp = await client.delete(f"/api/v1/categories/{cat_id}")
     assert delete_resp.status_code == 403

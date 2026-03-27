@@ -23,8 +23,8 @@ async def list_categories(
     count_q = select(func.count(Category.id)).where(base_filter)
 
     if active_only:
-        q = q.where(Category.is_active == True)  # noqa: E712
-        count_q = count_q.where(Category.is_active == True)  # noqa: E712
+        q = q.where(Category.is_active.is_(True))
+        count_q = count_q.where(Category.is_active.is_(True))
     if type:
         q = q.where(Category.type == type)
         count_q = count_q.where(Category.type == type)
@@ -43,7 +43,7 @@ async def get_category(
     """Get a single active category by ID (predefined or household-owned)."""
     q = select(Category).where(
         Category.id == category_id,
-        Category.is_active == True,  # noqa: E712
+        Category.is_active.is_(True),
         (Category.household_id == household_id) | (Category.household_id.is_(None)),
     )
     result = await session.execute(q)

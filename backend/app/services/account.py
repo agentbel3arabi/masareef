@@ -20,7 +20,7 @@ async def list_accounts(
     # Count
     count_q = select(func.count(Account.id)).where(
         Account.household_id == household_id,
-        Account.is_active == True,  # noqa: E712
+        Account.is_active.is_(True),
     )
     total = (await session.execute(count_q)).scalar_one()
 
@@ -45,7 +45,7 @@ async def get_account(
     q = select(Account).where(
         Account.id == account_id,
         Account.household_id == household_id,
-        Account.is_active == True,  # noqa: E712
+        Account.is_active.is_(True),
     )
     result = await session.execute(q)
     return result.scalar_one_or_none()
@@ -107,8 +107,8 @@ async def compute_displayed_balance(
     q = select(func.coalesce(func.sum(Transaction.amount_minor), 0)).where(
         Transaction.account_id == account.id,
         Transaction.household_id == account.household_id,
-        Transaction.is_active == True,  # noqa: E712
-        Transaction.applies_to_balance == True,  # noqa: E712
+        Transaction.is_active.is_(True),
+        Transaction.applies_to_balance.is_(True),
     )
     if account.opened_at:
         q = q.where(Transaction.date >= account.opened_at)

@@ -26,7 +26,12 @@ async def list_categories(
     household_id: uuid.UUID = Depends(get_household_id),
 ):
     categories, total = await category_service.list_categories(
-        session, household_id, type, active_only, page, page_size
+        session=session,
+        household_id=household_id,
+        type=type,
+        active_only=active_only,
+        page=page,
+        page_size=page_size,
     )
     items = [CategoryResponse.model_validate(cat).model_dump() for cat in categories]
     return SuccessResponse(

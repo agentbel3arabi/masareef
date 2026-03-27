@@ -70,3 +70,10 @@ async def client():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
+
+
+@pytest.fixture
+async def db_session():
+    """Yield a test DB session for direct ORM seeding in tests."""
+    async with TestSessionLocal() as session:
+        yield session
