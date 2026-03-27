@@ -21,6 +21,3 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",")]
         return v
-
-
-settings = Settings()  # type: ignore[call-arg]
