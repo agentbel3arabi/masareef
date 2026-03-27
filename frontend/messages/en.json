@@ -9,7 +9,8 @@
     "create": "Create",
     "search": "Search...",
     "noResults": "No results found",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "name": "Name"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -38,6 +39,7 @@
     "digitalWallet": "Digital Wallet",
     "financingApp": "Financing App",
     "balance": "Balance",
-    "available": "Available"
+    "available": "Available",
+    "loading": "Loading..."
   }
 }

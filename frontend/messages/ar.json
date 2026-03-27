@@ -9,7 +9,8 @@
     "create": "إنشاء",
     "search": "بحث...",
     "noResults": "لا توجد نتائج",
-    "confirm": "تأكيد"
+    "confirm": "تأكيد",
+    "name": "الاسم"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -38,6 +39,7 @@
     "digitalWallet": "محفظة إلكترونية",
     "financingApp": "تطبيق تمويل",
     "balance": "الرصيد",
-    "available": "المتاح"
+    "available": "المتاح",
+    "loading": "جاري التحميل..."
   }
 }
