@@ -21,8 +21,9 @@ export function StepHousehold({ firstName, value, onChange, onNext }: StepHouseh
         <p className="text-sm text-muted-foreground">{t("step1.description")}</p>
       </div>
       <div className="space-y-2">
-        <Label>{t("step1.householdName")}</Label>
+        <Label htmlFor="household-name">{t("step1.householdName")}</Label>
         <Input
+          id="household-name"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={`${firstName}'s Household`}

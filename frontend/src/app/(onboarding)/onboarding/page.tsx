@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCreateHousehold } from "@/hooks/use-households";
 import { useCreateAccount } from "@/hooks/use-accounts";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,22 +14,29 @@ import { StepDone } from "@/components/onboarding/step-done";
 export default function OnboardingPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const t = useTranslations("onboarding");
   const [step, setStep] = useState(1);
   const [householdName, setHouseholdName] = useState("");
   const [currency, setCurrency] = useState("EGP");
   const createHousehold = useCreateHousehold();
   const createAccount = useCreateAccount();
 
-  const firstName = (user?.user_metadata?.first_name as string) ?? "You";
-  const defaultHouseholdName = householdName || `${firstName}'s Household`;
+  const firstName = (user?.user_metadata?.first_name as string) ?? "";
+  const defaultHouseholdName =
+    householdName || (firstName ? `${firstName}'s Household` : t("defaultHouseholdName"));
 
   const handleStep3Next = async (
     accountData: { name: string; type: string; initial_balance: number } | null
   ) => {
-    await createHousehold.mutateAsync({
-      name: defaultHouseholdName,
-      base_currency: currency,
-    });
+    try {
+      await createHousehold.mutateAsync({
+        name: defaultHouseholdName,
+        base_currency: currency,
+      });
+    } catch {
+      // Toast already shown by useApiMutation.onError — stay on step 3 for retry
+      return;
+    }
     if (accountData) {
       try {
         await createAccount.mutateAsync({
@@ -45,10 +53,15 @@ export default function OnboardingPage() {
   };
 
   const handleStep3Skip = async () => {
-    await createHousehold.mutateAsync({
-      name: defaultHouseholdName,
-      base_currency: currency,
-    });
+    try {
+      await createHousehold.mutateAsync({
+        name: defaultHouseholdName,
+        base_currency: currency,
+      });
+    } catch {
+      // Toast already shown by useApiMutation.onError — stay on step 3 for retry
+      return;
+    }
     setStep(4);
   };
 

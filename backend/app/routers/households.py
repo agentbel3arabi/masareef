@@ -1,7 +1,8 @@
 import uuid
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -43,9 +44,9 @@ async def create_household(
         select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id)
     )
     if existing.scalar_one_or_none():
-        raise HTTPException(
+        return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
-            detail={
+            content={
                 "error": {
                     "code": "ALREADY_HAS_HOUSEHOLD",
                     "message": "User already belongs to a household",

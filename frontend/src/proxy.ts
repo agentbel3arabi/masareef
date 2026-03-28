@@ -45,23 +45,26 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Authenticated: check household for non-onboarding routes
+  // Authenticated: check household status for routing decisions
   // TODO(perf): cookie-based optimization if middleware latency becomes measurable
-  if (pathname !== ONBOARDING_ROUTE) {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const statusRes = await fetch(`${apiUrl}/api/v1/auth/household-status`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      if (statusRes.ok) {
-        const { data } = await statusRes.json();
-        if (!data.has_household) {
-          return NextResponse.redirect(new URL(ONBOARDING_ROUTE, request.url));
-        }
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const statusRes = await fetch(`${apiUrl}/api/v1/auth/household-status`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    if (statusRes.ok) {
+      const { data } = await statusRes.json();
+      // No household → send to onboarding (unless already there)
+      if (!data.has_household && pathname !== ONBOARDING_ROUTE) {
+        return NextResponse.redirect(new URL(ONBOARDING_ROUTE, request.url));
       }
-    } catch {
-      // If household-status call fails, allow through (don't block the user)
+      // Has household → skip onboarding, send to dashboard
+      if (data.has_household && pathname === ONBOARDING_ROUTE) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
     }
+  } catch {
+    // If household-status call fails, allow through (don't block the user)
   }
 
   return response;

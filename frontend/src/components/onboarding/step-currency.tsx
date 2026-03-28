@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,7 @@ interface StepCurrencyProps {
 
 export function StepCurrency({ value, onChange, onNext, onBack }: StepCurrencyProps) {
   const t = useTranslations("onboarding");
+  const locale = useLocale();
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -45,7 +46,9 @@ export function StepCurrency({ value, onChange, onNext, onBack }: StepCurrencyPr
             <div className="font-semibold">
               {c.symbol} {c.code}
             </div>
-            <div className="text-xs text-muted-foreground">{c.nameAr}</div>
+            <div className="text-xs text-muted-foreground">
+              {locale === "ar" ? c.nameAr : c.name}
+            </div>
           </button>
         ))}
       </div>

@@ -49,12 +49,14 @@
       "description": "يمكنك إضافة المزيد من الحسابات في أي وقت.",
       "skip": "تخطَّ، سأضيف لاحقاً",
       "accountName": "اسم الحساب",
+      "accountNamePlaceholder": "مثال: حساب CIB الجاري",
       "accountType": "نوع الحساب",
       "accountTypes": {
         "bankAccount": "حساب بنكي",
         "cash": "نقدي",
         "creditCard": "بطاقة ائتمانية",
-        "savings": "ادخار"
+        "savings": "ادخار",
+        "digitalWallet": "محفظة إلكترونية"
       },
       "creating": "جارٍ الإنشاء..."
     },
@@ -63,6 +65,7 @@
       "description": "مجموعتك المالية جاهزة. ابدأ تتبع أموالك الآن.",
       "goToDashboard": "الذهاب إلى لوحة التحكم"
     },
+    "defaultHouseholdName": "مجموعتي المالية",
     "common": {
       "next": "التالي",
       "back": "رجوع"

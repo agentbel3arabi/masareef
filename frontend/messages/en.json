@@ -49,12 +49,14 @@
       "description": "You can add more accounts anytime.",
       "skip": "Skip, I'll add later",
       "accountName": "Account name",
+      "accountNamePlaceholder": "e.g. CIB Current Account",
       "accountType": "Account type",
       "accountTypes": {
         "bankAccount": "Bank Account",
         "cash": "Cash",
         "creditCard": "Credit Card",
-        "savings": "Savings"
+        "savings": "Savings",
+        "digitalWallet": "Digital Wallet"
       },
       "creating": "Creating..."
     },
@@ -63,6 +65,7 @@
       "description": "Your household is ready. Start tracking your finances.",
       "goToDashboard": "Go to Dashboard"
     },
+    "defaultHouseholdName": "My Household",
     "common": {
       "next": "Next",
       "back": "Back"

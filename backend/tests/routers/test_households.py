@@ -66,4 +66,4 @@ async def test_create_household_conflict(client):
         json={"name": "Second Household", "base_currency": "USD"},
     )
     assert resp.status_code == 409
-    assert resp.json()["detail"]["error"]["code"] == "ALREADY_HAS_HOUSEHOLD"
+    assert resp.json()["error"]["code"] == "ALREADY_HAS_HOUSEHOLD"
