@@ -90,6 +90,8 @@
     "hasAccount": "Already have an account?",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "preferredLanguage": "Preferred language",
+    "country": "Country",
     "gender": "Gender",
     "age": "Age",
     "male": "Male",

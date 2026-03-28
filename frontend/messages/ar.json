@@ -90,6 +90,8 @@
     "hasAccount": "لديك حساب بالفعل؟",
     "firstName": "الاسم الأول",
     "lastName": "اسم العائلة",
+    "preferredLanguage": "اللغة المفضلة",
+    "country": "الدولة",
     "gender": "الجنس",
     "age": "العمر",
     "male": "ذكر",

@@ -16,6 +16,8 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [lang, setLang] = useState<"en" | "ar">("en");
+  const [country, setCountry] = useState("EG");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [error, setError] = useState("");
@@ -34,6 +36,8 @@ export default function SignupPage() {
         data: {
           first_name: firstName,
           last_name: lastName,
+          preferred_language: lang,
+          country: country,
           gender,
           age: age ? parseInt(age, 10) : undefined,
         },
@@ -98,6 +102,42 @@ export default function SignupPage() {
             minLength={6}
             required
           />
+        </div>
+        <div className="space-y-1">
+          <Label>{t("auth.preferredLanguage")}</Label>
+          <div className="flex rounded-lg border overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setLang("en")}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${lang === "en" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            >
+              🇺🇸 English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang("ar")}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${lang === "ar" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            >
+              🇪🇬 العربية
+            </button>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="country">{t("auth.country")}</Label>
+          <select
+            id="country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="w-full rounded-md border border-input bg-muted/20 px-3 py-2 text-sm"
+          >
+            <option value="EG">🇪🇬 Egypt</option>
+            <option value="SA">🇸🇦 Saudi Arabia</option>
+            <option value="AE">🇦🇪 UAE</option>
+            <option value="KW">🇰🇼 Kuwait</option>
+            <option value="BH">🇧🇭 Bahrain</option>
+            <option value="QA">🇶🇦 Qatar</option>
+            <option value="OTHER">🌍 Other</option>
+          </select>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">

@@ -7,9 +7,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
   return (
     <div className="flex min-h-screen">
       {/* Left marketing panel — hidden below md */}
-      <div className="hidden md:flex md:w-3/5 flex-col justify-between bg-gradient-to-br from-primary/90 to-primary p-12 text-white">
+      <div className="hidden md:flex md:w-3/5 flex-col justify-between bg-gradient-to-br from-[#004D20] via-primary to-[#1DB954] p-12 text-white">
         <div>
-          <Logo variant="horizontal" width={160} height={36} colorScheme="light" />
+          <Logo variant="horizontal" width={200} height={48} colorScheme="dark" />
         </div>
         <div className="space-y-8">
           <div>
