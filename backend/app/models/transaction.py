@@ -1,5 +1,6 @@
 import datetime as dt
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     BigInteger,
@@ -19,6 +20,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 from app.models.enums import TransactionType
+
+if TYPE_CHECKING:
+    from app.models.category import Category
 
 _enum_values = lambda e: [x.value for x in e]  # noqa: E731
 
@@ -46,6 +50,9 @@ class Transaction(TimestampMixin, SoftDeleteMixin, Base):
     )
     category_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("categories.id"), nullable=True
+    )
+    category: Mapped["Category | None"] = relationship(
+        "Category", foreign_keys=[category_id], lazy="selectin"
     )
     import_batch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
