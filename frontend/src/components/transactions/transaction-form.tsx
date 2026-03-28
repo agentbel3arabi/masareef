@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCreateTransaction } from "@/hooks/use-transactions";
-import { CURRENCIES } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { Plus } from "lucide-react";
 
 interface TransactionFormProps {
-  accountId?: number;
+  accountId: number;
   accountCurrency?: string;
 }
 
@@ -26,13 +26,15 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
 
   const createTx = useCreateTransaction();
 
+  const exponent = CURRENCIES[accountCurrency]?.exponent ?? 2;
+  const amountStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const exponent = CURRENCIES[accountCurrency]?.exponent ?? 2;
-    const amountMinor = Math.round(parseFloat(amount) * Math.pow(10, exponent));
+    const amountMinor = parseMajorToMinor(amount, exponent);
 
     await createTx.mutateAsync({
-      account_id: accountId!,
+      account_id: accountId,
       date,
       description,
       amount_minor: amountMinor,
@@ -97,8 +99,8 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
             <Label>Amount ({accountCurrency})</Label>
             <Input
               type="number"
-              step="0.01"
-              min="0.01"
+              step={amountStep}
+              min={amountStep}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
