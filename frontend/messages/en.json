@@ -40,7 +40,9 @@
     "transfers": "Transfers",
     "debts": "Debts",
     "budgets": "Budgets",
-    "settings": "Settings"
+    "settings": "Settings",
+    "openNavigation": "Open navigation",
+    "navigation": "Navigation"
   },
   "auth": {
     "login": "Log In",

@@ -40,7 +40,9 @@
     "transfers": "التحويلات",
     "debts": "الديون",
     "budgets": "الميزانيات",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "openNavigation": "فتح القائمة",
+    "navigation": "التنقل"
   },
   "auth": {
     "login": "تسجيل الدخول",
