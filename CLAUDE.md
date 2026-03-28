@@ -19,6 +19,7 @@ The table below lists every doc file and when to load it:
 | [06-research.md](./docs/06-research.md)                         | 10 competitor profiles, feature gap matrix, market trends                                                   | Product decisions, competitive positioning               |
 | [guides/08-testing.md](./docs/guides/08-testing.md)             | Test stack, test organization, fixture strategy, seed data, coverage requirements                           | Writing tests                                            |
 | [guides/09-design-tokens.md](./docs/guides/09-design-tokens.md) | Canonical design tokens, 32-screen UI design index with cross-links                                         | Frontend UI work                                         |
+| [stitch-screen-map.md](./docs/stitch-screen-map.md)            | Maps every feature and phase to its matching Stitch design screen(s)                                         | Planning any phase with frontend work                    |
 
 ```
 masareef/
@@ -72,8 +73,18 @@ Load only what's relevant. **Do not load all files at once.**
 | Frontend: new page / component | `CLAUDE.md` + feature spec + `guides/09-design-tokens.md` + matching `stitch-designs/html/` file | `04-user-flows.md` if flow unclear; `guides/10-brand-assets.md` if placing logos |
 | Backend: API endpoint          | `CLAUDE.md` + `01-architecture.md` + feature spec                                                | `02-data-models.md` for query patterns         |
 | Testing                        | `CLAUDE.md` + `guides/08-testing.md` + feature spec                                              | —                                              |
-| Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md`                                                 | —                                              |
+| Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | —                                              |
 | Full-stack feature (Phase N)   | `CLAUDE.md` + `05-roadmap.md` (Phase N section) + feature spec(s) listed there                   | All files listed in phase's "Required Reading" |
+
+### Frontend Planning Rule
+
+**Every phase plan that includes frontend work MUST:**
+
+1. List the matching `stitch-designs/html/` screen file(s) in its "Required reading" header — use `docs/stitch-screen-map.md` for quick lookup
+2. Reference specific design patterns from those screens in the plan's code blocks (card structure, filter layout, table styling, form arrangement)
+3. No frontend implementation plan is complete without this Stitch screen mapping
+
+When Stitch MCP server tools are available, prefer using them to analyze design screens directly for more accurate component extraction. Fall back to the static HTML files when MCP is unavailable. Design tokens in `guides/09-design-tokens.md` always win when they conflict with the Stitch HTML.
 
 ## D — Coding Conventions
 
