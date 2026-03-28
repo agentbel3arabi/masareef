@@ -10,7 +10,8 @@
     "search": "Search...",
     "noResults": "No results found",
     "confirm": "Confirm",
-    "name": "Name"
+    "name": "Name",
+    "unexpectedError": "An unexpected error occurred"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -40,6 +41,13 @@
     "financingApp": "Financing App",
     "balance": "Balance",
     "available": "Available",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "error": "Error",
+    "notFound": "Account not found",
+    "emptyState": "No accounts yet. Click \"Add Account\" to get started.",
+    "type": "Type",
+    "currency": "Currency",
+    "institution": "Institution",
+    "institutionPlaceholder": "e.g., CIB, HSBC"
   }
 }

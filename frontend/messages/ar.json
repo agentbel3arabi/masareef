@@ -10,7 +10,8 @@
     "search": "بحث...",
     "noResults": "لا توجد نتائج",
     "confirm": "تأكيد",
-    "name": "الاسم"
+    "name": "الاسم",
+    "unexpectedError": "حدث خطأ غير متوقع"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -40,6 +41,13 @@
     "financingApp": "تطبيق تمويل",
     "balance": "الرصيد",
     "available": "المتاح",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "notFound": "الحساب غير موجود",
+    "emptyState": "لا توجد حسابات بعد. اضغط \"إضافة حساب\" للبدء.",
+    "type": "النوع",
+    "currency": "العملة",
+    "institution": "المؤسسة",
+    "institutionPlaceholder": "مثال: CIB، HSBC"
   }
 }

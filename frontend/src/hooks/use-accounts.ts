@@ -39,7 +39,7 @@ export function useAccount(id: number) {
   return useQuery({
     queryKey: ["accounts", id],
     queryFn: () => apiGet<Account>(`/api/v1/accounts/${id}`),
-    enabled: !!id,
+    enabled: Number.isFinite(id) && id > 0,
   });
 }
 

@@ -46,7 +46,7 @@ export function AccountCard({ account }: AccountCardProps) {
             size="lg"
             colorize
           />
-          {account.type === "credit_card" && account.credit_limit && (
+          {account.type === "credit_card" && account.credit_limit != null && (
             <p className="text-xs text-muted-foreground mt-1">
               {t("available")}:{" "}
               <MoneyDisplay

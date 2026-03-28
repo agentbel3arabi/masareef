@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -20,35 +20,47 @@ const ACCOUNT_TYPES = [
 
 export function CreateAccountDialog() {
   const t = useTranslations();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState("bank_account");
   const [currency, setCurrency] = useState("EGP");
   const [institution, setInstitution] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const createAccount = useCreateAccount();
 
+  const exponent = CURRENCIES[currency]?.exponent ?? 2;
+  const balanceStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
+  const balancePlaceholder = (0).toFixed(exponent);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     const balanceMinor = initialBalance
-      ? Math.round(parseFloat(initialBalance) * 100)
+      ? Math.round(parseFloat(initialBalance) * Math.pow(10, exponent))
       : 0;
 
-    await createAccount.mutateAsync({
-      name,
-      type,
-      currency,
-      initial_balance: balanceMinor,
-      institution: institution || undefined,
-    });
+    try {
+      await createAccount.mutateAsync({
+        name,
+        type,
+        currency,
+        initial_balance: balanceMinor,
+        institution: institution || undefined,
+      });
 
-    setOpen(false);
-    setName("");
-    setType("bank_account");
-    setCurrency("EGP");
-    setInstitution("");
-    setInitialBalance("");
+      setOpen(false);
+      setName("");
+      setType("bank_account");
+      setCurrency("EGP");
+      setInstitution("");
+      setInitialBalance("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.unexpectedError"));
+    }
   };
 
   return (
@@ -64,14 +76,19 @@ export function CreateAccountDialog() {
           <DialogTitle>{t("accounts.addAccount")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+
           <div className="space-y-2">
-            <Label>{t("common.name") || "Name"}</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} required />
+            <Label htmlFor="account-name">{t("common.name")}</Label>
+            <Input id="account-name" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
-            <Label>Type</Label>
+            <Label htmlFor="account-type">{t("accounts.type")}</Label>
             <select
+              id="account-type"
               value={type}
               onChange={(e) => setType(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -85,37 +102,40 @@ export function CreateAccountDialog() {
           </div>
 
           <div className="space-y-2">
-            <Label>Currency</Label>
+            <Label htmlFor="account-currency">{t("accounts.currency")}</Label>
             <select
+              id="account-currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               {Object.entries(CURRENCIES).map(([code, info]) => (
                 <option key={code} value={code}>
-                  {code} — {info.name}
+                  {code} — {locale === "ar" ? info.nameAr : info.name}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="space-y-2">
-            <Label>Institution</Label>
+            <Label htmlFor="account-institution">{t("accounts.institution")}</Label>
             <Input
+              id="account-institution"
               value={institution}
               onChange={(e) => setInstitution(e.target.value)}
-              placeholder="e.g., CIB, HSBC"
+              placeholder={t("accounts.institutionPlaceholder")}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>{t("accounts.balance")}</Label>
+            <Label htmlFor="account-balance">{t("accounts.balance")}</Label>
             <Input
+              id="account-balance"
               type="number"
-              step="0.01"
+              step={balanceStep}
               value={initialBalance}
               onChange={(e) => setInitialBalance(e.target.value)}
-              placeholder="0.00"
+              placeholder={balancePlaceholder}
             />
           </div>
 

@@ -16,12 +16,12 @@ export default function AccountsPage() {
         <CreateAccountDialog />
       </div>
 
-      {isLoading && <p className="text-muted-foreground">{t("loading") || "Loading..."}</p>}
-      {error && <p className="text-destructive">Error: {error.message}</p>}
-      {data?.data && <AccountGrid accounts={data.data} />}
+      {isLoading && <p className="text-muted-foreground">{t("loading")}</p>}
+      {error && <p className="text-destructive">{t("error")}: {error.message}</p>}
+      {data?.data && data.data.length > 0 && <AccountGrid accounts={data.data} />}
       {data?.data?.length === 0 && !isLoading && (
         <p className="text-muted-foreground text-center py-12">
-          No accounts yet. Click &ldquo;Add Account&rdquo; to get started.
+          {t("emptyState")}
         </p>
       )}
     </div>

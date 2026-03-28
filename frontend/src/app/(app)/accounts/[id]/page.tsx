@@ -1,17 +1,19 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAccount } from "@/hooks/use-accounts";
 import { AccountBalanceHeader } from "@/components/accounts/account-balance-header";
 
 export default function AccountDetailPage() {
+  const t = useTranslations("accounts");
   const params = useParams();
   const accountId = Number(params.id);
   const { data, isLoading, error } = useAccount(accountId);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p className="text-destructive">Error: {error.message}</p>;
-  if (!data?.data) return <p>Account not found</p>;
+  if (isLoading) return <p className="text-muted-foreground">{t("loading")}</p>;
+  if (error) return <p className="text-destructive">{t("error")}: {error.message}</p>;
+  if (!data?.data) return <p className="text-muted-foreground">{t("notFound")}</p>;
 
   const account = data.data;
 
