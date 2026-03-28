@@ -12,6 +12,7 @@ def test_transaction_create_requires_amount_minor_integer():
     data = TransactionCreate(
         account_id=1,
         date=date(2026, 3, 20),
+        description="Test transaction",
         amount_minor=125000,
         type="debit",
         currency="EGP",

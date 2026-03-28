@@ -85,7 +85,7 @@ async def test_create_transaction_updates_balance(client):
 
     acct_resp = await client.get(f"/api/v1/accounts/{account_id}")
     assert acct_resp.status_code == 200
-    balance = acct_resp.json()["data"]["balance_minor"]
+    balance = acct_resp.json()["data"]["displayed_balance_minor"]
     assert balance == 950000
 
 
@@ -100,7 +100,7 @@ async def test_delete_transaction_reverses_balance(client):
     assert del_resp.status_code == 204
 
     acct_resp = await client.get(f"/api/v1/accounts/{account_id}")
-    balance = acct_resp.json()["data"]["balance_minor"]
+    balance = acct_resp.json()["data"]["displayed_balance_minor"]
     assert balance == 1000000
 
 
