@@ -21,22 +21,23 @@ export default function TransactionsPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">{t("nav.transactions")}</h1>
 
-      <TransactionFilterBar filters={filters} onChange={setFilters} />
-
       {isLoading ? (
         <>
           <FilterBarSkeleton />
           <TransactionTableSkeleton />
         </>
       ) : (
-        <TransactionTable
-          transactions={data?.data || []}
-          total={data?.meta?.total || 0}
-          page={filters.page || 1}
-          pageSize={filters.page_size || 50}
-          onPageChange={(p) => setFilters({ ...filters, page: p })}
-          showAccount
-        />
+        <>
+          <TransactionFilterBar filters={filters} onChange={setFilters} />
+          <TransactionTable
+            transactions={data?.data || []}
+            total={data?.meta?.total || 0}
+            page={filters.page || 1}
+            pageSize={filters.page_size || 50}
+            onPageChange={(p) => setFilters({ ...filters, page: p })}
+            showAccount
+          />
+        </>
       )}
     </div>
   );
