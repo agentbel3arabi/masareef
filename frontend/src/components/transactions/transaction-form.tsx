@@ -98,6 +98,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t("transactions.descriptionPlaceholder")}
+              required
             />
           </div>
 
