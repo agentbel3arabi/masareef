@@ -1,5 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api-client";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 
 export interface Transaction {
   id: number;
@@ -67,9 +69,11 @@ export function useTransactions(filters: TransactionFilters = {}) {
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: (data: CreateTransactionInput) =>
       apiPost<Transaction>("/api/v1/transactions", data),
+    successMessage: t("transactionCreated"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -79,8 +83,10 @@ export function useCreateTransaction() {
 
 export function useDeleteTransaction() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: (id: number) => apiDelete(`/api/v1/transactions/${id}`),
+    successMessage: t("transactionDeleted"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -100,9 +106,11 @@ export interface UpdateTransactionInput {
 
 export function useUpdateTransaction() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: ({ id, ...body }: UpdateTransactionInput) =>
       apiPut<Transaction>(`/api/v1/transactions/${id}`, body),
+    successMessage: t("transactionUpdated"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });

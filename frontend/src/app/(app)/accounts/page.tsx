@@ -5,6 +5,7 @@ import { useAccounts } from "@/hooks/use-accounts";
 import { AccountGrid } from "@/components/accounts/account-grid";
 import { CreateAccountDialog } from "@/components/accounts/create-account-dialog";
 import { TransferForm } from "@/components/transfers/transfer-form";
+import { AccountGridSkeleton } from "@/components/shared/skeletons";
 
 export default function AccountsPage() {
   const t = useTranslations("accounts");
@@ -20,7 +21,7 @@ export default function AccountsPage() {
         </div>
       </div>
 
-      {isLoading && <p className="text-muted-foreground">{t("loading")}</p>}
+      {isLoading && <AccountGridSkeleton />}
       {error && <p className="text-destructive">{t("error")}: {error.message}</p>}
       {data?.data && data.data.length > 0 && <AccountGrid accounts={data.data} />}
       {data?.data?.length === 0 && !isLoading && (
