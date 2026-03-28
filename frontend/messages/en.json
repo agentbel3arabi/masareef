@@ -1,4 +1,16 @@
 {
+  "toast": {
+    "accountCreated": "Account created",
+    "accountDeleted": "Account deleted",
+    "accountUpdated": "Account updated",
+    "transactionCreated": "Transaction recorded",
+    "transactionDeleted": "Transaction deleted",
+    "transactionUpdated": "Transaction updated",
+    "transferCreated": "Transfer created",
+    "transferDeleted": "Transfer deleted",
+    "error": "Something went wrong",
+    "tryAgain": "Please try again"
+  },
   "common": {
     "appName": "Masareef",
     "loading": "Loading...",
