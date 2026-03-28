@@ -7,7 +7,8 @@ Uses the real Supabase database. Requires these env vars:
   SUPABASE_SERVICE_ROLE_KEY — to create test users without email confirmation
   SUPABASE_JWT_SECRET       — to validate JWTs in the app
 
-Each test session creates an isolated household and cleans up after itself.
+Each test session creates a dedicated Supabase Auth user for integration tests and
+deletes that auth user after the session.
 """
 
 import os
@@ -17,13 +18,16 @@ from collections.abc import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
+
+# Load .env before app imports so Settings() finds DATABASE_URL/SUPABASE_* when
+# running locally without manually exporting env vars.
 from dotenv import load_dotenv
-from httpx import ASGITransport, AsyncClient
 
-from app.main import app
-
-# Load .env into os.environ so fixtures can read SUPABASE_URL etc. when running locally
 load_dotenv(pathlib.Path(__file__).parent.parent.parent / ".env")
+
+from httpx import ASGITransport, AsyncClient  # noqa: E402
+
+from app.main import app  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -93,13 +97,14 @@ async def test_auth_token(supabase_url: str, service_role_key: str) -> AsyncGene
     finally:
         if user_id is not None:
             async with AsyncClient() as client:
-                await client.delete(
+                delete_resp = await client.delete(
                     f"{supabase_url}/auth/v1/admin/users/{user_id}",
                     headers={
                         "apikey": service_role_key,
                         "Authorization": f"Bearer {service_role_key}",
                     },
                 )
+                delete_resp.raise_for_status()
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")

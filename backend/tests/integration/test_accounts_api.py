@@ -30,7 +30,6 @@ async def test_create_account(api_client: AsyncClient) -> None:
     assert body["data"]["name"] == "Integration Test Account"
     assert body["data"]["currency"] == "EGP"
     assert "id" in body["data"]
-    return body["data"]["id"]
 
 
 @pytest.mark.asyncio
