@@ -11,9 +11,10 @@ Each test session creates an isolated household and cleans up after itself.
 """
 import os
 import uuid
+from collections.abc import AsyncGenerator
+
 import pytest
 import pytest_asyncio
-import httpx
 from httpx import AsyncClient, ASGITransport
 
 from app.main import app
@@ -35,56 +36,58 @@ def service_role_key() -> str:
     return key
 
 
-@pytest_asyncio.fixture(scope="session")
-async def test_auth_token(supabase_url: str, service_role_key: str) -> str:
+@pytest_asyncio.fixture(scope="session", loop_scope="session")
+async def test_auth_token(supabase_url: str, service_role_key: str) -> AsyncGenerator[str, None]:
     """
     Create a test user via Supabase Admin API and return their access token.
     Cleans up the user after the test session.
     """
     test_email = f"test-integration-{uuid.uuid4().hex[:8]}@masareef-test.invalid"
     test_password = f"TestPass-{uuid.uuid4().hex[:12]}!"
+    user_id: str | None = None
 
-    async with httpx.AsyncClient() as client:
-        # Create user via Admin API
-        resp = await client.post(
-            f"{supabase_url}/auth/v1/admin/users",
-            headers={
-                "apikey": service_role_key,
-                "Authorization": f"Bearer {service_role_key}",
-            },
-            json={
-                "email": test_email,
-                "password": test_password,
-                "email_confirm": True,
-            },
-        )
-        resp.raise_for_status()
-        user_id = resp.json()["id"]
+    try:
+        async with AsyncClient() as client:
+            # Create user via Admin API
+            resp = await client.post(
+                f"{supabase_url}/auth/v1/admin/users",
+                headers={
+                    "apikey": service_role_key,
+                    "Authorization": f"Bearer {service_role_key}",
+                },
+                json={
+                    "email": test_email,
+                    "password": test_password,
+                    "email_confirm": True,
+                },
+            )
+            resp.raise_for_status()
+            user_id = resp.json()["id"]
 
-        # Sign in to get access token
-        sign_in = await client.post(
-            f"{supabase_url}/auth/v1/token?grant_type=password",
-            headers={"apikey": service_role_key},
-            json={"email": test_email, "password": test_password},
-        )
-        sign_in.raise_for_status()
-        token = sign_in.json()["access_token"]
+            # Sign in to get access token
+            sign_in = await client.post(
+                f"{supabase_url}/auth/v1/token?grant_type=password",
+                headers={"apikey": service_role_key},
+                json={"email": test_email, "password": test_password},
+            )
+            sign_in.raise_for_status()
+            token = sign_in.json()["access_token"]
 
-    yield token
+        yield token
+    finally:
+        if user_id is not None:
+            async with AsyncClient() as client:
+                await client.delete(
+                    f"{supabase_url}/auth/v1/admin/users/{user_id}",
+                    headers={
+                        "apikey": service_role_key,
+                        "Authorization": f"Bearer {service_role_key}",
+                    },
+                )
 
-    # Cleanup: delete test user
-    async with httpx.AsyncClient() as client:
-        await client.delete(
-            f"{supabase_url}/auth/v1/admin/users/{user_id}",
-            headers={
-                "apikey": service_role_key,
-                "Authorization": f"Bearer {service_role_key}",
-            },
-        )
 
-
-@pytest_asyncio.fixture(scope="session")
-async def api_client(test_auth_token: str) -> AsyncClient:
+@pytest_asyncio.fixture(scope="session", loop_scope="session")
+async def api_client(test_auth_token: str) -> AsyncGenerator[AsyncClient, None]:
     """HTTPX async client pointed at the FastAPI app with auth header injected."""
     async with AsyncClient(
         transport=ASGITransport(app=app),
