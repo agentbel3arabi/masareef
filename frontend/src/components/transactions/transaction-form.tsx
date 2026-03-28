@@ -57,11 +57,9 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button size="sm">
-          <Plus className="h-4 w-4 me-1" />
-          {t("transactions.addTransaction")}
-        </Button>
+      <SheetTrigger render={<Button size="sm" />}>
+        <Plus className="h-4 w-4 me-1" />
+        {t("transactions.addTransaction")}
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-md">
         <SheetHeader>
