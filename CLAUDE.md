@@ -2,7 +2,7 @@
 
 ## A — Project Summary
 
-Masareef (مصاريف) is an AI-powered personal finance platform for Egyptian/MENA users, built with a FastAPI (Python) backend, Next.js 14.2.x frontend, and Supabase (PostgreSQL) infrastructure. It provides Arabic-first bank statement import, multi-currency tracking, debt/installment management, Gam3eya (rotating savings), asset tracking, budgeting, 12-month forecasting, and household multi-user support — features no existing product combines for this market.
+Masareef (مصاريف) is an AI-powered personal finance platform for Egyptian/MENA users, built with a FastAPI (Python) backend, Next.js 16 frontend, and Supabase (PostgreSQL) infrastructure. It provides Arabic-first bank statement import, multi-currency tracking, debt/installment management, Gam3eya (rotating savings), asset tracking, budgeting, 12-month forecasting, and household multi-user support — features no existing product combines for this market.
 
 ## B — Directory Map
 
@@ -216,7 +216,7 @@ Frontend subscribes to these channels for live updates:
 
 6. **Feature files own their API contracts.** If an endpoint's spec lives in a feature file, that file is authoritative for behavior, request/response shapes, and acceptance criteria.
 
-7. **Frontend Stack Strictness:** Use Next.js 14 (specifically 14.2.x) with the **App Router** (`app/` directory). Do not use Next.js 15 or newer to ensure maximum AI code generation stability. All components must use strict TypeScript, shadcn/ui, and Tailwind CSS. **shadcn/ui version pin:** Use `shadcn@3.8.5` (the last Tailwind v3-compatible CLI) with **"new-york" style** (Radix-based). Do **NOT** use `shadcn@latest` — it generates "base-nova" style with `@base-ui/react` primitives and Tailwind v4 CSS syntax that is incompatible with Next.js 14.2 / Tailwind v3. When adding new shadcn components, use: `pnpm dlx shadcn@3.8.5 add -y <component>`. Required libraries: use **TanStack Query** for all server state management and cache invalidation; use **react-plotly.js** for all charts and data visualizations (Recharts and Chart.js are **strictly forbidden**); use **next-intl** for all i18n formatting (dates, numbers, currencies, plurals).
+7. **Frontend Stack Strictness:** Use **Next.js 16** with the **App Router** (`app/` directory). All components must use strict TypeScript, shadcn/ui, and **Tailwind CSS v4**. **shadcn/ui:** Use `shadcn@latest` with **"base-nova" style** (`@base-ui/react` primitives). When adding new shadcn components, use: `pnpm dlx shadcn@latest add -y <component>`. After adding, audit for physical directional CSS classes and convert to logical equivalents. Required libraries: use **TanStack Query** for all server state management and cache invalidation; use **react-plotly.js** for all charts and data visualizations (Recharts and Chart.js are **strictly forbidden**); use **next-intl** for all i18n formatting (dates, numbers, currencies, plurals).
 
 8. **Backend Stack Strictness:** Use **Python 3.12**. Build an asynchronous FastAPI application (`async def`). Use Pydantic V2 for all data validation and serialization — call `model.model_dump()` exclusively; `model.dict()` is **forbidden** (Pydantic V1 syntax). Database interactions must use asynchronous SQLAlchemy. Use **uv** for dependency management (`pyproject.toml` + `uv.lock`). Do not use Poetry or Conda. Use **`fastapi.BackgroundTasks`** for fire-and-forget logic (e.g., triggering AI categorization after an import commit). Use **APScheduler** for recurring cron-style jobs (e.g., nightly exchange rate refresh, forecast recalculation).
 
@@ -242,15 +242,16 @@ pnpm lint             # lint (next lint)
 ### Frontend: shadcn/ui
 
 ```bash
-pnpm dlx shadcn@3.8.5 add -y <component>   # add a shadcn component (Radix-based, new-york style)
-pnpm dlx shadcn@3.8.5 add -y -o <component> # add and overwrite existing component
+pnpm dlx shadcn@latest add -y <component>   # add a shadcn component (base-nova style, @base-ui/react)
+pnpm dlx shadcn@latest add -y -o <component> # add and overwrite existing component
 ```
 
-- **Version pinned to `shadcn@3.8.5`** — the last CLI version producing Tailwind v3-compatible components
-- Style: **new-york** (Radix UI primitives) — configured in `frontend/components.json`
-- `shadcn@latest` (v4+) generates "base-nova" style with `@base-ui/react` and Tailwind v4 CSS — **do not use**
-- CSS variables use **HSL format** (`0 0% 100%`), not oklch — Tailwind v3 requirement
-- Auto-generated components in `frontend/src/components/ui/` contain physical directional CSS classes (`right-`, `left-`, `pr-`, `pl-`) from the generator. These must be converted to logical equivalents (`end-`, `start-`, `pe-`, `ps-`) when the component is first used in a real page for RTL correctness.
+- Style: **base-nova** (`@base-ui/react` primitives) — configured in `frontend/components.json`
+- Tailwind CSS **v4** — config is in CSS (`@theme inline` block in `globals.css`), not `tailwind.config.ts`
+- CSS variables use **HSL format** in `@layer base` blocks; `@theme inline` block wraps them with `hsl()` for Tailwind utility resolution
+- Auto-generated components in `frontend/src/components/ui/` may contain physical directional CSS classes (`right-`, `left-`, `pr-`, `pl-`) from the generator. These **must** be converted to logical equivalents (`end-`, `start-`, `pe-`, `ps-`) immediately after adding.
+- Toast notifications use **sonner** (not Radix toast) — import from `sonner` or use the `useToast()` wrapper in `hooks/use-toast.ts`
+- base-nova uses `render` prop pattern instead of `asChild` — e.g., `<DialogTrigger render={<Button />}>` not `<DialogTrigger asChild><Button /></DialogTrigger>`
 
 ### Backend: uv
 

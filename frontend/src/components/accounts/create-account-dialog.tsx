@@ -72,11 +72,9 @@ export function CreateAccountDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 me-2" />
-          {t("accounts.addAccount")}
-        </Button>
+      <DialogTrigger render={<Button />}>
+        <Plus className="h-4 w-4 me-2" />
+        {t("accounts.addAccount")}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
