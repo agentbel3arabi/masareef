@@ -30,8 +30,14 @@ export function CreateAccountDialog({
   const t = useTranslations();
   const locale = useLocale();
   const [internalOpen, setInternalOpen] = useState(false);
-  const open = controlledOpen ?? internalOpen;
-  const setOpen = controlledOnOpenChange ?? setInternalOpen;
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (next: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(next);
+    }
+    controlledOnOpenChange?.(next);
+  };
   const [name, setName] = useState("");
   const [type, setType] = useState("bank_account");
   const [currency, setCurrency] = useState("EGP");

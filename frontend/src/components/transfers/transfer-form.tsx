@@ -22,8 +22,14 @@ export function TransferForm({
 }: TransferFormProps = {}) {
   const t = useTranslations();
   const [internalOpen, setInternalOpen] = useState(false);
-  const open = controlledOpen ?? internalOpen;
-  const setOpen = controlledOnOpenChange ?? setInternalOpen;
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (next: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(next);
+    }
+    controlledOnOpenChange?.(next);
+  };
   const { data: accountsData } = useAccounts();
   const createTransfer = useCreateTransfer();
 
