@@ -32,7 +32,7 @@ export default function TransfersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">{t("nav.transfers")}</h1>
         <TransferForm open={createOpen} onOpenChange={setCreateOpen} />
       </div>
@@ -47,7 +47,7 @@ export default function TransfersPage() {
           action={{ label: tEmpty("transfers.action"), onClick: () => setCreateOpen(true) }}
         />
       ) : (
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted/50">
               <tr>

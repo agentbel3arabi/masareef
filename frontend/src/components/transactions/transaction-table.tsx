@@ -27,7 +27,7 @@ export function TransactionTable({
 
   return (
     <div>
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-lg border overflow-x-auto">
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
