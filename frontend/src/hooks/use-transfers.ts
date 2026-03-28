@@ -1,5 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { apiGet, apiPost, apiDelete } from "@/lib/api-client";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 
 export interface Transfer {
   transfer_id: string;
@@ -30,8 +32,10 @@ export function useTransfers(page = 1, pageSize = 50) {
 
 export function useCreateTransfer() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: (data: CreateTransferInput) => apiPost("/api/v1/transfers", data),
+    successMessage: t("transferCreated"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transfers"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -41,8 +45,10 @@ export function useCreateTransfer() {
 
 export function useDeleteTransfer() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: (transferId: string) => apiDelete(`/api/v1/transfers/${transferId}`),
+    successMessage: t("transferDeleted"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transfers"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
