@@ -124,5 +124,31 @@
     "deleteConfirmTitle": "حذف التحويل",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
     "actions": "الإجراءات"
+  },
+  "emptyStates": {
+    "accounts": {
+      "title": "لا توجد حسابات بعد",
+      "description": "أضف حسابك الأول لتبدأ تتبع أموالك.",
+      "action": "إضافة حساب"
+    },
+    "transactions": {
+      "title": "لا توجد معاملات بعد",
+      "description": "سجّل أول معاملة أو استورد كشف حساب بنكي.",
+      "action": "إضافة معاملة"
+    },
+    "transfers": {
+      "title": "لا توجد تحويلات بعد",
+      "description": "أنشئ تحويلاً لنقل الأموال بين حساباتك.",
+      "action": "تحويل جديد"
+    },
+    "accountTransactions": {
+      "title": "لا توجد معاملات",
+      "description": "لا يوجد تاريخ معاملات لهذا الحساب بعد.",
+      "action": "إضافة معاملة"
+    },
+    "searchResults": {
+      "title": "لا توجد نتائج",
+      "description": "حاول تعديل الفلاتر أو مصطلحات البحث."
+    }
   }
 }
