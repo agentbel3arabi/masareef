@@ -54,12 +54,12 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
       <SheetTrigger asChild>
         <Button size="sm">
           <Plus className="h-4 w-4 me-1" />
-          Add Transaction
+          {t("transactions.addTransaction")}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>New Transaction</SheetTitle>
+          <SheetTitle>{t("transactions.newTransaction")}</SheetTitle>
         </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-6">
           <div className="flex gap-2">
@@ -69,7 +69,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               className="flex-1"
               onClick={() => setType("debit")}
             >
-              Expense
+              {t("transactions.expense")}
             </Button>
             <Button
               type="button"
@@ -77,26 +77,26 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               className="flex-1"
               onClick={() => setType("credit")}
             >
-              Income
+              {t("transactions.incomeType")}
             </Button>
           </div>
 
           <div className="space-y-2">
-            <Label>Date</Label>
+            <Label>{t("common.date")}</Label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>{t("common.description")}</Label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., Carrefour City Stars"
+              placeholder={t("transactions.descriptionPlaceholder")}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Amount ({accountCurrency})</Label>
+            <Label>{t("common.amount")} ({accountCurrency})</Label>
             <Input
               type="number"
               step={amountStep}
@@ -108,7 +108,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
           </div>
 
           <div className="space-y-2">
-            <Label>Notes</Label>
+            <Label>{t("transactions.notes")}</Label>
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
 

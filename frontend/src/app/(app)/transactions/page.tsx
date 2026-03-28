@@ -7,7 +7,7 @@ import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
 
 export default function TransactionsPage() {
-  const t = useTranslations("nav");
+  const t = useTranslations();
   const [filters, setFilters] = useState<TransactionFilters>({
     page: 1,
     page_size: 50,
@@ -18,12 +18,12 @@ export default function TransactionsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">{t("transactions")}</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("nav.transactions")}</h1>
 
       <TransactionFilterBar filters={filters} onChange={setFilters} />
 
       {isLoading ? (
-        <p>Loading...</p>
+        <p>{t("common.loading")}</p>
       ) : (
         <TransactionTable
           transactions={data?.data || []}

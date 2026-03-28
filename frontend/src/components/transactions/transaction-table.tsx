@@ -31,10 +31,10 @@ export function TransactionTable({
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
-              <th className="px-4 py-3 text-start text-sm font-medium">Date</th>
-              <th className="px-4 py-3 text-start text-sm font-medium">Description</th>
-              <th className="px-4 py-3 text-start text-sm font-medium">Category</th>
-              <th className="px-4 py-3 text-end text-sm font-medium">Amount</th>
+              <th className="px-4 py-3 text-start text-sm font-medium">{t("transactions.date")}</th>
+              <th className="px-4 py-3 text-start text-sm font-medium">{t("transactions.description")}</th>
+              <th className="px-4 py-3 text-start text-sm font-medium">{t("transactions.category")}</th>
+              <th className="px-4 py-3 text-end text-sm font-medium">{t("transactions.amount")}</th>
             </tr>
           </thead>
           <tbody>
@@ -55,7 +55,7 @@ export function TransactionTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-muted-foreground">
-            {total} total
+            {t("common.total", { count: total })}
           </p>
           <div className="flex gap-2">
             <Button
@@ -64,7 +64,7 @@ export function TransactionTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              Previous
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -72,7 +72,7 @@ export function TransactionTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              Next
+              {t("common.next")}
             </Button>
           </div>
         </div>
