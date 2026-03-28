@@ -37,7 +37,7 @@ async def create_household(
     data: HouseholdCreate,
     session: AsyncSession = Depends(get_db_session),
     user_id: uuid.UUID = Depends(get_current_user),
-) -> dict:
+) -> dict | JSONResponse:
     """Create a household and add the current user as admin. Called during onboarding."""
     # Prevent creating a second household
     existing = await session.execute(
