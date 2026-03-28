@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "./providers";
 import "./globals.css";
-
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -33,7 +32,7 @@ export default async function RootLayout({
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning className="font-sans">
       <body
         className={`${inter.variable} ${notoSansArabic.variable} min-h-screen bg-background font-sans antialiased`}
       >

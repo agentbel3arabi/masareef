@@ -57,11 +57,9 @@ export function TransferForm() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <ArrowLeftRight className="h-4 w-4 me-2" />
-          {t("transfers.newTransfer")}
-        </Button>
+      <DialogTrigger render={<Button />}>
+        <ArrowLeftRight className="h-4 w-4 me-2" />
+        {t("transfers.newTransfer")}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
