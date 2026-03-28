@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -16,12 +16,11 @@ export function MobileNavDrawer() {
   const pathname = usePathname();
   const t = useTranslations();
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  // Use pathname as dependency for the controlled component key to force remount on route change
+  const key = `drawer-${pathname}`;
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet key={key} open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
           <Button variant="ghost" size="icon" className="md:hidden">
