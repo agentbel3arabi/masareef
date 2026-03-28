@@ -44,8 +44,10 @@ frontend/src/
 │   └── transactions/
 │       ├── transaction-row.tsx         # MODIFY: i18n, category badge styling (after 1H)
 │       ├── transaction-table.tsx       # MODIFY: i18n headers, pagination text (after 1H)
-│       ├── transaction-form.tsx        # MODIFY: i18n all labels (after 1H)
+│       ├── transaction-form.tsx        # MODIFY: i18n all labels + add category selector (after 1H)
 │       └── transaction-filters.tsx     # MODIFY: i18n placeholders (after 1H)
+├── hooks/
+│   └── use-categories.ts              # NEW: TanStack Query hook for GET /api/v1/categories
 ├── i18n/
 │   └── request.ts                      # MODIFY: read NEXT_LOCALE cookie instead of hardcoded "ar"
 ├── messages/
@@ -1281,7 +1283,105 @@ git commit -m "feat(frontend): polish transaction table with category badge dots
 
 ---
 
-### Task 8: Final Build Verification
+### Task 8: Category Selector in Transaction Form
+
+**Context:** UAT identified that the transaction form has no category selector. The backend endpoint `GET /api/v1/categories` already exists and returns all predefined + custom categories. `CreateTransactionInput` already has `category_id?: number`. This task adds the hook and the select field.
+
+**Files:**
+- Create: `frontend/src/hooks/use-categories.ts`
+- Modify: `frontend/src/components/transactions/transaction-form.tsx`
+- Modify: `frontend/messages/ar.json` and `frontend/messages/en.json`
+
+- [ ] **Step 1: Create use-categories.ts hook**
+
+Create `frontend/src/hooks/use-categories.ts`:
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/api-client";
+
+export interface Category {
+  id: number;
+  name_en: string;
+  name_ar: string;
+  type: string;
+  icon: string | null;
+  color: string | null;
+  is_predefined: boolean;
+  sort_order: number;
+}
+
+export function useCategories(type?: "expense" | "income") {
+  const path = type
+    ? `/api/v1/categories?type=${type}`
+    : "/api/v1/categories";
+  return useQuery({
+    queryKey: ["categories", type],
+    queryFn: () => apiGet<Category[]>(path),
+  });
+}
+```
+
+- [ ] **Step 2: Add category select to transaction-form.tsx**
+
+In `frontend/src/components/transactions/transaction-form.tsx`:
+
+1. Add import: `import { useCategories } from "@/hooks/use-categories";`
+2. Add state: `const [categoryId, setCategoryId] = useState<number | "">("");`
+3. Add hook call after `createTx`: `const { data: categoriesData } = useCategories(type === "debit" ? "expense" : "income");`
+4. Add `category_id: categoryId || undefined` to the `mutateAsync` payload
+5. Reset state on success: `setCategoryId("");`
+6. Add the select field between Description and Amount:
+
+```tsx
+          <div className="space-y-2">
+            <Label>{t("transactions.category")}</Label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("transactions.uncategorized")}</option>
+              {(categoriesData?.data || []).map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name_en}
+                </option>
+              ))}
+            </select>
+          </div>
+```
+
+Note: Category list filters by `type` (expense when "debit", income when "credit") so only relevant categories appear. When locale is applied in Task 5, `name_en` can be swapped to the locale-aware name.
+
+- [ ] **Step 3: Add i18n keys**
+
+In `frontend/messages/en.json`, add to the `transactions` namespace (already extended in Task 4):
+```json
+"category": "Category"
+```
+
+In `frontend/messages/ar.json`, add to the `transactions` namespace:
+```json
+"category": "الفئة"
+```
+
+(The `"uncategorized"` key is already added in Task 4.)
+
+- [ ] **Step 4: TypeScript check and lint**
+
+```bash
+cd /mnt/d/1-Study/In-progress/saas_ideas/masareef/frontend && pnpm exec tsc --noEmit && pnpm lint
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add frontend/src/hooks/use-categories.ts frontend/src/components/transactions/transaction-form.tsx frontend/messages/ar.json frontend/messages/en.json
+git commit -m "feat(frontend): add category selector to transaction form with locale-filtered options"
+```
+
+---
+
+### Task 9: Final Build Verification
 
 - [ ] **Step 1: Full build and lint**
 
@@ -1308,6 +1408,7 @@ Run `pnpm dev` and verify:
 - [ ] **Transfers page:** All headers/labels translated in both locales
 - [ ] **Category badges:** Colored dot + text label pattern
 - [ ] **Table striping:** Alternating row backgrounds on transaction table
+- [ ] **Category selector:** Transaction form shows expense/income categories filtered by type; selecting a category saves it on submit
 
 - [ ] **Step 3: Commit any fixes**
 
