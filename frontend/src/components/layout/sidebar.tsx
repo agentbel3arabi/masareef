@@ -3,27 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  LayoutDashboard,
-  Wallet,
-  ArrowLeftRight,
-  Receipt,
-  HandCoins,
-  PiggyBank,
-  Settings,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
-
-const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "nav.dashboard" },
-  { href: "/accounts", icon: Wallet, label: "nav.accounts" },
-  { href: "/transactions", icon: Receipt, label: "nav.transactions" },
-  { href: "/transfers", icon: ArrowLeftRight, label: "nav.transfers" },
-  { href: "/debts", icon: HandCoins, label: "nav.debts" },
-  { href: "/budgets", icon: PiggyBank, label: "nav.budgets" },
-  { href: "/settings", icon: Settings, label: "nav.settings" },
-] as const;
+import { navItems } from "@/components/layout/nav-items";
 
 export function Sidebar() {
   const pathname = usePathname();

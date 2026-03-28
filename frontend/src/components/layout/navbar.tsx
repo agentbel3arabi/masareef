@@ -2,6 +2,7 @@
 
 import { ThemeToggle } from "./theme-toggle";
 import { LocaleToggle } from "./locale-toggle";
+import { MobileNavDrawer } from "./mobile-nav-drawer";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -12,7 +13,8 @@ export function Navbar() {
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
-      <div className="md:hidden">
+      <div className="flex items-center gap-2 md:hidden">
+        <MobileNavDrawer />
         <Logo variant="icon" width={28} height={28} />
       </div>
       <div className="flex-1" />
