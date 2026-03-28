@@ -41,7 +41,7 @@ def _fetch_jwks() -> dict:
     resp.raise_for_status()
     _jwks_cache = resp.json()
     _jwks_cache_time = now
-    return _jwks_cache
+    return _jwks_cache  # type: ignore[return-value]
 
 
 def decode_jwt(token: str) -> dict:
