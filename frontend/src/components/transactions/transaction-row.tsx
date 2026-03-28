@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { useDeleteTransaction, useUpdateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
-import { CURRENCIES, parseMajorToMinor, formatAmount } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import type { Transaction } from "@/hooks/use-transactions";
 
 interface TransactionRowProps {
@@ -38,7 +38,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
 
   // Edit form state — pre-filled from the transaction
   const exponent = CURRENCIES[transaction.currency]?.exponent ?? 2;
-  const initialAmount = formatAmount(Math.abs(transaction.amount_minor), transaction.currency);
+  const initialAmount = (Math.abs(transaction.amount_minor) / Math.pow(10, exponent)).toFixed(exponent);
 
   const [date, setDate] = useState(transaction.date);
   const [description, setDescription] = useState(transaction.description || "");
@@ -61,20 +61,15 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amountMinor = parseMajorToMinor(amount, exponent);
-    const signedAmount = type === "debit" ? -Math.abs(amountMinor) : Math.abs(amountMinor);
 
     await updateTx.mutateAsync({
       id: transaction.id,
-      data: {
-        account_id: transaction.account_id,
-        date,
-        description,
-        amount_minor: signedAmount,
-        type,
-        currency: transaction.currency,
-        category_id: categoryId || undefined,
-        notes: notes || undefined,
-      },
+      date,
+      description,
+      amount_minor: Math.abs(amountMinor),
+      type,
+      category_id: categoryId || null,
+      notes: notes || undefined,
     });
 
     setEditOpen(false);
@@ -84,7 +79,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
     // Reset form state to current transaction values each time the dialog opens
     setDate(transaction.date);
     setDescription(transaction.description || "");
-    setAmount(formatAmount(Math.abs(transaction.amount_minor), transaction.currency));
+    setAmount((Math.abs(transaction.amount_minor) / Math.pow(10, exponent)).toFixed(exponent));
     setType(transaction.type as "debit" | "credit");
     setNotes(transaction.notes || "");
     setCategoryId(transaction.category?.id ?? "");

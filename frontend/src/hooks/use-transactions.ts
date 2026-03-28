@@ -89,21 +89,20 @@ export function useDeleteTransaction() {
 }
 
 export interface UpdateTransactionInput {
-  account_id: number;
-  date: string;
-  description: string;
-  amount_minor: number;
-  type: string;
-  currency: string;
-  category_id?: number;
+  id: number;
+  date?: string;
+  description?: string;
+  amount_minor?: number;
+  type?: string;
+  category_id?: number | null;
   notes?: string;
 }
 
 export function useUpdateTransaction() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateTransactionInput }) =>
-      apiPut<Transaction>(`/api/v1/transactions/${id}`, data),
+    mutationFn: ({ id, ...body }: UpdateTransactionInput) =>
+      apiPut<Transaction>(`/api/v1/transactions/${id}`, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });

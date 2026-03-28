@@ -208,3 +208,41 @@ async def test_bulk_categorize(client):
     )
     assert resp.status_code == 200
     assert resp.json()["data"]["updated"] == 3
+
+
+@pytest.mark.asyncio
+async def test_transaction_category_embedded(client):
+    """GET transaction with a category should embed category object; without should return null."""
+    account_id = await _create_account(client)
+
+    # 1. Create a category via POST /api/v1/categories
+    cat_id = await _create_category(client, "Groceries Embedded")
+
+    # 2. Create a transaction (no category yet)
+    tx = await _create_tx(client, account_id, amount_minor=75000)
+    tx_id = tx["id"]
+
+    # 3. Assign the category via the categorize endpoint
+    cat_resp = await client.post(
+        f"/api/v1/transactions/{tx_id}/categorize",
+        json={"category_id": cat_id},
+    )
+    assert cat_resp.status_code == 200
+
+    # 4. GET the transaction and assert category is embedded with required fields
+    get_resp = await client.get(f"/api/v1/transactions/{tx_id}")
+    assert get_resp.status_code == 200
+    data = get_resp.json()["data"]
+    assert data["category"] is not None
+    assert data["category"]["id"] == cat_id
+    assert "name_en" in data["category"]
+    assert "name_ar" in data["category"]
+
+    # 5. Create a transaction WITHOUT a category and assert category is null
+    tx2 = await _create_tx(client, account_id, amount_minor=10000)
+    tx_id2 = tx2["id"]
+
+    get_resp2 = await client.get(f"/api/v1/transactions/{tx_id2}")
+    assert get_resp2.status_code == 200
+    data2 = get_resp2.json()["data"]
+    assert data2["category"] is None
