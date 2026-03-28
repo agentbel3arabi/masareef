@@ -9,7 +9,7 @@ interface TransactionRowProps {
   showAccount?: boolean;
 }
 
-export function TransactionRow({ transaction, showAccount = false }: TransactionRowProps) {
+export function TransactionRow({ transaction }: TransactionRowProps) {
   return (
     <tr className="border-b hover:bg-accent/50 transition-colors">
       <td className="px-4 py-3 text-sm">{transaction.date}</td>
