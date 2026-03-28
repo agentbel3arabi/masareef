@@ -7,17 +7,17 @@ from httpx import AsyncClient
 
 
 @pytest_asyncio.fixture
-async def two_accounts(api_client: AsyncClient):
+async def two_accounts(api_client: AsyncClient) -> tuple[int, int]:
     """Create two accounts for transfer tests."""
     acc1 = await api_client.post(
         "/api/v1/accounts",
         json={"name": "Transfer From", "type": "bank_account", "currency": "EGP"},
     )
+    assert acc1.status_code == 201
     acc2 = await api_client.post(
         "/api/v1/accounts",
         json={"name": "Transfer To", "type": "cash_wallet", "currency": "EGP"},
     )
-    assert acc1.status_code == 201
     assert acc2.status_code == 201
     return acc1.json()["data"]["id"], acc2.json()["data"]["id"]
 
@@ -30,6 +30,7 @@ async def test_list_transfers(api_client: AsyncClient) -> None:
     body = resp.json()
     assert "data" in body
     assert "meta" in body
+    assert isinstance(body["data"], list)
 
 
 @pytest.mark.asyncio
@@ -48,3 +49,5 @@ async def test_create_transfer(api_client: AsyncClient, two_accounts) -> None:
     body = resp.json()
     assert "transfer_id" in body["data"]
     assert body["data"]["source_amount"] == 100000
+    assert isinstance(body["data"]["debit_transaction_id"], int)
+    assert isinstance(body["data"]["credit_transaction_id"], int)

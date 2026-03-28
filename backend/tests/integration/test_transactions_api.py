@@ -44,6 +44,9 @@ async def test_create_transaction(api_client: AsyncClient, test_account_id: int)
     assert resp.status_code == 201
     body = resp.json()
     assert body["data"]["account_id"] == test_account_id
+    assert "id" in body["data"]
+    assert body["data"]["description"] == "Test Purchase"
+    assert body["data"]["currency"] == "EGP"
     assert body["data"]["type"] == "debit"
 
 
@@ -67,18 +70,26 @@ async def test_delete_transaction(api_client: AsyncClient, test_account_id: int)
     del_resp = await api_client.delete(f"/api/v1/transactions/{tx_id}")
     assert del_resp.status_code == 204
 
+    # Verify soft-delete: transaction no longer appears in account's list
+    list_resp = await api_client.get(
+        "/api/v1/transactions", params={"account_id": test_account_id}
+    )
+    assert list_resp.status_code == 200
+    ids = [tx["id"] for tx in list_resp.json()["data"]]
+    assert tx_id not in ids
+
 
 @pytest.mark.asyncio
 async def test_transaction_filters(api_client: AsyncClient, test_account_id: int) -> None:
-    """Query params (type, page, page_size) filter results correctly."""
-    # Create a debit transaction first so the filter has something to match
+    """Query params (type) filter results correctly."""
+    # Seed a debit transaction first so the filter has something to match
     await api_client.post(
         "/api/v1/transactions",
         json={
             "account_id": test_account_id,
             "date": str(date.today()),
-            "description": "Filter test debit",
-            "amount_minor": 5000,
+            "description": "Filter Test",
+            "amount_minor": 25000,
             "type": "debit",
             "currency": "EGP",
         },
@@ -88,5 +99,10 @@ async def test_transaction_filters(api_client: AsyncClient, test_account_id: int
         params={"account_id": test_account_id, "type": "debit", "page": 1, "page_size": 10},
     )
     assert resp.status_code == 200
-    for tx in resp.json()["data"]:
+    body = resp.json()
+    assert "data" in body
+    assert "meta" in body
+    assert isinstance(body["data"], list)
+    assert len(body["data"]) >= 1
+    for tx in body["data"]:
         assert tx["type"] == "debit"
