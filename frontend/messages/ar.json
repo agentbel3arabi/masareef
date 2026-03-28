@@ -1,4 +1,16 @@
 {
+  "toast": {
+    "accountCreated": "تم إنشاء الحساب",
+    "accountDeleted": "تم حذف الحساب",
+    "accountUpdated": "تم تحديث الحساب",
+    "transactionCreated": "تم تسجيل المعاملة",
+    "transactionDeleted": "تم حذف المعاملة",
+    "transactionUpdated": "تم تحديث المعاملة",
+    "transferCreated": "تم إنشاء التحويل",
+    "transferDeleted": "تم حذف التحويل",
+    "error": "حدث خطأ ما",
+    "tryAgain": "يرجى المحاولة مرة أخرى"
+  },
   "common": {
     "appName": "مصاريف",
     "loading": "جاري التحميل...",
