@@ -15,6 +15,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ArrowRight, Trash2 } from "lucide-react";
+import { TransactionTableSkeleton } from "@/components/shared/skeletons";
 
 export default function TransfersPage() {
   const t = useTranslations();
@@ -31,7 +32,7 @@ export default function TransfersPage() {
       </div>
 
       {isLoading ? (
-        <p>{t("common.loading")}</p>
+        <TransactionTableSkeleton />
       ) : (
         <div className="rounded-lg border overflow-hidden">
           <table className="w-full">

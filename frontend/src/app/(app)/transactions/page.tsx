@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
+import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 
 export default function TransactionsPage() {
   const t = useTranslations();
@@ -23,7 +24,10 @@ export default function TransactionsPage() {
       <TransactionFilterBar filters={filters} onChange={setFilters} />
 
       {isLoading ? (
-        <p>{t("common.loading")}</p>
+        <>
+          <FilterBarSkeleton />
+          <TransactionTableSkeleton />
+        </>
       ) : (
         <TransactionTable
           transactions={data?.data || []}
