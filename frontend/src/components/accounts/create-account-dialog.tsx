@@ -39,9 +39,16 @@ export function CreateAccountDialog() {
     e.preventDefault();
     setError(null);
 
-    const balanceMinor = initialBalance
-      ? Math.round(parseFloat(initialBalance) * Math.pow(10, exponent))
-      : 0;
+    let balanceMinor = 0;
+    const trimmed = initialBalance.trim();
+    if (trimmed !== "") {
+      const isNegative = trimmed.startsWith("-");
+      const unsigned = isNegative ? trimmed.slice(1) : trimmed;
+      const [intPart = "0", fracRaw = ""] = unsigned.split(".");
+      const padded = (fracRaw + "0".repeat(exponent)).slice(0, exponent);
+      balanceMinor = parseInt(intPart + padded, 10) || 0;
+      if (isNegative && balanceMinor !== 0) balanceMinor = -balanceMinor;
+    }
 
     try {
       await createAccount.mutateAsync({

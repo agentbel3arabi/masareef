@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -16,13 +17,15 @@ interface MoneyDisplayProps {
 export function MoneyDisplay({
   amount,
   currency,
-  locale = "ar",
+  locale,
   showCurrency = true,
   colorize = false,
   className,
   size = "md",
 }: MoneyDisplayProps) {
-  const formatted = locale === "ar"
+  const activeLocale = useLocale();
+  const effectiveLocale = locale ?? (activeLocale === "ar" ? "ar" : "en");
+  const formatted = effectiveLocale === "ar"
     ? formatAmountAr(amount, currency)
     : formatAmount(amount, currency);
 
