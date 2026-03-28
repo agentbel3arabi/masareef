@@ -23,7 +23,7 @@ export default function AccountDetailPage() {
   });
 
   if (accountLoading) return <p>{t("common.loading")}</p>;
-  if (!accountData?.data) return <p>Account not found</p>;
+  if (!accountData?.data) return <p>{t("common.notFound")}</p>;
 
   const account = accountData.data;
 

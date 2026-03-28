@@ -11,8 +11,11 @@ export function LocaleToggle() {
 
   const toggleLocale = () => {
     const next: Locale = locale === "ar" ? "en" : "ar";
-    document.cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000`;
-    localStorage.setItem("NEXT_LOCALE", next);
+    let cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000;SameSite=Lax`;
+    if (typeof window !== "undefined" && window.location.protocol === "https:") {
+      cookie += ";Secure";
+    }
+    document.cookie = cookie;
     router.refresh();
   };
 

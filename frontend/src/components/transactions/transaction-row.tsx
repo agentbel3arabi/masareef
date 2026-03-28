@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Badge } from "@/components/ui/badge";
 import type { Transaction } from "@/hooks/use-transactions";
@@ -12,6 +12,7 @@ interface TransactionRowProps {
 
 export function TransactionRow({ transaction }: TransactionRowProps) {
   const t = useTranslations();
+  const locale = useLocale();
   return (
     <tr className="border-b hover:bg-accent/50 transition-colors">
       <td className="px-4 py-3 text-sm">{transaction.date}</td>
@@ -30,7 +31,9 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
                 style={{ backgroundColor: transaction.category.color }}
               />
             )}
-            {transaction.category.name_en}
+            {locale === "ar" && transaction.category.name_ar
+              ? transaction.category.name_ar
+              : transaction.category.name_en}
           </Badge>
         ) : (
           <span className="text-xs text-muted-foreground">{t("transactions.uncategorized")}</span>

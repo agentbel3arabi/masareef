@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,7 @@ interface TransactionFormProps {
 
 export function TransactionForm({ accountId, accountCurrency = "EGP" }: TransactionFormProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [description, setDescription] = useState("");
@@ -72,7 +73,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               type="button"
               variant={type === "debit" ? "default" : "outline"}
               className="flex-1"
-              onClick={() => setType("debit")}
+              onClick={() => { setType("debit"); setCategoryId(""); }}
             >
               {t("transactions.expense")}
             </Button>
@@ -80,7 +81,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               type="button"
               variant={type === "credit" ? "default" : "outline"}
               className="flex-1"
-              onClick={() => setType("credit")}
+              onClick={() => { setType("credit"); setCategoryId(""); }}
             >
               {t("transactions.incomeType")}
             </Button>
@@ -110,7 +111,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               <option value="">{t("transactions.uncategorized")}</option>
               {(categoriesData?.data || []).map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.name_en}
+                  {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
                 </option>
               ))}
             </select>

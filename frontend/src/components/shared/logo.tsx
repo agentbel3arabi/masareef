@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 
@@ -27,7 +28,13 @@ const logoFiles: Record<string, { light: string; dark: string }> = {
 
 export function Logo({ variant, width, height, className }: LogoProps) {
   const { resolvedTheme } = useTheme();
-  const theme = resolvedTheme === "dark" ? "dark" : "light";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const theme = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const src = logoFiles[variant][theme];
 
   return (
