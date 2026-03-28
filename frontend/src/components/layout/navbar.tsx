@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeToggle } from "./theme-toggle";
+import { LocaleToggle } from "./locale-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -16,7 +17,7 @@ export function Navbar() {
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
-        {/* LocaleToggle will be added in Task 3 */}
+        <LocaleToggle />
         <ThemeToggle />
         {user && (
           <Button variant="ghost" size="icon" onClick={signOut}>
