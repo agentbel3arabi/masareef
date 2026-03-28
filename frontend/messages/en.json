@@ -30,8 +30,34 @@
     "amount": "Amount",
     "previous": "Previous",
     "next": "Next",
+    "back": "Back",
     "total": "{count} total",
     "select": "Select..."
+  },
+  "onboarding": {
+    "step1": {
+      "title": "Name your household",
+      "description": "This is where all your accounts and finances will live.",
+      "householdName": "Household name"
+    },
+    "step2": {
+      "title": "Choose your base currency",
+      "description": "This is the currency used for net worth and totals."
+    },
+    "step3": {
+      "title": "Add your first account",
+      "description": "You can add more accounts anytime.",
+      "skip": "Skip, I'll add later"
+    },
+    "step4": {
+      "title": "You're all set!",
+      "description": "Your household is ready. Start tracking your finances.",
+      "goToDashboard": "Go to Dashboard"
+    },
+    "common": {
+      "next": "Next",
+      "back": "Back"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -56,7 +82,16 @@
     "age": "Age",
     "male": "Male",
     "female": "Female",
-    "preferNotToSay": "Prefer not to say"
+    "preferNotToSay": "Prefer not to say",
+    "loginSubtitle": "Sign in to your Masareef account",
+    "signupSubtitle": "Create your free Masareef account",
+    "marketingHeadline": "Your money, your language, your rules.",
+    "marketingSubheadline": "Personal finance built for Egypt & MENA.",
+    "marketing": {
+      "feature1": "Import bank statements from Egyptian banks — CIB, HSBC, NBE and more",
+      "feature2": "AI categorization that understands Arabic merchants",
+      "feature3": "Track debts, installments, Gam3eya and assets in one place"
+    }
   },
   "accounts": {
     "title": "Accounts",

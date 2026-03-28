@@ -8,7 +8,6 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -35,48 +34,45 @@ export default function LoginPage() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-center text-2xl">{t("auth.login")}</CardTitle>
-      </CardHeader>
-      <form onSubmit={handleLogin}>
-        <CardContent className="space-y-4">
-          {error && (
-            <p className="text-sm text-destructive text-center">{error}</p>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="email">{t("auth.email")}</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">{t("auth.password")}</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? t("common.loading") : t("auth.login")}
-          </Button>
-          <p className="text-sm text-muted-foreground">
-            {t("auth.noAccount")}{" "}
-            <Link href="/signup" className="text-primary hover:underline">
-              {t("auth.signup")}
-            </Link>
-          </p>
-        </CardFooter>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold">{t("auth.login")}</h1>
+        <p className="text-sm text-muted-foreground">{t("auth.loginSubtitle")}</p>
+      </div>
+      <form onSubmit={handleLogin} className="space-y-4">
+        {error && (
+          <p className="text-sm text-destructive text-center">{error}</p>
+        )}
+        <div className="space-y-2">
+          <Label htmlFor="email">{t("auth.email")}</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">{t("auth.password")}</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? t("common.loading") : t("auth.login")}
+        </Button>
+        <p className="text-sm text-muted-foreground text-center">
+          {t("auth.noAccount")}{" "}
+          <Link href="/signup" className="text-primary hover:underline">
+            {t("auth.signup")}
+          </Link>
+        </p>
       </form>
-    </Card>
+    </div>
   );
 }
