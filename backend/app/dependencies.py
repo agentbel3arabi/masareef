@@ -11,7 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings
 from app.database import async_session_factory
-from app.models.household import HouseholdMember
+from app.models.enums import HouseholdRole
+from app.models.household import Household, HouseholdMember
 
 security = HTTPBearer(auto_error=False)
 
@@ -107,14 +108,24 @@ async def get_household_id(
     session: AsyncSession = Depends(get_db_session),
     user_id: uuid.UUID = Depends(get_current_user),
 ) -> uuid.UUID:
-    """Resolve user_id to their household_id."""
+    """Resolve user_id to their household_id. Auto-provisions on first login."""
     result = await session.execute(
         select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id)
     )
     household_id = result.scalar_one_or_none()
-    if not household_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User is not a member of any household",
-        )
-    return household_id
+    if household_id:
+        return household_id
+
+    # First login: auto-provision a personal household for this user.
+    household = Household(name="Personal Household", base_currency="EGP")
+    session.add(household)
+    await session.flush()
+    member = HouseholdMember(
+        household_id=household.id,
+        user_id=user_id,
+        role=HouseholdRole.ADMIN,
+        display_name="Owner",
+    )
+    session.add(member)
+    await session.flush()
+    return household.id
