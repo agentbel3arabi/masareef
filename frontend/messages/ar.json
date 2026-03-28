@@ -42,7 +42,9 @@
     "budgets": "الميزانيات",
     "settings": "الإعدادات",
     "openNavigation": "فتح القائمة",
-    "navigation": "التنقل"
+    "navigation": "التنقل",
+    "collapseSidebar": "طي الشريط الجانبي",
+    "expandSidebar": "توسيع الشريط الجانبي"
   },
   "auth": {
     "login": "تسجيل الدخول",

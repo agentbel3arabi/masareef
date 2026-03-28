@@ -42,7 +42,9 @@
     "budgets": "Budgets",
     "settings": "Settings",
     "openNavigation": "Open navigation",
-    "navigation": "Navigation"
+    "navigation": "Navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   },
   "auth": {
     "login": "Log In",
