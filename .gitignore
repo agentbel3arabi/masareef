@@ -9,6 +9,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.pytest_cache/
 
 # =========================
 # Next.js / Node
@@ -51,3 +52,10 @@ Thumbs.db
 #   - frontend/pnpm-lock.yaml
 #   - backend/uv.lock
 # =========================
+
+
+# =========================
+# Playwright MCP
+# =========================
+playwright-report/
+.playwright-mcp/
