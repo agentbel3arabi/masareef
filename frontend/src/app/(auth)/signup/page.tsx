@@ -13,8 +13,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 export default function SignupPage() {
   const t = useTranslations();
   const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +28,18 @@ export default function SignupPage() {
     setError("");
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          gender,
+          age: age ? parseInt(age, 10) : undefined,
+        },
+      },
+    });
 
     if (error) {
       setError(error.message);
@@ -44,6 +59,26 @@ export default function SignupPage() {
           {error && (
             <p className="text-sm text-destructive text-center">{error}</p>
           )}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">{t("auth.firstName")}</Label>
+              <Input
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">{t("auth.lastName")}</Label>
+              <Input
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">{t("auth.email")}</Label>
             <Input
@@ -64,6 +99,33 @@ export default function SignupPage() {
               minLength={6}
               required
             />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="gender">{t("auth.gender")}</Label>
+              <select
+                id="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">{t("common.select")}</option>
+                <option value="male">{t("auth.male")}</option>
+                <option value="female">{t("auth.female")}</option>
+                <option value="prefer_not_to_say">{t("auth.preferNotToSay")}</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="age">{t("auth.age")}</Label>
+              <Input
+                id="age"
+                type="number"
+                min={13}
+                max={120}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+              />
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-4">

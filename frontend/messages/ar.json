@@ -11,7 +11,15 @@
     "noResults": "لا توجد نتائج",
     "confirm": "تأكيد",
     "name": "الاسم",
-    "unexpectedError": "حدث خطأ غير متوقع"
+    "unexpectedError": "حدث خطأ غير متوقع",
+    "notFound": "غير موجود",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "amount": "المبلغ",
+    "previous": "السابق",
+    "next": "التالي",
+    "total": "{count} إجمالي",
+    "select": "اختر..."
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -29,7 +37,14 @@
     "password": "كلمة المرور",
     "forgotPassword": "نسيت كلمة المرور؟",
     "noAccount": "ليس لديك حساب؟",
-    "hasAccount": "لديك حساب بالفعل؟"
+    "hasAccount": "لديك حساب بالفعل؟",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "gender": "الجنس",
+    "age": "العمر",
+    "male": "ذكر",
+    "female": "أنثى",
+    "preferNotToSay": "أفضل عدم الإفصاح"
   },
   "accounts": {
     "title": "الحسابات",
@@ -48,6 +63,47 @@
     "type": "النوع",
     "currency": "العملة",
     "institution": "المؤسسة",
-    "institutionPlaceholder": "مثال: CIB، HSBC"
+    "institutionPlaceholder": "مثال: CIB، HSBC",
+    "quickTransfer": "تحويل سريع"
+  },
+  "transactions": {
+    "title": "المعاملات",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "category": "التصنيف",
+    "amount": "المبلغ",
+    "uncategorized": "بدون تصنيف",
+    "search": "بحث في المعاملات...",
+    "allTypes": "جميع الأنواع",
+    "expenses": "المصروفات",
+    "income": "الدخل",
+    "noResults": "لا توجد معاملات",
+    "previous": "السابق",
+    "next": "التالي",
+    "newTransaction": "معاملة جديدة",
+    "addTransaction": "إضافة معاملة",
+    "expense": "مصروف",
+    "incomeType": "دخل",
+    "notes": "ملاحظات",
+    "notesPlaceholder": "ملاحظات إضافية...",
+    "descriptionPlaceholder": "مثال: كارفور سيتي ستارز",
+    "heading": "المعاملات"
+  },
+  "transfers": {
+    "title": "التحويلات",
+    "newTransfer": "تحويل جديد",
+    "fromAccount": "من حساب",
+    "toAccount": "إلى حساب",
+    "exchangeRate": "سعر الصرف ({from} إلى {to})",
+    "transferBetween": "تحويل بين الحسابات",
+    "transfer": "تحويل",
+    "noTransfers": "لا توجد تحويلات بعد",
+    "date": "التاريخ",
+    "from": "من",
+    "to": "إلى",
+    "amount": "المبلغ",
+    "selectAccount": "اختر حساب...",
+    "description": "الوصف",
+    "descriptionPlaceholder": "مثال: سحب من الصراف"
   }
 }

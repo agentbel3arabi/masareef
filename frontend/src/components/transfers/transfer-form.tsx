@@ -60,23 +60,23 @@ export function TransferForm() {
       <DialogTrigger asChild>
         <Button>
           <ArrowLeftRight className="h-4 w-4 me-2" />
-          New Transfer
+          {t("transfers.newTransfer")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Transfer Between Accounts</DialogTitle>
+          <DialogTitle>{t("transfers.transferBetween")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>From Account</Label>
+            <Label>{t("transfers.fromAccount")}</Label>
             <select
               value={fromId}
               onChange={(e) => setFromId(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               required
             >
-              <option value="">Select...</option>
+              <option value="">{t("transfers.selectAccount")}</option>
               {accounts.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name} ({a.currency})
@@ -86,14 +86,14 @@ export function TransferForm() {
           </div>
 
           <div className="space-y-2">
-            <Label>To Account</Label>
+            <Label>{t("transfers.toAccount")}</Label>
             <select
               value={toId}
               onChange={(e) => setToId(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               required
             >
-              <option value="">Select...</option>
+              <option value="">{t("transfers.selectAccount")}</option>
               {accounts.filter((a) => a.id !== Number(fromId)).map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name} ({a.currency})
@@ -103,7 +103,7 @@ export function TransferForm() {
           </div>
 
           <div className="space-y-2">
-            <Label>Amount ({fromAccount?.currency || ""})</Label>
+            <Label>{t("common.amount")} ({fromAccount?.currency || ""})</Label>
             <Input
               type="number"
               step={amountStep}
@@ -117,7 +117,7 @@ export function TransferForm() {
           {isCrossCurrency && (
             <div className="space-y-2">
               <Label>
-                Exchange Rate ({fromAccount?.currency} to {toAccount?.currency})
+                {t("transfers.exchangeRate", { from: fromAccount?.currency, to: toAccount?.currency })}
               </Label>
               <Input
                 type="number"
@@ -131,21 +131,21 @@ export function TransferForm() {
           )}
 
           <div className="space-y-2">
-            <Label>Date</Label>
+            <Label>{t("common.date")}</Label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>{t("common.description")}</Label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., ATM withdrawal"
+              placeholder={t("transfers.descriptionPlaceholder")}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={createTransfer.isPending}>
-            {createTransfer.isPending ? t("common.loading") : "Transfer"}
+            {createTransfer.isPending ? t("common.loading") : t("transfers.transfer")}
           </Button>
         </form>
       </DialogContent>
