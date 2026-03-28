@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+
+const subscribe = () => () => {};
 
 interface LogoProps {
   variant: "horizontal" | "stacked" | "icon";
@@ -28,11 +30,7 @@ const logoFiles: Record<string, { light: string; dark: string }> = {
 
 export function Logo({ variant, width, height, className }: LogoProps) {
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   const theme = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const src = logoFiles[variant][theme];
