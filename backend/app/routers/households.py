@@ -45,7 +45,12 @@ async def create_household(
     if existing.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail={"error": {"code": "ALREADY_HAS_HOUSEHOLD", "message": "User already belongs to a household"}},
+            detail={
+                "error": {
+                    "code": "ALREADY_HAS_HOUSEHOLD",
+                    "message": "User already belongs to a household",
+                }
+            },
         )
 
     household = Household(name=data.name, base_currency=data.base_currency)
@@ -60,4 +65,10 @@ async def create_household(
     )
     session.add(member)
     # session.commit() is handled by get_db_session dependency
-    return {"data": {"id": str(household.id), "name": household.name, "base_currency": household.base_currency}}
+    return {
+        "data": {
+            "id": str(household.id),
+            "name": household.name,
+            "base_currency": household.base_currency,
+        }
+    }
