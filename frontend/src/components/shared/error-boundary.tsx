@@ -11,17 +11,16 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  message: string;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, message: "" };
+    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, message: error.message };
+  static getDerivedStateFromError(): State {
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
@@ -42,7 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => this.setState({ hasError: false, message: "" })}
+              onClick={() => this.setState({ hasError: false })}
             >
               Try Again / حاول مجدداً
             </Button>
