@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiGet, apiPost } from "@/lib/api-client";
+import { apiGet, apiPost, apiDelete } from "@/lib/api-client";
 
 export interface Transfer {
   transfer_id: string;
@@ -32,6 +32,17 @@ export function useCreateTransfer() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateTransferInput) => apiPost("/api/v1/transfers", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transfers"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useDeleteTransfer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (transferId: string) => apiDelete(`/api/v1/transfers/${transferId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transfers"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });

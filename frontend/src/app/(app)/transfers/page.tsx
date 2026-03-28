@@ -2,15 +2,26 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useTransfers } from "@/hooks/use-transfers";
+import { useTransfers, useDeleteTransfer } from "@/hooks/use-transfers";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { MoneyDisplay } from "@/components/shared/money-display";
-import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ArrowRight, Trash2 } from "lucide-react";
 
 export default function TransfersPage() {
   const t = useTranslations();
   const [page] = useState(1);
   const { data, isLoading } = useTransfers(page);
+  const deleteTransfer = useDeleteTransfer();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   return (
     <div>
@@ -31,6 +42,9 @@ export default function TransfersPage() {
                 <th className="px-4 py-3 text-center text-sm font-medium"></th>
                 <th className="px-4 py-3 text-start text-sm font-medium">{t("transfers.to")}</th>
                 <th className="px-4 py-3 text-end text-sm font-medium">{t("transfers.amount")}</th>
+                <th className="px-4 py-3 w-16">
+                  <span className="sr-only">{t("transfers.actions")}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -49,11 +63,22 @@ export default function TransfersPage() {
                       showCurrency
                     />
                   </td>
+                  <td className="px-4 py-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => setDeleteId(transfer.transfer_id)}
+                      aria-label={t("common.delete")}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
                 </tr>
               ))}
               {(!data?.data || data.data.length === 0) && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                     {t("transfers.noTransfers")}
                   </td>
                 </tr>
@@ -62,6 +87,34 @@ export default function TransfersPage() {
           </table>
         </div>
       )}
+
+      <Dialog open={deleteId !== null} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("transfers.deleteConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("transfers.deleteConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={deleteTransfer.isPending}
+              onClick={async () => {
+                if (deleteId) {
+                  await deleteTransfer.mutateAsync(deleteId);
+                  setDeleteId(null);
+                }
+              }}
+            >
+              {deleteTransfer.isPending ? t("common.loading") : t("common.delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

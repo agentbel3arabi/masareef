@@ -87,7 +87,11 @@
     "notes": "ملاحظات",
     "notesPlaceholder": "ملاحظات إضافية...",
     "descriptionPlaceholder": "مثال: كارفور سيتي ستارز",
-    "heading": "المعاملات"
+    "heading": "المعاملات",
+    "deleteConfirmTitle": "حذف المعاملة",
+    "deleteConfirmDescription": "هل أنت متأكد من حذف هذه المعاملة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "editTransaction": "تعديل المعاملة",
+    "actions": "الإجراءات"
   },
   "transfers": {
     "title": "التحويلات",
@@ -104,6 +108,9 @@
     "amount": "المبلغ",
     "selectAccount": "اختر حساب...",
     "description": "الوصف",
-    "descriptionPlaceholder": "مثال: سحب من الصراف"
+    "descriptionPlaceholder": "مثال: سحب من الصراف",
+    "deleteConfirmTitle": "حذف التحويل",
+    "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
+    "actions": "الإجراءات"
   }
 }
