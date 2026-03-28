@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Receipt, Search } from "lucide-react";
 import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
+import { EmptyState } from "@/components/shared/empty-state";
+
+function hasActiveFilters(filters: TransactionFilters): boolean {
+  return !!(filters.q || filters.type || filters.category_id || filters.date_from || filters.date_to);
+}
 
 export default function TransactionsPage() {
   const t = useTranslations();
+  const tEmpty = useTranslations("emptyStates");
   const [filters, setFilters] = useState<TransactionFilters>({
     page: 1,
     page_size: 50,
@@ -16,6 +23,8 @@ export default function TransactionsPage() {
   });
 
   const { data, isLoading } = useTransactions(filters);
+  const isEmpty = !isLoading && (data?.data?.length ?? 0) === 0;
+  const filtersActive = hasActiveFilters(filters);
 
   return (
     <div>
@@ -29,14 +38,30 @@ export default function TransactionsPage() {
       ) : (
         <>
           <TransactionFilterBar filters={filters} onChange={setFilters} />
-          <TransactionTable
-            transactions={data?.data || []}
-            total={data?.meta?.total || 0}
-            page={filters.page || 1}
-            pageSize={filters.page_size || 50}
-            onPageChange={(p) => setFilters({ ...filters, page: p })}
-            showAccount
-          />
+          {isEmpty ? (
+            filtersActive ? (
+              <EmptyState
+                icon={Search}
+                title={tEmpty("searchResults.title")}
+                description={tEmpty("searchResults.description")}
+              />
+            ) : (
+              <EmptyState
+                icon={Receipt}
+                title={tEmpty("transactions.title")}
+                description={tEmpty("transactions.description")}
+              />
+            )
+          ) : (
+            <TransactionTable
+              transactions={data?.data || []}
+              total={data?.meta?.total || 0}
+              page={filters.page || 1}
+              pageSize={filters.page_size || 50}
+              onPageChange={(p) => setFilters({ ...filters, page: p })}
+              showAccount
+            />
+          )}
         </>
       )}
     </div>
