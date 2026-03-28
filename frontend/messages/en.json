@@ -11,7 +11,15 @@
     "noResults": "No results found",
     "confirm": "Confirm",
     "name": "Name",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "notFound": "Not found",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "previous": "Previous",
+    "next": "Next",
+    "total": "{count} total",
+    "select": "Select..."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -48,6 +56,47 @@
     "type": "Type",
     "currency": "Currency",
     "institution": "Institution",
-    "institutionPlaceholder": "e.g., CIB, HSBC"
+    "institutionPlaceholder": "e.g., CIB, HSBC",
+    "quickTransfer": "Quick Transfer"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "date": "Date",
+    "description": "Description",
+    "category": "Category",
+    "amount": "Amount",
+    "uncategorized": "Uncategorized",
+    "search": "Search transactions...",
+    "allTypes": "All types",
+    "expenses": "Expenses",
+    "income": "Income",
+    "noResults": "No transactions",
+    "previous": "Previous",
+    "next": "Next",
+    "newTransaction": "New Transaction",
+    "addTransaction": "Add Transaction",
+    "expense": "Expense",
+    "incomeType": "Income",
+    "notes": "Notes",
+    "notesPlaceholder": "Additional notes...",
+    "descriptionPlaceholder": "e.g., Carrefour City Stars",
+    "heading": "Transactions"
+  },
+  "transfers": {
+    "title": "Transfers",
+    "newTransfer": "New Transfer",
+    "fromAccount": "From Account",
+    "toAccount": "To Account",
+    "exchangeRate": "Exchange Rate ({from} to {to})",
+    "transferBetween": "Transfer Between Accounts",
+    "transfer": "Transfer",
+    "noTransfers": "No transfers yet",
+    "date": "Date",
+    "from": "From",
+    "to": "To",
+    "amount": "Amount",
+    "selectAccount": "Select account...",
+    "description": "Description",
+    "descriptionPlaceholder": "e.g., ATM withdrawal"
   }
 }
