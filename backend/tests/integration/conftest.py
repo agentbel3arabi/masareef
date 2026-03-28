@@ -2,27 +2,27 @@
 Integration test fixtures.
 
 Uses the real Supabase database. Requires these env vars:
-  DATABASE_URL             — asyncpg connection string (with statement_cache_size=0)
-  SUPABASE_URL             — for admin API calls
+  DATABASE_URL              — asyncpg connection string (with statement_cache_size=0)
+  SUPABASE_URL              — for admin API calls
   SUPABASE_SERVICE_ROLE_KEY — to create test users without email confirmation
-  JWT_SECRET               — to sign test JWTs (or use a real Supabase token)
+  SUPABASE_JWT_SECRET       — to validate JWTs in the app
 
 Each test session creates an isolated household and cleans up after itself.
 """
-# Load .env into os.environ so fixtures can read SUPABASE_URL etc. when running locally
-import pathlib
-from dotenv import load_dotenv as _load_dotenv
-_load_dotenv(pathlib.Path(__file__).parent.parent.parent / ".env")
-
 import os
+import pathlib
 import uuid
 from collections.abc import AsyncGenerator
 
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
+from dotenv import load_dotenv
+from httpx import ASGITransport, AsyncClient
 
 from app.main import app
+
+# Load .env into os.environ so fixtures can read SUPABASE_URL etc. when running locally
+load_dotenv(pathlib.Path(__file__).parent.parent.parent / ".env")
 
 
 @pytest.fixture(autouse=True)

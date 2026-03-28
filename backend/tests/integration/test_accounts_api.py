@@ -77,7 +77,8 @@ async def test_get_nonexistent_account(api_client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_unauthenticated_request() -> None:
     """Requests without auth token return 401."""
-    from httpx import AsyncClient, ASGITransport
+    from httpx import ASGITransport, AsyncClient
+
     from app.main import app
 
     async with AsyncClient(

@@ -1,8 +1,9 @@
 """Integration tests for /api/v1/transfers endpoints."""
 
+from datetime import date
+
 import pytest
 import pytest_asyncio
-from datetime import date
 from httpx import AsyncClient
 
 
