@@ -49,10 +49,6 @@ async def create_transaction(
         applies_to_balance=True,
     )
     session.add(tx)
-
-    # Update account balance immediately so running balance stays accurate.
-    account.balance_minor += signed
-
     await session.flush()
     return tx
 
@@ -77,10 +73,8 @@ async def update_transaction(
     tx: Transaction,
     data: TransactionUpdate,
 ) -> Transaction:
-    """Reverse old balance delta, apply new. Update fields in place."""
+    """Update transaction fields. Balance is computed from seed + all transactions."""
     old_signed = int(tx.amount_minor)
-    old_applies = bool(tx.applies_to_balance)
-
     update_fields = data.model_dump(exclude_unset=True)
 
     category_id = update_fields.get("category_id")
@@ -106,14 +100,6 @@ async def update_transaction(
     for field, value in update_fields.items():
         setattr(tx, field, value)
 
-    # Adjust account balance if this transaction contributes to balance.
-    if old_applies:
-        account = await session.get(Account, tx.account_id)
-        if account is not None:
-            # Reverse old, apply new.
-            account.balance_minor -= old_signed
-            account.balance_minor += new_signed
-
     await session.flush()
     return tx
 
@@ -125,12 +111,6 @@ async def soft_delete_transaction(
     """Soft-delete a transaction, reverse its balance contribution, hard-delete splits."""
     # Hard-delete splits first (TransactionSplit has no is_active column).
     await session.execute(delete(TransactionSplit).where(TransactionSplit.transaction_id == tx.id))
-
-    # Reverse account balance if transaction was contributing.
-    if tx.applies_to_balance:
-        account = await session.get(Account, tx.account_id)
-        if account is not None:
-            account.balance_minor -= int(tx.amount_minor)
 
     tx.is_active = False
     await session.flush()
