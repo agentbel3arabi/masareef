@@ -1,30 +1,50 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { useAccount } from "@/hooks/use-accounts";
+import { useTransactions } from "@/hooks/use-transactions";
 import { AccountBalanceHeader } from "@/components/accounts/account-balance-header";
+import { TransactionTable } from "@/components/transactions/transaction-table";
+import { TransactionForm } from "@/components/transactions/transaction-form";
 
 export default function AccountDetailPage() {
-  const t = useTranslations("accounts");
   const params = useParams();
   const accountId = Number(params.id);
-  const { data, isLoading, error } = useAccount(accountId);
+  const [page, setPage] = useState(1);
 
-  if (isLoading) return <p className="text-muted-foreground">{t("loading")}</p>;
-  if (error) return <p className="text-destructive">{t("error")}: {error.message}</p>;
-  if (!data?.data) return <p className="text-muted-foreground">{t("notFound")}</p>;
+  const { data: accountData, isLoading: accountLoading } = useAccount(accountId);
+  const { data: txData, isLoading: txLoading } = useTransactions({
+    account_id: accountId,
+    page,
+    page_size: 50,
+  });
 
-  const account = data.data;
+  if (accountLoading) return <p>Loading...</p>;
+  if (!accountData?.data) return <p>Account not found</p>;
+
+  const account = accountData.data;
 
   return (
     <div className="space-y-6">
       <AccountBalanceHeader account={account} />
 
-      {/* Transaction table will be added in Unit 1H */}
-      <div className="rounded-lg border p-6 text-center text-muted-foreground">
-        Transaction table — coming in Unit 1H
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Transactions</h2>
+        <TransactionForm accountId={account.id} accountCurrency={account.currency} />
       </div>
+
+      {txLoading ? (
+        <p>Loading transactions...</p>
+      ) : (
+        <TransactionTable
+          transactions={txData?.data || []}
+          total={txData?.meta?.total || 0}
+          page={page}
+          pageSize={50}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   );
 }

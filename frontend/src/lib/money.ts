@@ -40,6 +40,22 @@ export function formatAmountAr(amountMinor: number, currency: string): string {
 }
 
 /**
+ * Parse a major-unit string to minor units without floating point.
+ * parseMajorToMinor("1250.50", 2) → 125050
+ * parseMajorToMinor("0.0199", 4) → 199  (for FX rate scaling)
+ */
+export function parseMajorToMinor(amount: string, exponent: number): number {
+  const trimmed = amount.trim();
+  if (!trimmed) return 0;
+  const isNegative = trimmed.startsWith("-");
+  const unsigned = isNegative ? trimmed.slice(1) : trimmed;
+  const [intPart = "0", fracRaw = ""] = unsigned.split(".");
+  const padded = (fracRaw + "0".repeat(exponent)).slice(0, exponent);
+  const minor = parseInt(intPart + padded, 10) || 0;
+  return isNegative && minor !== 0 ? -minor : minor;
+}
+
+/**
  * Format with currency symbol.
  * formatWithCurrency(125000, "EGP") → "1,250.00 EGP"
  */
