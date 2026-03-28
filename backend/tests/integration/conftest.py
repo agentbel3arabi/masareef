@@ -9,6 +9,11 @@ Uses the real Supabase database. Requires these env vars:
 
 Each test session creates an isolated household and cleans up after itself.
 """
+# Load .env into os.environ so fixtures can read SUPABASE_URL etc. when running locally
+import pathlib
+from dotenv import load_dotenv as _load_dotenv
+_load_dotenv(pathlib.Path(__file__).parent.parent.parent / ".env")
+
 import os
 import uuid
 from collections.abc import AsyncGenerator
@@ -18,6 +23,15 @@ import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 
 from app.main import app
+
+
+@pytest.fixture(autouse=True)
+def clear_app_dependency_overrides() -> None:
+    """Remove unit-test dependency overrides so real auth and DB run in integration tests."""
+    from app.main import app as _app
+    _app.dependency_overrides.clear()
+    yield
+    _app.dependency_overrides.clear()
 
 
 @pytest.fixture(scope="session")
