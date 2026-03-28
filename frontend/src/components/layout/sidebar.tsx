@@ -13,6 +13,7 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/shared/logo";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "nav.dashboard" },
@@ -31,7 +32,9 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col border-e bg-card">
       <div className="flex h-16 items-center px-6 border-b">
-        <h1 className="text-xl font-bold">{t("common.appName")}</h1>
+        <Link href="/dashboard">
+          <Logo variant="horizontal" width={140} height={32} />
+        </Link>
       </div>
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {

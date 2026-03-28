@@ -20,6 +20,7 @@ const notoSansArabic = Noto_Sans_Arabic({
 export const metadata: Metadata = {
   title: "Masareef - مصاريف",
   description: "AI-powered personal finance for MENA",
+  icons: { icon: "/logos/favicon.svg" },
 };
 
 export default async function RootLayout({
