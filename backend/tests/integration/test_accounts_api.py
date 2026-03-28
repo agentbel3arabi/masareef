@@ -1,4 +1,5 @@
 """Integration tests for /api/v1/accounts endpoints."""
+
 import pytest
 from httpx import AsyncClient
 
@@ -81,8 +82,6 @@ async def test_unauthenticated_request() -> None:
 
     from app.main import app
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as client:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         resp = await client.get("/api/v1/accounts")
         assert resp.status_code == 401

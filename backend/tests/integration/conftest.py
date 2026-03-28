@@ -9,6 +9,7 @@ Uses the real Supabase database. Requires these env vars:
 
 Each test session creates an isolated household and cleans up after itself.
 """
+
 import os
 import pathlib
 import uuid
@@ -29,6 +30,7 @@ load_dotenv(pathlib.Path(__file__).parent.parent.parent / ".env")
 def clear_app_dependency_overrides() -> None:
     """Remove unit-test dependency overrides so real auth and DB run in integration tests."""
     from app.main import app as _app
+
     _app.dependency_overrides.clear()
     yield
     _app.dependency_overrides.clear()

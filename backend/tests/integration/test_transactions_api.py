@@ -21,9 +21,7 @@ async def test_account_id(api_client: AsyncClient) -> int:
 @pytest.mark.asyncio
 async def test_list_transactions(api_client: AsyncClient, test_account_id: int) -> None:
     """GET /api/v1/transactions returns 200 with envelope."""
-    resp = await api_client.get(
-        "/api/v1/transactions", params={"account_id": test_account_id}
-    )
+    resp = await api_client.get("/api/v1/transactions", params={"account_id": test_account_id})
     assert resp.status_code == 200
     body = resp.json()
     assert "data" in body
@@ -72,9 +70,7 @@ async def test_delete_transaction(api_client: AsyncClient, test_account_id: int)
     assert del_resp.status_code == 204
 
     # Verify soft-delete: transaction no longer appears in account's list
-    list_resp = await api_client.get(
-        "/api/v1/transactions", params={"account_id": test_account_id}
-    )
+    list_resp = await api_client.get("/api/v1/transactions", params={"account_id": test_account_id})
     assert list_resp.status_code == 200
     ids = [tx["id"] for tx in list_resp.json()["data"]]
     assert tx_id not in ids
