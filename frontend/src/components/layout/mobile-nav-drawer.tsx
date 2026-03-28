@@ -41,7 +41,7 @@ export function MobileNavDrawer() {
           </Button>
         }
       />
-      <SheetContent side="left" className="w-64 p-0">
+      <SheetContent side="start" className="w-64 p-0">
         <div className="flex h-16 items-center px-6 border-b">
           <Link href="/dashboard" onClick={() => handleOpenChange(false)}>
             <Logo variant="horizontal" width={120} height={28} />

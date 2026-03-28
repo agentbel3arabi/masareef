@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Receipt, Search } from "lucide-react";
 import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { useAccounts } from "@/hooks/use-accounts";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
+import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
 
@@ -21,8 +23,11 @@ export default function TransactionsPage() {
     page_size: 50,
     sort: "-date",
   });
+  const [createOpen, setCreateOpen] = useState(false);
 
   const { data, isLoading } = useTransactions(filters);
+  const { data: accountsData } = useAccounts();
+  const firstAccountId = accountsData?.data?.[0]?.id;
   const isEmpty = !isLoading && (data?.data?.length ?? 0) === 0;
   const filtersActive = hasActiveFilters(filters);
 
@@ -46,11 +51,25 @@ export default function TransactionsPage() {
                 description={tEmpty("searchResults.description")}
               />
             ) : (
-              <EmptyState
-                icon={Receipt}
-                title={tEmpty("transactions.title")}
-                description={tEmpty("transactions.description")}
-              />
+              <>
+                <EmptyState
+                  icon={Receipt}
+                  title={tEmpty("transactions.title")}
+                  description={tEmpty("transactions.description")}
+                  action={
+                    firstAccountId !== undefined
+                      ? { label: tEmpty("transactions.action"), onClick: () => setCreateOpen(true) }
+                      : undefined
+                  }
+                />
+                {firstAccountId !== undefined && (
+                  <TransactionForm
+                    accountId={firstAccountId}
+                    open={createOpen}
+                    onOpenChange={setCreateOpen}
+                  />
+                )}
+              </>
             )
           ) : (
             <TransactionTable
