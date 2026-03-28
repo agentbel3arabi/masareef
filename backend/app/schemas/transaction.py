@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class TransactionCreate(BaseModel):
     account_id: int
     date: datetime.date
-    description: str = ""
+    description: str
     amount_minor: int  # Always positive — backend computes sign from type
     type: str  # "debit" or "credit"
     currency: str
