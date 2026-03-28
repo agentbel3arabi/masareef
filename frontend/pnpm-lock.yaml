@@ -44,9 +44,6 @@ importers:
       react-dom:
         specifier: ^19
         version: 19.2.4(react@19.2.4)
-      shadcn:
-        specifier: ^4.1.1
-        version: 4.1.1(@types/node@20.19.37)(typescript@5.9.3)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -78,6 +75,9 @@ importers:
       postcss:
         specifier: ^8
         version: 8.5.8
+      shadcn:
+        specifier: ^4.1.1
+        version: 4.1.1(@types/node@20.19.37)(typescript@5.9.3)
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
@@ -245,8 +245,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@dotenvx/dotenvx@1.58.0':
-    resolution: {integrity: sha512-xizSguxyyvH5eqGWJrhTomUdXFSRaweXBEXxTpkbaalIjHZeKPNPHpevwxCXXqdXPe5bTIeEtBSKD+zStadGFw==}
+  '@dotenvx/dotenvx@1.59.0':
+    resolution: {integrity: sha512-+LthcJBVj18x5B1Quua4XditjxYdafOmrXT6xxq+wnUldFQ41hfv/vrP/Z4CZkAk1OTdQSqgFIlVc/pUU+pIzQ==}
     hasBin: true
 
   '@ecies/ciphers@0.2.5':
@@ -3526,7 +3526,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  '@dotenvx/dotenvx@1.58.0':
+  '@dotenvx/dotenvx@1.59.0':
     dependencies:
       commander: 11.1.0
       dotenv: 17.3.1
@@ -6196,7 +6196,7 @@ snapshots:
       '@babel/parser': 7.29.2
       '@babel/plugin-transform-typescript': 7.28.6(@babel/core@7.29.0)
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
-      '@dotenvx/dotenvx': 1.58.0
+      '@dotenvx/dotenvx': 1.59.0
       '@modelcontextprotocol/sdk': 1.28.0(zod@3.25.76)
       '@types/validate-npm-package-name': 4.0.2
       browserslist: 4.28.1
