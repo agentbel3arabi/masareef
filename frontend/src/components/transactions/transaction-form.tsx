@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCreateTransaction } from "@/hooks/use-transactions";
+import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { Plus } from "lucide-react";
 
@@ -17,14 +18,17 @@ interface TransactionFormProps {
 
 export function TransactionForm({ accountId, accountCurrency = "EGP" }: TransactionFormProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"debit" | "credit">("debit");
   const [notes, setNotes] = useState("");
+  const [categoryId, setCategoryId] = useState<number | "">("");
 
   const createTx = useCreateTransaction();
+  const { data: categoriesData } = useCategories(type === "debit" ? "expense" : "income");
 
   const exponent = CURRENCIES[accountCurrency]?.exponent ?? 2;
   const amountStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
@@ -40,6 +44,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
       amount_minor: amountMinor,
       type,
       currency: accountCurrency,
+      category_id: categoryId || undefined,
       notes: notes || undefined,
     });
 
@@ -47,6 +52,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
     setDescription("");
     setAmount("");
     setNotes("");
+    setCategoryId("");
   };
 
   return (
@@ -54,12 +60,12 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
       <SheetTrigger asChild>
         <Button size="sm">
           <Plus className="h-4 w-4 me-1" />
-          Add Transaction
+          {t("transactions.addTransaction")}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>New Transaction</SheetTitle>
+          <SheetTitle>{t("transactions.newTransaction")}</SheetTitle>
         </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-6">
           <div className="flex gap-2">
@@ -67,36 +73,53 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               type="button"
               variant={type === "debit" ? "default" : "outline"}
               className="flex-1"
-              onClick={() => setType("debit")}
+              onClick={() => { setType("debit"); setCategoryId(""); }}
             >
-              Expense
+              {t("transactions.expense")}
             </Button>
             <Button
               type="button"
               variant={type === "credit" ? "default" : "outline"}
               className="flex-1"
-              onClick={() => setType("credit")}
+              onClick={() => { setType("credit"); setCategoryId(""); }}
             >
-              Income
+              {t("transactions.incomeType")}
             </Button>
           </div>
 
           <div className="space-y-2">
-            <Label>Date</Label>
+            <Label>{t("common.date")}</Label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>{t("common.description")}</Label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., Carrefour City Stars"
+              placeholder={t("transactions.descriptionPlaceholder")}
+              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Amount ({accountCurrency})</Label>
+            <Label>{t("transactions.category")}</Label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("transactions.uncategorized")}</option>
+              {(categoriesData?.data || []).map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t("common.amount")} ({accountCurrency})</Label>
             <Input
               type="number"
               step={amountStep}
@@ -108,7 +131,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
           </div>
 
           <div className="space-y-2">
-            <Label>Notes</Label>
+            <Label>{t("transactions.notes")}</Label>
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
 

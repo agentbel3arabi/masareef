@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import type { TransactionFilters } from "@/hooks/use-transactions";
 
@@ -9,10 +10,11 @@ interface TransactionFilterBarProps {
 }
 
 export function TransactionFilterBar({ filters, onChange }: TransactionFilterBarProps) {
+  const t = useTranslations();
   return (
     <div className="flex flex-wrap gap-3 mb-4">
       <Input
-        placeholder="Search..."
+        placeholder={t("transactions.search")}
         value={filters.q || ""}
         onChange={(e) => onChange({ ...filters, q: e.target.value, page: 1 })}
         className="max-w-xs"
@@ -22,9 +24,9 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
         onChange={(e) => onChange({ ...filters, type: e.target.value || undefined, page: 1 })}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
       >
-        <option value="">All types</option>
-        <option value="debit">Expenses</option>
-        <option value="credit">Income</option>
+        <option value="">{t("transactions.allTypes")}</option>
+        <option value="debit">{t("transactions.expenses")}</option>
+        <option value="credit">{t("transactions.income")}</option>
       </select>
       <Input
         type="date"

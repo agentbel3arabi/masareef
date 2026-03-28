@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useAccounts } from "@/hooks/use-accounts";
 import { AccountGrid } from "@/components/accounts/account-grid";
 import { CreateAccountDialog } from "@/components/accounts/create-account-dialog";
+import { TransferForm } from "@/components/transfers/transfer-form";
 
 export default function AccountsPage() {
   const t = useTranslations("accounts");
@@ -13,7 +14,10 @@ export default function AccountsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <CreateAccountDialog />
+        <div className="flex items-center gap-2">
+          <TransferForm />
+          <CreateAccountDialog />
+        </div>
       </div>
 
       {isLoading && <p className="text-muted-foreground">{t("loading")}</p>}

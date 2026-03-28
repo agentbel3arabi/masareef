@@ -1,22 +1,23 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { ThemeToggle } from "./theme-toggle";
+import { LocaleToggle } from "./locale-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import { Logo } from "@/components/shared/logo";
 
 export function Navbar() {
-  const t = useTranslations();
   const { user, signOut } = useAuth();
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
       <div className="md:hidden">
-        <h1 className="text-lg font-bold">{t("common.appName")}</h1>
+        <Logo variant="icon" width={28} height={28} />
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
+        <LocaleToggle />
         <ThemeToggle />
         {user && (
           <Button variant="ghost" size="icon" onClick={signOut}>
