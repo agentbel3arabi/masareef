@@ -23,7 +23,7 @@ export function useApiMutation<TData, TVariables = void>(
     onSuccess: (data, variables, context) => {
       if (successMessage) toast.success(successMessage);
       if (onSuccess) {
-        // @ts-expect-error TanStack Query v5 onSuccess has 4th param (context object); we pass undefined
+        // @ts-expect-error TanStack Query v5 onSuccess has 4 params; our simplified 3-param signature needs suppression
         onSuccess(data, variables, undefined, context);
       }
     },
@@ -32,7 +32,7 @@ export function useApiMutation<TData, TVariables = void>(
         error instanceof ApiError ? error.message : (errorMessage ?? t("error"));
       toast.error(message);
       if (onError) {
-        // @ts-expect-error TanStack Query v5 onError has 4th param (context object); we pass undefined
+        // @ts-expect-error TanStack Query v5 onError has 4 params; our simplified 3-param signature needs suppression
         onError(error, variables, undefined, context);
       }
     },

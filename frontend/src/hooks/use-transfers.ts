@@ -34,7 +34,7 @@ export function useCreateTransfer() {
   const queryClient = useQueryClient();
   const t = useTranslations("toast");
   return useApiMutation({
-    mutationFn: (data: CreateTransferInput) => apiPost("/api/v1/transfers", data),
+    mutationFn: (data: CreateTransferInput) => apiPost<Transfer>("/api/v1/transfers", data),
     successMessage: t("transferCreated"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transfers"] });

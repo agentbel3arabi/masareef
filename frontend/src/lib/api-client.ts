@@ -48,7 +48,9 @@ async function handleError(res: Response): Promise<never> {
   try {
     const json = await res.json();
     if (json?.error) body = json.error;
-  } catch {}
+  } catch {
+    // intentional: non-JSON error responses fall back to UNKNOWN_ERROR body
+  }
   throw new ApiError(res.status, body);
 }
 
