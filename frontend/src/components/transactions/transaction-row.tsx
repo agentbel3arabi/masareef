@@ -23,10 +23,13 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
       </td>
       <td className="px-4 py-3">
         {transaction.category ? (
-          <Badge
-            variant="secondary"
-            style={{ borderColor: transaction.category.color || undefined }}
-          >
+          <Badge variant="secondary" className="gap-1.5">
+            {transaction.category.color && (
+              <span
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ backgroundColor: transaction.category.color }}
+              />
+            )}
             {transaction.category.name_en}
           </Badge>
         ) : (

@@ -37,7 +37,7 @@ export function TransactionTable({
               <th className="px-4 py-3 text-end text-sm font-medium">{t("transactions.amount")}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="[&>tr:nth-child(even)]:bg-muted/30">
             {transactions.map((tx) => (
               <TransactionRow key={tx.id} transaction={tx} showAccount={showAccount} />
             ))}
