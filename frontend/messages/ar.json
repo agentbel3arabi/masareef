@@ -108,6 +108,9 @@
     "amount": "المبلغ",
     "selectAccount": "اختر حساب...",
     "description": "الوصف",
-    "descriptionPlaceholder": "مثال: سحب من الصراف"
+    "descriptionPlaceholder": "مثال: سحب من الصراف",
+    "deleteConfirmTitle": "حذف التحويل",
+    "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
+    "actions": "الإجراءات"
   }
 }
