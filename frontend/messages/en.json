@@ -47,7 +47,16 @@
     "step3": {
       "title": "Add your first account",
       "description": "You can add more accounts anytime.",
-      "skip": "Skip, I'll add later"
+      "skip": "Skip, I'll add later",
+      "accountName": "Account name",
+      "accountType": "Account type",
+      "accountTypes": {
+        "bankAccount": "Bank Account",
+        "cash": "Cash",
+        "creditCard": "Credit Card",
+        "savings": "Savings"
+      },
+      "creating": "Creating..."
     },
     "step4": {
       "title": "You're all set!",

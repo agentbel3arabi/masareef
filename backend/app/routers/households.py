@@ -1,7 +1,8 @@
 import uuid
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,8 +14,8 @@ router = APIRouter(prefix="/api/v1", tags=["households"])
 
 
 class HouseholdCreate(BaseModel):
-    name: str
-    base_currency: str = "EGP"
+    name: str = Field(min_length=1, max_length=100)
+    base_currency: Literal["EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"] = "EGP"
 
 
 @router.get("/auth/household-status")

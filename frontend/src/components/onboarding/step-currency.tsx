@@ -33,6 +33,7 @@ export function StepCurrency({ value, onChange, onNext, onBack }: StepCurrencyPr
         {CURRENCIES.map((c) => (
           <button
             key={c.code}
+            type="button"
             onClick={() => onChange(c.code)}
             className={cn(
               "rounded-lg border p-3 text-start text-sm transition-colors",

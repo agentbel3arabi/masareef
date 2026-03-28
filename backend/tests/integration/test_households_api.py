@@ -24,3 +24,25 @@ async def test_create_household_conflict(api_client: AsyncClient) -> None:
     assert resp.status_code == 409
     body = resp.json()
     assert body["detail"]["error"]["code"] == "ALREADY_HAS_HOUSEHOLD"
+
+
+@pytest.mark.skip(
+    reason=(
+        "requires a fresh_user_headers fixture (a second Supabase test user with no household). "
+        "The current api_client fixture uses a session-scoped user that already has a household. "
+        "Verify this happy path manually in UAT: sign up a new user, complete onboarding, "
+        "confirm POST /api/v1/households returns 201 with name and base_currency."
+    )
+)
+@pytest.mark.asyncio
+async def test_create_household_success(api_client: AsyncClient) -> None:
+    """A fresh user can create a household and gets 201 back."""
+    resp = await api_client.post(
+        "/api/v1/households",
+        json={"name": "My Household", "base_currency": "EGP"},
+    )
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["name"] == "My Household"
+    assert data["base_currency"] == "EGP"
+    assert "id" in data

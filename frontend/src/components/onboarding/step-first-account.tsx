@@ -33,7 +33,7 @@ export function StepFirstAccount({
       </div>
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>Account name</Label>
+          <Label>{t("step3.accountName")}</Label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -41,16 +41,16 @@ export function StepFirstAccount({
           />
         </div>
         <div className="space-y-2">
-          <Label>Account type</Label>
+          <Label>{t("step3.accountType")}</Label>
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
-            <option value="bank_account">Bank Account</option>
-            <option value="cash_wallet">Cash</option>
-            <option value="credit_card">Credit Card</option>
-            <option value="digital_wallet">Digital Wallet</option>
+            <option value="bank_account">{t("step3.accountTypes.bankAccount")}</option>
+            <option value="cash_wallet">{t("step3.accountTypes.cash")}</option>
+            <option value="credit_card">{t("step3.accountTypes.creditCard")}</option>
+            <option value="digital_wallet">{t("step3.accountTypes.savings")}</option>
           </select>
         </div>
       </div>
@@ -60,7 +60,7 @@ export function StepFirstAccount({
           disabled={!name.trim() || isLoading}
           className="w-full"
         >
-          {isLoading ? "Creating..." : t("common.next")}
+          {isLoading ? t("step3.creating") : t("common.next")}
         </Button>
         <Button variant="ghost" onClick={onSkip} disabled={isLoading} className="w-full">
           {t("step3.skip")}

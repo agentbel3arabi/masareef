@@ -8,7 +8,7 @@ export function StepDone({ onGoToDashboard }: { onGoToDashboard: () => void }) {
   const t = useTranslations("onboarding");
   return (
     <div className="flex flex-col items-center gap-6 text-center py-8">
-      <CheckCircle className="h-16 w-16 text-green-500" />
+      <CheckCircle className="h-16 w-16 text-primary" />
       <div className="space-y-2">
         <h2 className="text-2xl font-bold">{t("step4.title")}</h2>
         <p className="text-muted-foreground">{t("step4.description")}</p>

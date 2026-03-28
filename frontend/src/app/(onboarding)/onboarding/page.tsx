@@ -30,12 +30,16 @@ export default function OnboardingPage() {
       base_currency: currency,
     });
     if (accountData) {
-      await createAccount.mutateAsync({
-        name: accountData.name,
-        type: accountData.type,
-        currency,
-        initial_balance: accountData.initial_balance,
-      });
+      try {
+        await createAccount.mutateAsync({
+          name: accountData.name,
+          type: accountData.type,
+          currency,
+          initial_balance: accountData.initial_balance,
+        });
+      } catch {
+        // Account creation failed — continue to step 4 anyway (account can be added later)
+      }
     }
     setStep(4);
   };
