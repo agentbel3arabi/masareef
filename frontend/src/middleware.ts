@@ -26,17 +26,17 @@ export async function middleware(request: NextRequest) {
   );
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup");
 
-  if (!user && !isAuthRoute) {
+  if (!session && !isAuthRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (user && isAuthRoute) {
+  if (session && isAuthRoute) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
