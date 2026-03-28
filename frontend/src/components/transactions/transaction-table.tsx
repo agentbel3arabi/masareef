@@ -35,6 +35,9 @@ export function TransactionTable({
               <th className="px-4 py-3 text-start text-sm font-medium">{t("transactions.description")}</th>
               <th className="px-4 py-3 text-start text-sm font-medium">{t("transactions.category")}</th>
               <th className="px-4 py-3 text-end text-sm font-medium">{t("transactions.amount")}</th>
+              <th className="px-4 py-3 w-20">
+                <span className="sr-only">{t("transactions.actions")}</span>
+              </th>
             </tr>
           </thead>
           <tbody className="[&>tr:nth-child(even)]:bg-muted/30">
@@ -43,7 +46,7 @@ export function TransactionTable({
             ))}
             {transactions.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                   {t("common.noResults")}
                 </td>
               </tr>

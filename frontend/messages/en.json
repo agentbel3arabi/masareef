@@ -87,7 +87,11 @@
     "notes": "Notes",
     "notesPlaceholder": "Additional notes...",
     "descriptionPlaceholder": "e.g., Carrefour City Stars",
-    "heading": "Transactions"
+    "heading": "Transactions",
+    "deleteConfirmTitle": "Delete Transaction",
+    "deleteConfirmDescription": "Are you sure you want to delete this transaction? This action cannot be undone.",
+    "editTransaction": "Edit Transaction",
+    "actions": "Actions"
   },
   "transfers": {
     "title": "Transfers",
