@@ -18,10 +18,20 @@ const ACCOUNT_TYPES = [
   { value: "financing_app", label: "accounts.financingApp" },
 ];
 
-export function CreateAccountDialog() {
+interface CreateAccountDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function CreateAccountDialog({
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: CreateAccountDialogProps = {}) {
   const t = useTranslations();
   const locale = useLocale();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = controlledOnOpenChange ?? setInternalOpen;
   const [name, setName] = useState("");
   const [type, setType] = useState("bank_account");
   const [currency, setCurrency] = useState("EGP");
