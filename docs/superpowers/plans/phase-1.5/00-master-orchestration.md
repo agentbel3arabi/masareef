@@ -2,6 +2,32 @@
 
 > **For agentic workers:** This is a sequencing plan, not an implementation plan. Each unit links to its own detailed plan. Use superpowers:subagent-driven-development or superpowers:executing-plans on the per-unit plans.
 
+---
+
+## Current Status
+
+| Wave | Status | Plan File |
+|------|--------|-----------|
+| Wave 1 — Infrastructure | ✅ Complete (PRs #16, #17) | `docs/superpowers/plans/upgrade/` |
+| Wave 2 — Backend | ✅ Complete (PRs merged) | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
+| Wave 3 — UI Foundation | 📋 Planned, ready to execute | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
+| Wave 4 — Page Fidelity | ⏳ Write plan after Wave 3 merges | — |
+| Wave 5 — Landing & Process | ⏳ Write plan after Wave 4 merges | — |
+
+## Next Step
+
+**Execute Wave 3.** The plan is at `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md`.
+
+Execution order within Wave 3:
+1. **Start 1.5F** (`feature/1.5F-error-boundaries-toasts`) — error boundaries, typed ApiError, useApiMutation hook, loading skeletons. Must merge first.
+2. **Then 1.5G and 1.5H in parallel** (rebase both onto main after 1.5F merges):
+   - `feature/1.5G-empty-states-mobile-nav` — EmptyState component + mobile nav drawer
+   - `feature/1.5H-auth-redesign-onboarding` — split-panel auth + onboarding wizard (includes backend: household endpoints)
+
+Each unit follows the standard workflow: Execute → Push PR → Copilot Review → Fix → UAT → Merge.
+
+---
+
 **Goal:** Close all Phase 1 gaps — infrastructure upgrades, backend completeness, UI foundation, page fidelity, landing page, and workflow formalization — before starting Phase 2 (Import & Templates).
 
 **Design spec:** `docs/superpowers/specs/2026-03-28-phase-1.5-gap-remediation-design.md`
@@ -112,9 +138,9 @@ Wave 5: Landing & Process          ← Plan: written just-in-time after Wave 4 m
 | Wave 1 (1.5A) | `docs/superpowers/plans/upgrade/pr1-nextjs16-react19.md` |
 | Wave 1 (1.5B) | `docs/superpowers/plans/upgrade/pr2-tailwind-shadcn-base-nova.md` |
 | Wave 2 | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
-| Wave 3 | Written after Wave 2 merges |
-| Wave 4 | Written after Wave 3 merges |
-| Wave 5 | Written after Wave 4 merges |
+| Wave 3 | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` ✅ |
+| Wave 4 | Write after Wave 3 merges |
+| Wave 5 | Write after Wave 4 merges |
 
 ---
 
