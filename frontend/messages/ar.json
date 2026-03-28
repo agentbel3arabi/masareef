@@ -37,7 +37,14 @@
     "password": "كلمة المرور",
     "forgotPassword": "نسيت كلمة المرور؟",
     "noAccount": "ليس لديك حساب؟",
-    "hasAccount": "لديك حساب بالفعل؟"
+    "hasAccount": "لديك حساب بالفعل؟",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "gender": "الجنس",
+    "age": "العمر",
+    "male": "ذكر",
+    "female": "أنثى",
+    "preferNotToSay": "أفضل عدم الإفصاح"
   },
   "accounts": {
     "title": "الحسابات",

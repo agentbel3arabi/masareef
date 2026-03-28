@@ -37,7 +37,14 @@
     "password": "Password",
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "gender": "Gender",
+    "age": "Age",
+    "male": "Male",
+    "female": "Female",
+    "preferNotToSay": "Prefer not to say"
   },
   "accounts": {
     "title": "Accounts",
