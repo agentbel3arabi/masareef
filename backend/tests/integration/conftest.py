@@ -13,7 +13,7 @@ Each test session creates an isolated household and cleans up after itself.
 import os
 import pathlib
 import uuid
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
@@ -27,7 +27,7 @@ load_dotenv(pathlib.Path(__file__).parent.parent.parent / ".env")
 
 
 @pytest.fixture(autouse=True)
-def clear_app_dependency_overrides() -> None:
+def clear_app_dependency_overrides() -> Generator[None, None, None]:
     """Remove unit-test dependency overrides so real auth and DB run in integration tests."""
     from app.main import app as _app
 
