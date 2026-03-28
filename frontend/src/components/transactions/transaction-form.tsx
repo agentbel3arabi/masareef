@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCreateTransaction } from "@/hooks/use-transactions";
+import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { Plus } from "lucide-react";
 
@@ -23,8 +24,10 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"debit" | "credit">("debit");
   const [notes, setNotes] = useState("");
+  const [categoryId, setCategoryId] = useState<number | "">("");
 
   const createTx = useCreateTransaction();
+  const { data: categoriesData } = useCategories(type === "debit" ? "expense" : "income");
 
   const exponent = CURRENCIES[accountCurrency]?.exponent ?? 2;
   const amountStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
@@ -40,6 +43,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
       amount_minor: amountMinor,
       type,
       currency: accountCurrency,
+      category_id: categoryId || undefined,
       notes: notes || undefined,
     });
 
@@ -47,6 +51,7 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
     setDescription("");
     setAmount("");
     setNotes("");
+    setCategoryId("");
   };
 
   return (
@@ -93,6 +98,22 @@ export function TransactionForm({ accountId, accountCurrency = "EGP" }: Transact
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t("transactions.descriptionPlaceholder")}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t("transactions.category")}</Label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("transactions.uncategorized")}</option>
+              {(categoriesData?.data || []).map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name_en}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">
