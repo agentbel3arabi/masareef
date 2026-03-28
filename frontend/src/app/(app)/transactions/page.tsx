@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Receipt, Search } from "lucide-react";
 import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
@@ -16,6 +17,7 @@ function hasActiveFilters(filters: TransactionFilters): boolean {
 }
 
 export default function TransactionsPage() {
+  const router = useRouter();
   const t = useTranslations();
   const tEmpty = useTranslations("emptyStates");
   const [filters, setFilters] = useState<TransactionFilters>({
@@ -56,11 +58,17 @@ export default function TransactionsPage() {
                   icon={Receipt}
                   title={tEmpty("transactions.title")}
                   description={tEmpty("transactions.description")}
-                  action={
-                    firstAccountId !== undefined
-                      ? { label: tEmpty("transactions.action"), onClick: () => setCreateOpen(true) }
-                      : undefined
-                  }
+                  action={{
+                    label: tEmpty("transactions.action"),
+                    onClick: () => {
+                      if (firstAccountId !== undefined) {
+                        setCreateOpen(true);
+                      } else {
+                        // No accounts yet — direct user to create one first
+                        router.push("/accounts");
+                      }
+                    },
+                  }}
                 />
                 {firstAccountId !== undefined && (
                   <TransactionForm
