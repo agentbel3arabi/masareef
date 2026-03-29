@@ -90,11 +90,11 @@ export function Navbar() {
                   <Settings className="size-4" />
                   {t("settings")}
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={toggleLocale}>
+                <DropdownMenuItem onClick={toggleLocale}>
                   <Globe className="size-4" />
                   {locale === "ar" ? "English" : "العربية"}
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={toggleTheme}>
+                <DropdownMenuItem onClick={toggleTheme}>
                   <Sun className="hidden size-4 dark:block" />
                   <Moon className="size-4 dark:hidden" />
                   {t("toggleTheme")}
@@ -103,7 +103,7 @@ export function Navbar() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
-                onSelect={() => void signOut()}
+                onClick={() => void signOut()}
               >
                 <LogOut className="size-4" />
                 {t("signOut")}
