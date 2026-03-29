@@ -110,7 +110,10 @@ async def get_household_id(
 ) -> uuid.UUID:
     """Resolve user_id to their household_id. Auto-provisions on first login."""
     result = await session.execute(
-        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id)
+        select(HouseholdMember.household_id)
+        .where(HouseholdMember.user_id == user_id)
+        .order_by(HouseholdMember.joined_at.asc())
+        .limit(1)
     )
     household_id = result.scalar_one_or_none()
     if household_id:
