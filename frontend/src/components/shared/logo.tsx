@@ -29,6 +29,13 @@ const logoFiles: Record<string, { light: string; dark: string }> = {
   },
 };
 
+export const LOGO_SIZES = {
+  sidebar: { width: 160, height: 40 },
+  mobileNav: { width: 36, height: 36 },
+  authPanel: { width: 180, height: 44 },
+  onboarding: { width: 160, height: 40 },
+} as const;
+
 export function Logo({ variant, width, height, className, colorScheme = "auto" }: LogoProps) {
   const { resolvedTheme } = useTheme();
   const mounted = useSyncExternalStore(subscribe, () => true, () => false);

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/shared/logo";
+import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import { navItems } from "@/components/layout/nav-items";
 
 export function Sidebar() {
@@ -35,7 +35,7 @@ export function Sidebar() {
       <div className="flex h-16 items-center border-b px-3">
         {!collapsed && (
           <Link href="/dashboard" className="flex-1">
-            <Logo variant="horizontal" width={140} height={32} />
+            <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
           </Link>
         )}
         {collapsed && (
