@@ -88,7 +88,9 @@
     "sectionOverview": "نظرة عامة",
     "sectionFinance": "المالية",
     "sectionPlanning": "التخطيط",
-    "sectionSettings": "الإعدادات"
+    "sectionSettings": "الإعدادات",
+    "toggleTheme": "تبديل المظهر",
+    "signOut": "تسجيل الخروج"
   },
   "auth": {
     "login": "تسجيل الدخول",

@@ -88,7 +88,9 @@
     "sectionOverview": "Overview",
     "sectionFinance": "Finance",
     "sectionPlanning": "Planning",
-    "sectionSettings": "Settings"
+    "sectionSettings": "Settings",
+    "toggleTheme": "Toggle Theme",
+    "signOut": "Sign Out"
   },
   "auth": {
     "login": "Log In",
