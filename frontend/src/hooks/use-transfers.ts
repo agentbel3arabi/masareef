@@ -7,8 +7,8 @@ export interface Transfer {
   transfer_id: string;
   date: string;
   description: string;
-  from_account: { id: number; name: string; currency: string };
-  to_account: { id: number; name: string; currency: string };
+  from_account: { id: number; name: string; currency: string; type: string; institution: string | null } | null;
+  to_account: { id: number; name: string; currency: string; type: string; institution: string | null } | null;
   source_amount: number;
   target_amount: number;
   fx_rate_minor_units: number | null;
