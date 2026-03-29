@@ -32,7 +32,7 @@ export function LandingHowItWorks() {
           {steps.map(({ num, titleKey, descKey }) => (
             <div key={num} className="relative flex flex-col items-center text-center">
               {/* Numbered circle */}
-              <div className="relative z-10 mb-5 flex size-12 items-center justify-center rounded-full bg-green-500 text-lg font-extrabold text-white shadow-md">
+              <div className="relative z-10 mb-5 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-extrabold shadow-md">
                 {num}
               </div>
 

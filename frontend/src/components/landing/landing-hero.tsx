@@ -29,10 +29,7 @@ export function LandingHero() {
           </h1>
 
           {/* Arabic tagline */}
-          <p
-            className="text-2xl font-bold text-primary"
-            dir="rtl"
-          >
+          <p className="text-2xl font-bold text-primary">
             {t("hero.arabicTagline")}
           </p>
 

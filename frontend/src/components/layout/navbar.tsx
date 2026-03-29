@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import { type Locale } from "@/i18n/config";
+import { setLocaleCookie } from "@/lib/locale";
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -50,11 +51,7 @@ export function Navbar() {
 
   const toggleLocale = () => {
     const next: Locale = locale === "ar" ? "en" : "ar";
-    let cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000;SameSite=Lax`;
-    if (typeof window !== "undefined" && window.location.protocol === "https:") {
-      cookie += ";Secure";
-    }
-    document.cookie = cookie;
+    setLocaleCookie(next);
     router.refresh();
   };
 

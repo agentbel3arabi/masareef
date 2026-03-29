@@ -4,6 +4,7 @@ import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { type Locale } from "@/i18n/config";
+import { setLocaleCookie } from "@/lib/locale";
 
 export function LocaleToggle() {
   const locale = useLocale();
@@ -11,11 +12,7 @@ export function LocaleToggle() {
 
   const toggleLocale = () => {
     const next: Locale = locale === "ar" ? "en" : "ar";
-    let cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000;SameSite=Lax`;
-    if (typeof window !== "undefined" && window.location.protocol === "https:") {
-      cookie += ";Secure";
-    }
-    document.cookie = cookie;
+    setLocaleCookie(next);
     router.refresh();
   };
 

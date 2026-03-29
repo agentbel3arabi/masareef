@@ -15,6 +15,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { type Locale } from "@/i18n/config";
+import { setLocaleCookie } from "@/lib/locale";
 
 const NAV_LINKS = [
   { href: "#features", key: "features" },
@@ -30,11 +31,7 @@ export function LandingNav() {
 
   const toggleLocale = () => {
     const next: Locale = locale === "ar" ? "en" : "ar";
-    let cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000;SameSite=Lax`;
-    if (typeof window !== "undefined" && window.location.protocol === "https:") {
-      cookie += ";Secure";
-    }
-    document.cookie = cookie;
+    setLocaleCookie(next);
     router.refresh();
   };
 
