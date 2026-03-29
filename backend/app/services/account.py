@@ -131,6 +131,7 @@ async def compute_net_worth(
 
     # Fetch household base currency
     from app.models.household import Household
+
     hh = await session.get(Household, household_id)
     base_currency = hh.base_currency if hh else "EGP"
 
