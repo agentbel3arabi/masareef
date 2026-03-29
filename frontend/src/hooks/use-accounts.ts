@@ -88,10 +88,10 @@ export function useNetWorth() {
 export interface UpdateAccountInput {
   id: number;
   name?: string;
-  institution?: string;
-  credit_limit?: number;
-  billing_cycle_day?: number;
-  payment_due_day?: number;
+  institution?: string | null;
+  credit_limit?: number | null;
+  billing_cycle_day?: number | null;
+  payment_due_day?: number | null;
 }
 
 export function useUpdateAccount() {
