@@ -68,6 +68,8 @@
       "goToDashboard": "الذهاب إلى لوحة التحكم"
     },
     "defaultHouseholdName": "مجموعتي المالية",
+    "retryError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "retry": "تجاهل",
     "common": {
       "next": "التالي",
       "back": "رجوع"
@@ -111,6 +113,13 @@
     "preferNotToSay": "أفضل عدم الإفصاح",
     "loginSubtitle": "سجّل دخولك إلى حسابك في مصاريف",
     "signupSubtitle": "أنشئ حسابك المجاني في مصاريف",
+    "confirmTitle": "تحقق من بريدك الإلكتروني",
+    "confirmDescription": "أرسلنا رابط تأكيد إلى {email}. اضغط عليه لتفعيل حسابك.",
+    "goToLogin": "الذهاب لتسجيل الدخول",
+    "resendEmail": "لم تستلم؟ أعد الإرسال",
+    "resendSuccess": "تم إعادة إرسال بريد التأكيد",
+    "alreadyRegistered": "هذا البريد الإلكتروني مسجّل بالفعل.",
+    "loginInstead": "سجّل الدخول بدلاً من ذلك",
     "marketingHeadline": "فلوسك، بلغتك، بقواعدك.",
     "marketingSubheadline": "تطبيق مالي شخصي مصمم لمصر والمنطقة.",
     "marketing": {

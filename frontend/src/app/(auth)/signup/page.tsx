@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
   const t = useTranslations();
-  const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,15 +20,20 @@ export default function SignupPage() {
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [error, setError] = useState("");
+  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setIsDuplicateEmail(false);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -45,12 +49,67 @@ export default function SignupPage() {
     });
 
     if (error) {
-      setError(error.message);
+      const isDuplicate = error.message.toLowerCase().includes("already registered");
+      setIsDuplicateEmail(isDuplicate);
+      setError(isDuplicate ? "" : error.message);
+      setLoading(false);
+    } else if (data?.user?.identities?.length === 0) {
+      // Supabase returns fake success with empty identities for existing emails
+      // (email enumeration protection when "Confirm email" is enabled)
+      setIsDuplicateEmail(true);
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      setShowConfirmation(true);
     }
   };
+
+  const handleResend = async () => {
+    setResendLoading(true);
+    setResendSuccess(false);
+    setError("");
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({ type: "signup", email });
+    setResendLoading(false);
+    if (resendError) {
+      setError(resendError.message);
+      return;
+    }
+    setResendSuccess(true);
+  };
+
+  if (showConfirmation) {
+    return (
+      <div className="flex flex-col items-center text-center space-y-6 py-4">
+        <CheckCircle className="w-16 h-16 text-primary" aria-hidden="true" />
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">{t("auth.confirmTitle")}</h1>
+          <p className="text-sm text-muted-foreground max-w-xs">
+            {t("auth.confirmDescription", { email })}
+          </p>
+        </div>
+        <Button render={<Link href="/login" />} nativeButton={false} className="w-full">
+          {t("auth.goToLogin")}
+        </Button>
+        <div className="text-sm text-muted-foreground">
+          {error && (
+            <p className="text-destructive mb-2">{error}</p>
+          )}
+          {resendSuccess ? (
+            <span className="text-primary">{t("auth.resendSuccess")}</span>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendLoading}
+              className="text-primary hover:underline disabled:opacity-50"
+            >
+              {resendLoading ? t("common.loading") : t("auth.resendEmail")}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -59,7 +118,15 @@ export default function SignupPage() {
         <p className="text-sm text-muted-foreground">{t("auth.signupSubtitle")}</p>
       </div>
       <form onSubmit={handleSignup} className="space-y-4">
-        {error && (
+        {isDuplicateEmail && (
+          <div className="text-sm text-center space-y-1">
+            <p className="text-destructive">{t("auth.alreadyRegistered")}</p>
+            <Link href="/login" className="text-primary hover:underline">
+              {t("auth.loginInstead")}
+            </Link>
+          </div>
+        )}
+        {error && !isDuplicateEmail && (
           <p className="text-sm text-destructive text-center">{error}</p>
         )}
         <div className="grid grid-cols-2 gap-3">
