@@ -231,6 +231,12 @@
   "sidebar": {
     "tagline": "Smart finance management"
   },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or go back to the dashboard.",
+    "tryAgain": "Try Again",
+    "goHome": "Go to Dashboard"
+  },
   "emptyStates": {
     "accounts": {
       "title": "No accounts yet",
