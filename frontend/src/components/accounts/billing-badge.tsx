@@ -7,14 +7,18 @@ interface BillingBadgeProps {
 
 function daysUntilNextOccurrence(dayOfMonth: number): number {
   const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const thisMonth = new Date(year, month, dayOfMonth);
-  if (thisMonth <= today) {
-    const nextMonth = new Date(year, month + 1, dayOfMonth);
-    return Math.ceil((nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const todayDay = today.getDate();
+
+  if (dayOfMonth === todayDay) return 0;
+
+  if (dayOfMonth > todayDay) {
+    // Due day is still coming this month
+    const thisMonth = new Date(today.getFullYear(), today.getMonth(), dayOfMonth);
+    return Math.ceil((thisMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   }
-  return Math.ceil((thisMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Due day already passed this month — overdue
+  return dayOfMonth - todayDay; // negative number
 }
 
 export function BillingBadge({ paymentDueDay }: BillingBadgeProps) {
