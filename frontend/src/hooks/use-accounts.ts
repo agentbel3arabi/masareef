@@ -53,6 +53,7 @@ export function useCreateAccount() {
     successMessage: t("accountCreated"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["net-worth"] });
     },
   });
 }
@@ -65,6 +66,7 @@ export function useDeleteAccount() {
     successMessage: t("accountDeleted"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["net-worth"] });
     },
   });
 }
