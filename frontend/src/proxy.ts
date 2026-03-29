@@ -2,6 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const PUBLIC_ROUTES = ["/", "/login", "/signup"];
+const ONBOARDING_ROUTE = "/onboarding";
+
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({
     request: { headers: request.headers },
@@ -30,19 +33,43 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup");
 
-  if (!session && !isAuthRoute) {
+  // Unauthenticated: allow public routes, redirect everything else to /login
+  if (!session) {
+    if (PUBLIC_ROUTES.includes(pathname)) return response;
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (session && isAuthRoute) {
+  // Authenticated: redirect away from auth pages
+  if (pathname === "/login" || pathname === "/signup") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Authenticated: check household status for routing decisions
+  // TODO(perf): cookie-based optimization if middleware latency becomes measurable
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const statusRes = await fetch(`${apiUrl}/api/v1/auth/household-status`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    if (statusRes.ok) {
+      const { data } = await statusRes.json();
+      // No household → send to onboarding (unless already there)
+      if (!data.has_household && pathname !== ONBOARDING_ROUTE) {
+        return NextResponse.redirect(new URL(ONBOARDING_ROUTE, request.url));
+      }
+      // Has household → skip onboarding, send to dashboard
+      if (data.has_household && pathname === ONBOARDING_ROUTE) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+  } catch {
+    // If household-status call fails, allow through (don't block the user)
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|logos|favicon).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|logos|fonts).*)"],
 };
