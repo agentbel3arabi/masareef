@@ -120,6 +120,8 @@
     "digitalWallet": "Digital Wallet",
     "financingApp": "Financing App",
     "balance": "Balance",
+    "openingBalance": "Opening Balance",
+    "openedAt": "Account Opening Date",
     "available": "Available",
     "loading": "Loading...",
     "error": "Error",

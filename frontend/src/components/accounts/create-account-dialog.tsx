@@ -7,8 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateAccount } from "@/hooks/use-accounts";
-import { CURRENCIES } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { Plus } from "lucide-react";
+
+const CREDIT_TYPES = new Set(["credit_card", "financing_app"]);
 
 const ACCOUNT_TYPES = [
   { value: "bank_account", label: "accounts.bankAccount" },
@@ -43,6 +45,10 @@ export function CreateAccountDialog({
   const [currency, setCurrency] = useState("EGP");
   const [institution, setInstitution] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
+  const [openedAt, setOpenedAt] = useState("");
+  const [creditLimit, setCreditLimit] = useState("");
+  const [billingDay, setBillingDay] = useState("");
+  const [paymentDueDay, setPaymentDueDay] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const createAccount = useCreateAccount();
@@ -50,37 +56,32 @@ export function CreateAccountDialog({
   const exponent = CURRENCIES[currency]?.exponent ?? 2;
   const balanceStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
   const balancePlaceholder = (0).toFixed(exponent);
+  const isCreditType = CREDIT_TYPES.has(type);
+
+  const reset = () => {
+    setName(""); setType("bank_account"); setCurrency("EGP");
+    setInstitution(""); setInitialBalance(""); setOpenedAt("");
+    setCreditLimit(""); setBillingDay(""); setPaymentDueDay("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    let balanceMinor = 0;
-    const trimmed = initialBalance.trim();
-    if (trimmed !== "") {
-      const isNegative = trimmed.startsWith("-");
-      const unsigned = isNegative ? trimmed.slice(1) : trimmed;
-      const [intPart = "0", fracRaw = ""] = unsigned.split(".");
-      const padded = (fracRaw + "0".repeat(exponent)).slice(0, exponent);
-      balanceMinor = parseInt(intPart + padded, 10) || 0;
-      if (isNegative && balanceMinor !== 0) balanceMinor = -balanceMinor;
-    }
-
     try {
       await createAccount.mutateAsync({
         name,
         type,
         currency,
-        initial_balance: balanceMinor,
+        initial_balance: initialBalance ? parseMajorToMinor(initialBalance, exponent) : 0,
         institution: institution || undefined,
+        opened_at: openedAt || undefined,
+        credit_limit: isCreditType && creditLimit
+          ? parseMajorToMinor(creditLimit, exponent) : undefined,
+        billing_cycle_day: isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
+        payment_due_day: isCreditType && paymentDueDay ? parseInt(paymentDueDay, 10) : undefined,
       });
-
       setOpen(false);
-      setName("");
-      setType("bank_account");
-      setCurrency("EGP");
-      setInstitution("");
-      setInitialBalance("");
+      reset();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.unexpectedError"));
     }
@@ -149,7 +150,7 @@ export function CreateAccountDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="account-balance">{t("accounts.balance")}</Label>
+            <Label htmlFor="account-balance">{t("accounts.openingBalance")}</Label>
             <Input
               id="account-balance"
               type="number"
@@ -159,6 +160,59 @@ export function CreateAccountDialog({
               placeholder={balancePlaceholder}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="account-opened-at">{t("accounts.openedAt")}</Label>
+            <Input
+              id="account-opened-at"
+              type="date"
+              value={openedAt}
+              onChange={(e) => setOpenedAt(e.target.value)}
+            />
+          </div>
+
+          {isCreditType && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="account-credit-limit">{t("accounts.creditLimit")}</Label>
+                <Input
+                  id="account-credit-limit"
+                  type="number"
+                  step={balanceStep}
+                  min="0"
+                  value={creditLimit}
+                  onChange={(e) => setCreditLimit(e.target.value)}
+                  placeholder={balancePlaceholder}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="account-billing-day">{t("accounts.billingCycleDay")}</Label>
+                  <Input
+                    id="account-billing-day"
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={billingDay}
+                    onChange={(e) => setBillingDay(e.target.value)}
+                    placeholder="1–31"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="account-payment-due-day">{t("accounts.paymentDueDay")}</Label>
+                  <Input
+                    id="account-payment-due-day"
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={paymentDueDay}
+                    onChange={(e) => setPaymentDueDay(e.target.value)}
+                    placeholder="1–31"
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <Button type="submit" className="w-full" disabled={createAccount.isPending}>
             {createAccount.isPending ? t("common.loading") : t("common.create")}

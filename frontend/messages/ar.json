@@ -120,6 +120,8 @@
     "digitalWallet": "محفظة إلكترونية",
     "financingApp": "تطبيق تمويل",
     "balance": "الرصيد",
+    "openingBalance": "الرصيد الافتتاحي",
+    "openedAt": "تاريخ فتح الحساب",
     "available": "المتاح",
     "loading": "جاري التحميل...",
     "error": "خطأ",
