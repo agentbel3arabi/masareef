@@ -13,7 +13,8 @@
 | Wave 3 — UI Foundation | ✅ Complete (PRs #19, #20 + 1.5F) | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
 | Wave 4 — Page Fidelity | ✅ Complete (PRs #21, #22, #23) | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
 | Pre-Wave 5 Audit | ✅ Complete | `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md` |
-| Wave 5 — Landing & Process | ✅ Complete (PR #24) | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
+| Wave 5 — Landing (1.5L) | ✅ Complete (PR #24) | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
+| Wave 5 — Workflow (1.5M) | 📋 Pending | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
 | Wave 6 — Bug Fix (Branch 1) | ✅ Complete (PR #25) | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
 | Wave 6 — Design Fidelity (Branch 2) | 📋 Next — execute Branch 2 from wave-6 plan | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
 
