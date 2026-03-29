@@ -39,6 +39,7 @@ export const typeColors: Record<string, string> = {
   financing_app: "bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400",
 };
 
+// Used by AccountPill in transactions/account-pill.tsx
 export const typePillColors: Record<string, string> = {
   bank_account: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
   credit_card: "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300",

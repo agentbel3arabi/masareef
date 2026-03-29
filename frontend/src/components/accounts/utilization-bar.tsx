@@ -12,7 +12,7 @@ export function UtilizationBar({ balanceMinor, creditLimitMinor, currency }: Uti
   const locale = useLocale();
 
   const used = Math.max(0, -balanceMinor);
-  const pct = Math.min(100, Math.round((used / creditLimitMinor) * 100));
+  const pct = creditLimitMinor > 0 ? Math.min(100, Math.round((used / creditLimitMinor) * 100)) : 0;
 
   const barColor =
     pct < 50 ? "bg-green-500" :

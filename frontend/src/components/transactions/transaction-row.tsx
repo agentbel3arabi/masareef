@@ -103,7 +103,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
                 <span className="text-xs">{transaction.category.icon}</span>
               ) : transaction.category.color ? (
                 <span
-                  className="inline-block h-2 w-2 rounded-full flex-shrink-0"
+                  className="inline-block h-2 w-2 rounded-full shrink-0"
                   style={{ backgroundColor: transaction.category.color }}
                 />
               ) : null}
