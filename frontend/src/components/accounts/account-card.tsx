@@ -17,11 +17,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { MoneyDisplay } from "@/components/shared/money-display";
-import { CURRENCIES } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { UtilizationBar } from "./utilization-bar";
 import { BillingBadge } from "./billing-badge";
 import { useUpdateAccount, useDeleteAccount } from "@/hooks/use-accounts";
-import type { Account } from "@/hooks/use-accounts";
+import type { Account, UpdateAccountInput } from "@/hooks/use-accounts";
 
 export const typeIcons: Record<string, typeof Wallet> = {
   bank_account: Wallet,
@@ -79,10 +79,12 @@ export function AccountCard({ account }: AccountCardProps) {
   const isCreditType =
     account.type === "credit_card" || account.type === "financing_app";
 
+  const currencyExponent = CURRENCIES[account.currency]?.exponent ?? 2;
+
   const openEdit = () => {
     setName(account.name);
     setInstitution(account.institution ?? "");
-    setCreditLimit(account.credit_limit != null ? String(account.credit_limit / Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2)) : "");
+    setCreditLimit(account.credit_limit != null ? String(account.credit_limit / Math.pow(10, currencyExponent)) : "");
     setBillingDay(account.billing_cycle_day != null ? String(account.billing_cycle_day) : "");
     setPaymentDueDay(account.payment_due_day != null ? String(account.payment_due_day) : "");
     setEditOpen(true);
@@ -90,19 +92,27 @@ export function AccountCard({ account }: AccountCardProps) {
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateAccount.mutateAsync({
+    const payload: UpdateAccountInput = {
       id: account.id,
       name: name || undefined,
-      institution: institution || undefined,
-      credit_limit:
-        isCreditType && creditLimit
-          ? Math.round(parseFloat(creditLimit) * Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2))
-          : undefined,
-      billing_cycle_day:
-        isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
-      payment_due_day:
-        isCreditType && paymentDueDay ? parseInt(paymentDueDay, 10) : undefined,
-    });
+      institution: institution === "" ? null : institution,
+      credit_limit: isCreditType
+        ? creditLimit === ""
+          ? null
+          : parseMajorToMinor(creditLimit, currencyExponent)
+        : undefined,
+      billing_cycle_day: isCreditType
+        ? billingDay === ""
+          ? null
+          : parseInt(billingDay, 10)
+        : undefined,
+      payment_due_day: isCreditType
+        ? paymentDueDay === ""
+          ? null
+          : parseInt(paymentDueDay, 10)
+        : undefined,
+    };
+    await updateAccount.mutateAsync(payload);
     setEditOpen(false);
   };
 
@@ -150,7 +160,7 @@ export function AccountCard({ account }: AccountCardProps) {
           </Card>
         </Link>
 
-        <div className="absolute top-2 end-2 hidden group-hover:flex gap-1 z-10">
+        <div className="absolute top-2 end-2 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
           <Button
             variant="ghost"
             size="icon"
@@ -185,16 +195,18 @@ export function AccountCard({ account }: AccountCardProps) {
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 mt-2">
             <div className="space-y-2">
-              <Label>{t("name")}</Label>
+              <Label htmlFor="edit-account-name">{t("name")}</Label>
               <Input
+                id="edit-account-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label>{t("institution")}</Label>
+              <Label htmlFor="edit-account-institution">{t("institution")}</Label>
               <Input
+                id="edit-account-institution"
                 value={institution}
                 onChange={(e) => setInstitution(e.target.value)}
                 placeholder={t("institutionPlaceholder")}
@@ -203,10 +215,11 @@ export function AccountCard({ account }: AccountCardProps) {
             {isCreditType && (
               <>
                 <div className="space-y-2">
-                  <Label>{t("creditLimit")}</Label>
+                  <Label htmlFor="edit-credit-limit">{t("creditLimit")}</Label>
                   <Input
+                    id="edit-credit-limit"
                     type="number"
-                    step="0.01"
+                    step={String(Math.pow(10, -currencyExponent))}
                     min="0"
                     value={creditLimit}
                     onChange={(e) => setCreditLimit(e.target.value)}
@@ -214,8 +227,9 @@ export function AccountCard({ account }: AccountCardProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label>{t("billingCycleDay")}</Label>
+                    <Label htmlFor="edit-billing-day">{t("billingCycleDay")}</Label>
                     <Input
+                      id="edit-billing-day"
                       type="number"
                       min="1"
                       max="31"
@@ -225,8 +239,9 @@ export function AccountCard({ account }: AccountCardProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t("paymentDueDay")}</Label>
+                    <Label htmlFor="edit-payment-due-day">{t("paymentDueDay")}</Label>
                     <Input
+                      id="edit-payment-due-day"
                       type="number"
                       min="1"
                       max="31"
