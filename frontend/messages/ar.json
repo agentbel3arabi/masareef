@@ -228,6 +228,9 @@
     "comingSoon": "قادم في المرحلة الرابعة",
     "chartsComingSoon": "الرسوم البيانية قادمة قريباً"
   },
+  "sidebar": {
+    "tagline": "مصاريف منظمة بذكاء"
+  },
   "emptyStates": {
     "accounts": {
       "title": "لا توجد حسابات بعد",

@@ -38,8 +38,8 @@ export function Sidebar() {
         <Link href="/dashboard">
           <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
         </Link>
-        <p className="text-[11px] text-muted-foreground mt-0.5 font-medium" dir="rtl">
-          فلوسك متظبطة بالقرش
+        <p className="text-xs text-muted-foreground mt-0.5 font-medium">
+          {t("sidebar.tagline")}
         </p>
       </div>
 

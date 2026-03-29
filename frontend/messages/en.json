@@ -228,6 +228,9 @@
     "comingSoon": "Coming in Phase 4",
     "chartsComingSoon": "Charts coming soon"
   },
+  "sidebar": {
+    "tagline": "Smart finance management"
+  },
   "emptyStates": {
     "accounts": {
       "title": "No accounts yet",
