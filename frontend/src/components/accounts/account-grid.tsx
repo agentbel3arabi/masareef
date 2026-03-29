@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { AccountCard } from "./account-card";
+import { AccountCard, typeIcons } from "./account-card";
 import type { Account } from "@/hooks/use-accounts";
 
 const TYPE_ORDER = ["bank_account", "credit_card", "cash_wallet", "digital_wallet", "financing_app"];
@@ -29,16 +29,27 @@ export function AccountGrid({ accounts }: AccountGridProps) {
 
   return (
     <div className="space-y-8">
-      {grouped.map((group) => (
-        <section key={group.type}>
-          <h2 className="text-lg font-semibold mb-4">{group.label}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {group.items.map((account) => (
-              <AccountCard key={account.id} account={account} />
-            ))}
-          </div>
-        </section>
-      ))}
+      {grouped.map((group) => {
+        const Icon = typeIcons[group.type];
+        return (
+          <section key={group.type}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-bold text-muted-foreground flex items-center gap-2">
+                {Icon && <Icon className="h-4.5 w-4.5" />}
+                {group.label}
+              </h2>
+              <span className="text-xs text-muted-foreground font-medium">
+                {t("accounts.accountCount", { count: group.items.length })}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {group.items.map((account) => (
+                <AccountCard key={account.id} account={account} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
