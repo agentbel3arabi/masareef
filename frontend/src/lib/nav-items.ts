@@ -6,15 +6,14 @@ import {
   HandCoins,
   PiggyBank,
   Settings,
-  type LucideIcon,
 } from "lucide-react";
 
-export interface NavItem {
+export type NavItem = {
   href: string;
-  icon: LucideIcon;
+  icon: React.ElementType;
   label: string;
   disabled?: boolean;
-}
+};
 
 export const navItems: NavItem[] = [
   { href: "/dashboard", icon: LayoutDashboard, label: "nav.dashboard" },

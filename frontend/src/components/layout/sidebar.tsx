@@ -3,52 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  LayoutDashboard,
-  Wallet,
-  ArrowLeftRight,
-  Receipt,
-  HandCoins,
-  PiggyBank,
-  Settings,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo, LOGO_SIZES } from "@/components/shared/logo";
+import { navItems } from "@/lib/nav-items";
 
-type NavItem = {
-  href: string;
-  icon: React.ElementType;
-  label: string;
-  disabled?: boolean;
-};
-
-const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
+const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
   {
     label: "nav.sectionOverview",
-    items: [
-      { href: "/dashboard", icon: LayoutDashboard, label: "nav.dashboard" },
-    ],
+    items: navItems.filter((i) => i.href === "/dashboard"),
   },
   {
     label: "nav.sectionFinance",
-    items: [
-      { href: "/accounts", icon: Wallet, label: "nav.accounts" },
-      { href: "/transactions", icon: Receipt, label: "nav.transactions" },
-      { href: "/transfers", icon: ArrowLeftRight, label: "nav.transfers" },
-    ],
+    items: navItems.filter((i) =>
+      ["/accounts", "/transactions", "/transfers"].includes(i.href)
+    ),
   },
   {
     label: "nav.sectionPlanning",
-    items: [
-      { href: "/debts", icon: HandCoins, label: "nav.debts", disabled: true },
-      { href: "/budgets", icon: PiggyBank, label: "nav.budgets", disabled: true },
-    ],
+    items: navItems.filter((i) => ["/debts", "/budgets"].includes(i.href)),
   },
   {
     label: "nav.sectionSettings",
-    items: [
-      { href: "/settings", icon: Settings, label: "nav.settings" },
-    ],
+    items: navItems.filter((i) => i.href === "/settings"),
   },
 ];
 

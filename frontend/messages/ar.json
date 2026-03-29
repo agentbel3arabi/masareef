@@ -218,6 +218,16 @@
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
     "actions": "الإجراءات"
   },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "subtitle": "الرسوم البيانية والإحصاءات قادمة في المرحلة الرابعة.",
+    "netWorth": "صافي الثروة",
+    "monthlySpending": "الإنفاق الشهري",
+    "activeDebts": "الديون النشطة",
+    "upcoming": "القادم (30 يوم)",
+    "comingSoon": "قادم في المرحلة الرابعة",
+    "chartsComingSoon": "الرسوم البيانية قادمة قريباً"
+  },
   "emptyStates": {
     "accounts": {
       "title": "لا توجد حسابات بعد",
