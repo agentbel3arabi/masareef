@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeftRight, ArrowRight, Trash2 } from "lucide-react";
+import { ArrowLeftRight, Trash2 } from "lucide-react";
 import { useTransfers, useDeleteTransfer } from "@/hooks/use-transfers";
 import { TransferForm } from "@/components/transfers/transfer-form";
+import { AccountMiniCard } from "@/components/transfers/account-mini-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,7 @@ export default function TransfersPage() {
 
   const transfers = data?.data || [];
   const isEmpty = !isLoading && transfers.length === 0;
+  const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
   return (
     <div>
@@ -63,17 +65,22 @@ export default function TransfersPage() {
             </thead>
             <tbody>
               {transfers.map((transfer) => (
-                <tr key={transfer.transfer_id} className="border-b">
-                  <td className="px-4 py-3 text-sm">{transfer.date}</td>
-                  <td className="px-4 py-3 text-sm">{transfer.from_account?.name}</td>
-                  <td className="px-4 py-3 text-center">
-                    <ArrowRight className="h-4 w-4 inline text-muted-foreground" />
+                <tr key={transfer.transfer_id} className="border-b hover:bg-accent/50 transition-colors group">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {dateFormatter.format(new Date(transfer.date))}
                   </td>
-                  <td className="px-4 py-3 text-sm">{transfer.to_account?.name}</td>
+                  <td className="px-4 py-3">
+                    {transfer.from_account ? <AccountMiniCard {...transfer.from_account} /> : <span className="text-xs text-muted-foreground">—</span>}
+                  </td>
+                  <td className="px-4 py-3 text-center text-muted-foreground">→</td>
+                  <td className="px-4 py-3">
+                    {transfer.to_account ? <AccountMiniCard {...transfer.to_account} /> : <span className="text-xs text-muted-foreground">—</span>}
+                  </td>
                   <td className="px-4 py-3 text-end">
                     <MoneyDisplay
-                      amount={transfer.source_amount}
-                      currency={transfer.from_account?.currency || "EGP"}
+                      amount={-transfer.source_amount}
+                      currency={transfer.from_account?.currency ?? "EGP"}
+                      colorize
                       showCurrency
                     />
                   </td>
@@ -81,7 +88,7 @@ export default function TransfersPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity"
                       onClick={() => setDeleteId(transfer.transfer_id)}
                       aria-label={t("common.delete")}
                     >

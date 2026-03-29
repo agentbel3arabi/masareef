@@ -118,3 +118,39 @@ export function useUpdateTransaction() {
     },
   });
 }
+
+export interface BulkDeleteInput {
+  ids: number[];
+}
+
+export interface BulkCategorizeInput {
+  ids: number[];
+  category_id: number;
+}
+
+export function useBulkDeleteTransactions() {
+  const queryClient = useQueryClient();
+  const t = useTranslations("toast");
+  return useApiMutation({
+    mutationFn: (data: BulkDeleteInput) =>
+      apiPost<{ deleted: number }>("/api/v1/transactions/bulk/delete", data),
+    successMessage: t("bulkDeleted"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useBulkCategorizeTransactions() {
+  const queryClient = useQueryClient();
+  const t = useTranslations("toast");
+  return useApiMutation({
+    mutationFn: (data: BulkCategorizeInput) =>
+      apiPost<{ updated: number }>("/api/v1/transactions/bulk/categorize", data),
+    successMessage: t("bulkCategorized"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+}

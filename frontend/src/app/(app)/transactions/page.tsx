@@ -9,11 +9,23 @@ import { useAccounts } from "@/hooks/use-accounts";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
 import { TransactionForm } from "@/components/transactions/transaction-form";
+import { BulkToolbar } from "@/components/transactions/bulk-toolbar";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
+import type { Account } from "@/hooks/use-accounts";
 
 function hasActiveFilters(filters: TransactionFilters): boolean {
-  return !!(filters.q || filters.type || filters.category_id || filters.date_from || filters.date_to);
+  return !!(
+    filters.q ||
+    filters.type ||
+    filters.category_id ||
+    filters.account_id ||
+    filters.date_from ||
+    filters.date_to ||
+    filters.amount_min != null ||
+    filters.amount_max != null
+  );
 }
 
 export default function TransactionsPage() {
@@ -26,6 +38,8 @@ export default function TransactionsPage() {
     sort: "-date",
   });
   const [createOpen, setCreateOpen] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
   const { data, isLoading } = useTransactions(filters);
   const { data: accountsData } = useAccounts();
@@ -33,9 +47,44 @@ export default function TransactionsPage() {
   const isEmpty = !isLoading && (data?.data?.length ?? 0) === 0;
   const filtersActive = hasActiveFilters(filters);
 
+  const accountsMap: Record<number, Account> = {};
+  for (const acc of accountsData?.data ?? []) {
+    accountsMap[acc.id] = acc;
+  }
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = (ids: number[]) => {
+    setSelectedIds(ids.length === 0 ? new Set() : new Set(ids));
+  };
+
+  const exitBulkMode = () => {
+    setBulkMode(false);
+    setSelectedIds(new Set());
+  };
+
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">{t("nav.transactions")}</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">{t("nav.transactions")}</h1>
+        <Button
+          variant={bulkMode ? "secondary" : "outline"}
+          size="sm"
+          onClick={() => {
+            if (bulkMode) exitBulkMode();
+            else setBulkMode(true);
+          }}
+        >
+          {bulkMode ? t("transactions.cancel") : t("transactions.manage")}
+        </Button>
+      </div>
 
       {isLoading ? (
         <>
@@ -45,6 +94,9 @@ export default function TransactionsPage() {
       ) : (
         <>
           <TransactionFilterBar filters={filters} onChange={setFilters} />
+          {bulkMode && selectedIds.size > 0 && (
+            <BulkToolbar selectedIds={[...selectedIds]} onCancel={exitBulkMode} />
+          )}
           {isEmpty ? (
             filtersActive ? (
               <EmptyState
@@ -87,6 +139,11 @@ export default function TransactionsPage() {
               pageSize={filters.page_size || 50}
               onPageChange={(p) => setFilters({ ...filters, page: p })}
               showAccount
+              accountsMap={accountsMap}
+              bulkMode={bulkMode}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              onSelectAll={selectAll}
             />
           )}
         </>

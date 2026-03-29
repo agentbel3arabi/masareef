@@ -6,7 +6,7 @@ import { MobileNavDrawer } from "./mobile-nav-drawer";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { Logo } from "@/components/shared/logo";
+import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -15,7 +15,7 @@ export function Navbar() {
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
       <div className="flex items-center gap-2 md:hidden">
         <MobileNavDrawer />
-        <Logo variant="icon" width={28} height={28} />
+        <Logo variant="icon" {...LOGO_SIZES.mobileNav} />
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">

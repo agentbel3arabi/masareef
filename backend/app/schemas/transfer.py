@@ -30,6 +30,8 @@ class TransferAccountSummary(BaseModel):
     id: int
     name: str
     currency: str
+    type: str
+    institution: str | None = None
 
     model_config = {"from_attributes": True}
 
