@@ -13,24 +13,45 @@
 | Wave 3 — UI Foundation | ✅ Complete (PRs #19, #20 + 1.5F) | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
 | Wave 4 — Page Fidelity | ✅ Complete (PRs #21, #22, #23) | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
 | Pre-Wave 5 Audit | ✅ Complete | `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md` |
-| Wave 5 — Landing & Process | 📋 Write plan, ready to execute | — |
+| Wave 5 — Landing & Process | ✅ Complete (PR #24) | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
+| Wave 6 — Bug Fix (Branch 1) | ✅ Complete (PR #25) | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
+| Wave 6 — Design Fidelity (Branch 2) | 📋 Next — execute Branch 2 from wave-6 plan | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
 
 ## Pre-Wave 5 Audit
 
 Full codebase audit completed 2026-03-29 (28 findings: 3 CRITICAL, 12 MAJOR, 13 MINOR). Report: `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md`. All findings assigned to Wave 5 units — no hotfix branches needed. Unit 1.5L absorbs ~2.5 hours of polish fixes alongside the landing page; Unit 1.5M gets the backend route order fix.
 
+## Wave 6 — Bug Fix & Design Fidelity
+
+UAT of Unit 1.5L revealed 18 bugs and design gaps. Wave 6 plan: `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md`.
+
+**Branch 1 (`fix/auth-onboarding-bugs`)** — ✅ Complete (PR #25). Fixed:
+- Login redirect (cookie pickup via full-page navigation)
+- Signup confirmation screen + duplicate email detection (empty identities)
+- Onboarding error handling + expanded account creation form
+- Transaction creation (try-catch, positive amount_minor)
+- Backend multi-household `get_household_id` crash (limit+ordering)
+- Onboarding layout Logo SSR fix
+
+**Branch 2 (`fix/design-fidelity-v2`)** — Next. Covers:
+- Sidebar redesign (collapse, logo spacing, tagline, help/logout)
+- Floating action button for transactions
+- Auth page logo sizing
+- Transaction form design (spacing, category icons)
+- Accounts + transactions page fidelity vs Stitch designs
+
 ## Next Step
 
-**Write and execute Wave 5.** Cut two branches from main:
+**Execute Wave 6 Branch 2 (`fix/design-fidelity-v2`).** Cut branch from main:
 
 ```
-git checkout -b feature/1.5L-landing-page
-git checkout -b chore/1.5M-workflow-roadmap-updates
+git checkout main && git pull
+git checkout -b fix/design-fidelity-v2
 ```
 
-Wave 5 plan must be written before execution (write just-in-time, now that Wave 4 is on main).
+Plan: Tasks 8-15 in `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md`.
 
-Each unit follows the standard workflow: Execute → Push PR → Copilot Review → Fix → UAT → Merge.
+Pre-work: Use Stitch MCP to analyze design screens before implementing UI changes.
 
 ---
 
