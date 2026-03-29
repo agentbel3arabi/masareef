@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowLeftRight, ArrowRight, Trash2 } from "lucide-react";
 import { useTransfers, useDeleteTransfer } from "@/hooks/use-transfers";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { MoneyDisplay } from "@/components/shared/money-display";
@@ -14,27 +15,39 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { ArrowRight, Trash2 } from "lucide-react";
 import { TransactionTableSkeleton } from "@/components/shared/skeletons";
+import { EmptyState } from "@/components/shared/empty-state";
 
 export default function TransfersPage() {
   const t = useTranslations();
+  const tEmpty = useTranslations("emptyStates");
   const [page] = useState(1);
   const { data, isLoading } = useTransfers(page);
   const deleteTransfer = useDeleteTransfer();
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const transfers = data?.data || [];
+  const isEmpty = !isLoading && transfers.length === 0;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">{t("nav.transfers")}</h1>
-        <TransferForm />
+        <TransferForm open={createOpen} onOpenChange={setCreateOpen} />
       </div>
 
       {isLoading ? (
         <TransactionTableSkeleton />
+      ) : isEmpty ? (
+        <EmptyState
+          icon={ArrowLeftRight}
+          title={tEmpty("transfers.title")}
+          description={tEmpty("transfers.description")}
+          action={{ label: tEmpty("transfers.action"), onClick: () => setCreateOpen(true) }}
+        />
       ) : (
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted/50">
               <tr>
@@ -49,7 +62,7 @@ export default function TransfersPage() {
               </tr>
             </thead>
             <tbody>
-              {(data?.data || []).map((transfer) => (
+              {transfers.map((transfer) => (
                 <tr key={transfer.transfer_id} className="border-b">
                   <td className="px-4 py-3 text-sm">{transfer.date}</td>
                   <td className="px-4 py-3 text-sm">{transfer.from_account?.name}</td>
@@ -77,13 +90,6 @@ export default function TransfersPage() {
                   </td>
                 </tr>
               ))}
-              {(!data?.data || data.data.length === 0) && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    {t("transfers.noTransfers")}
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

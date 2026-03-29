@@ -14,12 +14,27 @@ import { Plus } from "lucide-react";
 interface TransactionFormProps {
   accountId: number;
   accountCurrency?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function TransactionForm({ accountId, accountCurrency = "EGP" }: TransactionFormProps) {
+export function TransactionForm({
+  accountId,
+  accountCurrency = "EGP",
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: TransactionFormProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen as boolean) : internalOpen;
+  const setOpen = (next: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(next);
+    }
+    controlledOnOpenChange?.(next);
+  };
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");

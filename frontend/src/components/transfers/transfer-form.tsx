@@ -11,9 +11,25 @@ import { useCreateTransfer } from "@/hooks/use-transfers";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { ArrowLeftRight } from "lucide-react";
 
-export function TransferForm() {
+interface TransferFormProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function TransferForm({
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: TransferFormProps = {}) {
   const t = useTranslations();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (next: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(next);
+    }
+    controlledOnOpenChange?.(next);
+  };
   const { data: accountsData } = useAccounts();
   const createTransfer = useCreateTransfer();
 
