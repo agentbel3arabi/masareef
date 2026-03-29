@@ -69,7 +69,7 @@
     },
     "defaultHouseholdName": "My Household",
     "retryError": "Something went wrong. Please try again.",
-    "retry": "Try Again",
+    "retry": "Dismiss",
     "common": {
       "next": "Next",
       "back": "Back"

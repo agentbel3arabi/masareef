@@ -61,6 +61,7 @@ export default function SignupPage() {
   const handleResend = async () => {
     setResendLoading(true);
     setResendSuccess(false);
+    setError("");
     const supabase = createClient();
     const { error: resendError } = await supabase.auth.resend({ type: "signup", email });
     setResendLoading(false);
@@ -74,14 +75,14 @@ export default function SignupPage() {
   if (showConfirmation) {
     return (
       <div className="flex flex-col items-center text-center space-y-6 py-4">
-        <CheckCircle className="w-16 h-16 text-primary" />
+        <CheckCircle className="w-16 h-16 text-primary" aria-hidden="true" />
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">{t("auth.confirmTitle")}</h1>
           <p className="text-sm text-muted-foreground max-w-xs">
             {t("auth.confirmDescription", { email })}
           </p>
         </div>
-        <Button render={<Link href="/login" />} className="w-full">
+        <Button render={<Link href="/login" />} nativeButton={false} className="w-full">
           {t("auth.goToLogin")}
         </Button>
         <div className="text-sm text-muted-foreground">
