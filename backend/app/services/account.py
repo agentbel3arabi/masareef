@@ -134,8 +134,8 @@ async def compute_net_worth(
     hh = await session.get(Household, household_id)
     base_currency = hh.base_currency if hh else "EGP"
 
-    # Total in base currency — for accounts already in base currency, sum directly
-    # For cross-currency accounts, sum only same-currency for now (exchange rate integration is Phase 5)
+    # Total in base currency — same-currency accounts only for now.
+    # Cross-currency aggregation requires exchange rates (Phase 5).
     total_base_minor = by_currency.get(base_currency, 0)
 
     return {
