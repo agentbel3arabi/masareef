@@ -195,7 +195,8 @@
     "deleteSelected": "حذف",
     "bulkDeleteConfirm": "حذف {count} معاملة؟ لا يمكن التراجع.",
     "bulkDeleted": "تم حذف المعاملات",
-    "bulkCategorized": "تم إعادة تصنيف المعاملات"
+    "bulkCategorized": "تم إعادة تصنيف المعاملات",
+    "selectTransaction": "تحديد معاملة {id}"
   },
   "transfers": {
     "title": "التحويلات",

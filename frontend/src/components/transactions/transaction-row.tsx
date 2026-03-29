@@ -112,7 +112,7 @@ export function TransactionRow({
             <Checkbox
               checked={selected}
               onCheckedChange={() => onToggleSelect?.(transaction.id)}
-              aria-label={`Select transaction ${transaction.id}`}
+              aria-label={t("transactions.selectTransaction", { id: transaction.id })}
             />
           </td>
         )}
@@ -165,7 +165,7 @@ export function TransactionRow({
         </td>
         <td className="px-4 py-3">
           {!bulkMode && (
-            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
               <Button
                 variant="ghost"
                 size="icon"

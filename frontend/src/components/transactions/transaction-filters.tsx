@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ interface TransactionFilterBarProps {
 
 export function TransactionFilterBar({ filters, onChange }: TransactionFilterBarProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const { data: accountsData } = useAccounts();
   const { data: categoriesData } = useCategories();
 
@@ -59,6 +60,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
           })
         }
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+        aria-label={t("transactions.allAccounts")}
       >
         <option value="">{t("transactions.allAccounts")}</option>
         {(accountsData?.data || []).map((acc) => (
@@ -79,12 +81,13 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
           })
         }
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+        aria-label={t("transactions.allCategories")}
       >
         <option value="">{t("transactions.allCategories")}</option>
         {(categoriesData?.data || []).map((cat) => (
           <option key={cat.id} value={cat.id}>
             {cat.icon ? `${cat.icon} ` : ""}
-            {cat.name_en}
+            {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
           </option>
         ))}
       </select>
@@ -96,6 +99,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
           onChange({ ...filters, type: e.target.value || undefined, page: 1 })
         }
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+        aria-label={t("transactions.allTypes")}
       >
         <option value="">{t("transactions.allTypes")}</option>
         <option value="debit">{t("transactions.expenses")}</option>

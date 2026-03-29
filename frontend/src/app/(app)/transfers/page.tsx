@@ -30,6 +30,7 @@ export default function TransfersPage() {
 
   const transfers = data?.data || [];
   const isEmpty = !isLoading && transfers.length === 0;
+  const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
   return (
     <div>
@@ -66,19 +67,19 @@ export default function TransfersPage() {
               {transfers.map((transfer) => (
                 <tr key={transfer.transfer_id} className="border-b hover:bg-accent/50 transition-colors group">
                   <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(transfer.date))}
+                    {dateFormatter.format(new Date(transfer.date))}
                   </td>
                   <td className="px-4 py-3">
-                    <AccountMiniCard {...transfer.from_account} />
+                    {transfer.from_account ? <AccountMiniCard {...transfer.from_account} /> : <span className="text-xs text-muted-foreground">—</span>}
                   </td>
                   <td className="px-4 py-3 text-center text-muted-foreground">→</td>
                   <td className="px-4 py-3">
-                    <AccountMiniCard {...transfer.to_account} />
+                    {transfer.to_account ? <AccountMiniCard {...transfer.to_account} /> : <span className="text-xs text-muted-foreground">—</span>}
                   </td>
                   <td className="px-4 py-3 text-end">
                     <MoneyDisplay
                       amount={-transfer.source_amount}
-                      currency={transfer.from_account.currency}
+                      currency={transfer.from_account?.currency ?? "EGP"}
                       colorize
                       showCurrency
                     />
@@ -87,7 +88,7 @@ export default function TransfersPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity"
                       onClick={() => setDeleteId(transfer.transfer_id)}
                       aria-label={t("common.delete")}
                     >

@@ -195,7 +195,8 @@
     "deleteSelected": "Delete",
     "bulkDeleteConfirm": "Delete {count} transactions? This cannot be undone.",
     "bulkDeleted": "Transactions deleted",
-    "bulkCategorized": "Transactions re-categorized"
+    "bulkCategorized": "Transactions re-categorized",
+    "selectTransaction": "Select transaction {id}"
   },
   "transfers": {
     "title": "Transfers",
