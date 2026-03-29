@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Logo } from "@/components/shared/logo";
+import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("auth");
@@ -9,7 +9,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       {/* Left marketing panel — hidden below md */}
       <div className="hidden md:flex md:w-3/5 flex-col justify-between bg-gradient-to-br from-primary/80 via-primary to-primary/60 p-12 text-white">
         <div>
-          <Logo variant="horizontal" width={200} height={48} colorScheme="dark" />
+          <Logo variant="horizontal" {...LOGO_SIZES.authPanel} colorScheme="dark" />
         </div>
         <div className="space-y-8">
           <div>
@@ -36,7 +36,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       <div className="flex flex-1 flex-col items-center justify-center p-8 bg-background">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex justify-center md:hidden">
-            <Logo variant="stacked" width={120} height={80} />
+            <Logo variant="stacked" width={160} height={106} />
           </div>
           {children}
         </div>
