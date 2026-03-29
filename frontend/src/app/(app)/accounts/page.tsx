@@ -9,6 +9,7 @@ import { CreateAccountDialog } from "@/components/accounts/create-account-dialog
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { AccountGridSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
+import { NetWorthBar } from "@/components/accounts/net-worth-bar";
 
 export default function AccountsPage() {
   const t = useTranslations("accounts");
@@ -25,6 +26,8 @@ export default function AccountsPage() {
           <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
         </div>
       </div>
+
+      <NetWorthBar />
 
       {isLoading && <AccountGridSkeleton />}
       {error && <p className="text-destructive">{t("error")}: {error.message}</p>}

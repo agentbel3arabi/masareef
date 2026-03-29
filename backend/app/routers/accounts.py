@@ -51,6 +51,15 @@ async def list_accounts(
     )
 
 
+@router.get("/net-worth")
+async def get_net_worth(
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+) -> SuccessResponse:
+    data = await account_service.compute_net_worth(session, household_id)
+    return SuccessResponse(data=data)
+
+
 @router.get("/{account_id}")
 async def get_account(
     account_id: int,
