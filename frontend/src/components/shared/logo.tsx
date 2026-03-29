@@ -30,10 +30,12 @@ const logoFiles: Record<string, { light: string; dark: string }> = {
 };
 
 export const LOGO_SIZES = {
-  sidebar: { width: 160, height: 40 },
-  mobileNav: { width: 36, height: 36 },
-  authPanel: { width: 180, height: 44 },
-  onboarding: { width: 160, height: 40 },
+  sidebar: { width: 150, height: 60 },      // 2.5:1 ratio (horizontal SVG 500x200)
+  mobileNav: { width: 36, height: 36 },     // icon is square
+  authPanel: { width: 175, height: 70 },    // 2.5:1 ratio
+  onboarding: { width: 150, height: 60 },   // 2.5:1 ratio
+  landing: { width: 140, height: 56 },      // 2.5:1 ratio, for landing page nav
+  landingFooter: { width: 140, height: 56 },// 2.5:1 ratio, for footer
 } as const;
 
 export function Logo({ variant, width, height, className, colorScheme = "auto" }: LogoProps) {
