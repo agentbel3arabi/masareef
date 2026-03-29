@@ -222,7 +222,11 @@ async def list_transfers(
                         "id": from_acct.id,
                         "name": from_acct.name,
                         "currency": from_acct.currency,
-                        "type": from_acct.type.value if hasattr(from_acct.type, "value") else from_acct.type,
+                        "type": (
+                            from_acct.type.value
+                            if hasattr(from_acct.type, "value")
+                            else from_acct.type
+                        ),
                         "institution": from_acct.institution,
                     }
                     if from_acct
@@ -233,7 +237,9 @@ async def list_transfers(
                         "id": to_acct.id,
                         "name": to_acct.name,
                         "currency": to_acct.currency,
-                        "type": to_acct.type.value if hasattr(to_acct.type, "value") else to_acct.type,
+                        "type": (
+                            to_acct.type.value if hasattr(to_acct.type, "value") else to_acct.type
+                        ),
                         "institution": to_acct.institution,
                     }
                     if to_acct
