@@ -112,7 +112,7 @@ async def get_household_id(
     result = await session.execute(
         select(HouseholdMember.household_id)
         .where(HouseholdMember.user_id == user_id)
-        .order_by(HouseholdMember.joined_at.asc())
+        .order_by(HouseholdMember.joined_at.desc())
         .limit(1)
     )
     household_id = result.scalar_one_or_none()
