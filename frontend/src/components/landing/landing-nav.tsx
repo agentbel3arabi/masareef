@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import {
@@ -29,10 +30,16 @@ export function LandingNav() {
   const locale = useLocale();
   const router = useRouter();
 
+  const { theme, setTheme } = useTheme();
+
   const toggleLocale = () => {
     const next: Locale = locale === "ar" ? "en" : "ar";
     setLocaleCookie(next);
     router.refresh();
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -69,6 +76,10 @@ export function LandingNav() {
               {locale === "ar" ? "Switch to English" : "\u0627\u0644\u062a\u0628\u062f\u064a\u0644 \u0625\u0644\u0649 \u0627\u0644\u0639\u0631\u0628\u064a\u0629"}
             </span>
           </Button>
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            <Sun className="hidden size-4 dark:block" />
+            <Moon className="size-4 dark:hidden" />
+          </Button>
           <Button variant="outline" nativeButton={false} render={<Link href="/login" />}>
             {t("nav.signIn")}
           </Button>
@@ -83,6 +94,10 @@ export function LandingNav() {
             <span className="text-sm font-medium">
               {locale === "ar" ? "EN" : "\u0639"}
             </span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            <Sun className="hidden size-4 dark:block" />
+            <Moon className="size-4 dark:hidden" />
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
