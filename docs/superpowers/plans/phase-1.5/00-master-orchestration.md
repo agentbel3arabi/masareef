@@ -10,19 +10,21 @@
 |------|--------|-----------|
 | Wave 1 — Infrastructure | ✅ Complete (PRs #16, #17) | `docs/superpowers/plans/upgrade/` |
 | Wave 2 — Backend | ✅ Complete (PRs merged) | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
-| Wave 3 — UI Foundation | 📋 Planned, ready to execute | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
+| Wave 3 — UI Foundation | ✅ Complete (PRs #19, #20 + 1.5F) | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
 | Wave 4 — Page Fidelity | 📋 Planned, ready to execute | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
 | Wave 5 — Landing & Process | ⏳ Write plan after Wave 4 merges | — |
 
 ## Next Step
 
-**Execute Wave 3.** The plan is at `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md`.
+**Execute Wave 4.** The plan is at `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md`.
 
-Execution order within Wave 3:
-1. **Start 1.5F** (`feature/1.5F-error-boundaries-toasts`) — error boundaries, typed ApiError, useApiMutation hook, loading skeletons. Must merge first.
-2. **Then 1.5G and 1.5H in parallel** (rebase both onto main after 1.5F merges):
-   - `feature/1.5G-empty-states-mobile-nav` — EmptyState component + mobile nav drawer
-   - `feature/1.5H-auth-redesign-onboarding` — split-panel auth + onboarding wizard (includes backend: household endpoints)
+All three units run in parallel — cut branches from main:
+
+```
+git checkout -b feature/1.5I-accounts-fidelity
+git checkout -b feature/1.5J-transactions-fidelity
+git checkout -b feature/1.5K-transfers-dashboard-sidebar
+```
 
 Each unit follows the standard workflow: Execute → Push PR → Copilot Review → Fix → UAT → Merge.
 
