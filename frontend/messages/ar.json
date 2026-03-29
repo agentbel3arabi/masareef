@@ -111,6 +111,11 @@
     "preferNotToSay": "أفضل عدم الإفصاح",
     "loginSubtitle": "سجّل دخولك إلى حسابك في مصاريف",
     "signupSubtitle": "أنشئ حسابك المجاني في مصاريف",
+    "confirmTitle": "تحقق من بريدك الإلكتروني",
+    "confirmDescription": "أرسلنا رابط تأكيد إلى {email}. اضغط عليه لتفعيل حسابك.",
+    "goToLogin": "الذهاب لتسجيل الدخول",
+    "resendEmail": "لم تستلم؟ أعد الإرسال",
+    "resendSuccess": "تم إعادة إرسال بريد التأكيد",
     "marketingHeadline": "فلوسك، بلغتك، بقواعدك.",
     "marketingSubheadline": "تطبيق مالي شخصي مصمم لمصر والمنطقة.",
     "marketing": {

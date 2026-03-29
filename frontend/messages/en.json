@@ -111,6 +111,11 @@
     "preferNotToSay": "Prefer not to say",
     "loginSubtitle": "Sign in to your Masareef account",
     "signupSubtitle": "Create your free Masareef account",
+    "confirmTitle": "Check your email",
+    "confirmDescription": "We sent a confirmation link to {email}. Click it to activate your account.",
+    "goToLogin": "Go to Login",
+    "resendEmail": "Didn't receive it? Resend",
+    "resendSuccess": "Confirmation email resent",
     "marketingHeadline": "Your money, your language, your rules.",
     "marketingSubheadline": "Personal finance built for Egypt & MENA.",
     "marketing": {
