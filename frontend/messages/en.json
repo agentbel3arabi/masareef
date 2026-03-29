@@ -88,7 +88,9 @@
     "sectionOverview": "Overview",
     "sectionFinance": "Finance",
     "sectionPlanning": "Planning",
-    "sectionSettings": "Settings"
+    "sectionSettings": "Settings",
+    "toggleTheme": "Toggle Theme",
+    "signOut": "Sign Out"
   },
   "auth": {
     "login": "Log In",
@@ -228,6 +230,19 @@
     "comingSoon": "Coming in Phase 4",
     "chartsComingSoon": "Charts coming soon"
   },
+  "sidebar": {
+    "tagline": "All your finances in one place"
+  },
+  "settings": {
+    "title": "Settings",
+    "comingSoon": "Account preferences, data management, and more will be available here."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or go back to the dashboard.",
+    "tryAgain": "Try Again",
+    "goHome": "Go to Dashboard"
+  },
   "emptyStates": {
     "accounts": {
       "title": "No accounts yet",
@@ -252,6 +267,134 @@
     "searchResults": {
       "title": "No results found",
       "description": "Try adjusting your filters or search terms."
+    }
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About",
+      "signIn": "Sign In",
+      "getStarted": "Get Started Free"
+    },
+    "hero": {
+      "badge": "Fintech for the MENA region",
+      "headline1": "Your money,",
+      "headline2": "your language,",
+      "headline3": "your rules.",
+      "arabicTagline": "فلوسك، بلغتك، بقواعدك",
+      "description": "The first personal finance app built for Egyptian and MENA families. Track spending, manage debts, monitor your Gam3eya, and forecast your cash flow — all in Arabic.",
+      "ctaPrimary": "Get Started Free",
+      "ctaSecondary": "Learn More",
+      "mockupBalance": "Total Balance",
+      "mockupAmount": "EGP 142,500.00",
+      "mockupGoal": "Monthly Savings Goal",
+      "mockupProgress": "75% Achieved",
+      "mockupGam3eya": "Gam3eya",
+      "mockupPayout": "Payout: July 1st"
+    },
+    "features": {
+      "title": "Built for the way you handle money",
+      "subtitle": "No more forcing your local financial habits into western apps. Masareef is designed specifically for the unique needs of the MENA market.",
+      "bankImport": "Smart Bank Import",
+      "bankImportDesc": "Simply upload your bank PDF or CSV. Our system parses Egyptian bank statements perfectly, no manual entry required.",
+      "aiCategorize": "AI Categorization",
+      "aiCategorizeDesc": "Powered by LLMs to understand local merchant names in both Arabic and English for precise spending charts.",
+      "debts": "Debts & Installments",
+      "debtsDesc": "Manage your ValU, Sympl, and bank loans with automated amortization schedules and payment reminders.",
+      "gam3eya": "Gam3eya Tracking",
+      "gam3eyaDesc": "Manage rotating savings clubs with ease. Know when it's your turn and keep everyone accountable in one place.",
+      "assets": "Asset Management",
+      "assetsDesc": "Track your real estate value, gold prices, and high-interest certificates in real-time.",
+      "family": "Family Finance",
+      "familyDesc": "Share household budgets with your partner. Unified tracking for collaborative financial planning."
+    },
+    "howItWorks": {
+      "title": "Three steps to clarity",
+      "step1Title": "Import Data",
+      "step1Desc": "Upload statements or connect securely. We support all major regional institutions.",
+      "step2Title": "AI Categorize",
+      "step2Desc": "Our AI identifies your spending habits across local grocers, bills, and lifestyle.",
+      "step3Title": "See Full Picture",
+      "step3Desc": "Get a comprehensive dashboard showing your net worth, debts, and future forecasts."
+    },
+    "dashboard": {
+      "title": "Your financial command center",
+      "subtitle": "Everything you need to see at a glance — balances, spending trends, upcoming payments, and savings goals.",
+      "totalBalance": "Total Balance",
+      "balanceAmount": "EGP 142,500.00",
+      "income": "Income",
+      "incomeAmount": "EGP 35,000",
+      "expenses": "Expenses",
+      "expensesAmount": "EGP 22,300",
+      "savings": "Savings",
+      "savingsAmount": "EGP 12,700",
+      "recentTransactions": "Recent Transactions",
+      "t1": "Carrefour Groceries",
+      "t1Amount": "- EGP 1,250",
+      "t2": "Salary Deposit",
+      "t2Amount": "+ EGP 35,000",
+      "t3": "Vodafone Bill",
+      "t3Amount": "- EGP 350",
+      "t4": "Gam3eya Payment",
+      "t4Amount": "- EGP 2,000",
+      "savingsGoal": "Savings Goal",
+      "savingsProgress": "75% achieved"
+    },
+    "pricing": {
+      "title": "Pricing that fits your life",
+      "subtitle": "Start for free, upgrade when you're ready to master your money.",
+      "mostPopular": "Most Popular",
+      "free": "Free",
+      "freePrice": "EGP 0",
+      "freePeriod": "/forever",
+      "freeFeature1": "1 member access",
+      "freeFeature2": "Manual CSV import",
+      "freeFeature3": "Basic spending charts",
+      "freeCta": "Start for Free",
+      "premium": "Premium",
+      "premiumPrice": "EGP 99",
+      "premiumPeriod": "/mo",
+      "premiumFeature1": "Up to 5 household members",
+      "premiumFeature2": "Smart AI categorization",
+      "premiumFeature3": "Gam3eya tracker",
+      "premiumFeature4": "Telegram notifications",
+      "premiumFeature5": "Debt management tools",
+      "premiumCta": "Go Premium",
+      "business": "Business",
+      "businessPrice": "EGP 249",
+      "businessPeriod": "/mo",
+      "businessFeature1": "Unlimited households",
+      "businessFeature2": "Up to 25 members",
+      "businessFeature3": "API access & Exports",
+      "businessFeature4": "Dedicated accountant view",
+      "businessCta": "Contact Sales"
+    },
+    "cta": {
+      "title": "Financial literacy in your pocket.",
+      "description": "Start tracking your finances today — in your language, on your terms.",
+      "button": "Join the Waitlist",
+      "subtext": "No credit card required",
+      "quote": "Wealth is not about how much you make, but how much you keep."
+    },
+    "footer": {
+      "description": "All your finances in one place. Built with care in Egypt for the modern Arab world.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "gam3eyaTracker": "Gam3eya Tracker",
+      "debtCalculator": "Debt Calculator",
+      "company": "Company",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "newsletter": "Newsletter",
+      "newsletterDesc": "Get local financial tips directly in your inbox.",
+      "emailPlaceholder": "Your email",
+      "join": "Join",
+      "newsletterToast": "Newsletter coming soon!",
+      "copyright": "© 2026 Masareef. Made with ❤️ in Egypt"
     }
   }
 }
