@@ -57,24 +57,29 @@ export function TransactionForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const amountMinor = parseMajorToMinor(amount, exponent);
+    const amountMinor = Math.abs(parseMajorToMinor(amount, exponent));
+    if (amountMinor === 0) return;
 
-    await createTx.mutateAsync({
-      account_id: accountId,
-      date,
-      description,
-      amount_minor: amountMinor,
-      type,
-      currency: accountCurrency,
-      category_id: categoryId || undefined,
-      notes: notes || undefined,
-    });
+    try {
+      await createTx.mutateAsync({
+        account_id: accountId,
+        date,
+        description,
+        amount_minor: amountMinor,
+        type,
+        currency: accountCurrency,
+        category_id: categoryId || undefined,
+        notes: notes || undefined,
+      });
 
-    setOpen(false);
-    setDescription("");
-    setAmount("");
-    setNotes("");
-    setCategoryId("");
+      setOpen(false);
+      setDescription("");
+      setAmount("");
+      setNotes("");
+      setCategoryId("");
+    } catch {
+      // Error toast already shown by useApiMutation.onError — keep form open for retry
+    }
   };
 
   return (
