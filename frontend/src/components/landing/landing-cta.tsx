@@ -22,6 +22,7 @@ export function LandingCta() {
             <Button
               size="lg"
               className="px-8 py-4 text-base font-semibold"
+              nativeButton={false}
               render={<Link href="/signup" />}
             >
               {t("cta.button")}

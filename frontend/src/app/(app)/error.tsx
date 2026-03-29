@@ -22,7 +22,7 @@ export default function AppError({
       </div>
       <div className="flex gap-3">
         <Button onClick={reset}>{t("tryAgain")}</Button>
-        <Button variant="outline" render={<Link href="/dashboard" />}>
+        <Button variant="outline" nativeButton={false} render={<Link href="/dashboard" />}>
           {t("goHome")}
         </Button>
       </div>

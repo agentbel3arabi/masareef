@@ -120,6 +120,7 @@ export function LandingPricing() {
               <Button
                 className="w-full"
                 variant={plan.highlighted ? "default" : "outline"}
+                nativeButton={false}
                 render={<Link href="/signup" />}
               >
                 {t(plan.ctaKey as Parameters<typeof t>[0])}

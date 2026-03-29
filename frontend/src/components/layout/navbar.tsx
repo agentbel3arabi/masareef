@@ -77,9 +77,11 @@ export function Navbar() {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" sideOffset={8} className="w-56">
-              <DropdownMenuLabel className="truncate font-normal">
-                {displayName}
-              </DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="truncate font-normal">
+                  {displayName}
+                </DropdownMenuLabel>
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem
@@ -93,8 +95,8 @@ export function Navbar() {
                   {locale === "ar" ? "English" : "العربية"}
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={toggleTheme}>
-                  <Sun className="hidden size-4 dark:inline" />
-                  <Moon className="inline size-4 dark:hidden" />
+                  <Sun className="hidden size-4 dark:block" />
+                  <Moon className="size-4 dark:hidden" />
                   {t("toggleTheme")}
                 </DropdownMenuItem>
               </DropdownMenuGroup>

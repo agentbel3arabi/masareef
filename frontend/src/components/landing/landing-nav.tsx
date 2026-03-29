@@ -69,10 +69,10 @@ export function LandingNav() {
               {locale === "ar" ? "Switch to English" : "\u0627\u0644\u062a\u0628\u062f\u064a\u0644 \u0625\u0644\u0649 \u0627\u0644\u0639\u0631\u0628\u064a\u0629"}
             </span>
           </Button>
-          <Button variant="outline" render={<Link href="/login" />}>
+          <Button variant="outline" nativeButton={false} render={<Link href="/login" />}>
             {t("nav.signIn")}
           </Button>
-          <Button render={<Link href="/signup" />}>
+          <Button nativeButton={false} render={<Link href="/signup" />}>
             {t("nav.getStarted")}
           </Button>
         </div>
@@ -119,12 +119,14 @@ export function LandingNav() {
                 <Button
                   variant="outline"
                   className="w-full"
+                  nativeButton={false}
                   render={<Link href="/login" onClick={() => setOpen(false)} />}
                 >
                   {t("nav.signIn")}
                 </Button>
                 <Button
                   className="w-full"
+                  nativeButton={false}
                   render={<Link href="/signup" onClick={() => setOpen(false)} />}
                 >
                   {t("nav.getStarted")}

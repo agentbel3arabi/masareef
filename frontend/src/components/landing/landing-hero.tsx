@@ -43,6 +43,7 @@ export function LandingHero() {
             <Button
               size="lg"
               className="px-8 py-4 text-base font-semibold"
+              nativeButton={false}
               render={<Link href="/signup" />}
             >
               {t("hero.ctaPrimary")}
@@ -51,6 +52,7 @@ export function LandingHero() {
               variant="outline"
               size="lg"
               className="px-8 py-4 text-base font-semibold"
+              nativeButton={false}
               render={<a href="#features" />}
             >
               {t("hero.ctaSecondary")}
