@@ -61,7 +61,6 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
         }
         aria-label={t("transactions.allAccounts")}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-        aria-label={t("transactions.allAccounts")}
       >
         <option value="">{t("transactions.allAccounts")}</option>
         {(accountsData?.data || []).map((acc) => (
@@ -83,7 +82,6 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
         }
         aria-label={t("transactions.allCategories")}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-        aria-label={t("transactions.allCategories")}
       >
         <option value="">{t("transactions.allCategories")}</option>
         {(categoriesData?.data || []).map((cat) => (
@@ -102,7 +100,6 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
         }
         aria-label={t("transactions.allTypes")}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-        aria-label={t("transactions.allTypes")}
       >
         <option value="">{t("transactions.allTypes")}</option>
         <option value="debit">{t("transactions.expenses")}</option>
