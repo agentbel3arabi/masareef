@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ChevronsLeft, ChevronsRight, CircleHelp, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo, LOGO_SIZES } from "@/components/shared/logo";
@@ -34,8 +34,12 @@ const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const t = useTranslations();
+  const locale = useLocale();
   const { collapsed, toggle } = useSidebar();
   const { signOut } = useAuth();
+  const isRtl = locale === "ar";
+  const CollapseIcon = isRtl ? ChevronsRight : ChevronsLeft;
+  const ExpandIcon = isRtl ? ChevronsLeft : ChevronsRight;
 
   return (
     <aside
@@ -73,10 +77,11 @@ export function Sidebar() {
         {!collapsed && (
           <button
             onClick={toggle}
+            aria-label={t("nav.collapseSidebar")}
             title={t("nav.collapseSidebar")}
             className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <ChevronsLeft className="h-4 w-4" />
+            <CollapseIcon className="h-4 w-4" />
           </button>
         )}
       </div>
@@ -86,10 +91,11 @@ export function Sidebar() {
         <div className="flex justify-center py-2">
           <button
             onClick={toggle}
+            aria-label={t("nav.expandSidebar")}
             title={t("nav.expandSidebar")}
             className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <ChevronsRight className="h-4 w-4" />
+            <ExpandIcon className="h-4 w-4" />
           </button>
         </div>
       )}
@@ -167,8 +173,9 @@ export function Sidebar() {
           collapsed ? "px-1" : "px-2"
         )}
       >
+        {/* TODO: Replace with real help page route when available */}
         <Link
-          href="#"
+          href="/settings"
           title={collapsed ? t("sidebar.help") : undefined}
           className={cn(
             "flex items-center rounded-lg text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
