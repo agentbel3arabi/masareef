@@ -17,6 +17,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { MoneyDisplay } from "@/components/shared/money-display";
+import { CURRENCIES } from "@/lib/money";
 import { UtilizationBar } from "./utilization-bar";
 import { BillingBadge } from "./billing-badge";
 import { useUpdateAccount, useDeleteAccount } from "@/hooks/use-accounts";
@@ -62,7 +63,7 @@ export function AccountCard({ account }: AccountCardProps) {
   const [name, setName] = useState(account.name);
   const [institution, setInstitution] = useState(account.institution ?? "");
   const [creditLimit, setCreditLimit] = useState(
-    account.credit_limit != null ? String(account.credit_limit / 100) : ""
+    account.credit_limit != null ? String(account.credit_limit / Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2)) : ""
   );
   const [billingDay, setBillingDay] = useState(
     account.billing_cycle_day != null ? String(account.billing_cycle_day) : ""
@@ -80,7 +81,7 @@ export function AccountCard({ account }: AccountCardProps) {
   const openEdit = () => {
     setName(account.name);
     setInstitution(account.institution ?? "");
-    setCreditLimit(account.credit_limit != null ? String(account.credit_limit / 100) : "");
+    setCreditLimit(account.credit_limit != null ? String(account.credit_limit / Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2)) : "");
     setBillingDay(account.billing_cycle_day != null ? String(account.billing_cycle_day) : "");
     setPaymentDueDay(account.payment_due_day != null ? String(account.payment_due_day) : "");
     setEditOpen(true);
@@ -94,7 +95,7 @@ export function AccountCard({ account }: AccountCardProps) {
       institution: institution || undefined,
       credit_limit:
         isCreditType && creditLimit
-          ? Math.round(parseFloat(creditLimit) * 100)
+          ? Math.round(parseFloat(creditLimit) * Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2))
           : undefined,
       billing_cycle_day:
         isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
