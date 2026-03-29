@@ -240,7 +240,8 @@
     "chartsComingSoon": "Charts coming soon"
   },
   "sidebar": {
-    "tagline": "All your finances in one place"
+    "tagline": "All your finances in one place",
+    "help": "Help Center"
   },
   "settings": {
     "title": "Settings",
