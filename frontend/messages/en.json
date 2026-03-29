@@ -68,6 +68,8 @@
       "goToDashboard": "Go to Dashboard"
     },
     "defaultHouseholdName": "My Household",
+    "retryError": "Something went wrong. Please try again.",
+    "retry": "Try Again",
     "common": {
       "next": "Next",
       "back": "Back"

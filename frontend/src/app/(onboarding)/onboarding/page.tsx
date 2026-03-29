@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCreateHousehold } from "@/hooks/use-households";
 import { useCreateAccount } from "@/hooks/use-accounts";
@@ -10,14 +9,16 @@ import { StepHousehold } from "@/components/onboarding/step-household";
 import { StepCurrency } from "@/components/onboarding/step-currency";
 import { StepFirstAccount } from "@/components/onboarding/step-first-account";
 import { StepDone } from "@/components/onboarding/step-done";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
 export default function OnboardingPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const t = useTranslations("onboarding");
   const [step, setStep] = useState(1);
   const [householdName, setHouseholdName] = useState("");
   const [currency, setCurrency] = useState("EGP");
+  const [stepError, setStepError] = useState("");
   const createHousehold = useCreateHousehold();
   const createAccount = useCreateAccount();
 
@@ -28,13 +29,15 @@ export default function OnboardingPage() {
   const handleStep3Next = async (
     accountData: { name: string; type: string; initial_balance: number } | null
   ) => {
+    setStepError("");
     try {
       await createHousehold.mutateAsync({
         name: defaultHouseholdName,
         base_currency: currency,
       });
-    } catch {
-      // Toast already shown by useApiMutation.onError — stay on step 3 for retry
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("retryError");
+      setStepError(message);
       return;
     }
     if (accountData) {
@@ -53,17 +56,21 @@ export default function OnboardingPage() {
   };
 
   const handleStep3Skip = async () => {
+    setStepError("");
     try {
       await createHousehold.mutateAsync({
         name: defaultHouseholdName,
         base_currency: currency,
       });
-    } catch {
-      // Toast already shown by useApiMutation.onError — stay on step 3 for retry
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("retryError");
+      setStepError(message);
       return;
     }
     setStep(4);
   };
+
+  const isStep3Loading = createHousehold.isPending || createAccount.isPending;
 
   return (
     <div className="space-y-8">
@@ -96,15 +103,36 @@ export default function OnboardingPage() {
         />
       )}
       {step === 3 && (
-        <StepFirstAccount
-          defaultCurrency={currency}
-          onNext={handleStep3Next}
-          onSkip={handleStep3Skip}
-          onBack={() => setStep(2)}
-          isLoading={createHousehold.isPending || createAccount.isPending}
-        />
+        <>
+          {stepError && (
+            <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+              <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <div className="flex-1 space-y-2">
+                <p>{stepError}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => setStepError("")}
+                  disabled={isStep3Loading}
+                >
+                  {t("retry")}
+                </Button>
+              </div>
+            </div>
+          )}
+          <StepFirstAccount
+            defaultCurrency={currency}
+            onNext={handleStep3Next}
+            onSkip={handleStep3Skip}
+            onBack={() => setStep(2)}
+            isLoading={isStep3Loading}
+          />
+        </>
       )}
-      {step === 4 && <StepDone onGoToDashboard={() => router.push("/dashboard")} />}
+      {step === 4 && (
+        <StepDone onGoToDashboard={() => (window.location.href = "/dashboard")} />
+      )}
     </div>
   );
 }
