@@ -59,6 +59,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
             page: 1,
           })
         }
+        aria-label={t("transactions.allAccounts")}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         aria-label={t("transactions.allAccounts")}
       >
@@ -80,6 +81,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
             page: 1,
           })
         }
+        aria-label={t("transactions.allCategories")}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         aria-label={t("transactions.allCategories")}
       >
@@ -98,6 +100,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
         onChange={(e) =>
           onChange({ ...filters, type: e.target.value || undefined, page: 1 })
         }
+        aria-label={t("transactions.allTypes")}
         className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         aria-label={t("transactions.allTypes")}
       >
