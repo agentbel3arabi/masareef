@@ -125,13 +125,16 @@ export function TransactionForm({
           <div className="space-y-2">
             <Label>{t("transactions.category")}</Label>
             <Select
-              value={categoryId === "" ? undefined : String(categoryId)}
-              onValueChange={(val) => setCategoryId(val ? Number(val) : "")}
+              value={categoryId === "" ? "__uncategorized__" : String(categoryId)}
+              onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t("transactions.uncategorized")} />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="__uncategorized__">
+                  {t("transactions.uncategorized")}
+                </SelectItem>
                 {(categoriesData?.data || []).map((cat) => (
                   <SelectItem key={cat.id} value={String(cat.id)}>
                     {cat.icon && (

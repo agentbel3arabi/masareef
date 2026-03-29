@@ -69,7 +69,7 @@ export function Navbar() {
       <div className="flex items-center gap-2">
         {user ? (
           <DropdownMenu>
-            <DropdownMenuTrigger className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <DropdownMenuTrigger aria-label="Open user menu" className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Avatar size="default">
                 <AvatarFallback className="text-xs font-medium">
                   {initials}
