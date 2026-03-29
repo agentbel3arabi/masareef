@@ -6,6 +6,7 @@ import { Trash2, Pencil } from "lucide-react";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,14 +20,27 @@ import {
 import { useDeleteTransaction, useUpdateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import { AccountPill } from "./account-pill";
 import type { Transaction } from "@/hooks/use-transactions";
+import type { Account } from "@/hooks/use-accounts";
 
 interface TransactionRowProps {
   transaction: Transaction;
   showAccount?: boolean;
+  account?: Account;
+  bulkMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (id: number) => void;
 }
 
-export function TransactionRow({ transaction }: TransactionRowProps) {
+export function TransactionRow({
+  transaction,
+  showAccount,
+  account,
+  bulkMode = false,
+  selected = false,
+  onToggleSelect,
+}: TransactionRowProps) {
   const t = useTranslations();
   const locale = useLocale();
 
@@ -88,7 +102,20 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
 
   return (
     <>
-      <tr className="border-b hover:bg-accent/50 transition-colors">
+      <tr
+        className={`border-b transition-colors group ${
+          selected ? "bg-primary/5" : "hover:bg-accent/50"
+        }`}
+      >
+        {bulkMode && (
+          <td className="px-4 py-3 w-10">
+            <Checkbox
+              checked={selected}
+              onCheckedChange={() => onToggleSelect?.(transaction.id)}
+              aria-label={`Select transaction ${transaction.id}`}
+            />
+          </td>
+        )}
         <td className="px-4 py-3 text-sm">{transaction.date}</td>
         <td className="px-4 py-3 text-sm">
           <div>{transaction.description || "—"}</div>
@@ -96,6 +123,17 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
             <div className="text-xs text-muted-foreground">{transaction.notes}</div>
           )}
         </td>
+        {showAccount && (
+          <td className="px-4 py-3">
+            {account ? (
+              <AccountPill
+                accountId={account.id}
+                accountName={account.name}
+                accountType={account.type}
+              />
+            ) : null}
+          </td>
+        )}
         <td className="px-4 py-3">
           {transaction.category ? (
             <Badge variant="secondary" className="gap-1.5">
@@ -112,7 +150,9 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
                 : transaction.category.name_en}
             </Badge>
           ) : (
-            <span className="text-xs text-muted-foreground">{t("transactions.uncategorized")}</span>
+            <span className="text-xs text-muted-foreground">
+              {t("transactions.uncategorized")}
+            </span>
           )}
         </td>
         <td className="px-4 py-3 text-end">
@@ -124,26 +164,28 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
           />
         </td>
         <td className="px-4 py-3">
-          <div className="flex items-center justify-end gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={openEdit}
-              aria-label={t("common.edit")}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-destructive"
-              onClick={() => setDeleteOpen(true)}
-              aria-label={t("common.delete")}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          {!bulkMode && (
+            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={openEdit}
+                aria-label={t("common.edit")}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={() => setDeleteOpen(true)}
+                aria-label={t("common.delete")}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </td>
       </tr>
 
@@ -182,7 +224,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
               <Button
                 type="button"
                 variant={type === "debit" ? "default" : "outline"}
-                className="flex-1"
+                className="grow"
                 onClick={() => { setType("debit"); setCategoryId(""); }}
               >
                 {t("transactions.expense")}
@@ -190,7 +232,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
               <Button
                 type="button"
                 variant={type === "credit" ? "default" : "outline"}
-                className="flex-1"
+                className="grow"
                 onClick={() => { setType("credit"); setCategoryId(""); }}
               >
                 {t("transactions.incomeType")}
