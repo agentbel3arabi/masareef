@@ -11,20 +11,19 @@
 | Wave 1 — Infrastructure | ✅ Complete (PRs #16, #17) | `docs/superpowers/plans/upgrade/` |
 | Wave 2 — Backend | ✅ Complete (PRs merged) | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
 | Wave 3 — UI Foundation | ✅ Complete (PRs #19, #20 + 1.5F) | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
-| Wave 4 — Page Fidelity | 📋 Planned, ready to execute | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
-| Wave 5 — Landing & Process | ⏳ Write plan after Wave 4 merges | — |
+| Wave 4 — Page Fidelity | ✅ Complete (PRs #21, #22, #23) | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
+| Wave 5 — Landing & Process | 📋 Write plan, ready to execute | — |
 
 ## Next Step
 
-**Execute Wave 4.** The plan is at `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md`.
-
-All three units run in parallel — cut branches from main:
+**Write and execute Wave 5.** Cut two branches from main:
 
 ```
-git checkout -b feature/1.5I-accounts-fidelity
-git checkout -b feature/1.5J-transactions-fidelity
-git checkout -b feature/1.5K-transfers-dashboard-sidebar
+git checkout -b feature/1.5L-landing-page
+git checkout -b chore/1.5M-workflow-roadmap-updates
 ```
+
+Wave 5 plan must be written before execution (write just-in-time, now that Wave 4 is on main).
 
 Each unit follows the standard workflow: Execute → Push PR → Copilot Review → Fix → UAT → Merge.
 
@@ -141,8 +140,8 @@ Wave 5: Landing & Process          ← Plan: written just-in-time after Wave 4 m
 | Wave 1 (1.5B) | `docs/superpowers/plans/upgrade/pr2-tailwind-shadcn-base-nova.md` |
 | Wave 2 | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
 | Wave 3 | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` ✅ |
-| Wave 4 | Write after Wave 3 merges |
-| Wave 5 | Write after Wave 4 merges |
+| Wave 4 | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` ✅ |
+| Wave 5 | Write now (Wave 4 on main) |
 
 ---
 
