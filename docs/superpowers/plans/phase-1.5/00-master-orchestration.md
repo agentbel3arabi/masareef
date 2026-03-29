@@ -12,7 +12,12 @@
 | Wave 2 — Backend | ✅ Complete (PRs merged) | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
 | Wave 3 — UI Foundation | ✅ Complete (PRs #19, #20 + 1.5F) | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
 | Wave 4 — Page Fidelity | ✅ Complete (PRs #21, #22, #23) | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
+| Pre-Wave 5 Audit | ✅ Complete | `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md` |
 | Wave 5 — Landing & Process | 📋 Write plan, ready to execute | — |
+
+## Pre-Wave 5 Audit
+
+Full codebase audit completed 2026-03-29 (28 findings: 3 CRITICAL, 12 MAJOR, 13 MINOR). Report: `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md`. All findings assigned to Wave 5 units — no hotfix branches needed. Unit 1.5L absorbs ~2.5 hours of polish fixes alongside the landing page; Unit 1.5M gets the backend route order fix.
 
 ## Next Step
 

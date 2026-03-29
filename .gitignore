@@ -59,3 +59,8 @@ Thumbs.db
 # =========================
 playwright-report/
 .playwright-mcp/
+
+# =========================
+# Audit screenshots (large PNGs)
+# =========================
+docs/superpowers/reports/screenshots/
