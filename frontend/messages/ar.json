@@ -8,6 +8,8 @@
     "transactionUpdated": "تم تحديث المعاملة",
     "transferCreated": "تم إنشاء التحويل",
     "transferDeleted": "تم حذف التحويل",
+    "bulkDeleted": "تم حذف المعاملات",
+    "bulkCategorized": "تم إعادة تصنيف المعاملات",
     "error": "حدث خطأ ما",
     "tryAgain": "يرجى المحاولة مرة أخرى"
   },
@@ -178,7 +180,22 @@
     "deleteConfirmTitle": "حذف المعاملة",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذه المعاملة؟ لا يمكن التراجع عن هذا الإجراء.",
     "editTransaction": "تعديل المعاملة",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "allAccounts": "كل الحسابات",
+    "allCategories": "كل الفئات",
+    "allTypes": "كل الأنواع",
+    "amountMin": "الحد الأدنى",
+    "amountMax": "الحد الأقصى",
+    "resetFilters": "إعادة تعيين",
+    "manage": "إدارة",
+    "cancel": "إلغاء",
+    "selectAll": "تحديد الكل",
+    "selectedCount": "{count} محدد",
+    "recategorize": "تصنيف…",
+    "deleteSelected": "حذف",
+    "bulkDeleteConfirm": "حذف {count} معاملة؟ لا يمكن التراجع.",
+    "bulkDeleted": "تم حذف المعاملات",
+    "bulkCategorized": "تم إعادة تصنيف المعاملات"
   },
   "transfers": {
     "title": "التحويلات",

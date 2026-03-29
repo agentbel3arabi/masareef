@@ -8,6 +8,8 @@
     "transactionUpdated": "Transaction updated",
     "transferCreated": "Transfer created",
     "transferDeleted": "Transfer deleted",
+    "bulkDeleted": "Transactions deleted",
+    "bulkCategorized": "Transactions re-categorized",
     "error": "Something went wrong",
     "tryAgain": "Please try again"
   },
@@ -178,7 +180,22 @@
     "deleteConfirmTitle": "Delete Transaction",
     "deleteConfirmDescription": "Are you sure you want to delete this transaction? This action cannot be undone.",
     "editTransaction": "Edit Transaction",
-    "actions": "Actions"
+    "actions": "Actions",
+    "allAccounts": "All Accounts",
+    "allCategories": "All Categories",
+    "allTypes": "All Types",
+    "amountMin": "Min amount",
+    "amountMax": "Max amount",
+    "resetFilters": "Reset",
+    "manage": "Manage",
+    "cancel": "Cancel",
+    "selectAll": "Select all",
+    "selectedCount": "{count} selected",
+    "recategorize": "Re-categorize…",
+    "deleteSelected": "Delete",
+    "bulkDeleteConfirm": "Delete {count} transactions? This cannot be undone.",
+    "bulkDeleted": "Transactions deleted",
+    "bulkCategorized": "Transactions re-categorized"
   },
   "transfers": {
     "title": "Transfers",
