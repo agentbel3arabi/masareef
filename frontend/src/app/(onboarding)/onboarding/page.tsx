@@ -27,7 +27,16 @@ export default function OnboardingPage() {
     householdName || (firstName ? `${firstName}'s Household` : t("defaultHouseholdName"));
 
   const handleStep3Next = async (
-    accountData: { name: string; type: string; initial_balance: number } | null
+    accountData: {
+      name: string;
+      type: string;
+      initial_balance: number;
+      institution?: string;
+      opened_at?: string;
+      credit_limit?: number;
+      billing_cycle_day?: number;
+      payment_due_day?: number;
+    } | null
   ) => {
     setStepError("");
     try {
@@ -47,6 +56,11 @@ export default function OnboardingPage() {
           type: accountData.type,
           currency,
           initial_balance: accountData.initial_balance,
+          institution: accountData.institution,
+          opened_at: accountData.opened_at,
+          credit_limit: accountData.credit_limit,
+          billing_cycle_day: accountData.billing_cycle_day,
+          payment_due_day: accountData.payment_due_day,
         });
       } catch {
         // Account creation failed — continue to step 4 anyway (account can be added later)
