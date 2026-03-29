@@ -33,7 +33,7 @@ export default function SignupPage() {
     setIsDuplicateEmail(false);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -52,6 +52,11 @@ export default function SignupPage() {
       const isDuplicate = error.message.toLowerCase().includes("already registered");
       setIsDuplicateEmail(isDuplicate);
       setError(isDuplicate ? "" : error.message);
+      setLoading(false);
+    } else if (data?.user?.identities?.length === 0) {
+      // Supabase returns fake success with empty identities for existing emails
+      // (email enumeration protection when "Confirm email" is enabled)
+      setIsDuplicateEmail(true);
       setLoading(false);
     } else {
       setShowConfirmation(true);
