@@ -12,8 +12,12 @@ function daysUntilNextOccurrence(dayOfMonth: number): number {
   if (dayOfMonth === todayDay) return 0;
 
   if (dayOfMonth > todayDay) {
-    // Due day is still coming this month
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), dayOfMonth);
+    // Due day is still coming this month — clamp to last day of month
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+    const clampedDay = Math.min(dayOfMonth, lastDayOfMonth);
+    const thisMonth = new Date(year, month, clampedDay);
     return Math.ceil((thisMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   }
 
