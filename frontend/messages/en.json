@@ -116,6 +116,8 @@
     "goToLogin": "Go to Login",
     "resendEmail": "Didn't receive it? Resend",
     "resendSuccess": "Confirmation email resent",
+    "alreadyRegistered": "This email is already registered.",
+    "loginInstead": "Log in instead",
     "marketingHeadline": "Your money, your language, your rules.",
     "marketingSubheadline": "Personal finance built for Egypt & MENA.",
     "marketing": {

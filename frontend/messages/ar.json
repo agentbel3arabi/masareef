@@ -116,6 +116,8 @@
     "goToLogin": "الذهاب لتسجيل الدخول",
     "resendEmail": "لم تستلم؟ أعد الإرسال",
     "resendSuccess": "تم إعادة إرسال بريد التأكيد",
+    "alreadyRegistered": "هذا البريد الإلكتروني مسجّل بالفعل.",
+    "loginInstead": "سجّل الدخول بدلاً من ذلك",
     "marketingHeadline": "فلوسك، بلغتك، بقواعدك.",
     "marketingSubheadline": "تطبيق مالي شخصي مصمم لمصر والمنطقة.",
     "marketing": {

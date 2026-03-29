@@ -20,6 +20,7 @@ export default function SignupPage() {
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [error, setError] = useState("");
+  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -29,6 +30,7 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setIsDuplicateEmail(false);
 
     const supabase = createClient();
     const { error } = await supabase.auth.signUp({
@@ -47,7 +49,9 @@ export default function SignupPage() {
     });
 
     if (error) {
-      setError(error.message);
+      const isDuplicate = error.message.toLowerCase().includes("already registered");
+      setIsDuplicateEmail(isDuplicate);
+      setError(isDuplicate ? "" : error.message);
       setLoading(false);
     } else {
       setShowConfirmation(true);
@@ -108,7 +112,15 @@ export default function SignupPage() {
         <p className="text-sm text-muted-foreground">{t("auth.signupSubtitle")}</p>
       </div>
       <form onSubmit={handleSignup} className="space-y-4">
-        {error && (
+        {isDuplicateEmail && (
+          <div className="text-sm text-center space-y-1">
+            <p className="text-destructive">{t("auth.alreadyRegistered")}</p>
+            <Link href="/login" className="text-primary hover:underline">
+              {t("auth.loginInstead")}
+            </Link>
+          </div>
+        )}
+        {error && !isDuplicateEmail && (
           <p className="text-sm text-destructive text-center">{error}</p>
         )}
         <div className="grid grid-cols-2 gap-3">
