@@ -9,6 +9,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useCreateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus } from "lucide-react";
 
 interface TransactionFormProps {
@@ -117,18 +124,24 @@ export function TransactionForm({
 
           <div className="space-y-2">
             <Label>{t("transactions.category")}</Label>
-            <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            <Select
+              value={categoryId === "" ? undefined : String(categoryId)}
+              onValueChange={(val) => setCategoryId(val ? Number(val) : "")}
             >
-              <option value="">{t("transactions.uncategorized")}</option>
-              {(categoriesData?.data || []).map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("transactions.uncategorized")} />
+              </SelectTrigger>
+              <SelectContent>
+                {(categoriesData?.data || []).map((cat) => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    {cat.icon && (
+                      <span className="me-2 text-muted-foreground">{cat.icon}</span>
+                    )}
+                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
