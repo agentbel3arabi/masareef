@@ -11,6 +11,7 @@ interface LogoProps {
   width: number;
   height: number;
   className?: string;
+  colorScheme?: "auto" | "light" | "dark";
 }
 
 const logoFiles: Record<string, { light: string; dark: string }> = {
@@ -28,11 +29,19 @@ const logoFiles: Record<string, { light: string; dark: string }> = {
   },
 };
 
-export function Logo({ variant, width, height, className }: LogoProps) {
+export function Logo({ variant, width, height, className, colorScheme = "auto" }: LogoProps) {
   const { resolvedTheme } = useTheme();
   const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
-  const theme = mounted && resolvedTheme === "dark" ? "dark" : "light";
+  let theme: "light" | "dark";
+  if (colorScheme === "light") {
+    theme = "light";
+  } else if (colorScheme === "dark") {
+    theme = "dark";
+  } else {
+    theme = mounted && resolvedTheme === "dark" ? "dark" : "light";
+  }
+
   const src = logoFiles[variant][theme];
 
   return (

@@ -30,8 +30,46 @@
     "amount": "المبلغ",
     "previous": "السابق",
     "next": "التالي",
+    "back": "رجوع",
     "total": "{count} إجمالي",
     "select": "اختر..."
+  },
+  "onboarding": {
+    "step1": {
+      "title": "سمِّ مجموعتك المالية",
+      "description": "هنا ستعيش جميع حساباتك وأموالك.",
+      "householdName": "اسم المجموعة"
+    },
+    "step2": {
+      "title": "اختر عملتك الأساسية",
+      "description": "هذه هي العملة المستخدمة لحساب صافي الثروة والإجماليات."
+    },
+    "step3": {
+      "title": "أضف حسابك الأول",
+      "description": "يمكنك إضافة المزيد من الحسابات في أي وقت.",
+      "skip": "تخطَّ، سأضيف لاحقاً",
+      "accountName": "اسم الحساب",
+      "accountNamePlaceholder": "مثال: حساب CIB الجاري",
+      "accountType": "نوع الحساب",
+      "accountTypes": {
+        "bankAccount": "حساب بنكي",
+        "cash": "نقدي",
+        "creditCard": "بطاقة ائتمانية",
+        "savings": "ادخار",
+        "digitalWallet": "محفظة إلكترونية"
+      },
+      "creating": "جارٍ الإنشاء..."
+    },
+    "step4": {
+      "title": "كل شيء جاهز!",
+      "description": "مجموعتك المالية جاهزة. ابدأ تتبع أموالك الآن.",
+      "goToDashboard": "الذهاب إلى لوحة التحكم"
+    },
+    "defaultHouseholdName": "مجموعتي المالية",
+    "common": {
+      "next": "التالي",
+      "back": "رجوع"
+    }
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -56,11 +94,22 @@
     "hasAccount": "لديك حساب بالفعل؟",
     "firstName": "الاسم الأول",
     "lastName": "اسم العائلة",
+    "preferredLanguage": "اللغة المفضلة",
+    "country": "الدولة",
     "gender": "الجنس",
     "age": "العمر",
     "male": "ذكر",
     "female": "أنثى",
-    "preferNotToSay": "أفضل عدم الإفصاح"
+    "preferNotToSay": "أفضل عدم الإفصاح",
+    "loginSubtitle": "سجّل دخولك إلى حسابك في مصاريف",
+    "signupSubtitle": "أنشئ حسابك المجاني في مصاريف",
+    "marketingHeadline": "فلوسك، بلغتك، بقواعدك.",
+    "marketingSubheadline": "تطبيق مالي شخصي مصمم لمصر والمنطقة.",
+    "marketing": {
+      "feature1": "استورد كشوف حساب من البنوك المصرية — CIB وHSBC والبنك الأهلي وغيرها",
+      "feature2": "تصنيف تلقائي بالذكاء الاصطناعي يفهم أسماء التجار العرب",
+      "feature3": "تتبع الديون والأقساط والجمعيات والأصول في مكان واحد"
+    }
   },
   "accounts": {
     "title": "الحسابات",

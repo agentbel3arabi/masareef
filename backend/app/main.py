@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
 from app.routers import accounts, categories, transactions, transfers
+from app.routers.households import router as households_router
 
 # Load settings — will use .env file at runtime
 try:
@@ -37,6 +38,7 @@ app.add_middleware(
 )
 
 
+app.include_router(households_router)
 app.include_router(accounts.router)
 app.include_router(categories.router)
 app.include_router(transactions.router)
