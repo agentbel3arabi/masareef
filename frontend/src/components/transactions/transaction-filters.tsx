@@ -38,7 +38,8 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
     filters.amount_max != null;
 
   return (
-    <div className="flex flex-wrap gap-2 mb-4 items-end">
+    <div className="bg-muted/30 rounded-2xl p-5 mb-4">
+      <div className="flex flex-wrap gap-2 items-end">
       {/* Search */}
       <Input
         placeholder={t("transactions.search")}
@@ -165,6 +166,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
           {t("transactions.resetFilters")}
         </Button>
       )}
+      </div>
     </div>
   );
 }

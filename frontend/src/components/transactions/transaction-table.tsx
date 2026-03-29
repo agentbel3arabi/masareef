@@ -41,9 +41,9 @@ export function TransactionTable({
 
   return (
     <div>
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-2xl border overflow-hidden overflow-x-auto shadow-sm">
         <table className="w-full">
-          <thead className="bg-muted/50">
+          <thead className="bg-muted/30">
             <tr>
               {bulkMode && (
                 <th className="px-4 py-3 w-10">
@@ -57,21 +57,21 @@ export function TransactionTable({
                   />
                 </th>
               )}
-              <th className="px-4 py-3 text-start text-sm font-medium">
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("transactions.date")}
               </th>
-              <th className="px-4 py-3 text-start text-sm font-medium">
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("transactions.description")}
               </th>
               {showAccount && (
-                <th className="px-4 py-3 text-start text-sm font-medium">
+                <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("nav.accounts")}
                 </th>
               )}
-              <th className="px-4 py-3 text-start text-sm font-medium">
+              <th className="px-4 py-3 text-start text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("transactions.category")}
               </th>
-              <th className="px-4 py-3 text-end text-sm font-medium">
+              <th className="px-4 py-3 text-end text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("transactions.amount")}
               </th>
               <th className="px-4 py-3 w-20">
