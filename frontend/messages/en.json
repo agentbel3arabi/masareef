@@ -40,7 +40,11 @@
     "transfers": "Transfers",
     "debts": "Debts",
     "budgets": "Budgets",
-    "settings": "Settings"
+    "settings": "Settings",
+    "openNavigation": "Open navigation",
+    "navigation": "Navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   },
   "auth": {
     "login": "Log In",
@@ -124,5 +128,31 @@
     "deleteConfirmTitle": "Delete Transfer",
     "deleteConfirmDescription": "Are you sure you want to delete this transfer? This action cannot be undone.",
     "actions": "Actions"
+  },
+  "emptyStates": {
+    "accounts": {
+      "title": "No accounts yet",
+      "description": "Add your first account to get started tracking your finances.",
+      "action": "Add Account"
+    },
+    "transactions": {
+      "title": "No transactions yet",
+      "description": "Record your first transaction or import a bank statement.",
+      "action": "Add Transaction"
+    },
+    "transfers": {
+      "title": "No transfers yet",
+      "description": "Create a transfer to move money between your accounts.",
+      "action": "New Transfer"
+    },
+    "accountTransactions": {
+      "title": "No transactions",
+      "description": "This account has no transaction history yet.",
+      "action": "Add Transaction"
+    },
+    "searchResults": {
+      "title": "No results found",
+      "description": "Try adjusting your filters or search terms."
+    }
   }
 }
