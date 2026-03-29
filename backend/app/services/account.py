@@ -117,6 +117,35 @@ async def compute_displayed_balance(
     return account.balance_minor + tx_sum
 
 
+async def compute_net_worth(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+) -> dict:
+    """Compute net worth across all active accounts."""
+    accounts, _ = await list_accounts(session, household_id, page=1, page_size=1000)
+
+    by_currency: dict[str, int] = {}
+    for acct in accounts:
+        bal = await compute_displayed_balance(session, acct)
+        by_currency[acct.currency] = by_currency.get(acct.currency, 0) + bal
+
+    # Fetch household base currency
+    from app.models.household import Household
+    hh = await session.get(Household, household_id)
+    base_currency = hh.base_currency if hh else "EGP"
+
+    # Total in base currency — for accounts already in base currency, sum directly
+    # For cross-currency accounts, sum only same-currency for now (exchange rate integration is Phase 5)
+    total_base_minor = by_currency.get(base_currency, 0)
+
+    return {
+        "by_currency": by_currency,
+        "total_base_minor": total_base_minor,
+        "base_currency": base_currency,
+        "account_count": len(accounts),
+    }
+
+
 async def reconcile_account(
     session: AsyncSession,
     account: Account,
