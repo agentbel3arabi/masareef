@@ -76,7 +76,7 @@ export function TransactionForm({
         <Plus className="h-4 w-4 me-1" />
         {t("transactions.addTransaction")}
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-md">
+      <SheetContent side="end" className="w-full sm:max-w-md">
         <SheetHeader>
           <SheetTitle>{t("transactions.newTransaction")}</SheetTitle>
         </SheetHeader>
