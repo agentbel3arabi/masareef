@@ -38,6 +38,17 @@ export function MobileNavDrawer() {
         </div>
         <nav className="flex-1 space-y-1 p-4">
           {navItems.map((item) => {
+            if (item.disabled) {
+              return (
+                <span
+                  key={item.href}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground/40 cursor-not-allowed"
+                >
+                  <item.icon className="h-4 w-4" />
+                  {t(item.label)}
+                </span>
+              );
+            }
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
