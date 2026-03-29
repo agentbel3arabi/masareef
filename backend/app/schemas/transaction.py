@@ -54,6 +54,7 @@ class CategoryEmbedded(BaseModel):
     name_en: str
     name_ar: str | None = None
     color: str | None = None
+    icon: str | None = None
 
     model_config = {"from_attributes": True}
 

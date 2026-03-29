@@ -99,12 +99,14 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
         <td className="px-4 py-3">
           {transaction.category ? (
             <Badge variant="secondary" className="gap-1.5">
-              {transaction.category.color && (
+              {transaction.category.icon ? (
+                <span className="text-xs">{transaction.category.icon}</span>
+              ) : transaction.category.color ? (
                 <span
-                  className="inline-block h-2 w-2 rounded-full"
+                  className="inline-block h-2 w-2 rounded-full shrink-0"
                   style={{ backgroundColor: transaction.category.color }}
                 />
-              )}
+              ) : null}
               {locale === "ar" && transaction.category.name_ar
                 ? transaction.category.name_ar
                 : transaction.category.name_en}

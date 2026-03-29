@@ -16,6 +16,7 @@ export interface Transaction {
     name_en: string;
     name_ar: string | null;
     color: string | null;
+    icon: string | null;
   } | null;
   is_split: boolean;
   transfer_id: string | null;
