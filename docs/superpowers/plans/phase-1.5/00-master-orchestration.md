@@ -11,7 +11,7 @@
 | Wave 1 — Infrastructure | ✅ Complete (PRs #16, #17) | `docs/superpowers/plans/upgrade/` |
 | Wave 2 — Backend | ✅ Complete (PRs merged) | `docs/superpowers/plans/phase-1.5/wave-2-backend.md` |
 | Wave 3 — UI Foundation | 📋 Planned, ready to execute | `docs/superpowers/plans/phase-1.5/wave-3-ui-foundation.md` |
-| Wave 4 — Page Fidelity | ⏳ Write plan after Wave 3 merges | — |
+| Wave 4 — Page Fidelity | 📋 Planned, ready to execute | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
 | Wave 5 — Landing & Process | ⏳ Write plan after Wave 4 merges | — |
 
 ## Next Step
