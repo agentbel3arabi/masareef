@@ -82,7 +82,11 @@
     "openNavigation": "فتح القائمة",
     "navigation": "التنقل",
     "collapseSidebar": "طي الشريط الجانبي",
-    "expandSidebar": "توسيع الشريط الجانبي"
+    "expandSidebar": "توسيع الشريط الجانبي",
+    "sectionOverview": "نظرة عامة",
+    "sectionFinance": "المالية",
+    "sectionPlanning": "التخطيط",
+    "sectionSettings": "الإعدادات"
   },
   "auth": {
     "login": "تسجيل الدخول",

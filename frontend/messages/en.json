@@ -82,7 +82,11 @@
     "openNavigation": "Open navigation",
     "navigation": "Navigation",
     "collapseSidebar": "Collapse sidebar",
-    "expandSidebar": "Expand sidebar"
+    "expandSidebar": "Expand sidebar",
+    "sectionOverview": "Overview",
+    "sectionFinance": "Finance",
+    "sectionPlanning": "Planning",
+    "sectionSettings": "Settings"
   },
   "auth": {
     "login": "Log In",
