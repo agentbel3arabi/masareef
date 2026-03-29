@@ -231,6 +231,10 @@
   "sidebar": {
     "tagline": "Smart finance management"
   },
+  "settings": {
+    "title": "Settings",
+    "comingSoon": "Account preferences, data management, and more will be available here."
+  },
   "error": {
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Please try again or go back to the dashboard.",
