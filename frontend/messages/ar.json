@@ -180,7 +180,14 @@
     "billingCycleDay": "يوم دورة الفاتورة",
     "paymentDueDay": "يوم استحقاق الدفع",
     "cancel": "إلغاء",
-    "name": "اسم الحساب"
+    "name": "اسم الحساب",
+    "incomeThisMonth": "الدخل هذا الشهر",
+    "expensesThisMonth": "المصروفات هذا الشهر",
+    "avgTransaction": "متوسط المعاملة",
+    "accountStatements": "كشف الحساب",
+    "transferFunds": "تحويل الأموال",
+    "comingSoon": "قريباً",
+    "totalAccounts": "الحسابات"
   },
   "transactions": {
     "title": "المعاملات",
@@ -223,7 +230,8 @@
     "bulkDeleteConfirm": "حذف {count} معاملة؟ لا يمكن التراجع.",
     "bulkDeleted": "تم حذف المعاملات",
     "bulkCategorized": "تم إعادة تصنيف المعاملات",
-    "selectTransaction": "تحديد معاملة {id}"
+    "selectTransaction": "تحديد معاملة {id}",
+    "netFlow": "صافي التدفق"
   },
   "transfers": {
     "title": "التحويلات",
@@ -247,13 +255,18 @@
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "subtitle": "الرسوم البيانية والإحصاءات قادمة في المرحلة الرابعة.",
+    "subtitle": "نظرة عامة على أموالك",
     "netWorth": "صافي الثروة",
     "monthlySpending": "الإنفاق الشهري",
     "activeDebts": "الديون النشطة",
     "upcoming": "القادم (30 يوم)",
-    "comingSoon": "قادم في المرحلة الرابعة",
-    "chartsComingSoon": "الرسوم البيانية قادمة قريباً"
+    "recentTransactions": "آخر المعاملات",
+    "viewAll": "عرض الكل",
+    "noRecentTransactions": "لا توجد معاملات حديثة بعد.",
+    "comingSoonPhase2": "قادم في المرحلة 2",
+    "comingSoonPhase3": "قادم في المرحلة 3",
+    "comingSoonPhase4": "قادم في المرحلة 4",
+    "chartsComingSoon": "الرسوم البيانية قادمة في المرحلة 4"
   },
   "brand": {
     "name": "مصاريف",

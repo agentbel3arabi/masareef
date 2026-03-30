@@ -180,7 +180,14 @@
     "billingCycleDay": "Billing Cycle Day",
     "paymentDueDay": "Payment Due Day",
     "cancel": "Cancel",
-    "name": "Account Name"
+    "name": "Account Name",
+    "incomeThisMonth": "Income this month",
+    "expensesThisMonth": "Expenses this month",
+    "avgTransaction": "Avg. Transaction",
+    "accountStatements": "Account Statements",
+    "transferFunds": "Transfer Funds",
+    "comingSoon": "Coming soon",
+    "totalAccounts": "Accounts"
   },
   "transactions": {
     "title": "Transactions",
@@ -223,7 +230,8 @@
     "bulkDeleteConfirm": "Delete {count} transactions? This cannot be undone.",
     "bulkDeleted": "Transactions deleted",
     "bulkCategorized": "Transactions re-categorized",
-    "selectTransaction": "Select transaction {id}"
+    "selectTransaction": "Select transaction {id}",
+    "netFlow": "Net Flow"
   },
   "transfers": {
     "title": "Transfers",
@@ -247,13 +255,18 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Charts and insights coming in Phase 4.",
+    "subtitle": "Your financial overview",
     "netWorth": "Net Worth",
     "monthlySpending": "Monthly Spending",
     "activeDebts": "Active Debts",
     "upcoming": "Upcoming (30d)",
-    "comingSoon": "Coming in Phase 4",
-    "chartsComingSoon": "Charts coming soon"
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View all",
+    "noRecentTransactions": "No recent transactions yet.",
+    "comingSoonPhase2": "Coming in Phase 2",
+    "comingSoonPhase3": "Coming in Phase 3",
+    "comingSoonPhase4": "Coming in Phase 4",
+    "chartsComingSoon": "Charts coming in Phase 4"
   },
   "brand": {
     "name": "Masareef",
