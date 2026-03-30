@@ -72,7 +72,7 @@ export function Sidebar() {
           </Link>
           {!collapsed && (
             <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium truncate">
-              {t("sidebar.tagline")}
+              {t("brand.tagline")}
             </p>
           )}
         </div>

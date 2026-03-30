@@ -37,6 +37,7 @@ export function DataTable<T>({
             {columns.map((col) => (
               <th
                 key={col.key}
+                scope="col"
                 className={cn(
                   "px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-muted-foreground",
                   col.className
@@ -52,6 +53,9 @@ export function DataTable<T>({
             <tr
               key={keyExtractor(row)}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
+              onKeyDown={onRowClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onRowClick(row); } } : undefined}
+              tabIndex={onRowClick ? 0 : undefined}
+              role={onRowClick ? "button" : undefined}
               className={cn(
                 "transition-colors hover:bg-muted/30",
                 onRowClick && "cursor-pointer"

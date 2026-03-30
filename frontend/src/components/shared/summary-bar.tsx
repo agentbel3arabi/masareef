@@ -15,8 +15,8 @@ interface SummaryBarProps {
 export function SummaryBar({ items, className }: SummaryBarProps) {
   return (
     <Card className={cn("flex flex-wrap items-center gap-6 p-4", className)}>
-      {items.map((item) => (
-        <div key={item.label} className="flex flex-col">
+      {items.map((item, index) => (
+        <div key={item.label ?? index} className="flex flex-col">
           <span className="text-xs font-medium text-muted-foreground">
             {item.label}
           </span>
