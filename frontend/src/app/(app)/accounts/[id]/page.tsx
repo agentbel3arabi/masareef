@@ -25,6 +25,8 @@ export default function AccountDetailPage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [txFilters, setTxFilters] = useState<TransactionFilters>({
     account_id: accountId,
     page: 1,
@@ -65,7 +67,19 @@ export default function AccountDetailPage() {
 
       {/* Transactions section */}
       <div>
-        <h2 className="text-base font-semibold mb-4">{t("transactions.heading")}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold">{t("transactions.heading")}</h2>
+          <Button
+            variant={bulkMode ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => {
+              if (bulkMode) { setBulkMode(false); setSelectedIds(new Set()); }
+              else setBulkMode(true);
+            }}
+          >
+            {bulkMode ? t("transactions.cancel") : t("transactions.manage")}
+          </Button>
+        </div>
         <TransactionFilterBar
           filters={txFilters}
           onChange={(f) => setTxFilters({ ...f, account_id: accountId })}
@@ -88,6 +102,14 @@ export default function AccountDetailPage() {
             page={txFilters.page || 1}
             pageSize={txFilters.page_size || 50}
             onPageChange={(p) => setTxFilters({ ...txFilters, page: p })}
+            bulkMode={bulkMode}
+            selectedIds={selectedIds}
+            onToggleSelect={(id) => setSelectedIds(prev => {
+              const next = new Set(prev);
+              next.has(id) ? next.delete(id) : next.add(id);
+              return next;
+            })}
+            onSelectAll={(ids) => setSelectedIds(ids.length === 0 ? new Set() : new Set(ids))}
           />
         )}
       </div>

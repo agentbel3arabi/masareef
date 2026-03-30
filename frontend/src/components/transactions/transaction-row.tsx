@@ -10,6 +10,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -262,18 +269,32 @@ export function TransactionRow({
 
             <div className="space-y-2">
               <Label>{t("transactions.category")}</Label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              <Select
+                value={categoryId === "" ? "__uncategorized__" : String(categoryId)}
+                onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
               >
-                <option value="">{t("transactions.uncategorized")}</option>
-                {(categoriesData?.data || []).map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full">
+                  {categoryId !== "" && categoriesData?.data?.find(c => c.id === categoryId) ? (
+                    <span className="flex items-center gap-2">
+                      <CategoryIcon icon={categoriesData.data.find(c => c.id === categoryId)!.icon} className="h-4 w-4 shrink-0" />
+                      {(() => { const cat = categoriesData.data.find(c => c.id === categoryId)!; return locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en; })()}
+                    </span>
+                  ) : (
+                    <SelectValue placeholder={t("transactions.uncategorized")} />
+                  )}
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__uncategorized__">{t("transactions.uncategorized")}</SelectItem>
+                  {(categoriesData?.data || []).map((cat) => (
+                    <SelectItem key={cat.id} value={String(cat.id)}>
+                      <span className="flex items-center gap-2">
+                        <CategoryIcon icon={cat.icon} className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
