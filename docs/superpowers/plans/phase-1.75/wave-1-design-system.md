@@ -41,7 +41,7 @@
 
 | File | Changes |
 |------|---------|
-| `frontend/src/components/shared/logo.tsx` | Add `"white"` variant prop for dark backgrounds |
+| `frontend/src/components/shared/logo.tsx` | Verify `colorScheme="dark"` correctly maps to white logo assets; ensure logo files exist in `frontend/public/logos/` |
 | `frontend/src/components/layout/sidebar.tsx` | Full redesign to match approved Stitch 05-dashboard sidebar |
 | `frontend/src/components/layout/navbar.tsx` | Token alignment (spacing, colors) |
 | `frontend/src/app/globals.css` | Audit and fix any CSS variable drift from canonical tokens |

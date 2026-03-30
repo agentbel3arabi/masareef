@@ -109,7 +109,7 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 - Workflow documented in docs/guides/11-workflow.md
 - Roadmap updated with deferred items
 
-**Status:** ✅ Complete (PRs #16–26)
+**Status:** ✅ Complete (PRs #16–27)
 
 ---
 

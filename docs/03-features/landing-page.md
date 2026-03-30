@@ -14,7 +14,8 @@ Public marketing landing page for unauthenticated users. Serves at `/` and showc
 
 ## Language & Localization
 
-- **Browser Detection:** Locale detected via `next-intl` middleware
+- **Locale Source:** Locale is read from the `NEXT_LOCALE` cookie on each request
+- **Default Locale:** If no `NEXT_LOCALE` cookie is set, the locale defaults to Arabic (`ar`)
 - **Manual Toggle:** Language toggle button in navigation (English ↔ Arabic)
 - **RTL Support:** Arabic (ar) renders as right-to-left; English (en) renders as left-to-right
 - **Persistence:** Language choice stored in locale cookie, persists across sessions

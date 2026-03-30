@@ -26,7 +26,7 @@ Add unit-specific checks here based on the features built in this unit.
 If this unit includes new API endpoints:
 - [ ] Test each new endpoint manually (curl, Postman, or Thunder Client)
 - [ ] Test all documented request/response shapes with valid and invalid inputs
-- [ ] Verify error responses follow the standard envelope: `{ "error": { "code": "...", "message": "...", "details": [...] } }`
+- [ ] Verify error responses follow the standard envelope: `{ "detail": { "error": { "code": "...", "message": "...", "details": [...] } } }`
 - [ ] Check pagination works if applicable (valid `page` and `page_size` params; verify `meta` in response)
 - [ ] Test household scoping — verify user can only access their own household data (RLS + application layer)
 - [ ] Test soft-delete cascades match `02-data-models.md` specifications

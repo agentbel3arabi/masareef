@@ -31,7 +31,9 @@ Accounts are the foundation of all financial tracking. Every transaction, debt, 
 
 ### Credit Card Utilization
 
-**Calculation:** `utilization = (abs(displayed_balance_minor) / credit_limit) * 100`
+**Calculation (all amounts in minor units):**
+- `used_credit_minor = max(0, -displayed_balance_minor)` — negative balance means you owe money; zero/positive means fully paid or overpaid
+- `utilization = (used_credit_minor / credit_limit_minor) * 100`
 
 **Color thresholds:**
 - Green: <50% utilized
