@@ -39,13 +39,16 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsDuplicateEmail(false);
+    setResendSuccess(false);
+
     if (password !== confirmPassword) {
       setError(t("auth.passwordMismatch"));
       return;
     }
+
     setLoading(true);
-    setError("");
-    setIsDuplicateEmail(false);
 
     const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
