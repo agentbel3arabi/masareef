@@ -14,7 +14,7 @@
 | Wave 4 — Page Fidelity | ✅ Complete (PRs #21, #22, #23) | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
 | Pre-Wave 5 Audit | ✅ Complete | `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md` |
 | Wave 5 — Landing (1.5L) | ✅ Complete (PR #24) | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
-| Wave 5 — Workflow (1.5M) | 📋 Next | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
+| Wave 5 — Workflow (1.5M) | ✅ Complete (PRs #24, #27) | `docs/superpowers/plans/phase-1.5/wave-5-unit-1.5L.md`, `docs/superpowers/plans/phase-1.5/wave-5-unit-1.5M.md` |
 | Wave 6 — Bug Fix (Branch 1) | ✅ Complete (PR #25) | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
 | Wave 6 — Design Fidelity (Branch 2) | ✅ Complete (PR #26) — page redesigns deferred | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
 
@@ -47,7 +47,7 @@ UAT of Unit 1.5L revealed 18 bugs and design gaps. Wave 6 plan: `docs/superpower
 
 ## Next Step
 
-**Execute Wave 5 Unit 1.5M (`chore/1.5M-workflow-roadmap-updates`).** This is the final unit of Phase 1.5 — workflow formalization and roadmap updates. After 1.5M, Phase 1.5 is complete and Phase 2 (Import & Templates) can begin.
+**Phase 1.5 is complete.** All 5 waves (13 units) have been merged to main. Next: Phase 1.75 (Design System & Page Redesign).
 
 ---
 

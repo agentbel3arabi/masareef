@@ -26,9 +26,7 @@ async def get_household_status(
 ) -> dict:
     """Check if authenticated user has a household. Does NOT auto-provision."""
     result = await session.execute(
-        select(HouseholdMember.household_id)
-        .where(HouseholdMember.user_id == user_id)
-        .limit(1)
+        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id).limit(1)
     )
     household_id = result.scalar_one_or_none()
     return {"data": {"has_household": household_id is not None}}
@@ -43,9 +41,7 @@ async def create_household(
     """Create a household and add the current user as admin. Called during onboarding."""
     # Prevent creating a second household
     existing = await session.execute(
-        select(HouseholdMember.household_id)
-        .where(HouseholdMember.user_id == user_id)
-        .limit(1)
+        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id).limit(1)
     )
     if existing.scalar_one_or_none():
         return JSONResponse(
