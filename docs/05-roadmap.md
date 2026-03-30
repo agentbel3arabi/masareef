@@ -117,51 +117,68 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 **Unlocks:** Visual consistency, correct branding, and shared component foundation before feature expansion in Phase 2.
 
 ### Problem
-Pages were built functionality-first across Phase 1 and 1.5. They work correctly but don't consistently match Stitch designs. The original Stitch project has incorrect branding (wrong logo/tagline). There is no shared component library, so each page implements its own card, table, filter, and form patterns.
+Pages were built functionality-first across Phase 1 and 1.5. They work correctly but don't consistently match Stitch designs. The original Stitch project (`3967836651870677827`) has incorrect branding (wrong logo/tagline) and is retired. There is no shared component library, so each page implements its own card, table, filter, and form patterns.
+
+### Design Principles
+
+- **Stitch MCP is the primary tool.** All design work uses `generate_screen_from_text`, `edit_screens`, `get_screen` etc. Static HTML files in `docs/stitch-designs/html/` are fallback only when MCP is unavailable.
+- **User design review gate.** Every Stitch-generated screen must be reviewed and approved by the user before implementation begins. The cycle is: generate → present → user approves or requests changes → only then implement. No implementation starts without explicit sign-off.
+- **English designs, RTL-first implementation.** Stitch screens are generated in English (better AI quality). All implementation code uses CSS logical properties (`ps-`, `pe-`, `start-`, `end-`) — never physical (`pl-`, `pr-`, `left-`, `right-`). Arabic RTL rendering is verified in every wave's acceptance criteria.
+- **Rebuild visuals, preserve logic.** All TanStack Query hooks, API calls, pagination, filter state, form validation, and i18n translations stay intact. Only component markup and styling change.
 
 ### Deliverables
 
 **Wave 1 — Design System Foundation (`chore/1.75-design-system`)**
-- New Stitch project with correct Masareef branding (primary `#16A34A`, INTER font, ROUND_EIGHT, FIDELITY color variant)
-- All 8 screens generated via Stitch MCP and **approved by user** before any implementation
+- New Stitch project with correct Masareef branding (primary `#16A34A`, INTER font, ROUND_EIGHT, FIDELITY color variant, neutral `#0F172A`)
+- All 8 screens generated via Stitch MCP and **approved by user before any implementation**
 - `frontend/src/config/brand.ts` — single source for name, tagline (EN + AR), integrated with next-intl
 - 6 shared components: `PageHeader`, `StatCard`, `FilterBar`, `DataTable`, `FormSheet`, `SummaryBar`
 - Sidebar full redesign (matching Stitch 05-dashboard sidebar)
 - Navbar token alignment (colors, spacing, typography)
 - Design token audit — `globals.css` CSS variables verified against `guides/09-design-tokens.md`
-- Frontend design playbook: `docs/guides/11-frontend-design-playbook.md`
+- Frontend design playbook: `docs/guides/13-frontend-design-playbook.md` _(note: 11=workflow, 12=UAT template)_
 
 **Wave 2a — Auth & Onboarding Redesign (`feature/1.75-auth-redesign`)**
-- Login: split-screen, dark navy `#0F172A` left panel, white logo, form right
-- Signup: same split-screen layout, extended form
+- Login: split-screen, dark navy `#0F172A` left panel, white logo variant, form right
+- Signup: same split-screen layout, extended form, confirmation flow
 - Onboarding: 4-step wizard with progress indicator
+- All auth logic (redirect, confirmation, duplicate detection, error handling) preserved
 
 **Wave 2b — Core App Pages Redesign (`feature/1.75-app-pages-redesign`)**
-- Dashboard: real StatCards, recent transactions, quick actions, chart placeholders (Plotly deferred to Phase 4)
+- Dashboard: real StatCards, recent transactions, quick actions, chart placeholder cards (Plotly deferred to Phase 4)
 - Accounts: cards grouped by type, net worth bar, credit utilization indicators
 - Account Detail: header with stats row, transaction list with FilterBar + DataTable
-- Transactions: redesigned FilterBar, DataTable, summary stats row, FAB (floating action button)
+- Transactions: redesigned FilterBar, DataTable, summary stats row, FAB (floating action button, bottom-end)
 - Transfers: improved card layout, from→to visual flow
-- Transaction Form + Transfer Form: rebuilt using FormSheet shared component
+- Transaction Form + Transfer Form: rebuilt using `FormSheet` shared component (screens 21 + 22)
+- All page logic (hooks, API calls, filters, pagination, bulk ops) preserved
 
 **Wave 2c — Landing Page Refresh (`feature/1.75-landing-refresh`)**
-- Rebuild all landing sections from new Stitch design with correct brand text and logo
+- Rebuild all 8 landing sections from new Stitch design with correct brand text and logo variants
 
 **Cross-cutting**
-- "Coming soon" policy: backend-dependent UI elements shown as disabled with tooltips, not hidden
-- Backend dependency tracker: `docs/superpowers/plans/phase-1.75/backend-dependencies.md` — all "coming soon" items mapped to target phase
+- "Coming soon" policy: backend-dependent UI elements shown as disabled with tooltip ("Coming soon") or empty state ("Coming in Phase N") — never silently omitted
+- Backend dependency tracker: `docs/superpowers/plans/phase-1.75/backend-dependencies.md` — every "coming soon" item mapped to a target phase
+
+### Out of Scope
+- No new backend endpoints — this is a frontend-only phase
+- No Plotly charts — dashboard gets placeholder cards only (Phase 4)
+- No new features or behaviour changes — visuals only
+- Settings page — currently a placeholder; built in Phase 13
+- Future phase pages — only the 9 currently built pages are redesigned
 
 ### Success Criteria
-- All 8 pages (landing, login, signup, onboarding, dashboard, accounts, account detail, transactions, transfers) visually match their approved Stitch design
+- All 9 pages (landing, login, signup, onboarding, dashboard, accounts, account detail, transactions, transfers) + 2 forms (transaction form, transfer form) visually match their approved Stitch design
 - Every Stitch screen was reviewed and explicitly approved by user before implementation
 - Brand strings (tagline, name) come from `brand.ts` — not hardcoded anywhere
-- Logo variant correctly selected based on background (default vs white)
+- Logo variant correctly selected per background (default on light, white on dark/navy)
 - 6 shared components used consistently across all pages
 - CSS variables in `globals.css` match canonical tokens in `guides/09-design-tokens.md`
 - No physical directional CSS classes (`pl-`, `pr-`, `ml-`, `mr-`, `left-`, `right-`) anywhere in frontend
 - RTL Arabic correct on every page
 - Dark mode correct on every page
 - Responsive at 375px, 768px, 1280px on every page
+- All existing functionality preserved — no regressions on any page
 - Backend dependency tracker complete — all "coming soon" items mapped to a roadmap phase
 - `pnpm build` + `pnpm lint` + `tsc --noEmit` pass on all branches
 

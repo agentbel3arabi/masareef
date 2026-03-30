@@ -34,7 +34,7 @@
 | `frontend/src/components/shared/data-table.tsx` | Consistent table styling wrapper |
 | `frontend/src/components/shared/form-sheet.tsx` | Side sheet wrapper for forms |
 | `frontend/src/components/shared/summary-bar.tsx` | Totals bar (net worth, income/expense) |
-| `docs/guides/11-frontend-design-playbook.md` | How to generate and implement Stitch designs for future phases |
+| `docs/guides/13-frontend-design-playbook.md` | How to generate and implement Stitch designs for future phases |
 | `docs/superpowers/plans/phase-1.75/backend-dependencies.md` | Tracker for backend work discovered during redesign |
 
 ### Modified Files
@@ -909,7 +909,7 @@ git commit -m "docs: initialize backend dependencies tracker"
 ### Task 16: Write frontend design playbook
 
 **Files:**
-- Create: `docs/guides/11-frontend-design-playbook.md`
+- Create: `docs/guides/13-frontend-design-playbook.md`
 
 - [ ] **Step 1: Write the playbook**
 
@@ -996,7 +996,7 @@ When Stitch design conflicts with `docs/guides/09-design-tokens.md`, **design to
 - [ ] **Step 2: Commit**
 
 ```bash
-git add docs/guides/11-frontend-design-playbook.md
+git add docs/guides/13-frontend-design-playbook.md
 git commit -m "docs: add frontend design playbook for future phases"
 ```
 
