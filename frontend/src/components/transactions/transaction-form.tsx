@@ -123,7 +123,7 @@ export function TransactionForm({
             <SelectTrigger className="w-full">
               {selectedCategory ? (
                 <span className="flex items-center gap-2">
-                  {selectedCategory.icon && <span>{selectedCategory.icon}</span>}
+                  {selectedCategory.icon && <span className="text-base leading-none">{selectedCategory.icon}</span>}
                   {locale === "ar" && selectedCategory.name_ar
                     ? selectedCategory.name_ar
                     : selectedCategory.name_en}

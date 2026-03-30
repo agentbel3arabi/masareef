@@ -1,8 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ArrowLeftRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -16,10 +14,9 @@ const TYPE_LABEL_KEYS: Record<string, string> = {
 
 interface AccountBalanceHeaderProps {
   account: Account;
-  onTransfer?: () => void;
 }
 
-export function AccountBalanceHeader({ account, onTransfer }: AccountBalanceHeaderProps) {
+export function AccountBalanceHeader({ account }: AccountBalanceHeaderProps) {
   const t = useTranslations("accounts");
   const typeLabel = t(TYPE_LABEL_KEYS[account.type] ?? "bankAccount");
 
@@ -36,30 +33,17 @@ export function AccountBalanceHeader({ account, onTransfer }: AccountBalanceHead
       {/* Account name */}
       <h1 className="text-2xl font-bold text-foreground">{account.name}</h1>
 
-      {/* Balance + action buttons */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-            {t("balance")}
-          </p>
-          <MoneyDisplay
-            amount={account.displayed_balance_minor}
-            currency={account.currency}
-            size="lg"
-            colorize
-          />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {onTransfer && (
-            <Button size="sm" onClick={onTransfer}>
-              <ArrowLeftRight className="h-4 w-4 me-1" />
-              {t("transferFunds")}
-            </Button>
-          )}
-          <Button size="sm" variant="outline" disabled>
-            {t("accountStatements")}
-          </Button>
-        </div>
+      {/* Balance */}
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+          {t("balance")}
+        </p>
+        <MoneyDisplay
+          amount={account.displayed_balance_minor}
+          currency={account.currency}
+          size="lg"
+          colorize
+        />
       </div>
 
       {/* Stats row */}
