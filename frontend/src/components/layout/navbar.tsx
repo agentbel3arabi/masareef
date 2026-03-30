@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { Settings, Moon, Sun, Globe, LogOut } from "lucide-react";
+import { Settings, Moon, Sun, Globe, LogOut, Bell } from "lucide-react";
 import { MobileNavDrawer } from "./mobile-nav-drawer";
 import { LocaleToggle } from "./locale-toggle";
 import { ThemeToggle } from "./theme-toggle";
@@ -22,10 +22,12 @@ import {
 import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import { type Locale } from "@/i18n/config";
 import { setLocaleCookie } from "@/lib/locale";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 
 export function Navbar() {
   const { user, signOut } = useAuth();
   const t = useTranslations("nav");
+  const { actions } = useNavbarActions();
   const locale = useLocale();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
@@ -60,13 +62,20 @@ export function Navbar() {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-card px-6">
+    <header className="sticky top-0 z-50 flex h-16 items-center justify-between bg-background/80 backdrop-blur-md px-6">
       <div className="flex items-center gap-2 md:hidden">
         <MobileNavDrawer />
         <Logo variant="icon" {...LOGO_SIZES.mobileNav} />
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
+        {actions}
+        <button
+          className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          aria-label="Notifications"
+        >
+          <Bell className="h-4 w-4" />
+        </button>
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger aria-label="Open user menu" className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">

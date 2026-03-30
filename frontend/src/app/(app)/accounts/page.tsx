@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Wallet, ArrowLeftRight, Plus } from "lucide-react";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { useAccounts, useNetWorth } from "@/hooks/use-accounts";
 import { AccountGrid } from "@/components/accounts/account-grid";
 import { CreateAccountDialog } from "@/components/accounts/create-account-dialog";
@@ -28,6 +29,25 @@ export default function AccountsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>("EGP");
+
+  const { setActions } = useNavbarActions();
+
+  useEffect(() => {
+    setActions(
+      <div className="flex items-center gap-2">
+        <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+          <ArrowLeftRight className="h-4 w-4 me-1" />
+          {tTransfers("newTransfer")}
+        </Button>
+        <Button size="sm" onClick={() => setCreateOpen(true)}>
+          <Plus className="h-4 w-4 me-1" />
+          {t("addAccount")}
+        </Button>
+      </div>
+    );
+    return () => setActions(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nw = nwResponse?.data;
   const accounts = data?.data ?? [];
@@ -113,15 +133,6 @@ export default function AccountsPage() {
         </div>
       </section>
 
-      {/* Actions row */}
-      <div className="flex items-center justify-end gap-2">
-        <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
-          <ArrowLeftRight className="h-4 w-4 me-1" />
-          {tTransfers("newTransfer")}
-        </Button>
-        <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
-      </div>
-
       {/* Account grid — already grouped by type */}
       {isLoading && <AccountGridSkeleton />}
       {error && (
@@ -139,6 +150,7 @@ export default function AccountsPage() {
         />
       )}
 
+      <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
       <TransferForm open={transferOpen} onOpenChange={setTransferOpen} />
     </div>
   );

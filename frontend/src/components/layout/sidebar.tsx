@@ -46,14 +46,14 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex md:flex-col border-e bg-card transition-all duration-200",
+        "hidden md:flex md:flex-col bg-card transition-all duration-200",
         collapsed ? "md:w-16" : "md:w-64"
       )}
     >
       {/* Header: logo + collapse toggle */}
       <div
         className={cn(
-          "flex items-center border-b",
+          "flex items-center",
           collapsed ? "h-16 justify-center px-2" : "h-16 justify-between px-4"
         )}
       >
@@ -172,7 +172,7 @@ export function Sidebar() {
       {/* Bottom section: Help + Logout */}
       <div
         className={cn(
-          "mt-auto border-t py-2",
+          "mt-auto py-2",
           collapsed ? "px-1" : "px-2"
         )}
       >
