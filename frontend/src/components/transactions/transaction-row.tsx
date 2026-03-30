@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Trash2, Pencil } from "lucide-react";
+import { CategoryIcon, getCategoryIcon } from "@/lib/category-icon";
 import { MoneyDisplay } from "@/components/shared/money-display";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -104,7 +111,7 @@ export function TransactionRow({
     <>
       <tr
         className={`border-b transition-colors group ${
-          selected ? "bg-primary/5" : "hover:bg-accent/50"
+          selected ? "bg-primary/10 border-s-2 border-primary" : "hover:bg-muted/40"
         }`}
       >
         {bulkMode && (
@@ -136,23 +143,24 @@ export function TransactionRow({
         )}
         <td className="px-4 py-3">
           {transaction.category ? (
-            <Badge variant="secondary" className="gap-1.5">
-              {transaction.category.icon ? (
-                <span className="text-xs">{transaction.category.icon}</span>
-              ) : transaction.category.color ? (
-                <span
-                  className="inline-block h-2 w-2 rounded-full shrink-0"
-                  style={{ backgroundColor: transaction.category.color }}
-                />
-              ) : null}
-              {locale === "ar" && transaction.category.name_ar
-                ? transaction.category.name_ar
-                : transaction.category.name_en}
-            </Badge>
-          ) : (
-            <span className="text-xs text-muted-foreground">
-              {t("transactions.uncategorized")}
+            <span className="inline-flex items-center gap-1.5 text-sm">
+              <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-muted text-muted-foreground shrink-0">
+                {transaction.category.icon && getCategoryIcon(transaction.category.icon) ? (
+                  <CategoryIcon icon={transaction.category.icon} className="h-3.5 w-3.5" />
+                ) : transaction.category.color ? (
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: transaction.category.color }} />
+                ) : (
+                  <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+                )}
+              </span>
+              <span className="truncate max-w-[100px]">
+                {locale === "ar" && transaction.category.name_ar
+                  ? transaction.category.name_ar
+                  : transaction.category.name_en}
+              </span>
             </span>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
           )}
         </td>
         <td className="px-4 py-3 text-end">
@@ -261,18 +269,42 @@ export function TransactionRow({
 
             <div className="space-y-2">
               <Label>{t("transactions.category")}</Label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              <Select
+                value={categoryId === "" ? "__uncategorized__" : String(categoryId)}
+                onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
               >
-                <option value="">{t("transactions.uncategorized")}</option>
-                {(categoriesData?.data || []).map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full">
+                  {(() => {
+                    const selectedCategory =
+                      categoryId !== ""
+                        ? categoriesData?.data?.find((c) => c.id === categoryId) ??
+                          (transaction.category?.id === categoryId ? transaction.category : undefined)
+                        : undefined;
+                    if (selectedCategory) {
+                      return (
+                        <span className="flex items-center gap-2">
+                          <CategoryIcon icon={selectedCategory.icon} className="h-4 w-4 shrink-0" />
+                          {locale === "ar" && selectedCategory.name_ar
+                            ? selectedCategory.name_ar
+                            : selectedCategory.name_en}
+                        </span>
+                      );
+                    }
+                    return <SelectValue placeholder={t("transactions.uncategorized")} />;
+                  })()}
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__uncategorized__">{t("transactions.uncategorized")}</SelectItem>
+                  {(categoriesData?.data || []).map((cat) => (
+                    <SelectItem key={cat.id} value={String(cat.id)}>
+                      <span className="flex items-center gap-2">
+                        <CategoryIcon icon={cat.icon} className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

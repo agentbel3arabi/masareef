@@ -93,7 +93,8 @@
     "sectionPlanning": "التخطيط",
     "sectionSettings": "الإعدادات",
     "toggleTheme": "تبديل المظهر",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "notifications": "الإشعارات"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -156,6 +157,7 @@
     "openingBalance": "الرصيد الافتتاحي",
     "openedAt": "تاريخ فتح الحساب",
     "available": "المتاح",
+    "amountDue": "المبلغ المستحق",
     "loading": "جاري التحميل...",
     "error": "خطأ",
     "notFound": "الحساب غير موجود",
@@ -180,7 +182,25 @@
     "billingCycleDay": "يوم دورة الفاتورة",
     "paymentDueDay": "يوم استحقاق الدفع",
     "cancel": "إلغاء",
-    "name": "اسم الحساب"
+    "name": "اسم الحساب",
+    "incomeThisMonth": "الدخل هذا الشهر",
+    "expensesThisMonth": "المصروفات هذا الشهر",
+    "avgTransaction": "متوسط المعاملة",
+    "accountStatements": "كشف الحساب",
+    "transferFunds": "تحويل الأموال",
+    "comingSoon": "قريباً",
+    "totalAccounts": "الحسابات",
+    "assets": "الأصول",
+    "liabilities": "الخصوم",
+    "manage": "إدارة",
+    "deleteSelected": "حذف المحدد",
+    "accountSelected": "حساب محدد",
+    "accountsSelected": "حسابات محددة",
+    "selectAccount": "تحديد الحساب",
+    "deselectAccount": "إلغاء تحديد الحساب",
+    "cardholder": "حامل البطاقة",
+    "accountStatusActive": "نشط",
+    "accountStatusInactive": "غير نشط"
   },
   "transactions": {
     "title": "المعاملات",
@@ -223,7 +243,11 @@
     "bulkDeleteConfirm": "حذف {count} معاملة؟ لا يمكن التراجع.",
     "bulkDeleted": "تم حذف المعاملات",
     "bulkCategorized": "تم إعادة تصنيف المعاملات",
-    "selectTransaction": "تحديد معاملة {id}"
+    "selectTransaction": "تحديد معاملة {id}",
+    "netFlow": "صافي التدفق",
+    "subtitle": "راجع وأدر حركاتك المالية عبر جميع حساباتك المرتبطة.",
+    "count": "المعاملات",
+    "list": "قائمة المعاملات"
   },
   "transfers": {
     "title": "التحويلات",
@@ -243,17 +267,28 @@
     "descriptionPlaceholder": "مثال: سحب من الصراف",
     "deleteConfirmTitle": "حذف التحويل",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "selected": "محدد",
+    "selectAll": "تحديد جميع التحويلات",
+    "selectTransfer": "تحديد التحويل {id}"
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "subtitle": "الرسوم البيانية والإحصاءات قادمة في المرحلة الرابعة.",
+    "subtitle": "نظرة عامة على أموالك",
     "netWorth": "صافي الثروة",
+    "monthlyIncome": "الدخل الشهري",
     "monthlySpending": "الإنفاق الشهري",
     "activeDebts": "الديون النشطة",
+    "incomeVsExpenses": "الدخل مقابل المصروفات",
+    "spendingByCategory": "الإنفاق حسب الفئة",
     "upcoming": "القادم (30 يوم)",
-    "comingSoon": "قادم في المرحلة الرابعة",
-    "chartsComingSoon": "الرسوم البيانية قادمة قريباً"
+    "recentTransactions": "آخر المعاملات",
+    "viewAll": "عرض الكل",
+    "noRecentTransactions": "لا توجد معاملات حديثة بعد.",
+    "comingSoonPhase2": "قادم في المرحلة 2",
+    "comingSoonPhase3": "قادم في المرحلة 3",
+    "comingSoonPhase4": "قادم في المرحلة 4",
+    "chartsComingSoon": "الرسوم البيانية قادمة في المرحلة 4"
   },
   "brand": {
     "name": "مصاريف",

@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { FilterBar } from "@/components/shared/filter-bar";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCategories } from "@/hooks/use-categories";
 import type { TransactionFilters } from "@/hooks/use-transactions";
@@ -17,9 +18,10 @@ const DEFAULT_FILTERS: TransactionFilters = {
 interface TransactionFilterBarProps {
   filters: TransactionFilters;
   onChange: (filters: TransactionFilters) => void;
+  hideAccountFilter?: boolean;
 }
 
-export function TransactionFilterBar({ filters, onChange }: TransactionFilterBarProps) {
+export function TransactionFilterBar({ filters, onChange, hideAccountFilter = false }: TransactionFilterBarProps) {
   const t = useTranslations();
   const locale = useLocale();
   const { data: accountsData } = useAccounts();
@@ -38,7 +40,7 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
     filters.amount_max != null;
 
   return (
-    <div className="flex flex-wrap gap-2 mb-4 items-end">
+    <FilterBar className="mb-4">
       {/* Search */}
       <Input
         placeholder={t("transactions.search")}
@@ -50,25 +52,27 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
       />
 
       {/* Account */}
-      <select
-        value={filters.account_id ?? ""}
-        onChange={(e) =>
-          onChange({
-            ...filters,
-            account_id: e.target.value ? Number(e.target.value) : undefined,
-            page: 1,
-          })
-        }
-        aria-label={t("transactions.allAccounts")}
-        className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-      >
-        <option value="">{t("transactions.allAccounts")}</option>
-        {(accountsData?.data || []).map((acc) => (
-          <option key={acc.id} value={acc.id}>
-            {acc.name}
-          </option>
-        ))}
-      </select>
+      {!hideAccountFilter && (
+        <select
+          value={filters.account_id ?? ""}
+          onChange={(e) =>
+            onChange({
+              ...filters,
+              account_id: e.target.value ? Number(e.target.value) : undefined,
+              page: 1,
+            })
+          }
+          aria-label={t("transactions.allAccounts")}
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+        >
+          <option value="">{t("transactions.allAccounts")}</option>
+          {(accountsData?.data || []).map((acc) => (
+            <option key={acc.id} value={acc.id}>
+              {acc.name}
+            </option>
+          ))}
+        </select>
+      )}
 
       {/* Category */}
       <select
@@ -165,6 +169,6 @@ export function TransactionFilterBar({ filters, onChange }: TransactionFilterBar
           {t("transactions.resetFilters")}
         </Button>
       )}
-    </div>
+    </FilterBar>
   );
 }

@@ -46,36 +46,24 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex md:flex-col border-e bg-card transition-all duration-200",
+        "hidden md:flex md:flex-col bg-card transition-all duration-200",
         collapsed ? "md:w-16" : "md:w-64"
       )}
     >
-      {/* Header: logo + collapse toggle */}
+      {/* Logo row — same h-16 as navbar */}
       <div
         className={cn(
-          "flex items-center border-b",
-          collapsed ? "h-16 justify-center px-2" : "h-16 justify-between px-4"
+          "flex h-16 items-center",
+          collapsed ? "justify-center px-2" : "justify-between px-4"
         )}
       >
-        <div
-          className={cn(
-            "flex flex-col",
-            collapsed ? "items-center" : "min-w-0"
+        <Link href="/dashboard">
+          {collapsed ? (
+            <Logo variant="icon" width={28} height={28} />
+          ) : (
+            <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
           )}
-        >
-          <Link href="/dashboard">
-            {collapsed ? (
-              <Logo variant="icon" width={28} height={28} />
-            ) : (
-              <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
-            )}
-          </Link>
-          {!collapsed && (
-            <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium truncate">
-              {t("brand.tagline")}
-            </p>
-          )}
-        </div>
+        </Link>
         {!collapsed && (
           <button
             onClick={toggle}
@@ -88,7 +76,16 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Expand button when collapsed (below header) */}
+      {/* Brand tagline — below logo */}
+      {!collapsed && (
+        <div className="px-4 pb-3">
+          <p className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wider">
+            {t("brand.tagline")}
+          </p>
+        </div>
+      )}
+
+      {/* Expand button when collapsed */}
       {collapsed && (
         <div className="flex justify-center py-2">
           <button
@@ -172,7 +169,7 @@ export function Sidebar() {
       {/* Bottom section: Help + Logout */}
       <div
         className={cn(
-          "mt-auto border-t py-2",
+          "mt-auto py-2",
           collapsed ? "px-1" : "px-2"
         )}
       >

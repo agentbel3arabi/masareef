@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { Building2, Brain, DollarSign, Users } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
+import { LocaleToggle } from "@/components/layout/locale-toggle";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const FEATURE_ICONS = [Building2, Brain, DollarSign, Users] as const;
 
@@ -45,7 +47,11 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       </div>
 
       {/* Right form panel */}
-      <div className="flex flex-1 flex-col items-center justify-center p-8 bg-background">
+      <div className="relative flex flex-1 flex-col items-center justify-center p-8 bg-background">
+        <div className="absolute top-4 end-4 flex items-center gap-1">
+          <LocaleToggle />
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-sm space-y-6">
           <div className="flex justify-center md:hidden">
             <Logo variant="stacked" width={160} height={106} />

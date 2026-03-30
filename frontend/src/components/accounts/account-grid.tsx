@@ -16,9 +16,12 @@ const TYPE_LABELS: Record<string, string> = {
 
 interface AccountGridProps {
   accounts: Account[];
+  manageMode?: boolean;
+  selectedIds?: Set<number>;
+  onSelect?: (id: number) => void;
 }
 
-export function AccountGrid({ accounts }: AccountGridProps) {
+export function AccountGrid({ accounts, manageMode, selectedIds, onSelect }: AccountGridProps) {
   const t = useTranslations();
 
   const grouped = TYPE_ORDER.map((type) => ({
@@ -34,7 +37,13 @@ export function AccountGrid({ accounts }: AccountGridProps) {
           <h2 className="text-lg font-semibold mb-4">{group.label}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {group.items.map((account) => (
-              <AccountCard key={account.id} account={account} />
+              <AccountCard
+                key={account.id}
+                account={account}
+                manageMode={manageMode}
+                selected={selectedIds?.has(account.id)}
+                onSelect={onSelect}
+              />
             ))}
           </div>
         </section>

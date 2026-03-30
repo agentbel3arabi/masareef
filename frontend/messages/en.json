@@ -93,7 +93,8 @@
     "sectionPlanning": "Planning",
     "sectionSettings": "Settings",
     "toggleTheme": "Toggle Theme",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "notifications": "Notifications"
   },
   "auth": {
     "login": "Log In",
@@ -156,6 +157,7 @@
     "openingBalance": "Opening Balance",
     "openedAt": "Account Opening Date",
     "available": "Available",
+    "amountDue": "Amount Due",
     "loading": "Loading...",
     "error": "Error",
     "notFound": "Account not found",
@@ -180,7 +182,25 @@
     "billingCycleDay": "Billing Cycle Day",
     "paymentDueDay": "Payment Due Day",
     "cancel": "Cancel",
-    "name": "Account Name"
+    "name": "Account Name",
+    "incomeThisMonth": "Income this month",
+    "expensesThisMonth": "Expenses this month",
+    "avgTransaction": "Avg. Transaction",
+    "accountStatements": "Account Statements",
+    "transferFunds": "Transfer Funds",
+    "comingSoon": "Coming soon",
+    "totalAccounts": "Accounts",
+    "assets": "Assets",
+    "liabilities": "Liabilities",
+    "manage": "Manage",
+    "deleteSelected": "Delete Selected",
+    "accountSelected": "account selected",
+    "accountsSelected": "accounts selected",
+    "selectAccount": "Select account",
+    "deselectAccount": "Deselect account",
+    "cardholder": "Cardholder",
+    "accountStatusActive": "Active",
+    "accountStatusInactive": "Inactive"
   },
   "transactions": {
     "title": "Transactions",
@@ -223,7 +243,11 @@
     "bulkDeleteConfirm": "Delete {count} transactions? This cannot be undone.",
     "bulkDeleted": "Transactions deleted",
     "bulkCategorized": "Transactions re-categorized",
-    "selectTransaction": "Select transaction {id}"
+    "selectTransaction": "Select transaction {id}",
+    "netFlow": "Net Flow",
+    "subtitle": "Review and manage your financial movement across all connected accounts.",
+    "count": "Transactions",
+    "list": "Transaction List"
   },
   "transfers": {
     "title": "Transfers",
@@ -243,17 +267,28 @@
     "descriptionPlaceholder": "e.g., ATM withdrawal",
     "deleteConfirmTitle": "Delete Transfer",
     "deleteConfirmDescription": "Are you sure you want to delete this transfer? This action cannot be undone.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "selected": "selected",
+    "selectAll": "Select all transfers",
+    "selectTransfer": "Select transfer {id}"
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Charts and insights coming in Phase 4.",
+    "subtitle": "Your financial overview",
     "netWorth": "Net Worth",
+    "monthlyIncome": "Monthly Income",
     "monthlySpending": "Monthly Spending",
     "activeDebts": "Active Debts",
+    "incomeVsExpenses": "Income vs Expenses",
+    "spendingByCategory": "Spending by Category",
     "upcoming": "Upcoming (30d)",
-    "comingSoon": "Coming in Phase 4",
-    "chartsComingSoon": "Charts coming soon"
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View all",
+    "noRecentTransactions": "No recent transactions yet.",
+    "comingSoonPhase2": "Coming in Phase 2",
+    "comingSoonPhase3": "Coming in Phase 3",
+    "comingSoonPhase4": "Coming in Phase 4",
+    "chartsComingSoon": "Charts coming in Phase 4"
   },
   "brand": {
     "name": "Masareef",
