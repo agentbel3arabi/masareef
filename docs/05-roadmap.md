@@ -114,23 +114,58 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 ---
 
 ## Phase 1.75: Design System & Page Redesign
-**Unlocks:** Visual consistency and Stitch design fidelity before feature expansion in Phase 2.
+**Unlocks:** Visual consistency, correct branding, and shared component foundation before feature expansion in Phase 2.
+
+### Problem
+Pages were built functionality-first across Phase 1 and 1.5. They work correctly but don't consistently match Stitch designs. The original Stitch project has incorrect branding (wrong logo/tagline). There is no shared component library, so each page implements its own card, table, filter, and form patterns.
 
 ### Deliverables
-- Design token system: CSS variables, semantic tokens, dark/light mode tokens
-- Accounts page full redesign (matching Stitch 06-accounts.html)
-- Transactions page full redesign (matching Stitch 07b-transactions-global.html)
-- Account detail page redesign (matching Stitch 07-account-detail.html)
-- Dashboard page redesign
-- Transfers page redesign
-- Component library audit: consistent card styles, table patterns, form layouts
+
+**Wave 1 — Design System Foundation (`chore/1.75-design-system`)**
+- New Stitch project with correct Masareef branding (primary `#16A34A`, INTER font, ROUND_EIGHT, FIDELITY color variant)
+- All 8 screens generated via Stitch MCP and **approved by user** before any implementation
+- `frontend/src/config/brand.ts` — single source for name, tagline (EN + AR), integrated with next-intl
+- 6 shared components: `PageHeader`, `StatCard`, `FilterBar`, `DataTable`, `FormSheet`, `SummaryBar`
+- Sidebar full redesign (matching Stitch 05-dashboard sidebar)
+- Navbar token alignment (colors, spacing, typography)
+- Design token audit — `globals.css` CSS variables verified against `guides/09-design-tokens.md`
+- Frontend design playbook: `docs/guides/11-frontend-design-playbook.md`
+
+**Wave 2a — Auth & Onboarding Redesign (`feature/1.75-auth-redesign`)**
+- Login: split-screen, dark navy `#0F172A` left panel, white logo, form right
+- Signup: same split-screen layout, extended form
+- Onboarding: 4-step wizard with progress indicator
+
+**Wave 2b — Core App Pages Redesign (`feature/1.75-app-pages-redesign`)**
+- Dashboard: real StatCards, recent transactions, quick actions, chart placeholders (Plotly deferred to Phase 4)
+- Accounts: cards grouped by type, net worth bar, credit utilization indicators
+- Account Detail: header with stats row, transaction list with FilterBar + DataTable
+- Transactions: redesigned FilterBar, DataTable, summary stats row, FAB (floating action button)
+- Transfers: improved card layout, from→to visual flow
+- Transaction Form + Transfer Form: rebuilt using FormSheet shared component
+
+**Wave 2c — Landing Page Refresh (`feature/1.75-landing-refresh`)**
+- Rebuild all landing sections from new Stitch design with correct brand text and logo
+
+**Cross-cutting**
+- "Coming soon" policy: backend-dependent UI elements shown as disabled with tooltips, not hidden
+- Backend dependency tracker: `docs/superpowers/plans/phase-1.75/backend-dependencies.md` — all "coming soon" items mapped to target phase
 
 ### Success Criteria
-- All redesigned pages match Stitch designs at pixel-fidelity level
-- Design tokens documented in docs/guides/09-design-tokens.md
-- No physical directional CSS classes (pl-, pr-, ml-, mr-) anywhere in codebase
+- All 8 pages (landing, login, signup, onboarding, dashboard, accounts, account detail, transactions, transfers) visually match their approved Stitch design
+- Every Stitch screen was reviewed and explicitly approved by user before implementation
+- Brand strings (tagline, name) come from `brand.ts` — not hardcoded anywhere
+- Logo variant correctly selected based on background (default vs white)
+- 6 shared components used consistently across all pages
+- CSS variables in `globals.css` match canonical tokens in `guides/09-design-tokens.md`
+- No physical directional CSS classes (`pl-`, `pr-`, `ml-`, `mr-`, `left-`, `right-`) anywhere in frontend
+- RTL Arabic correct on every page
+- Dark mode correct on every page
+- Responsive at 375px, 768px, 1280px on every page
+- Backend dependency tracker complete — all "coming soon" items mapped to a roadmap phase
+- `pnpm build` + `pnpm lint` + `tsc --noEmit` pass on all branches
 
-**Required reading:** `guides/09-design-tokens.md`, `stitch-screen-map.md`
+**Required reading:** `guides/09-design-tokens.md`, `stitch-screen-map.md`, `docs/superpowers/specs/2026-03-30-phase-1.75-design-system-redesign.md`
 
 ---
 
