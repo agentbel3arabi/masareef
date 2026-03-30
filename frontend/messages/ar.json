@@ -82,6 +82,7 @@
     "transfers": "التحويلات",
     "debts": "الديون",
     "budgets": "الميزانيات",
+    "gam3eya": "الجمعية",
     "settings": "الإعدادات",
     "openNavigation": "فتح القائمة",
     "navigation": "التنقل",
@@ -239,8 +240,12 @@
     "comingSoon": "قادم في المرحلة الرابعة",
     "chartsComingSoon": "الرسوم البيانية قادمة قريباً"
   },
+  "brand": {
+    "name": "مصاريف",
+    "tagline": "حسبة بيتك، متظبطة بالملي.",
+    "taglineShort": "إدارة مالية ذكية"
+  },
   "sidebar": {
-    "tagline": "مصاريفك كلها في مكان واحد",
     "help": "مركز المساعدة"
   },
   "settings": {

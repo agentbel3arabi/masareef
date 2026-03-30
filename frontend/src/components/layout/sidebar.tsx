@@ -23,7 +23,9 @@ const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
   },
   {
     label: "nav.sectionPlanning",
-    items: navItems.filter((i) => ["/debts", "/budgets"].includes(i.href)),
+    items: navItems.filter((i) =>
+      ["/budgets", "/debts", "/gam3eya"].includes(i.href)
+    ),
   },
   {
     label: "nav.sectionSettings",
@@ -70,7 +72,7 @@ export function Sidebar() {
           </Link>
           {!collapsed && (
             <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium truncate">
-              {t("sidebar.tagline")}
+              {t("brand.tagline")}
             </p>
           )}
         </div>
