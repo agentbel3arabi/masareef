@@ -18,12 +18,14 @@ const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
   {
     label: "nav.sectionFinance",
     items: navItems.filter((i) =>
-      ["/accounts", "/transactions", "/transfers"].includes(i.href)
+      ["/accounts", "/transactions"].includes(i.href)
     ),
   },
   {
     label: "nav.sectionPlanning",
-    items: navItems.filter((i) => ["/debts", "/budgets"].includes(i.href)),
+    items: navItems.filter((i) =>
+      ["/budgets", "/debts", "/gam3eya"].includes(i.href)
+    ),
   },
   {
     label: "nav.sectionSettings",
