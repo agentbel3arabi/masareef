@@ -62,7 +62,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center justify-between bg-background/50 backdrop-blur-xl px-6">
+    <header className="sticky top-0 z-50 flex h-16 items-center justify-between bg-background/80 backdrop-blur-md border-b border-border/40 px-6">
       <div className="flex items-center gap-2 md:hidden">
         <MobileNavDrawer />
         <Logo variant="icon" {...LOGO_SIZES.mobileNav} />
