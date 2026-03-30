@@ -99,7 +99,7 @@ export default function TransactionsPage() {
       setActions(
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
-            {selectedIds.size} {t("transactions.selectedCount", { count: selectedIds.size })}
+            {t("transactions.selectedCount", { count: selectedIds.size })}
           </span>
           <Select
             onValueChange={async (val) => {
@@ -154,20 +154,26 @@ export default function TransactionsPage() {
 
   // Page-level summary stats from current page data
   const visibleTxs = data?.data ?? [];
-  const firstCurrency = visibleTxs[0]?.currency ?? "EGP";
-  const pageIncome = visibleTxs
-    .filter((tx) => tx.type === "credit")
-    .reduce((sum, tx) => sum + tx.amount_minor, 0);
-  const pageExpenses = visibleTxs
-    .filter((tx) => tx.type === "debit")
-    .reduce((sum, tx) => sum + Math.abs(tx.amount_minor), 0);
-  const pageNet = pageIncome - pageExpenses;
   const totalCount = data?.meta?.total ?? 0;
 
+  // Only show totals when all visible transactions share the same currency
+  const currencies = [...new Set(visibleTxs.map((tx) => tx.currency).filter(Boolean))];
+  const singleCurrency = currencies.length === 1 ? currencies[0] : undefined;
+
+  const pageIncome = singleCurrency
+    ? visibleTxs.filter((tx) => tx.type === "credit").reduce((sum, tx) => sum + tx.amount_minor, 0)
+    : 0;
+  const pageExpenses = singleCurrency
+    ? visibleTxs.filter((tx) => tx.type === "debit").reduce((sum, tx) => sum + Math.abs(tx.amount_minor), 0)
+    : 0;
+  const pageNet = pageIncome - pageExpenses;
+
   const fmt = (amount: number) =>
-    locale === "ar"
-      ? formatAmountAr(amount, firstCurrency)
-      : formatAmount(amount, firstCurrency);
+    singleCurrency
+      ? locale === "ar"
+        ? formatAmountAr(amount, singleCurrency)
+        : formatAmount(amount, singleCurrency)
+      : "—";
 
   return (
     <div className="space-y-6">
