@@ -14,9 +14,9 @@
 | Wave 4 — Page Fidelity | ✅ Complete (PRs #21, #22, #23) | `docs/superpowers/plans/phase-1.5/wave-4-page-fidelity.md` |
 | Pre-Wave 5 Audit | ✅ Complete | `docs/superpowers/reports/pre-wave5-audit-2026-03-29.md` |
 | Wave 5 — Landing (1.5L) | ✅ Complete (PR #24) | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
-| Wave 5 — Workflow (1.5M) | 📋 Pending | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
+| Wave 5 — Workflow (1.5M) | 📋 Next | `docs/superpowers/plans/phase-1.5/wave-5-*.md` |
 | Wave 6 — Bug Fix (Branch 1) | ✅ Complete (PR #25) | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
-| Wave 6 — Design Fidelity (Branch 2) | 📋 Next — execute Branch 2 from wave-6 plan | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
+| Wave 6 — Design Fidelity (Branch 2) | ✅ Complete (PR #26) — page redesigns deferred | `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md` |
 
 ## Pre-Wave 5 Audit
 
@@ -34,25 +34,20 @@ UAT of Unit 1.5L revealed 18 bugs and design gaps. Wave 6 plan: `docs/superpower
 - Backend multi-household `get_household_id` crash (limit+ordering)
 - Onboarding layout Logo SSR fix
 
-**Branch 2 (`fix/design-fidelity-v2`)** — Next. Covers:
-- Sidebar redesign (collapse, logo spacing, tagline, help/logout)
-- Floating action button for transactions
-- Auth page logo sizing
-- Transaction form design (spacing, category icons)
-- Accounts + transactions page fidelity vs Stitch designs
+**Branch 2 (`fix/design-fidelity-v2`)** — ✅ Complete (PR #26). Shipped:
+- Sidebar: collapse/expand toggle with localStorage, help/logout at bottom, RTL-aware icons, aria-labels
+- Transactions: floating action button (FAB) for new transaction
+- Auth pages: increased logo sizes, fixed login/signup 500 (server/client boundary bug)
+- Transaction form: improved spacing, category shows icon + name
+
+**Deferred to dedicated design phase:**
+- Accounts page full redesign (matching Stitch 06-accounts.html)
+- Transactions page full redesign (matching Stitch 07b-transactions-global.html)
+- Account detail page redesign (matching Stitch 07-account-detail.html)
 
 ## Next Step
 
-**Execute Wave 6 Branch 2 (`fix/design-fidelity-v2`).** Cut branch from main:
-
-```
-git checkout main && git pull
-git checkout -b fix/design-fidelity-v2
-```
-
-Plan: Tasks 8-15 in `docs/superpowers/plans/phase-1.5/wave-6-bugfix-design.md`.
-
-Pre-work: Use Stitch MCP to analyze design screens before implementing UI changes.
+**Execute Wave 5 Unit 1.5M (`chore/1.5M-workflow-roadmap-updates`).** This is the final unit of Phase 1.5 — workflow formalization and roadmap updates. After 1.5M, Phase 1.5 is complete and Phase 2 (Import & Templates) can begin.
 
 ---
 
