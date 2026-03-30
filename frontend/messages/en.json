@@ -239,8 +239,13 @@
     "comingSoon": "Coming in Phase 4",
     "chartsComingSoon": "Charts coming soon"
   },
+  "brand": {
+    "name": "Masareef",
+    "tagline": "Your entire financial life, finally making sense.",
+    "taglineShort": "AI-Powered Personal Finance"
+  },
   "sidebar": {
-    "tagline": "All your finances in one place",
+    "tagline": "Your entire financial life, finally making sense.",
     "help": "Help Center"
   },
   "settings": {
