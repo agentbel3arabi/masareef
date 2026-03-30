@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Wallet, CreditCard, Banknote, Smartphone, ShoppingBag } from "lucide-react";
 
 const typeIcons: Record<string, React.ElementType> = {
@@ -24,12 +25,16 @@ interface AccountMiniCardProps {
   currency: string;
 }
 
-export function AccountMiniCard({ id: _id, name, institution, type, currency: _currency }: AccountMiniCardProps) {
+export function AccountMiniCard({ id, name, institution, type, currency: _currency }: AccountMiniCardProps) {
   const Icon = typeIcons[type] || Wallet;
   const colorClass = typeColors[type] || "bg-muted text-muted-foreground";
 
   return (
-    <div className="flex items-center gap-2">
+    <Link
+      href={`/accounts/${id}`}
+      onClick={(e) => e.stopPropagation()}
+      className="flex items-center gap-2 hover:opacity-75 transition-opacity"
+    >
       <div className={`rounded-md p-1.5 ${colorClass}`}>
         <Icon className="h-3.5 w-3.5" />
       </div>
@@ -39,6 +44,6 @@ export function AccountMiniCard({ id: _id, name, institution, type, currency: _c
           <p className="text-xs text-muted-foreground truncate">{institution}</p>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
