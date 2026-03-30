@@ -83,7 +83,7 @@ function CreditAccountCard({
   return (
     <div className="relative group">
       <Link href={`/accounts/${account.id}`}>
-        <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {/* Physical card face */}
           <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
             <div className="flex items-start justify-between mb-6">
@@ -198,7 +198,7 @@ function BankAccountCard({
   return (
     <div className="relative group">
       <Link href={`/accounts/${account.id}`}>
-        <div className="bg-white rounded-xl p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+        <div className="bg-white rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {account.institution && (
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
               {account.institution}
@@ -260,7 +260,7 @@ function OtherAccountCard({ account, onEdit, onDelete }: { account: Account; onE
   return (
     <div className="relative group">
       <Link href={`/accounts/${account.id}`}>
-        <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
+        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
           {/* Left accent stripe */}
           <div className={cn("w-1.5 shrink-0", accentBg)} />
           {/* Card content */}

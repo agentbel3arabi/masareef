@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronsLeft, ChevronsRight, CircleHelp, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import { navItems } from "@/lib/nav-items";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -49,28 +50,20 @@ export function Sidebar() {
         collapsed ? "md:w-16" : "md:w-64"
       )}
     >
-      {/* Header: logo + collapse toggle */}
+      {/* Logo row — same h-16 as navbar */}
       <div
         className={cn(
-          "flex items-center",
-          collapsed ? "h-16 justify-center px-2" : "h-16 justify-between px-4"
+          "flex h-16 items-center",
+          collapsed ? "justify-center px-2" : "justify-between px-4"
         )}
       >
-        <div
-          className={cn(
-            "flex flex-col",
-            collapsed ? "items-center" : "min-w-0"
+        <Link href="/dashboard">
+          {collapsed ? (
+            <Logo variant="icon" width={28} height={28} />
+          ) : (
+            <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
           )}
-        >
-          {!collapsed && (
-            <div className="flex flex-col ps-1">
-              <p className="text-sm font-bold text-foreground">Personal Finance</p>
-              <p className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wider">
-                {t("brand.tagline")}
-              </p>
-            </div>
-          )}
-        </div>
+        </Link>
         {!collapsed && (
           <button
             onClick={toggle}
@@ -83,7 +76,16 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Expand button when collapsed (below header) */}
+      {/* Brand tagline — below logo */}
+      {!collapsed && (
+        <div className="px-4 pb-3">
+          <p className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wider">
+            {t("brand.tagline")}
+          </p>
+        </div>
+      )}
+
+      {/* Expand button when collapsed */}
       {collapsed && (
         <div className="flex justify-center py-2">
           <button

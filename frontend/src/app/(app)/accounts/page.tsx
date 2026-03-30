@@ -88,7 +88,7 @@ export default function AccountsPage() {
   return (
     <div className="space-y-8">
       {/* Net worth hero */}
-      <section className="rounded-2xl border bg-card p-8 flex flex-wrap items-center justify-between gap-6 shadow-sm">
+      <section className="rounded-lg bg-card p-8 flex flex-wrap items-center justify-between gap-6 shadow-sm">
         <div className="flex flex-wrap items-center gap-10">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">

@@ -67,12 +67,6 @@ export function Navbar() {
         <MobileNavDrawer />
         <Logo variant="icon" {...LOGO_SIZES.mobileNav} />
       </div>
-      {/* Desktop: logo on left */}
-      <div className="hidden md:flex items-center">
-        <Link href="/dashboard">
-          <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
-        </Link>
-      </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
         {actions}
