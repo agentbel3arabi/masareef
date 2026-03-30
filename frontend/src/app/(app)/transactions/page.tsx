@@ -148,9 +148,10 @@ export default function TransactionsPage() {
         </div>
       );
     }
-    return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bulkMode, [...selectedIds].sort().join(','), bulkDelete.isPending, bulkCategorize.isPending, categoriesData, locale]);
+
+  useEffect(() => () => setActions(null), [setActions]);
 
   // Page-level summary stats from current page data
   const visibleTxs = data?.data ?? [];

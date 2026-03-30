@@ -83,9 +83,10 @@ export default function TransfersPage() {
         </div>
       );
     }
-    return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bulkMode, [...selectedTransferIds].sort().join(','), deleteTransfer.isPending, locale]);
+
+  useEffect(() => () => setActions(null), [setActions]);
 
   const transfers = (data?.data ?? []) as Transfer[];
   const isEmpty = !isLoading && transfers.length === 0;

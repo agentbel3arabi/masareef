@@ -94,9 +94,10 @@ export default function AccountsPage() {
         </div>
       );
     }
-    return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manageMode, [...selectedAccountIds].sort().join(','), deleteAccount.isPending, locale]);
+
+  useEffect(() => () => setActions(null), [setActions]);
 
   const nw = nwResponse?.data;
   const accounts = data?.data ?? [];

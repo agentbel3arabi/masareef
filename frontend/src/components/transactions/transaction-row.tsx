@@ -275,9 +275,11 @@ export function TransactionRow({
               >
                 <SelectTrigger className="w-full">
                   {(() => {
-                    const selectedCategory = categoryId !== ""
-                      ? categoriesData?.data?.find((c) => c.id === categoryId)
-                      : undefined;
+                    const selectedCategory =
+                      categoryId !== ""
+                        ? categoriesData?.data?.find((c) => c.id === categoryId) ??
+                          (transaction.category?.id === categoryId ? transaction.category : undefined)
+                        : undefined;
                     if (selectedCategory) {
                       return (
                         <span className="flex items-center gap-2">
