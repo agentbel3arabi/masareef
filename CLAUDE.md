@@ -22,6 +22,8 @@ The table below lists every doc file and when to load it:
 | [guides/11-workflow.md](./docs/guides/11-workflow.md)           | Unit execution workflow (Plan → Execute → Review → UAT → Merge)                                             | Starting any implementation unit                         |
 | [guides/12-uat-template.md](./docs/guides/12-uat-template.md)   | UAT checklist template with standard + phase-specific checks                                                | Writing UAT checklists                                   |
 | [stitch-screen-map.md](./docs/stitch-screen-map.md)            | Maps every feature and phase to its matching Stitch design screen(s)                                         | Planning any phase with frontend work                    |
+| [stitch-designs/stitch-project-reference.md](./docs/stitch-designs/stitch-project-reference.md) | Masareef v2 Stitch project ID, design system asset ID, all 8 approved screen IDs with verified titles | Any frontend phase using Stitch MCP to generate or implement screens |
+| [backend-dependencies.md](./docs/backend-dependencies.md) | UI elements from Phase 1.75 redesign that need future backend endpoints, mapped to roadmap phases | Planning Phase 2+ — check before scoping any backend work |
 
 ```
 masareef/
@@ -61,9 +63,11 @@ masareef/
 │   │   ├── 09-design-tokens.md         # Design tokens, UI design index (32 screens)
 │   │   ├── 11-workflow.md              # Unit execution workflow (Plan → Execute → Review → UAT → Merge)
 │   │   └── 12-uat-template.md          # UAT checklist template with standard + phase-specific checks
+│   ├── backend-dependencies.md         # UI elements needing future backend work, mapped to phases
 │   ├── stitch-designs/
 │   │   ├── screenshots/                # 32 PNG screenshots (visual reference)
-│   │   └── html/                       # 32 HTML files (code reference)
+│   │   ├── html/                       # 32 HTML files (code reference)
+│   │   └── stitch-project-reference.md # Masareef v2 Stitch project ID + approved screen IDs
 │   └── stitch-prompts/                 # Prompts used to generate each design
 ```
 
@@ -75,7 +79,7 @@ Load only what's relevant. **Do not load all files at once.**
 | ------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
 | Backend: new feature           | `CLAUDE.md` + `01-architecture.md` + feature spec                                                | `02-data-models.md` if schema work involved    |
 | Backend: database / migration  | `CLAUDE.md` + `02-data-models.md` + feature spec                                                 | —                                              |
-| Frontend: new page / component | `CLAUDE.md` + feature spec + `guides/09-design-tokens.md` + matching `stitch-designs/html/` file | `04-user-flows.md` if flow unclear; `guides/10-brand-assets.md` if placing logos |
+| Frontend: new page / component | `CLAUDE.md` + feature spec + `guides/09-design-tokens.md` + matching `stitch-designs/html/` file | `04-user-flows.md` if flow unclear; `guides/10-brand-assets.md` if placing logos; `stitch-designs/stitch-project-reference.md` if using Stitch MCP |
 | Backend: API endpoint          | `CLAUDE.md` + `01-architecture.md` + feature spec                                                | `02-data-models.md` for query patterns         |
 | Testing                        | `CLAUDE.md` + `guides/08-testing.md` + feature spec                                              | —                                              |
 | Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | —                                              |
