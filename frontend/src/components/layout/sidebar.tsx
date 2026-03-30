@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronsLeft, ChevronsRight, CircleHelp, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import { navItems } from "@/lib/nav-items";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -63,17 +62,13 @@ export function Sidebar() {
             collapsed ? "items-center" : "min-w-0"
           )}
         >
-          <Link href="/dashboard">
-            {collapsed ? (
-              <Logo variant="icon" width={28} height={28} />
-            ) : (
-              <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
-            )}
-          </Link>
           {!collapsed && (
-            <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium truncate">
-              {t("brand.tagline")}
-            </p>
+            <div className="flex flex-col ps-1">
+              <p className="text-sm font-bold text-foreground">Personal Finance</p>
+              <p className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wider">
+                {t("brand.tagline")}
+              </p>
+            </div>
           )}
         </div>
         {!collapsed && (

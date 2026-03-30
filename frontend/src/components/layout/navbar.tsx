@@ -62,10 +62,16 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center justify-between bg-background/80 backdrop-blur-md px-6">
+    <header className="sticky top-0 z-50 flex h-16 items-center justify-between bg-background/50 backdrop-blur-xl px-6">
       <div className="flex items-center gap-2 md:hidden">
         <MobileNavDrawer />
         <Logo variant="icon" {...LOGO_SIZES.mobileNav} />
+      </div>
+      {/* Desktop: logo on left */}
+      <div className="hidden md:flex items-center">
+        <Link href="/dashboard">
+          <Logo variant="horizontal" {...LOGO_SIZES.sidebar} />
+        </Link>
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">

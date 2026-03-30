@@ -83,7 +83,7 @@ function CreditAccountCard({
   return (
     <div className="relative group">
       <Link href={`/accounts/${account.id}`}>
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+        <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {/* Physical card face */}
           <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
             <div className="flex items-start justify-between mb-6">
@@ -198,7 +198,7 @@ function BankAccountCard({
   return (
     <div className="relative group">
       <Link href={`/accounts/${account.id}`}>
-        <div className="bg-white rounded-2xl p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+        <div className="bg-white rounded-xl p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {account.institution && (
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
               {account.institution}
@@ -249,66 +249,46 @@ function BankAccountCard({
   );
 }
 
-function OtherAccountCard({
-  account,
-  onEdit,
-  onDelete,
-}: {
-  account: Account;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
+function OtherAccountCard({ account, onEdit, onDelete }: { account: Account; onEdit: () => void; onDelete: () => void }) {
   const t = useTranslations("accounts");
   const Icon = typeIcons[account.type] ?? Wallet;
-  const iconColor =
-    typeColors[account.type] ?? "bg-primary/10 text-primary";
+  const iconColor = typeColors[account.type] ?? "bg-primary/10 text-primary";
+
+  // Extract just the background color class for the accent stripe
+  const accentBg = iconColor.split(" ")[0]; // e.g. "bg-green-100"
 
   return (
     <div className="relative group">
       <Link href={`/accounts/${account.id}`}>
-        <div className="bg-white rounded-xl border border-border/40 px-4 py-3 flex items-center gap-3 hover:border-border hover:shadow-sm transition-all cursor-pointer">
-          <div className={cn("rounded-full p-2 shrink-0", iconColor)}>
-            <Icon className="h-4 w-4" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{account.name}</p>
+        <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
+          {/* Left accent stripe */}
+          <div className={cn("w-1.5 shrink-0", accentBg)} />
+          {/* Card content */}
+          <div className="flex-1 p-5">
+            <div className={cn("inline-flex rounded-lg p-2 mb-3", iconColor)}>
+              <Icon className="h-4 w-4" />
+            </div>
+            <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
             {account.institution && (
-              <p className="text-xs text-muted-foreground truncate">
-                {account.institution}
-              </p>
+              <p className="text-xs text-muted-foreground mb-3">{account.institution}</p>
             )}
+            <MoneyDisplay
+              amount={account.displayed_balance_minor}
+              currency={account.currency}
+              size="lg"
+              colorize
+            />
           </div>
-          <MoneyDisplay
-            amount={account.displayed_balance_minor}
-            currency={account.currency}
-            colorize
-          />
         </div>
       </Link>
-      <div className="absolute top-2 end-2 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 bg-background/90 shadow-sm hover:bg-background"
-          onClick={(e) => {
-            e.preventDefault();
-            onEdit();
-          }}
-          aria-label={t("editAccount")}
-        >
-          <Pencil className="h-3 w-3" />
+      <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+        <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
+          onClick={(e) => { e.preventDefault(); onEdit(); }} aria-label={t("editAccount")}>
+          <Pencil className="h-3.5 w-3.5" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
-          onClick={(e) => {
-            e.preventDefault();
-            onDelete();
-          }}
-          aria-label={t("deleteAccount")}
-        >
-          <Trash2 className="h-3 w-3" />
+        <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+          onClick={(e) => { e.preventDefault(); onDelete(); }} aria-label={t("deleteAccount")}>
+          <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>
@@ -395,10 +375,9 @@ export function AccountCard({ account }: AccountCardProps) {
     setDeleteOpen(false);
   };
 
-  const isCreditCard =
-    account.type === "credit_card" || account.type === "financing_app";
+  const isCreditCard = account.type === "credit_card";
   const isOther =
-    account.type === "cash_wallet" || account.type === "digital_wallet";
+    account.type === "cash_wallet" || account.type === "digital_wallet" || account.type === "financing_app";
 
   return (
     <>
