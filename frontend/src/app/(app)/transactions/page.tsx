@@ -142,7 +142,7 @@ export default function TransactionsPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, selectedIds.size, categoriesData]);
+  }, [bulkMode, selectedIds.size, categoriesData, locale]);
 
   // Page-level summary stats from current page data
   const visibleTxs = data?.data ?? [];

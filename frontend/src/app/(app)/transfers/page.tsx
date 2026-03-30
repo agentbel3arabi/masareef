@@ -75,7 +75,7 @@ export default function TransfersPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, selectedTransferIds.size]);
+  }, [bulkMode, selectedTransferIds.size, locale]);
 
   const transfers = (data?.data ?? []) as Transfer[];
   const isEmpty = !isLoading && transfers.length === 0;

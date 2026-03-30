@@ -92,7 +92,7 @@ function CreditAccountCard({
   return (
     <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
       <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
-        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+        <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {/* Physical card face */}
           <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
             {manageMode && (
@@ -229,7 +229,7 @@ function BankAccountCard({
   return (
     <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
       <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
-        <div className="bg-white rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+        <div className="bg-card rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {manageMode && (
             <button
               onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
@@ -321,7 +321,7 @@ function OtherAccountCard({
   return (
     <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
       <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
-        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
+        <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
           {/* Left accent stripe */}
           <div className={cn("w-1.5 shrink-0", accentBg)} />
           {/* Card content */}

@@ -114,7 +114,7 @@ export default function AccountDetailPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, selectedIds.size, categoriesData]);
+  }, [bulkMode, selectedIds.size, categoriesData, locale]);
 
   // Early returns AFTER all hooks
   if (accountLoading) return <p className="p-6 text-muted-foreground">{t("common.loading")}</p>;

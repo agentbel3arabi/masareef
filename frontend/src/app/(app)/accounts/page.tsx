@@ -86,7 +86,7 @@ export default function AccountsPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manageMode, selectedAccountIds.size]);
+  }, [manageMode, selectedAccountIds.size, locale]);
 
   const nw = nwResponse?.data;
   const accounts = data?.data ?? [];
