@@ -9,6 +9,7 @@ import { StepHousehold } from "@/components/onboarding/step-household";
 import { StepCurrency } from "@/components/onboarding/step-currency";
 import { StepFirstAccount } from "@/components/onboarding/step-first-account";
 import { StepDone } from "@/components/onboarding/step-done";
+import { StepIndicator } from "@/components/onboarding/step-indicator";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 
@@ -88,17 +89,15 @@ export default function OnboardingPage() {
 
   return (
     <div className="space-y-8">
-      {/* Progress dots */}
-      <div className="flex justify-center gap-2">
-        {[1, 2, 3, 4].map((s) => (
-          <div
-            key={s}
-            className={`h-2 rounded-full transition-all ${
-              s === step ? "w-8 bg-primary" : s < step ? "w-2 bg-primary/50" : "w-2 bg-muted"
-            }`}
-          />
-        ))}
-      </div>
+      <StepIndicator
+        steps={[
+          t("step1.title"),
+          t("step2.title"),
+          t("step3.title"),
+          t("step4.title"),
+        ]}
+        currentStep={step}
+      />
 
       {step === 1 && (
         <StepHousehold

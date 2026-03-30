@@ -112,7 +112,7 @@
     "male": "Male",
     "female": "Female",
     "preferNotToSay": "Prefer not to say",
-    "loginSubtitle": "Sign in to your Masareef account",
+    "loginSubtitle": "Sign in to your account to continue",
     "signupSubtitle": "Create your free Masareef account",
     "confirmTitle": "Check your email",
     "confirmDescription": "We sent a confirmation link to {email}. Click it to activate your account.",
@@ -121,12 +121,27 @@
     "resendSuccess": "Confirmation email resent",
     "alreadyRegistered": "This email is already registered.",
     "loginInstead": "Log in instead",
-    "marketingHeadline": "Your money, your language, your rules.",
+    "welcomeBack": "Welcome back",
+    "signIn": "Sign In",
+    "orContinueWith": "or continue with",
+    "comingSoon": "Coming soon",
+    "createAccount": "Create Account",
+    "startJourney": "Start your journey to financial precision today.",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordStrength": {
+      "label": "Password strength",
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong"
+    },
+    "marketingHeadline": "Your entire financial life, finally making sense.",
     "marketingSubheadline": "Personal finance built for Egypt & MENA.",
     "marketing": {
       "feature1": "Import bank statements from Egyptian banks — CIB, HSBC, NBE and more",
       "feature2": "AI categorization that understands Arabic merchants",
-      "feature3": "Track debts, installments, Gam3eya and assets in one place"
+      "feature3": "Track debts, installments, Gam3eya and assets in one place",
+      "feature4": "Shared wallets and budget goals for your whole household"
     }
   },
   "accounts": {
