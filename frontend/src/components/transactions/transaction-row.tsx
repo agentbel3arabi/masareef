@@ -136,22 +136,21 @@ export function TransactionRow({
         )}
         <td className="px-4 py-3">
           {transaction.category ? (
-            <span
-              className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-muted text-muted-foreground"
-              title={locale === "ar" && transaction.category.name_ar
-                ? transaction.category.name_ar
-                : transaction.category.name_en}
-            >
-              <CategoryIcon icon={transaction.category.icon} className="h-4 w-4" />
-              {!transaction.category.icon && transaction.category.color && (
-                <span
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: transaction.category.color }}
-                />
-              )}
-              {!transaction.category.icon && !transaction.category.color && (
-                <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-              )}
+            <span className="inline-flex items-center gap-1.5 text-sm">
+              <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-muted text-muted-foreground shrink-0">
+                <CategoryIcon icon={transaction.category.icon} className="h-3.5 w-3.5" />
+                {!transaction.category.icon && transaction.category.color && (
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: transaction.category.color }}
+                  />
+                )}
+              </span>
+              <span className="truncate max-w-[100px]">
+                {locale === "ar" && transaction.category.name_ar
+                  ? transaction.category.name_ar
+                  : transaction.category.name_en}
+              </span>
             </span>
           ) : (
             <span className="text-xs text-muted-foreground">—</span>
