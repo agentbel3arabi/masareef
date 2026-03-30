@@ -19,6 +19,8 @@ The table below lists every doc file and when to load it:
 | [06-research.md](./docs/06-research.md)                         | 10 competitor profiles, feature gap matrix, market trends                                                   | Product decisions, competitive positioning               |
 | [guides/08-testing.md](./docs/guides/08-testing.md)             | Test stack, test organization, fixture strategy, seed data, coverage requirements                           | Writing tests                                            |
 | [guides/09-design-tokens.md](./docs/guides/09-design-tokens.md) | Canonical design tokens, 32-screen UI design index with cross-links                                         | Frontend UI work                                         |
+| [guides/11-workflow.md](./docs/guides/11-workflow.md)           | Unit execution workflow (Plan → Execute → Review → UAT → Merge)                                             | Starting any implementation unit                         |
+| [guides/12-uat-template.md](./docs/guides/12-uat-template.md)   | UAT checklist template with standard + phase-specific checks                                                | Writing UAT checklists                                   |
 | [stitch-screen-map.md](./docs/stitch-screen-map.md)            | Maps every feature and phase to its matching Stitch design screen(s)                                         | Planning any phase with frontend work                    |
 
 ```
@@ -40,6 +42,7 @@ masareef/
 │   │   ├── debts.md
 │   │   ├── financing-apps.md
 │   │   ├── gam3eya.md
+│   │   ├── landing-page.md
 │   │   ├── assets.md
 │   │   ├── budgets.md
 │   │   ├── forecasting.md
@@ -55,7 +58,9 @@ masareef/
 │   ├── 06-research.md                  # Competitor profiles, market trends
 │   ├── guides/
 │   │   ├── 08-testing.md               # Test strategy, fixtures, coverage requirements
-│   │   └── 09-design-tokens.md         # Design tokens, UI design index (32 screens)
+│   │   ├── 09-design-tokens.md         # Design tokens, UI design index (32 screens)
+│   │   ├── 11-workflow.md              # Unit execution workflow (Plan → Execute → Review → UAT → Merge)
+│   │   └── 12-uat-template.md          # UAT checklist template with standard + phase-specific checks
 │   ├── stitch-designs/
 │   │   ├── screenshots/                # 32 PNG screenshots (visual reference)
 │   │   └── html/                       # 32 HTML files (code reference)
