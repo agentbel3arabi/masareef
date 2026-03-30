@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+
+function getPasswordStrength(password: string): "weak" | "medium" | "strong" | null {
+  if (!password) return null;
+  if (password.length < 8) return "weak";
+  if (password.length < 12) return "medium";
+  return "strong";
+}
 
 export default function SignupPage() {
   const t = useTranslations();
@@ -15,10 +23,9 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [lang, setLang] = useState<"en" | "ar">("en");
   const [country, setCountry] = useState("EG");
-  const [gender, setGender] = useState("");
-  const [age, setAge] = useState("");
   const [error, setError] = useState("");
   const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,8 +33,14 @@ export default function SignupPage() {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
 
+  const passwordStrength = getPasswordStrength(password);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError(t("auth.passwordMismatch"));
+      return;
+    }
     setLoading(true);
     setError("");
     setIsDuplicateEmail(false);
@@ -42,8 +55,6 @@ export default function SignupPage() {
           last_name: lastName,
           preferred_language: lang,
           country: country,
-          gender,
-          age: age ? parseInt(age, 10) : undefined,
         },
       },
     });
@@ -54,8 +65,6 @@ export default function SignupPage() {
       setError(isDuplicate ? "" : error.message);
       setLoading(false);
     } else if (data?.user?.identities?.length === 0) {
-      // Supabase returns fake success with empty identities for existing emails
-      // (email enumeration protection when "Confirm email" is enabled)
       setIsDuplicateEmail(true);
       setLoading(false);
     } else {
@@ -91,9 +100,7 @@ export default function SignupPage() {
           {t("auth.goToLogin")}
         </Button>
         <div className="text-sm text-muted-foreground">
-          {error && (
-            <p className="text-destructive mb-2">{error}</p>
-          )}
+          {error && <p className="text-destructive mb-2">{error}</p>}
           {resendSuccess ? (
             <span className="text-primary">{t("auth.resendSuccess")}</span>
           ) : (
@@ -114,9 +121,10 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">{t("auth.signup")}</h1>
-        <p className="text-sm text-muted-foreground">{t("auth.signupSubtitle")}</p>
+        <h1 className="text-2xl font-bold">{t("auth.createAccount")}</h1>
+        <p className="text-sm text-muted-foreground">{t("auth.startJourney")}</p>
       </div>
+
       <form onSubmit={handleSignup} className="space-y-4">
         {isDuplicateEmail && (
           <div className="text-sm text-center space-y-1">
@@ -129,6 +137,7 @@ export default function SignupPage() {
         {error && !isDuplicateEmail && (
           <p className="text-sm text-destructive text-center">{error}</p>
         )}
+
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label htmlFor="firstName">{t("auth.firstName")}</Label>
@@ -149,6 +158,7 @@ export default function SignupPage() {
             />
           </div>
         </div>
+
         <div className="space-y-2">
           <Label htmlFor="email">{t("auth.email")}</Label>
           <Input
@@ -159,6 +169,7 @@ export default function SignupPage() {
             required
           />
         </div>
+
         <div className="space-y-2">
           <Label htmlFor="password">{t("auth.password")}</Label>
           <Input
@@ -169,26 +180,50 @@ export default function SignupPage() {
             minLength={6}
             required
           />
+          {passwordStrength && (
+            <div className="space-y-1">
+              <div className="flex gap-1">
+                {(["weak", "medium", "strong"] as const).map((level, i) => (
+                  <div
+                    key={level}
+                    className={cn(
+                      "h-1 flex-1 rounded-full transition-colors",
+                      passwordStrength === "weak" && i === 0
+                        ? "bg-destructive"
+                        : passwordStrength === "medium" && i <= 1
+                          ? "bg-yellow-500"
+                          : passwordStrength === "strong"
+                            ? "bg-primary"
+                            : "bg-muted"
+                    )}
+                  />
+                ))}
+              </div>
+              <p
+                className={cn(
+                  "text-xs",
+                  passwordStrength === "weak" && "text-destructive",
+                  passwordStrength === "medium" && "text-yellow-600",
+                  passwordStrength === "strong" && "text-primary"
+                )}
+              >
+                {t(`auth.passwordStrength.${passwordStrength}`)}
+              </p>
+            </div>
+          )}
         </div>
-        <div className="space-y-1">
-          <Label>{t("auth.preferredLanguage")}</Label>
-          <div className="flex rounded-lg border overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setLang("en")}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${lang === "en" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-            >
-              🇺🇸 English
-            </button>
-            <button
-              type="button"
-              onClick={() => setLang("ar")}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${lang === "ar" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-            >
-              🇪🇬 العربية
-            </button>
-          </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">{t("auth.confirmPassword")}</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
         </div>
+
         <div className="space-y-1">
           <Label htmlFor="country">{t("auth.country")}</Label>
           <select
@@ -206,36 +241,46 @@ export default function SignupPage() {
             <option value="OTHER">🌍 Other</option>
           </select>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label htmlFor="gender">{t("auth.gender")}</Label>
-            <select
-              id="gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+
+        <div className="space-y-1">
+          <Label>{t("auth.preferredLanguage")}</Label>
+          <div className="flex rounded-lg border overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setLang("en")}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                lang === "en"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
             >
-              <option value="">{t("common.select")}</option>
-              <option value="male">{t("auth.male")}</option>
-              <option value="female">{t("auth.female")}</option>
-              <option value="prefer_not_to_say">{t("auth.preferNotToSay")}</option>
-            </select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="age">{t("auth.age")}</Label>
-            <Input
-              id="age"
-              type="number"
-              min={13}
-              max={120}
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-            />
+              🇺🇸 English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang("ar")}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                lang === "ar"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              🇪🇬 العربية
+            </button>
           </div>
         </div>
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? t("common.loading") : t("auth.signup")}
+
+        <Button type="submit" className="w-full gap-2" disabled={loading}>
+          {loading ? (
+            t("common.loading")
+          ) : (
+            <>
+              {t("auth.createAccount")}
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
         </Button>
+
         <p className="text-sm text-muted-foreground text-center">
           {t("auth.hasAccount")}{" "}
           <Link href="/login" className="text-primary hover:underline">
