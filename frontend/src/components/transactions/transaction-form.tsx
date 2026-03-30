@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CategoryIcon } from "@/lib/category-icon";
 
 interface TransactionFormProps {
   accountId: number;
@@ -123,7 +124,7 @@ export function TransactionForm({
             <SelectTrigger className="w-full">
               {selectedCategory ? (
                 <span className="flex items-center gap-2">
-                  {selectedCategory.icon && <span className="text-base leading-none">{selectedCategory.icon}</span>}
+                  <CategoryIcon icon={selectedCategory.icon} className="h-4 w-4 shrink-0" />
                   {locale === "ar" && selectedCategory.name_ar
                     ? selectedCategory.name_ar
                     : selectedCategory.name_en}
@@ -138,10 +139,10 @@ export function TransactionForm({
               </SelectItem>
               {(categoriesData?.data || []).map((cat) => (
                 <SelectItem key={cat.id} value={String(cat.id)}>
-                  {cat.icon && (
-                    <span className="me-2 text-muted-foreground">{cat.icon}</span>
-                  )}
-                  {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                  <span className="flex items-center gap-2">
+                    <CategoryIcon icon={cat.icon} className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>

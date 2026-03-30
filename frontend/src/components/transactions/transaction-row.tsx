@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Trash2, Pencil } from "lucide-react";
+import { CategoryIcon } from "@/lib/category-icon";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -136,19 +137,19 @@ export function TransactionRow({
         <td className="px-4 py-3">
           {transaction.category ? (
             <span
-              className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-muted text-base"
+              className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-muted text-muted-foreground"
               title={locale === "ar" && transaction.category.name_ar
                 ? transaction.category.name_ar
                 : transaction.category.name_en}
             >
-              {transaction.category.icon ? (
-                transaction.category.icon
-              ) : transaction.category.color ? (
+              <CategoryIcon icon={transaction.category.icon} className="h-4 w-4" />
+              {!transaction.category.icon && transaction.category.color && (
                 <span
                   className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: transaction.category.color }}
                 />
-              ) : (
+              )}
+              {!transaction.category.icon && !transaction.category.color && (
                 <span className="h-2 w-2 rounded-full bg-muted-foreground/30" />
               )}
             </span>
