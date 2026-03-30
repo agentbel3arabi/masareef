@@ -59,9 +59,14 @@ export default function TransfersPage() {
             size="sm"
             disabled={deleteTransfer.isPending}
             onClick={async () => {
-              await Promise.all([...selectedTransferIds].map((id) => deleteTransfer.mutateAsync(id)));
-              setBulkMode(false);
-              setSelectedTransferIds(new Set());
+              const results = await Promise.allSettled(
+                [...selectedTransferIds].map((id) => deleteTransfer.mutateAsync(id))
+              );
+              const hasFailure = results.some((r) => r.status === "rejected");
+              if (!hasFailure) {
+                setBulkMode(false);
+                setSelectedTransferIds(new Set());
+              }
             }}
           >
             <Trash2 className="h-3.5 w-3.5 me-1" />
@@ -75,7 +80,7 @@ export default function TransfersPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, selectedTransferIds.size, locale]);
+  }, [bulkMode, [...selectedTransferIds].sort().join(','), deleteTransfer.isPending, locale]);
 
   const transfers = (data?.data ?? []) as Transfer[];
   const isEmpty = !isLoading && transfers.length === 0;

@@ -70,9 +70,14 @@ export default function AccountsPage() {
             size="sm"
             disabled={deleteAccount.isPending}
             onClick={async () => {
-              await Promise.all([...selectedAccountIds].map((id) => deleteAccount.mutateAsync(id)));
-              setManageMode(false);
-              setSelectedAccountIds(new Set());
+              const results = await Promise.allSettled(
+                [...selectedAccountIds].map((id) => deleteAccount.mutateAsync(id))
+              );
+              const hasFailure = results.some((r) => r.status === "rejected");
+              if (!hasFailure) {
+                setManageMode(false);
+                setSelectedAccountIds(new Set());
+              }
             }}
           >
             <Trash2 className="h-3.5 w-3.5 me-1" />
@@ -86,20 +91,19 @@ export default function AccountsPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manageMode, selectedAccountIds.size, locale]);
+  }, [manageMode, [...selectedAccountIds].sort().join(','), deleteAccount.isPending, locale]);
 
   const nw = nwResponse?.data;
   const accounts = data?.data ?? [];
+  const baseCurrency = nw?.base_currency ?? "EGP";
 
-  // Compute assets and liabilities from accounts list
+  // Compute assets and liabilities — only same-currency accounts to avoid cross-currency mixing
   const assetsMinor = accounts
-    .filter((a) => a.displayed_balance_minor > 0)
+    .filter((a) => a.currency === baseCurrency && a.displayed_balance_minor > 0)
     .reduce((s, a) => s + a.displayed_balance_minor, 0);
   const liabilitiesMinor = accounts
-    .filter((a) => a.displayed_balance_minor < 0)
+    .filter((a) => a.currency === baseCurrency && a.displayed_balance_minor < 0)
     .reduce((s, a) => s + Math.abs(a.displayed_balance_minor), 0);
-
-  const baseCurrency = nw?.base_currency ?? "EGP";
 
   const fmt = (amount: number, currency: string) =>
     locale === "ar"

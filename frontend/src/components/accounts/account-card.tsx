@@ -104,7 +104,7 @@ function CreditAccountCard({
                     ? "bg-primary border-primary text-white"
                     : "bg-white/20 border-white/60"
                 )}
-                aria-label={t("editAccount")}
+                aria-label={selected ? t("deselectAccount") : t("selectAccount")}
               >
                 {selected && <span className="text-xs font-bold">✓</span>}
               </button>
@@ -123,7 +123,7 @@ function CreditAccountCard({
             </p>
             <div>
               <p className="text-[9px] uppercase tracking-widest text-white/50 mb-0.5">
-                Cardholder
+                {t("cardholder")}
               </p>
               <p className="text-xs font-bold uppercase tracking-wider text-white">
                 {account.name}
@@ -239,7 +239,7 @@ function BankAccountCard({
                   ? "bg-primary border-primary text-white"
                   : "bg-background/90 border-border"
               )}
-              aria-label={t("editAccount")}
+              aria-label={selected ? t("deselectAccount") : t("selectAccount")}
             >
               {selected && <span className="text-xs font-bold">✓</span>}
             </button>
@@ -257,9 +257,9 @@ function BankAccountCard({
             colorize
           />
           <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary" />
+            <div className={cn("w-2 h-2 rounded-full", account.is_active !== false ? "bg-primary" : "bg-muted-foreground")} />
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Active
+              {account.is_active !== false ? t("accountStatusActive") : t("accountStatusInactive")}
             </span>
           </div>
         </div>
@@ -335,7 +335,7 @@ function OtherAccountCard({
                     ? "bg-primary border-primary text-white"
                     : "bg-background/90 border-border"
                 )}
-                aria-label={t("editAccount")}
+                aria-label={selected ? t("deselectAccount") : t("selectAccount")}
               >
                 {selected && <span className="text-xs font-bold">✓</span>}
               </button>

@@ -72,7 +72,7 @@ export default function AccountDetailPage() {
     } else {
       setActions(
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+          <span className="text-sm text-muted-foreground">{t("transactions.selectedCount", { count: selectedIds.size })}</span>
           <Select
             onValueChange={async (val) => {
               await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
@@ -114,7 +114,7 @@ export default function AccountDetailPage() {
     }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, selectedIds.size, categoriesData, locale]);
+  }, [bulkMode, [...selectedIds].sort().join(','), bulkDelete.isPending, bulkCategorize.isPending, categoriesData, locale]);
 
   // Early returns AFTER all hooks
   if (accountLoading) return <p className="p-6 text-muted-foreground">{t("common.loading")}</p>;

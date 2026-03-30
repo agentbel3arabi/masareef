@@ -194,7 +194,12 @@
     "manage": "Manage",
     "deleteSelected": "Delete Selected",
     "accountSelected": "account selected",
-    "accountsSelected": "accounts selected"
+    "accountsSelected": "accounts selected",
+    "selectAccount": "Select account",
+    "deselectAccount": "Deselect account",
+    "cardholder": "Cardholder",
+    "accountStatusActive": "Active",
+    "accountStatusInactive": "Inactive"
   },
   "transactions": {
     "title": "Transactions",

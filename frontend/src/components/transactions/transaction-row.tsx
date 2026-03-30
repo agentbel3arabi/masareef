@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Trash2, Pencil } from "lucide-react";
-import { CategoryIcon } from "@/lib/category-icon";
+import { CategoryIcon, getCategoryIcon } from "@/lib/category-icon";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -145,12 +145,12 @@ export function TransactionRow({
           {transaction.category ? (
             <span className="inline-flex items-center gap-1.5 text-sm">
               <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-muted text-muted-foreground shrink-0">
-                <CategoryIcon icon={transaction.category.icon} className="h-3.5 w-3.5" />
-                {!transaction.category.icon && transaction.category.color && (
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: transaction.category.color }}
-                  />
+                {transaction.category.icon && getCategoryIcon(transaction.category.icon) ? (
+                  <CategoryIcon icon={transaction.category.icon} className="h-3.5 w-3.5" />
+                ) : transaction.category.color ? (
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: transaction.category.color }} />
+                ) : (
+                  <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
                 )}
               </span>
               <span className="truncate max-w-[100px]">

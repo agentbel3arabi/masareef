@@ -194,7 +194,12 @@
     "manage": "إدارة",
     "deleteSelected": "حذف المحدد",
     "accountSelected": "حساب محدد",
-    "accountsSelected": "حسابات محددة"
+    "accountsSelected": "حسابات محددة",
+    "selectAccount": "تحديد الحساب",
+    "deselectAccount": "إلغاء تحديد الحساب",
+    "cardholder": "حامل البطاقة",
+    "accountStatusActive": "نشط",
+    "accountStatusInactive": "غير نشط"
   },
   "transactions": {
     "title": "المعاملات",
