@@ -71,8 +71,10 @@ export function Navbar() {
       <div className="flex items-center gap-2">
         {actions}
         <button
-          className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          className="rounded-full p-2 text-muted-foreground/40 cursor-not-allowed"
           aria-label={t("notifications")}
+          disabled
+          aria-disabled="true"
         >
           <Bell className="h-4 w-4" />
         </button>

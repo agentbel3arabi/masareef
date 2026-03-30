@@ -70,13 +70,18 @@ export default function AccountsPage() {
             size="sm"
             disabled={deleteAccount.isPending}
             onClick={async () => {
+              const idsArray = [...selectedAccountIds];
               const results = await Promise.allSettled(
-                [...selectedAccountIds].map((id) => deleteAccount.mutateAsync(id))
+                idsArray.map((id) => deleteAccount.mutateAsync(id))
               );
-              const hasFailure = results.some((r) => r.status === "rejected");
-              if (!hasFailure) {
+              const failedIds = new Set(
+                idsArray.filter((_, i) => results[i].status === "rejected")
+              );
+              if (failedIds.size === 0) {
                 setManageMode(false);
                 setSelectedAccountIds(new Set());
+              } else {
+                setSelectedAccountIds(failedIds);
               }
             }}
           >
@@ -159,20 +164,27 @@ export default function AccountsPage() {
 
         {/* Currency switcher */}
         <div className="flex items-center gap-1 bg-muted p-1 rounded-xl">
-          {DISPLAY_CURRENCIES.map((cur) => (
-            <button
-              key={cur}
-              onClick={() => setDisplayCurrency(cur)}
-              className={cn(
-                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
-                cur === displayCurrency
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {cur}
-            </button>
-          ))}
+          {DISPLAY_CURRENCIES.map((cur) => {
+            const isBase = cur === baseCurrency;
+            return (
+              <button
+                key={cur}
+                onClick={() => isBase && setDisplayCurrency(cur)}
+                disabled={!isBase}
+                title={!isBase ? t("comingSoon") : undefined}
+                className={cn(
+                  "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+                  cur === displayCurrency
+                    ? "bg-background shadow-sm text-foreground"
+                    : isBase
+                    ? "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground/40 cursor-not-allowed"
+                )}
+              >
+                {cur}
+              </button>
+            );
+          })}
         </div>
       </section>
 

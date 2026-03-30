@@ -59,13 +59,18 @@ export default function TransfersPage() {
             size="sm"
             disabled={deleteTransfer.isPending}
             onClick={async () => {
+              const idsArray = [...selectedTransferIds];
               const results = await Promise.allSettled(
-                [...selectedTransferIds].map((id) => deleteTransfer.mutateAsync(id))
+                idsArray.map((id) => deleteTransfer.mutateAsync(id))
               );
-              const hasFailure = results.some((r) => r.status === "rejected");
-              if (!hasFailure) {
+              const failedIds = new Set(
+                idsArray.filter((_, i) => results[i].status === "rejected")
+              );
+              if (failedIds.size === 0) {
                 setBulkMode(false);
                 setSelectedTransferIds(new Set());
+              } else {
+                setSelectedTransferIds(failedIds);
               }
             }}
           >

@@ -340,7 +340,7 @@ function OtherAccountCard({
   const iconColor = typeColors[account.type] ?? "bg-primary/10 text-primary";
 
   // Extract just the background color class for the accent stripe
-  const accentBg = iconColor.split(" ")[0]; // e.g. "bg-green-100"
+  const accentBg = iconColor.split(" ").filter((c) => c.startsWith("bg-") || c.startsWith("dark:bg-")).join(" ");
 
   const cardContent = (
     <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
