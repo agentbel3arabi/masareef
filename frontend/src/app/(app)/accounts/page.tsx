@@ -37,31 +37,56 @@ export default function AccountsPage() {
   const { setActions } = useNavbarActions();
 
   useEffect(() => {
-    setActions(
-      <div className="flex items-center gap-2">
-        <Button
-          size="sm"
-          variant={manageMode ? "secondary" : "outline"}
-          onClick={() => {
-            setManageMode((m) => !m);
-            setSelectedAccountIds(new Set());
-          }}
-        >
-          {manageMode ? t("cancel") : t("manage")}
+    if (!manageMode) {
+      setActions(
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setManageMode(true)}>
+            {t("manage")}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+            <ArrowLeftRight className="h-4 w-4 me-1" />
+            {tTransfers("newTransfer")}
+          </Button>
+          <Button size="sm" onClick={() => setCreateOpen(true)}>
+            <Plus className="h-4 w-4 me-1" />
+            {t("addAccount")}
+          </Button>
+        </div>
+      );
+    } else if (selectedAccountIds.size === 0) {
+      setActions(
+        <Button variant="secondary" size="sm" onClick={() => { setManageMode(false); setSelectedAccountIds(new Set()); }}>
+          {t("cancel")}
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
-          <ArrowLeftRight className="h-4 w-4 me-1" />
-          {tTransfers("newTransfer")}
-        </Button>
-        <Button size="sm" onClick={() => setCreateOpen(true)}>
-          <Plus className="h-4 w-4 me-1" />
-          {t("addAccount")}
-        </Button>
-      </div>
-    );
+      );
+    } else {
+      setActions(
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {selectedAccountIds.size} {selectedAccountIds.size === 1 ? t("accountSelected") : t("accountsSelected")}
+          </span>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deleteAccount.isPending}
+            onClick={async () => {
+              await Promise.all([...selectedAccountIds].map((id) => deleteAccount.mutateAsync(id)));
+              setManageMode(false);
+              setSelectedAccountIds(new Set());
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 me-1" />
+            {t("deleteSelected")}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => { setManageMode(false); setSelectedAccountIds(new Set()); }}>
+            {t("cancel")}
+          </Button>
+        </div>
+      );
+    }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manageMode]);
+  }, [manageMode, selectedAccountIds.size]);
 
   const nw = nwResponse?.data;
   const accounts = data?.data ?? [];
@@ -146,40 +171,6 @@ export default function AccountsPage() {
           ))}
         </div>
       </section>
-
-      {/* Bulk delete toolbar */}
-      {manageMode && selectedAccountIds.size > 0 && (
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-destructive/5 border border-destructive/20">
-          <span className="text-sm font-medium text-destructive">
-            {selectedAccountIds.size}{" "}
-            {selectedAccountIds.size === 1 ? t("accountSelected") : t("accountsSelected")}
-          </span>
-          <div className="flex-1" />
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={deleteAccount.isPending}
-            onClick={async () => {
-              await Promise.all([...selectedAccountIds].map((id) => deleteAccount.mutateAsync(id)));
-              setManageMode(false);
-              setSelectedAccountIds(new Set());
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5 me-1" />
-            {t("deleteSelected")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setManageMode(false);
-              setSelectedAccountIds(new Set());
-            }}
-          >
-            {t("cancel")}
-          </Button>
-        </div>
-      )}
 
       {/* Account grid — already grouped by type */}
       {isLoading && <AccountGridSkeleton />}

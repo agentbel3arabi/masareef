@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Plus, Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash } from "lucide-react";
-import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { Plus, Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2 } from "lucide-react";
+import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useAccounts } from "@/hooks/use-accounts";
+import { useCategories } from "@/hooks/use-categories";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
 import { TransactionForm } from "@/components/transactions/transaction-form";
-import { BulkToolbar } from "@/components/transactions/bulk-toolbar";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CategoryIcon } from "@/lib/category-icon";
 import { formatAmount, formatAmountAr } from "@/lib/money";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -45,6 +48,11 @@ export default function TransactionsPage() {
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
+  const { setActions } = useNavbarActions();
+  const { data: categoriesData } = useCategories();
+  const bulkDelete = useBulkDeleteTransactions();
+  const bulkCategorize = useBulkCategorizeTransactions();
+
   const { data, isLoading } = useTransactions(filters);
   const { data: accountsData } = useAccounts();
   const firstAccountId = accountsData?.data?.[0]?.id;
@@ -73,6 +81,68 @@ export default function TransactionsPage() {
     setBulkMode(false);
     setSelectedIds(new Set());
   };
+
+  useEffect(() => {
+    if (!bulkMode) {
+      setActions(
+        <Button variant="outline" size="sm" onClick={() => setBulkMode(true)}>
+          {t("transactions.manage")}
+        </Button>
+      );
+    } else if (selectedIds.size === 0) {
+      setActions(
+        <Button variant="secondary" size="sm" onClick={exitBulkMode}>
+          {t("transactions.cancel")}
+        </Button>
+      );
+    } else {
+      setActions(
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {selectedIds.size} {t("transactions.selectedCount", { count: selectedIds.size })}
+          </span>
+          <Select
+            onValueChange={async (val) => {
+              await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
+              exitBulkMode();
+            }}
+            disabled={bulkCategorize.isPending}
+          >
+            <SelectTrigger className="h-8 w-40 text-xs">
+              <SelectValue placeholder={t("transactions.recategorize")} />
+            </SelectTrigger>
+            <SelectContent>
+              {(categoriesData?.data || []).map((cat) => (
+                <SelectItem key={cat.id} value={String(cat.id)}>
+                  <span className="flex items-center gap-2">
+                    <CategoryIcon icon={cat.icon} className="h-3.5 w-3.5 shrink-0" />
+                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={bulkDelete.isPending}
+            onClick={async () => {
+              await bulkDelete.mutateAsync({ ids: [...selectedIds] });
+              exitBulkMode();
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 me-1" />
+            {t("transactions.deleteSelected")}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={exitBulkMode}>
+            {t("transactions.cancel")}
+          </Button>
+        </div>
+      );
+    }
+    return () => setActions(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bulkMode, selectedIds.size, categoriesData]);
 
   // Page-level summary stats from current page data
   const visibleTxs = data?.data ?? [];
@@ -133,27 +203,9 @@ export default function TransactionsPage() {
           <TransactionFilterBar filters={filters} onChange={setFilters} />
 
           {/* Section header */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {t("transactions.list")}
-            </h2>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={bulkMode ? "secondary" : "outline"}
-                size="sm"
-                onClick={() => {
-                  if (bulkMode) exitBulkMode();
-                  else setBulkMode(true);
-                }}
-              >
-                {bulkMode ? t("transactions.cancel") : t("transactions.manage")}
-              </Button>
-            </div>
-          </div>
-
-          {bulkMode && selectedIds.size > 0 && (
-            <BulkToolbar selectedIds={[...selectedIds]} onCancel={exitBulkMode} />
-          )}
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            {t("transactions.list")}
+          </h2>
 
           {isEmpty ? (
             filtersActive ? (

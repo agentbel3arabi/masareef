@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Receipt, Plus, ArrowLeftRight } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { Receipt, Plus, ArrowLeftRight, Trash2 } from "lucide-react";
 import { useAccount } from "@/hooks/use-accounts";
-import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { useCategories } from "@/hooks/use-categories";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { AccountBalanceHeader } from "@/components/accounts/account-balance-header";
 import { TransactionTable } from "@/components/transactions/transaction-table";
@@ -14,11 +15,14 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CategoryIcon } from "@/lib/category-icon";
 
 export default function AccountDetailPage() {
   const t = useTranslations();
   const tEmpty = useTranslations("emptyStates");
   const tAccounts = useTranslations("accounts");
+  const locale = useLocale();
   const params = useParams();
   const accountId = Number(params.id);
   const { setActions } = useNavbarActions();
@@ -27,6 +31,10 @@ export default function AccountDetailPage() {
   const [transferOpen, setTransferOpen] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+  const { data: categoriesData } = useCategories();
+  const bulkDelete = useBulkDeleteTransactions();
+  const bulkCategorize = useBulkCategorizeTransactions();
   const [txFilters, setTxFilters] = useState<TransactionFilters>({
     account_id: accountId,
     page: 1,
@@ -38,7 +46,7 @@ export default function AccountDetailPage() {
   const { data: txData, isLoading: txLoading } = useTransactions(txFilters);
 
   useEffect(() => {
-    setActions(
+    const normalActions = (
       <div className="flex items-center gap-2">
         <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
           <ArrowLeftRight className="h-4 w-4 me-1" />
@@ -47,11 +55,66 @@ export default function AccountDetailPage() {
         <Button size="sm" variant="outline" disabled>
           {tAccounts("accountStatements")}
         </Button>
+        <Button variant="outline" size="sm" onClick={() => setBulkMode(true)}>
+          {t("transactions.manage")}
+        </Button>
       </div>
     );
+
+    if (!bulkMode) {
+      setActions(normalActions);
+    } else if (selectedIds.size === 0) {
+      setActions(
+        <Button variant="secondary" size="sm" onClick={() => { setBulkMode(false); setSelectedIds(new Set()); }}>
+          {t("transactions.cancel")}
+        </Button>
+      );
+    } else {
+      setActions(
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+          <Select
+            onValueChange={async (val) => {
+              await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
+              setBulkMode(false); setSelectedIds(new Set());
+            }}
+            disabled={bulkCategorize.isPending}
+          >
+            <SelectTrigger className="h-8 w-40 text-xs">
+              <SelectValue placeholder={t("transactions.recategorize")} />
+            </SelectTrigger>
+            <SelectContent>
+              {(categoriesData?.data || []).map((cat) => (
+                <SelectItem key={cat.id} value={String(cat.id)}>
+                  <span className="flex items-center gap-2">
+                    <CategoryIcon icon={cat.icon} className="h-3.5 w-3.5 shrink-0" />
+                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={bulkDelete.isPending}
+            onClick={async () => {
+              await bulkDelete.mutateAsync({ ids: [...selectedIds] });
+              setBulkMode(false); setSelectedIds(new Set());
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 me-1" />
+            {t("transactions.deleteSelected")}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => { setBulkMode(false); setSelectedIds(new Set()); }}>
+            {t("transactions.cancel")}
+          </Button>
+        </div>
+      );
+    }
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bulkMode, selectedIds.size, categoriesData]);
 
   // Early returns AFTER all hooks
   if (accountLoading) return <p className="p-6 text-muted-foreground">{t("common.loading")}</p>;
@@ -67,19 +130,7 @@ export default function AccountDetailPage() {
 
       {/* Transactions section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold">{t("transactions.heading")}</h2>
-          <Button
-            variant={bulkMode ? "secondary" : "outline"}
-            size="sm"
-            onClick={() => {
-              if (bulkMode) { setBulkMode(false); setSelectedIds(new Set()); }
-              else setBulkMode(true);
-            }}
-          >
-            {bulkMode ? t("transactions.cancel") : t("transactions.manage")}
-          </Button>
-        </div>
+        <h2 className="text-base font-semibold mb-4">{t("transactions.heading")}</h2>
         <TransactionFilterBar
           filters={txFilters}
           onChange={(f) => setTxFilters({ ...f, account_id: accountId })}
