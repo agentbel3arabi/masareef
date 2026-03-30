@@ -22,7 +22,7 @@ Public marketing landing page for unauthenticated users. Serves at `/` and showc
 
 ## Layout Structure
 
-7 full-screen sections rendered in order within a `min-h-screen` container:
+8 full-screen sections rendered in order within a `min-h-screen` container:
 
 ```
 ┌──────────────────────────────────┐

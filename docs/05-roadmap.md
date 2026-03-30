@@ -100,7 +100,7 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 - UI foundation: error boundaries, toasts, loading skeletons, empty states, mobile nav drawer
 - Auth redesign: split-layout login/signup, onboarding wizard
 - Page fidelity: accounts, transactions, transfers pages match Stitch designs
-- Landing page: 7-section marketing page with pricing, features, how-it-works
+- Landing page: 8-section marketing page with pricing, features, how-it-works
 - Workflow: formalized Plan → Execute → Review → UAT → Merge process documented
 
 ### Success Criteria
