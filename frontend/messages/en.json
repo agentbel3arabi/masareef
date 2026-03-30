@@ -156,6 +156,7 @@
     "openingBalance": "Opening Balance",
     "openedAt": "Account Opening Date",
     "available": "Available",
+    "amountDue": "Amount Due",
     "loading": "Loading...",
     "error": "Error",
     "notFound": "Account not found",

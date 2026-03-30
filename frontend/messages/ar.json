@@ -156,6 +156,7 @@
     "openingBalance": "الرصيد الافتتاحي",
     "openedAt": "تاريخ فتح الحساب",
     "available": "المتاح",
+    "amountDue": "المبلغ المستحق",
     "loading": "جاري التحميل...",
     "error": "خطأ",
     "notFound": "الحساب غير موجود",
