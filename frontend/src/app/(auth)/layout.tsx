@@ -18,10 +18,10 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
     <div className="flex min-h-screen">
       {/* Left marketing panel — hidden below md */}
       <div className="hidden md:flex md:w-3/5 flex-col justify-between bg-[#0F172A] p-12 text-white">
-        <div>
-          <Logo variant="horizontal" width={320} height={128} colorScheme="dark" />
-        </div>
-        <div className="space-y-10">
+        <div className="flex-1 flex flex-col justify-center space-y-10">
+          <div className="flex justify-center">
+            <Logo variant="horizontal" width={320} height={128} colorScheme="dark" />
+          </div>
           <div>
             <h1 className="text-4xl font-bold leading-tight">
               {t("marketingHeadline")}
