@@ -190,7 +190,11 @@
     "comingSoon": "قريباً",
     "totalAccounts": "الحسابات",
     "assets": "الأصول",
-    "liabilities": "الخصوم"
+    "liabilities": "الخصوم",
+    "manage": "إدارة",
+    "deleteSelected": "حذف المحدد",
+    "accountSelected": "حساب محدد",
+    "accountsSelected": "حسابات محددة"
   },
   "transactions": {
     "title": "المعاملات",
@@ -257,7 +261,8 @@
     "descriptionPlaceholder": "مثال: سحب من الصراف",
     "deleteConfirmTitle": "حذف التحويل",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "selected": "محدد"
   },
   "dashboard": {
     "title": "لوحة التحكم",

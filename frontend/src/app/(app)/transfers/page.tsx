@@ -10,6 +10,7 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { TransactionTableSkeleton } from "@/components/shared/skeletons";
 import {
   Dialog,
@@ -30,6 +31,8 @@ export default function TransfersPage() {
   const deleteTransfer = useDeleteTransfer();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedTransferIds, setSelectedTransferIds] = useState<Set<string>>(new Set());
 
   const transfers = (data?.data ?? []) as Transfer[];
   const isEmpty = !isLoading && transfers.length === 0;
@@ -39,7 +42,10 @@ export default function TransfersPage() {
     { dateStyle: "medium" }
   );
 
-  const columns = [
+  const allSelected =
+    transfers.length > 0 && transfers.every((tr) => selectedTransferIds.has(tr.transfer_id));
+
+  const baseColumns = [
     {
       key: "date",
       header: t("transfers.date"),
@@ -111,12 +117,85 @@ export default function TransfersPage() {
     },
   ];
 
+  const checkboxColumn = {
+    key: "checkbox",
+    header: (
+      <Checkbox
+        checked={allSelected}
+        onCheckedChange={(checked) => {
+          if (checked) setSelectedTransferIds(new Set(transfers.map((tr) => tr.transfer_id)));
+          else setSelectedTransferIds(new Set());
+        }}
+      />
+    ),
+    className: "w-10",
+    render: (row: Transfer) => (
+      <Checkbox
+        checked={selectedTransferIds.has(row.transfer_id)}
+        onCheckedChange={() => {
+          setSelectedTransferIds((prev) => {
+            const next = new Set(prev);
+            next.has(row.transfer_id) ? next.delete(row.transfer_id) : next.add(row.transfer_id);
+            return next;
+          });
+        }}
+      />
+    ),
+  };
+
+  const columns = bulkMode ? [checkboxColumn, ...baseColumns] : baseColumns;
+
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div>
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">{t("nav.transfers")}</h1>
+        <Button
+          variant={bulkMode ? "secondary" : "outline"}
+          size="sm"
+          onClick={() => {
+            setBulkMode((m) => !m);
+            setSelectedTransferIds(new Set());
+          }}
+        >
+          {bulkMode ? t("common.cancel") : t("transactions.manage")}
+        </Button>
       </div>
+
+      {/* Bulk delete toolbar */}
+      {bulkMode && selectedTransferIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-destructive/5 border border-destructive/20">
+          <span className="text-sm font-medium text-destructive">
+            {selectedTransferIds.size} {t("transfers.selected")}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deleteTransfer.isPending}
+            onClick={async () => {
+              await Promise.all(
+                [...selectedTransferIds].map((id) => deleteTransfer.mutateAsync(id))
+              );
+              setBulkMode(false);
+              setSelectedTransferIds(new Set());
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 me-1" />
+            {t("common.delete")} ({selectedTransferIds.size})
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setBulkMode(false);
+              setSelectedTransferIds(new Set());
+            }}
+          >
+            {t("common.cancel")}
+          </Button>
+        </div>
+      )}
 
       {isLoading ? (
         <TransactionTableSkeleton />

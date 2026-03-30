@@ -49,6 +49,9 @@ export const typePillColors: Record<string, string> = {
 
 interface AccountCardProps {
   account: Account;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
 }
 
 // Credit card physical face gradient — alternates by account id
@@ -67,10 +70,16 @@ function CreditAccountCard({
   account,
   onEdit,
   onDelete,
+  manageMode,
+  selected,
+  onSelect,
 }: {
   account: Account;
   onEdit: () => void;
   onDelete: () => void;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
 }) {
   const t = useTranslations("accounts");
   const gradient = creditCardGradient(account.id);
@@ -81,11 +90,25 @@ function CreditAccountCard({
       : null;
 
   return (
-    <div className="relative group">
-      <Link href={`/accounts/${account.id}`}>
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
         <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
           {/* Physical card face */}
           <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
+            {manageMode && (
+              <button
+                onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
+                className={cn(
+                  "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
+                  selected
+                    ? "bg-primary border-primary text-white"
+                    : "bg-white/20 border-white/60"
+                )}
+                aria-label={t("editAccount")}
+              >
+                {selected && <span className="text-xs font-bold">✓</span>}
+              </button>
+            )}
             <div className="flex items-start justify-between mb-6">
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
                 {account.institution || account.name}
@@ -154,32 +177,34 @@ function CreditAccountCard({
         </div>
       </Link>
 
-      <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 bg-white/20 text-white hover:bg-white/30"
-          onClick={(e) => {
-            e.preventDefault();
-            onEdit();
-          }}
-          aria-label={t("editAccount")}
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 bg-white/20 text-white hover:bg-destructive hover:text-destructive-foreground"
-          onClick={(e) => {
-            e.preventDefault();
-            onDelete();
-          }}
-          aria-label={t("deleteAccount")}
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
-      </div>
+      {!manageMode && (
+        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-white/20 text-white hover:bg-white/30"
+            onClick={(e) => {
+              e.preventDefault();
+              onEdit();
+            }}
+            aria-label={t("editAccount")}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-white/20 text-white hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
+            aria-label={t("deleteAccount")}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -188,17 +213,37 @@ function BankAccountCard({
   account,
   onEdit,
   onDelete,
+  manageMode,
+  selected,
+  onSelect,
 }: {
   account: Account;
   onEdit: () => void;
   onDelete: () => void;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
 }) {
   const t = useTranslations("accounts");
 
   return (
-    <div className="relative group">
-      <Link href={`/accounts/${account.id}`}>
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
         <div className="bg-white rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+          {manageMode && (
+            <button
+              onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
+              className={cn(
+                "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
+                selected
+                  ? "bg-primary border-primary text-white"
+                  : "bg-background/90 border-border"
+              )}
+              aria-label={t("editAccount")}
+            >
+              {selected && <span className="text-xs font-bold">✓</span>}
+            </button>
+          )}
           {account.institution && (
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
               {account.institution}
@@ -219,37 +264,53 @@ function BankAccountCard({
           </div>
         </div>
       </Link>
-      <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
-          onClick={(e) => {
-            e.preventDefault();
-            onEdit();
-          }}
-          aria-label={t("editAccount")}
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
-          onClick={(e) => {
-            e.preventDefault();
-            onDelete();
-          }}
-          aria-label={t("deleteAccount")}
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
-      </div>
+      {!manageMode && (
+        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
+            onClick={(e) => {
+              e.preventDefault();
+              onEdit();
+            }}
+            aria-label={t("editAccount")}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
+            aria-label={t("deleteAccount")}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
 
-function OtherAccountCard({ account, onEdit, onDelete }: { account: Account; onEdit: () => void; onDelete: () => void }) {
+function OtherAccountCard({
+  account,
+  onEdit,
+  onDelete,
+  manageMode,
+  selected,
+  onSelect,
+}: {
+  account: Account;
+  onEdit: () => void;
+  onDelete: () => void;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
+}) {
   const t = useTranslations("accounts");
   const Icon = typeIcons[account.type] ?? Wallet;
   const iconColor = typeColors[account.type] ?? "bg-primary/10 text-primary";
@@ -258,13 +319,27 @@ function OtherAccountCard({ account, onEdit, onDelete }: { account: Account; onE
   const accentBg = iconColor.split(" ")[0]; // e.g. "bg-green-100"
 
   return (
-    <div className="relative group">
-      <Link href={`/accounts/${account.id}`}>
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
         <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
           {/* Left accent stripe */}
           <div className={cn("w-1.5 shrink-0", accentBg)} />
           {/* Card content */}
           <div className="flex-1 p-5">
+            {manageMode && (
+              <button
+                onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
+                className={cn(
+                  "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
+                  selected
+                    ? "bg-primary border-primary text-white"
+                    : "bg-background/90 border-border"
+                )}
+                aria-label={t("editAccount")}
+              >
+                {selected && <span className="text-xs font-bold">✓</span>}
+              </button>
+            )}
             <div className={cn("inline-flex rounded-lg p-2 mb-3", iconColor)}>
               <Icon className="h-4 w-4" />
             </div>
@@ -281,21 +356,23 @@ function OtherAccountCard({ account, onEdit, onDelete }: { account: Account; onE
           </div>
         </div>
       </Link>
-      <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-        <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
-          onClick={(e) => { e.preventDefault(); onEdit(); }} aria-label={t("editAccount")}>
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
-          onClick={(e) => { e.preventDefault(); onDelete(); }} aria-label={t("deleteAccount")}>
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
-      </div>
+      {!manageMode && (
+        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+          <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
+            onClick={(e) => { e.preventDefault(); onEdit(); }} aria-label={t("editAccount")}>
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => { e.preventDefault(); onDelete(); }} aria-label={t("deleteAccount")}>
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
 
-export function AccountCard({ account }: AccountCardProps) {
+export function AccountCard({ account, manageMode, selected, onSelect }: AccountCardProps) {
   const t = useTranslations("accounts");
   const tCommon = useTranslations("common");
 
@@ -386,18 +463,27 @@ export function AccountCard({ account }: AccountCardProps) {
           account={account}
           onEdit={openEdit}
           onDelete={() => setDeleteOpen(true)}
+          manageMode={manageMode}
+          selected={selected}
+          onSelect={onSelect}
         />
       ) : isOther ? (
         <OtherAccountCard
           account={account}
           onEdit={openEdit}
           onDelete={() => setDeleteOpen(true)}
+          manageMode={manageMode}
+          selected={selected}
+          onSelect={onSelect}
         />
       ) : (
         <BankAccountCard
           account={account}
           onEdit={openEdit}
           onDelete={() => setDeleteOpen(true)}
+          manageMode={manageMode}
+          selected={selected}
+          onSelect={onSelect}
         />
       )}
 

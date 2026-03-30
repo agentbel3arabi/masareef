@@ -190,7 +190,11 @@
     "comingSoon": "Coming soon",
     "totalAccounts": "Accounts",
     "assets": "Assets",
-    "liabilities": "Liabilities"
+    "liabilities": "Liabilities",
+    "manage": "Manage",
+    "deleteSelected": "Delete Selected",
+    "accountSelected": "account selected",
+    "accountsSelected": "accounts selected"
   },
   "transactions": {
     "title": "Transactions",
@@ -257,7 +261,8 @@
     "descriptionPlaceholder": "e.g., ATM withdrawal",
     "deleteConfirmTitle": "Delete Transfer",
     "deleteConfirmDescription": "Are you sure you want to delete this transfer? This action cannot be undone.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "selected": "selected"
   },
   "dashboard": {
     "title": "Dashboard",

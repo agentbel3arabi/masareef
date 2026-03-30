@@ -111,7 +111,7 @@ export function TransactionRow({
     <>
       <tr
         className={`border-b transition-colors group ${
-          selected ? "bg-primary/5" : "hover:bg-accent/50"
+          selected ? "bg-primary/10 border-s-2 border-primary" : "hover:bg-muted/40"
         }`}
       >
         {bulkMode && (

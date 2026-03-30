@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Wallet, ArrowLeftRight, Plus } from "lucide-react";
+import { Wallet, ArrowLeftRight, Plus, Trash2 } from "lucide-react";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
-import { useAccounts, useNetWorth } from "@/hooks/use-accounts";
+import { useAccounts, useNetWorth, useDeleteAccount } from "@/hooks/use-accounts";
 import { AccountGrid } from "@/components/accounts/account-grid";
 import { CreateAccountDialog } from "@/components/accounts/create-account-dialog";
 import { TransferForm } from "@/components/transfers/transfer-form";
@@ -29,12 +29,26 @@ export default function AccountsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>("EGP");
+  const [manageMode, setManageMode] = useState(false);
+  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<number>>(new Set());
+
+  const deleteAccount = useDeleteAccount();
 
   const { setActions } = useNavbarActions();
 
   useEffect(() => {
     setActions(
       <div className="flex items-center gap-2">
+        <Button
+          size="sm"
+          variant={manageMode ? "secondary" : "outline"}
+          onClick={() => {
+            setManageMode((m) => !m);
+            setSelectedAccountIds(new Set());
+          }}
+        >
+          {manageMode ? t("cancel") : t("manage")}
+        </Button>
         <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
           <ArrowLeftRight className="h-4 w-4 me-1" />
           {tTransfers("newTransfer")}
@@ -47,7 +61,7 @@ export default function AccountsPage() {
     );
     return () => setActions(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [manageMode]);
 
   const nw = nwResponse?.data;
   const accounts = data?.data ?? [];
@@ -133,6 +147,40 @@ export default function AccountsPage() {
         </div>
       </section>
 
+      {/* Bulk delete toolbar */}
+      {manageMode && selectedAccountIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-destructive/5 border border-destructive/20">
+          <span className="text-sm font-medium text-destructive">
+            {selectedAccountIds.size}{" "}
+            {selectedAccountIds.size === 1 ? t("accountSelected") : t("accountsSelected")}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deleteAccount.isPending}
+            onClick={async () => {
+              await Promise.all([...selectedAccountIds].map((id) => deleteAccount.mutateAsync(id)));
+              setManageMode(false);
+              setSelectedAccountIds(new Set());
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 me-1" />
+            {t("deleteSelected")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setManageMode(false);
+              setSelectedAccountIds(new Set());
+            }}
+          >
+            {t("cancel")}
+          </Button>
+        </div>
+      )}
+
       {/* Account grid — already grouped by type */}
       {isLoading && <AccountGridSkeleton />}
       {error && (
@@ -140,7 +188,20 @@ export default function AccountsPage() {
           {t("error")}: {error.message}
         </p>
       )}
-      {!isLoading && accounts.length > 0 && <AccountGrid accounts={accounts} />}
+      {!isLoading && accounts.length > 0 && (
+        <AccountGrid
+          accounts={accounts}
+          manageMode={manageMode}
+          selectedIds={selectedAccountIds}
+          onSelect={(id) =>
+            setSelectedAccountIds((prev) => {
+              const next = new Set(prev);
+              next.has(id) ? next.delete(id) : next.add(id);
+              return next;
+            })
+          }
+        />
+      )}
       {!isLoading && accounts.length === 0 && (
         <EmptyState
           icon={Wallet}
