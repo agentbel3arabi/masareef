@@ -82,6 +82,19 @@ If the Stitch design includes UI elements that need backend work not yet built:
 
 Log every such element in `docs/superpowers/plans/phase-1.75/backend-dependencies.md`.
 
+## Design Consistency Rules
+
+Stitch designs are **not perfectly consistent** across screens. The sidebar, navbar, and shared components may look different from screen to screen in Stitch — this is a known limitation of AI-generated designs.
+
+**The rule: agreed components always win over what Stitch shows.**
+
+Specifically:
+- **Sidebar navigation** is always the canonical list from `lib/nav-items.ts` — if a Stitch screen shows fewer nav items, add the missing ones anyway
+- **Shared components** (`PageHeader`, `StatCard`, `FilterBar`, `DataTable`, `FormSheet`, `SummaryBar`) must be used on every page that needs them, even if the Stitch design uses a different layout
+- **Logo** is always the real SVG from `public/logos/` via `<Logo>` component — never a text placeholder, even if the Stitch screen shows text
+- **Spacing, padding, border radius** follow design tokens, not Stitch pixel values
+- When a Stitch screen contradicts the agreed component design, implement the agreed component and adapt the page layout around it
+
 ## Design Token Authority
 
 When Stitch design conflicts with `docs/guides/09-design-tokens.md`, **design tokens always win**:
