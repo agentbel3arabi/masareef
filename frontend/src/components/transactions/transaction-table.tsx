@@ -79,7 +79,7 @@ export function TransactionTable({
               </th>
             </tr>
           </thead>
-          <tbody className="[&>tr:nth-child(even)]:bg-muted/30">
+          <tbody>
             {transactions.map((tx) => (
               <TransactionRow
                 key={tx.id}

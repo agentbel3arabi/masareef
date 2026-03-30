@@ -24,12 +24,12 @@ export function FormSheet({
 }: FormSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="end" className="w-full sm:max-w-lg overflow-y-auto">
+      <SheetContent side="end" className="w-full sm:max-w-lg overflow-y-auto px-6">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
-        <div className="mt-6 space-y-4">{children}</div>
+        <div className="mt-6 px-1 space-y-6">{children}</div>
       </SheetContent>
     </Sheet>
   );

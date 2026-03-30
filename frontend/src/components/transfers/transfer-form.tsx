@@ -3,33 +3,20 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FormSheet } from "@/components/shared/form-sheet";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCreateTransfer } from "@/hooks/use-transfers";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
-import { ArrowLeftRight } from "lucide-react";
 
 interface TransferFormProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function TransferForm({
-  open: controlledOpen,
-  onOpenChange: controlledOnOpenChange,
-}: TransferFormProps = {}) {
+export function TransferForm({ open, onOpenChange }: TransferFormProps) {
   const t = useTranslations();
-  const [internalOpen, setInternalOpen] = useState(false);
-  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
-  const open = isControlled ? controlledOpen : internalOpen;
-  const setOpen = (next: boolean) => {
-    if (!isControlled) {
-      setInternalOpen(next);
-    }
-    controlledOnOpenChange?.(next);
-  };
   const { data: accountsData } = useAccounts();
   const createTransfer = useCreateTransfer();
 
@@ -63,7 +50,7 @@ export function TransferForm({
         : undefined,
     });
 
-    setOpen(false);
+    onOpenChange(false);
     setFromId("");
     setToId("");
     setAmount("");
@@ -72,97 +59,95 @@ export function TransferForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>
-        <ArrowLeftRight className="h-4 w-4 me-2" />
-        {t("transfers.newTransfer")}
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("transfers.transferBetween")}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>{t("transfers.fromAccount")}</Label>
-            <select
-              value={fromId}
-              onChange={(e) => setFromId(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              required
-            >
-              <option value="">{t("transfers.selectAccount")}</option>
-              {accounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} ({a.currency})
-                </option>
-              ))}
-            </select>
-          </div>
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("transfers.transferBetween")}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label>{t("transfers.fromAccount")}</Label>
+          <select
+            value={fromId}
+            onChange={(e) => setFromId(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            required
+          >
+            <option value="">{t("transfers.selectAccount")}</option>
+            {accounts.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name} ({a.currency})
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="space-y-2">
-            <Label>{t("transfers.toAccount")}</Label>
-            <select
-              value={toId}
-              onChange={(e) => setToId(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              required
-            >
-              <option value="">{t("transfers.selectAccount")}</option>
-              {accounts.filter((a) => a.id !== Number(fromId)).map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} ({a.currency})
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="space-y-2">
+          <Label>{t("transfers.toAccount")}</Label>
+          <select
+            value={toId}
+            onChange={(e) => setToId(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            required
+          >
+            <option value="">{t("transfers.selectAccount")}</option>
+            {accounts.filter((a) => a.id !== Number(fromId)).map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name} ({a.currency})
+              </option>
+            ))}
+          </select>
+        </div>
 
+        <div className="space-y-2">
+          <Label>{t("common.amount")} ({fromAccount?.currency || ""})</Label>
+          <Input
+            type="number"
+            step={amountStep}
+            min={amountStep}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </div>
+
+        {isCrossCurrency && (
           <div className="space-y-2">
-            <Label>{t("common.amount")} ({fromAccount?.currency || ""})</Label>
+            <Label>
+              {t("transfers.exchangeRate", {
+                from: fromAccount?.currency,
+                to: toAccount?.currency,
+              })}
+            </Label>
             <Input
               type="number"
-              step={amountStep}
-              min={amountStep}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              step="0.0001"
+              value={fxRate}
+              onChange={(e) => setFxRate(e.target.value)}
+              placeholder="e.g., 0.0199"
               required
             />
           </div>
+        )}
 
-          {isCrossCurrency && (
-            <div className="space-y-2">
-              <Label>
-                {t("transfers.exchangeRate", { from: fromAccount?.currency, to: toAccount?.currency })}
-              </Label>
-              <Input
-                type="number"
-                step="0.0001"
-                value={fxRate}
-                onChange={(e) => setFxRate(e.target.value)}
-                placeholder="e.g., 0.0199"
-                required
-              />
-            </div>
-          )}
+        <div className="space-y-2">
+          <Label>{t("common.date")}</Label>
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        </div>
 
-          <div className="space-y-2">
-            <Label>{t("common.date")}</Label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-          </div>
+        <div className="space-y-2">
+          <Label>{t("common.description")}</Label>
+          <Input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder={t("transfers.descriptionPlaceholder")}
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label>{t("common.description")}</Label>
-            <Input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("transfers.descriptionPlaceholder")}
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={createTransfer.isPending}>
-            {createTransfer.isPending ? t("common.loading") : t("transfers.transfer")}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <Button type="submit" className="w-full" disabled={createTransfer.isPending}>
+          {createTransfer.isPending ? t("common.loading") : t("transfers.transfer")}
+        </Button>
+      </form>
+    </FormSheet>
   );
 }

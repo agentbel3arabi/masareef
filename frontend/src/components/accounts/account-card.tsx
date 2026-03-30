@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Wallet, CreditCard, Banknote, Smartphone, ShoppingBag, Pencil, Trash2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,11 +16,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { MoneyDisplay } from "@/components/shared/money-display";
-import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor, formatAmount } from "@/lib/money";
 import { UtilizationBar } from "./utilization-bar";
-import { BillingBadge } from "./billing-badge";
 import { useUpdateAccount, useDeleteAccount } from "@/hooks/use-accounts";
 import type { Account, UpdateAccountInput } from "@/hooks/use-accounts";
+import { cn } from "@/lib/utils";
 
 export const typeIcons: Record<string, typeof Wallet> = {
   bank_account: Wallet,
@@ -50,13 +49,368 @@ export const typePillColors: Record<string, string> = {
 
 interface AccountCardProps {
   account: Account;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
 }
 
-export function AccountCard({ account }: AccountCardProps) {
+// Credit card physical face gradient — alternates by account id
+function creditCardGradient(id: number): string {
+  return id % 2 === 1
+    ? "from-slate-800 to-slate-900"    // dark navy
+    : "from-emerald-800 to-emerald-900"; // dark green
+}
+
+// Last 4 digits placeholder based on account id
+function maskedLast4(id: number): string {
+  return String(id).padStart(4, "0").slice(-4);
+}
+
+function CreditAccountCard({
+  account,
+  onEdit,
+  onDelete,
+  manageMode,
+  selected,
+  onSelect,
+}: {
+  account: Account;
+  onEdit: () => void;
+  onDelete: () => void;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
+}) {
   const t = useTranslations("accounts");
-  const tCommon = useTranslations("common");
+  const gradient = creditCardGradient(account.id);
+  const last4 = maskedLast4(account.id);
+  const available =
+    account.credit_limit != null
+      ? account.credit_limit + account.displayed_balance_minor
+      : null;
+
+  const cardContent = (
+    <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+      {/* Physical card face */}
+      <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
+        {manageMode && (
+          <div
+            className={cn(
+              "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+              selected
+                ? "bg-primary border-primary text-white"
+                : "bg-white/20 border-white/60"
+            )}
+            aria-hidden="true"
+          >
+            {selected && <span className="text-xs font-bold">✓</span>}
+          </div>
+        )}
+        <div className="flex items-start justify-between mb-6">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+            {account.institution || account.name}
+          </p>
+          <div className="flex gap-1">
+            <div className="w-7 h-5 rounded bg-white/20" />
+            <div className="w-7 h-5 rounded bg-white/10 -ms-3" />
+          </div>
+        </div>
+        <p className="text-sm font-mono tracking-[0.2em] text-white/90 mb-4">
+          •••• •••• •••• {last4}
+        </p>
+        <div>
+          <p className="text-[9px] uppercase tracking-widest text-white/50 mb-0.5">
+            {t("cardholder")}
+          </p>
+          <p className="text-xs font-bold uppercase tracking-wider text-white">
+            {account.name}
+          </p>
+        </div>
+      </div>
+
+      {/* Stats below the card face */}
+      <div className="p-4 space-y-3">
+        {account.credit_limit != null && (
+          <UtilizationBar
+            balanceMinor={account.displayed_balance_minor}
+            creditLimitMinor={account.credit_limit}
+            currency={account.currency}
+          />
+        )}
+        <div className="grid grid-cols-3 gap-2 pt-1">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {t("creditLimit")}
+            </p>
+            <p className="text-xs font-semibold">
+              {account.credit_limit != null
+                ? formatAmount(account.credit_limit, account.currency)
+                : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {t("amountDue")}
+            </p>
+            <p className="text-xs font-semibold text-destructive">
+              {formatAmount(
+                Math.abs(account.displayed_balance_minor),
+                account.currency
+              )}
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {t("available")}
+            </p>
+            <p className="text-xs font-semibold text-primary">
+              {available != null
+                ? formatAmount(available, account.currency)
+                : "—"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      {manageMode ? (
+        <button
+          type="button"
+          className="w-full text-start block"
+          onClick={() => onSelect?.(account.id)}
+          aria-label={selected ? t("deselectAccount") : t("selectAccount")}
+        >
+          {cardContent}
+        </button>
+      ) : (
+        <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
+      )}
+
+      {!manageMode && (
+        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-white/20 text-white hover:bg-white/30"
+            onClick={(e) => {
+              e.preventDefault();
+              onEdit();
+            }}
+            aria-label={t("editAccount")}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-white/20 text-white hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
+            aria-label={t("deleteAccount")}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BankAccountCard({
+  account,
+  onEdit,
+  onDelete,
+  manageMode,
+  selected,
+  onSelect,
+}: {
+  account: Account;
+  onEdit: () => void;
+  onDelete: () => void;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
+}) {
+  const t = useTranslations("accounts");
+
+  const cardContent = (
+    <div className="bg-card rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+      {manageMode && (
+        <div
+          className={cn(
+            "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+            selected
+              ? "bg-primary border-primary text-white"
+              : "bg-background/90 border-border"
+          )}
+          aria-hidden="true"
+        >
+          {selected && <span className="text-xs font-bold">✓</span>}
+        </div>
+      )}
+      {account.institution && (
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+          {account.institution}
+        </p>
+      )}
+      <p className="text-sm font-medium text-foreground mb-3">{account.name}</p>
+      <MoneyDisplay
+        amount={account.displayed_balance_minor}
+        currency={account.currency}
+        size="lg"
+        colorize
+      />
+      <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
+        <div className={cn("w-2 h-2 rounded-full", account.is_active !== false ? "bg-primary" : "bg-muted-foreground")} />
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {account.is_active !== false ? t("accountStatusActive") : t("accountStatusInactive")}
+        </span>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      {manageMode ? (
+        <button
+          type="button"
+          className="w-full text-start block"
+          onClick={() => onSelect?.(account.id)}
+          aria-label={selected ? t("deselectAccount") : t("selectAccount")}
+        >
+          {cardContent}
+        </button>
+      ) : (
+        <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
+      )}
+      {!manageMode && (
+        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
+            onClick={(e) => {
+              e.preventDefault();
+              onEdit();
+            }}
+            aria-label={t("editAccount")}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
+            aria-label={t("deleteAccount")}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OtherAccountCard({
+  account,
+  onEdit,
+  onDelete,
+  manageMode,
+  selected,
+  onSelect,
+}: {
+  account: Account;
+  onEdit: () => void;
+  onDelete: () => void;
+  manageMode?: boolean;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
+}) {
+  const t = useTranslations("accounts");
   const Icon = typeIcons[account.type] ?? Wallet;
   const iconColor = typeColors[account.type] ?? "bg-primary/10 text-primary";
+
+  // Extract just the background color class for the accent stripe
+  const accentBg = iconColor.split(" ").filter((c) => c.startsWith("bg-") || c.startsWith("dark:bg-")).join(" ");
+
+  const cardContent = (
+    <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
+      {/* Left accent stripe */}
+      <div className={cn("w-1.5 shrink-0", accentBg)} />
+      {/* Card content */}
+      <div className="flex-1 p-5">
+        {manageMode && (
+          <div
+            className={cn(
+              "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+              selected
+                ? "bg-primary border-primary text-white"
+                : "bg-background/90 border-border"
+            )}
+            aria-hidden="true"
+          >
+            {selected && <span className="text-xs font-bold">✓</span>}
+          </div>
+        )}
+        <div className={cn("inline-flex rounded-lg p-2 mb-3", iconColor)}>
+          <Icon className="h-4 w-4" />
+        </div>
+        <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
+        {account.institution && (
+          <p className="text-xs text-muted-foreground mb-3">{account.institution}</p>
+        )}
+        <MoneyDisplay
+          amount={account.displayed_balance_minor}
+          currency={account.currency}
+          size="lg"
+          colorize
+        />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      {manageMode ? (
+        <button
+          type="button"
+          className="w-full text-start block"
+          onClick={() => onSelect?.(account.id)}
+          aria-label={selected ? t("deselectAccount") : t("selectAccount")}
+        >
+          {cardContent}
+        </button>
+      ) : (
+        <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
+      )}
+      {!manageMode && (
+        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
+          <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
+            onClick={(e) => { e.preventDefault(); onEdit(); }} aria-label={t("editAccount")}>
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+            onClick={(e) => { e.preventDefault(); onDelete(); }} aria-label={t("deleteAccount")}>
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function AccountCard({ account, manageMode, selected, onSelect }: AccountCardProps) {
+  const t = useTranslations("accounts");
+  const tCommon = useTranslations("common");
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -64,7 +418,12 @@ export function AccountCard({ account }: AccountCardProps) {
   const [name, setName] = useState(account.name);
   const [institution, setInstitution] = useState(account.institution ?? "");
   const [creditLimit, setCreditLimit] = useState(
-    account.credit_limit != null ? String(account.credit_limit / Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2)) : ""
+    account.credit_limit != null
+      ? String(
+          account.credit_limit /
+            Math.pow(10, CURRENCIES[account.currency]?.exponent ?? 2)
+        )
+      : ""
   );
   const [billingDay, setBillingDay] = useState(
     account.billing_cycle_day != null ? String(account.billing_cycle_day) : ""
@@ -84,9 +443,17 @@ export function AccountCard({ account }: AccountCardProps) {
   const openEdit = () => {
     setName(account.name);
     setInstitution(account.institution ?? "");
-    setCreditLimit(account.credit_limit != null ? String(account.credit_limit / Math.pow(10, currencyExponent)) : "");
-    setBillingDay(account.billing_cycle_day != null ? String(account.billing_cycle_day) : "");
-    setPaymentDueDay(account.payment_due_day != null ? String(account.payment_due_day) : "");
+    setCreditLimit(
+      account.credit_limit != null
+        ? String(account.credit_limit / Math.pow(10, currencyExponent))
+        : ""
+    );
+    setBillingDay(
+      account.billing_cycle_day != null ? String(account.billing_cycle_day) : ""
+    );
+    setPaymentDueDay(
+      account.payment_due_day != null ? String(account.payment_due_day) : ""
+    );
     setEditOpen(true);
   };
 
@@ -121,73 +488,42 @@ export function AccountCard({ account }: AccountCardProps) {
     setDeleteOpen(false);
   };
 
+  const isCreditCard = account.type === "credit_card";
+  const isOther =
+    account.type === "cash_wallet" || account.type === "digital_wallet" || account.type === "financing_app";
+
   return (
     <>
-      <div className="relative group">
-        <Link href={`/accounts/${account.id}`}>
-          <Card className="hover:bg-accent/50 hover:-translate-y-1 transition-all duration-200 cursor-pointer">
-            <CardHeader className="flex flex-row items-center gap-3 pb-2">
-              <div className={`rounded-lg p-2 ${iconColor}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <CardTitle className="text-sm font-medium truncate">
-                  {account.name}
-                </CardTitle>
-                {account.institution && (
-                  <p className="text-xs text-muted-foreground">{account.institution}</p>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <MoneyDisplay
-                amount={account.displayed_balance_minor}
-                currency={account.currency}
-                size="lg"
-                colorize
-              />
-              {isCreditType && account.credit_limit != null && (
-                <UtilizationBar
-                  balanceMinor={account.displayed_balance_minor}
-                  creditLimitMinor={account.credit_limit}
-                  currency={account.currency}
-                />
-              )}
-              {isCreditType && account.payment_due_day != null && (
-                <BillingBadge paymentDueDay={account.payment_due_day} />
-              )}
-            </CardContent>
-          </Card>
-        </Link>
+      {isCreditCard ? (
+        <CreditAccountCard
+          account={account}
+          onEdit={openEdit}
+          onDelete={() => setDeleteOpen(true)}
+          manageMode={manageMode}
+          selected={selected}
+          onSelect={onSelect}
+        />
+      ) : isOther ? (
+        <OtherAccountCard
+          account={account}
+          onEdit={openEdit}
+          onDelete={() => setDeleteOpen(true)}
+          manageMode={manageMode}
+          selected={selected}
+          onSelect={onSelect}
+        />
+      ) : (
+        <BankAccountCard
+          account={account}
+          onEdit={openEdit}
+          onDelete={() => setDeleteOpen(true)}
+          manageMode={manageMode}
+          selected={selected}
+          onSelect={onSelect}
+        />
+      )}
 
-        <div className="absolute top-2 end-2 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
-            onClick={(e) => {
-              e.preventDefault();
-              openEdit();
-            }}
-            aria-label={t("editAccount")}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
-            onClick={(e) => {
-              e.preventDefault();
-              setDeleteOpen(true);
-            }}
-            aria-label={t("deleteAccount")}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      </div>
-
+      {/* Edit dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -239,7 +575,9 @@ export function AccountCard({ account }: AccountCardProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="edit-payment-due-day">{t("paymentDueDay")}</Label>
+                    <Label htmlFor="edit-payment-due-day">
+                      {t("paymentDueDay")}
+                    </Label>
                     <Input
                       id="edit-payment-due-day"
                       type="number"

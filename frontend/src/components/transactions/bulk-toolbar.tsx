@@ -5,6 +5,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -12,6 +19,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { CategoryIcon } from "@/lib/category-icon";
 import { useCategories } from "@/hooks/use-categories";
 import {
   useBulkDeleteTransactions,
@@ -37,14 +45,6 @@ export function BulkToolbar({ selectedIds, onCancel }: BulkToolbarProps) {
     setConfirmOpen(false);
   };
 
-  const handleCategorize = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const categoryId = Number(e.target.value);
-    if (!categoryId) return;
-    await bulkCategorize.mutateAsync({ ids: selectedIds, category_id: categoryId });
-    onCancel();
-    e.target.value = "";
-  };
-
   if (selectedIds.length === 0) return null;
 
   return (
@@ -54,20 +54,33 @@ export function BulkToolbar({ selectedIds, onCancel }: BulkToolbarProps) {
           {t("selectedCount", { count: selectedIds.length })}
         </span>
         <div className="grow" />
-        <select
-          defaultValue=""
-          onChange={handleCategorize}
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+        <Select
+          onValueChange={async (val) => {
+            const categoryId = Number(val);
+            if (!categoryId) return;
+            try {
+              await bulkCategorize.mutateAsync({ ids: selectedIds, category_id: categoryId });
+              onCancel();
+            } catch (error) {
+              console.error("Failed to bulk categorize transactions:", error);
+            }
+          }}
           disabled={bulkCategorize.isPending}
         >
-          <option value="">{t("recategorize")}</option>
-          {(categoriesData?.data || []).map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.icon ? `${cat.icon} ` : ""}
-              {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder={t("recategorize")} />
+          </SelectTrigger>
+          <SelectContent>
+            {(categoriesData?.data || []).map((cat) => (
+              <SelectItem key={cat.id} value={String(cat.id)}>
+                <span className="flex items-center gap-2">
+                  <CategoryIcon icon={cat.icon} className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button
           variant="destructive"
           size="sm"
