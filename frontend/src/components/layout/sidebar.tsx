@@ -141,6 +141,7 @@ export function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-label={collapsed ? t(item.label) : undefined}
                     title={collapsed ? t(item.label) : undefined}
                     className={cn(
                       "flex items-center rounded-lg text-sm transition-colors",
@@ -176,6 +177,7 @@ export function Sidebar() {
         {/* TODO: Replace with real help page route when available */}
         <Link
           href="/settings"
+          aria-label={collapsed ? t("sidebar.help") : undefined}
           title={collapsed ? t("sidebar.help") : undefined}
           className={cn(
             "flex items-center rounded-lg text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
@@ -187,6 +189,7 @@ export function Sidebar() {
         </Link>
         <button
           onClick={() => void signOut()}
+          aria-label={collapsed ? t("nav.signOut") : undefined}
           title={collapsed ? t("nav.signOut") : undefined}
           className={cn(
             "flex w-full items-center rounded-lg text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors",
