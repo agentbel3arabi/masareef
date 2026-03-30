@@ -51,6 +51,7 @@ export function TransactionForm({
 
   const createTx = useCreateTransaction();
   const { data: categoriesData } = useCategories(type === "debit" ? "expense" : "income");
+  const selectedCategory = categoriesData?.data?.find((c) => c.id === categoryId);
 
   const exponent = CURRENCIES[accountCurrency]?.exponent ?? 2;
   const amountStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
@@ -92,7 +93,7 @@ export function TransactionForm({
         <SheetHeader>
           <SheetTitle>{t("transactions.newTransaction")}</SheetTitle>
         </SheetHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
           <div className="flex gap-2">
             <Button
               type="button"
@@ -134,7 +135,16 @@ export function TransactionForm({
               onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("transactions.uncategorized")} />
+                {selectedCategory ? (
+                  <span className="flex items-center gap-2">
+                    {selectedCategory.icon && <span>{selectedCategory.icon}</span>}
+                    {locale === "ar" && selectedCategory.name_ar
+                      ? selectedCategory.name_ar
+                      : selectedCategory.name_en}
+                  </span>
+                ) : (
+                  <SelectValue placeholder={t("transactions.uncategorized")} />
+                )}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__uncategorized__">

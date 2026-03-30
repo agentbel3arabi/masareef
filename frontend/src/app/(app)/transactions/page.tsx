@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Receipt, Search } from "lucide-react";
+import { Plus, Receipt, Search } from "lucide-react";
 import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useAccounts } from "@/hooks/use-accounts";
 import { TransactionTable } from "@/components/transactions/transaction-table";
@@ -105,31 +105,22 @@ export default function TransactionsPage() {
                 description={tEmpty("searchResults.description")}
               />
             ) : (
-              <>
-                <EmptyState
-                  icon={Receipt}
-                  title={tEmpty("transactions.title")}
-                  description={tEmpty("transactions.description")}
-                  action={{
-                    label: tEmpty("transactions.action"),
-                    onClick: () => {
-                      if (firstAccountId !== undefined) {
-                        setCreateOpen(true);
-                      } else {
-                        // No accounts yet — direct user to create one first
-                        router.push("/accounts");
-                      }
-                    },
-                  }}
-                />
-                {firstAccountId !== undefined && (
-                  <TransactionForm
-                    accountId={firstAccountId}
-                    open={createOpen}
-                    onOpenChange={setCreateOpen}
-                  />
-                )}
-              </>
+              <EmptyState
+                icon={Receipt}
+                title={tEmpty("transactions.title")}
+                description={tEmpty("transactions.description")}
+                action={{
+                  label: tEmpty("transactions.action"),
+                  onClick: () => {
+                    if (firstAccountId !== undefined) {
+                      setCreateOpen(true);
+                    } else {
+                      // No accounts yet — direct user to create one first
+                      router.push("/accounts");
+                    }
+                  },
+                }}
+              />
             )
           ) : (
             <TransactionTable
@@ -146,6 +137,23 @@ export default function TransactionsPage() {
               onSelectAll={selectAll}
             />
           )}
+        </>
+      )}
+
+      {firstAccountId !== undefined && (
+        <>
+          <button
+            onClick={() => setCreateOpen(true)}
+            aria-label={t("transactions.addTransaction")}
+            className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg hover:shadow-xl active:scale-95 transition-all"
+          >
+            <Plus className="h-6 w-6" />
+          </button>
+          <TransactionForm
+            accountId={firstAccountId}
+            open={createOpen}
+            onOpenChange={setCreateOpen}
+          />
         </>
       )}
     </div>
