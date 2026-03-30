@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Wallet, ArrowLeftRight } from "lucide-react";
+import { Wallet, ArrowLeftRight, Plus } from "lucide-react";
 import { useAccounts, useNetWorth } from "@/hooks/use-accounts";
 import { AccountGrid } from "@/components/accounts/account-grid";
 import { CreateAccountDialog } from "@/components/accounts/create-account-dialog";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { AccountGridSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
-import { PageHeader } from "@/components/shared/page-header";
-import { SummaryBar } from "@/components/shared/summary-bar";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { formatAmount, formatAmountAr } from "@/lib/money";
+
+const DISPLAY_CURRENCIES = ["EGP", "USD", "SAR"] as const;
+type DisplayCurrency = (typeof DISPLAY_CURRENCIES)[number];
 
 export default function AccountsPage() {
   const t = useTranslations("accounts");
@@ -21,57 +23,114 @@ export default function AccountsPage() {
   const locale = useLocale();
 
   const { data, isLoading, error } = useAccounts();
-  const { data: netWorthData } = useNetWorth();
+  const { data: nwResponse } = useNetWorth();
 
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>("EGP");
 
-  const nw = netWorthData?.data;
-  const netWorthValue = nw
-    ? locale === "ar"
-      ? formatAmountAr(nw.total_base_minor, nw.base_currency)
-      : formatAmount(nw.total_base_minor, nw.base_currency)
-    : "—";
+  const nw = nwResponse?.data;
+  const accounts = data?.data ?? [];
 
-  const summaryItems = [
-    { label: t("netWorth"), value: netWorthValue },
-    {
-      label: t("totalAccounts"),
-      value: nw ? String(nw.account_count) : "—",
-    },
-  ];
+  // Compute assets and liabilities from accounts list
+  const assetsMinor = accounts
+    .filter((a) => a.displayed_balance_minor > 0)
+    .reduce((s, a) => s + a.displayed_balance_minor, 0);
+  const liabilitiesMinor = accounts
+    .filter((a) => a.displayed_balance_minor < 0)
+    .reduce((s, a) => s + Math.abs(a.displayed_balance_minor), 0);
+
+  const baseCurrency = nw?.base_currency ?? "EGP";
+
+  const fmt = (amount: number, currency: string) =>
+    locale === "ar"
+      ? formatAmountAr(amount, currency)
+      : formatAmount(amount, currency);
+
+  // Only EGP (base currency) is live; others are backend dependency
+  const netWorthDisplay =
+    displayCurrency === baseCurrency && nw
+      ? fmt(nw.total_base_minor, baseCurrency)
+      : displayCurrency !== baseCurrency
+      ? "—"
+      : "—";
+
+  const assetsDisplay =
+    displayCurrency === baseCurrency
+      ? fmt(assetsMinor, baseCurrency)
+      : "—";
+
+  const liabilitiesDisplay =
+    displayCurrency === baseCurrency
+      ? fmt(liabilitiesMinor, baseCurrency)
+      : "—";
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={t("title")}
-        actions={
-          <>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setTransferOpen(true)}
+    <div className="space-y-8">
+      {/* Net worth hero */}
+      <section className="rounded-2xl border bg-card p-8 flex flex-wrap items-center justify-between gap-6 shadow-sm">
+        <div className="flex flex-wrap items-center gap-10">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              {t("netWorth")}
+            </p>
+            <p className="text-4xl font-black tracking-tight text-foreground">
+              {netWorthDisplay}
+            </p>
+          </div>
+          <div className="flex gap-8 border-s border-border ps-10">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                {t("assets")}
+              </p>
+              <p className="text-xl font-bold text-primary">{assetsDisplay}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                {t("liabilities")}
+              </p>
+              <p className="text-xl font-bold text-destructive">{liabilitiesDisplay}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Currency switcher */}
+        <div className="flex items-center gap-1 bg-muted p-1 rounded-xl">
+          {DISPLAY_CURRENCIES.map((cur) => (
+            <button
+              key={cur}
+              onClick={() => setDisplayCurrency(cur)}
+              className={cn(
+                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+                cur === displayCurrency
+                  ? "bg-background shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              <ArrowLeftRight className="h-4 w-4 me-1" />
-              {tTransfers("newTransfer")}
-            </Button>
-            <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
-          </>
-        }
-      />
+              {cur}
+            </button>
+          ))}
+        </div>
+      </section>
 
-      <SummaryBar items={summaryItems} />
+      {/* Actions row */}
+      <div className="flex items-center justify-end gap-2">
+        <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+          <ArrowLeftRight className="h-4 w-4 me-1" />
+          {tTransfers("newTransfer")}
+        </Button>
+        <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
+      </div>
 
+      {/* Account grid — already grouped by type */}
       {isLoading && <AccountGridSkeleton />}
       {error && (
         <p className="text-destructive">
           {t("error")}: {error.message}
         </p>
       )}
-      {data?.data && data.data.length > 0 && (
-        <AccountGrid accounts={data.data} />
-      )}
-      {!isLoading && data?.data?.length === 0 && (
+      {!isLoading && accounts.length > 0 && <AccountGrid accounts={accounts} />}
+      {!isLoading && accounts.length === 0 && (
         <EmptyState
           icon={Wallet}
           title={tEmpty("accounts.title")}

@@ -187,7 +187,9 @@
     "accountStatements": "كشف الحساب",
     "transferFunds": "تحويل الأموال",
     "comingSoon": "قريباً",
-    "totalAccounts": "الحسابات"
+    "totalAccounts": "الحسابات",
+    "assets": "الأصول",
+    "liabilities": "الخصوم"
   },
   "transactions": {
     "title": "المعاملات",

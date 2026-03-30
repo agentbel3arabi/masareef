@@ -187,7 +187,9 @@
     "accountStatements": "Account Statements",
     "transferFunds": "Transfer Funds",
     "comingSoon": "Coming soon",
-    "totalAccounts": "Accounts"
+    "totalAccounts": "Accounts",
+    "assets": "Assets",
+    "liabilities": "Liabilities"
   },
   "transactions": {
     "title": "Transactions",
