@@ -89,93 +89,105 @@ function CreditAccountCard({
       ? account.credit_limit + account.displayed_balance_minor
       : null;
 
-  return (
-    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
-      <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
-        <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
-          {/* Physical card face */}
-          <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
-            {manageMode && (
-              <button
-                onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
-                className={cn(
-                  "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
-                  selected
-                    ? "bg-primary border-primary text-white"
-                    : "bg-white/20 border-white/60"
-                )}
-                aria-label={selected ? t("deselectAccount") : t("selectAccount")}
-              >
-                {selected && <span className="text-xs font-bold">✓</span>}
-              </button>
+  const cardContent = (
+    <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+      {/* Physical card face */}
+      <div className={cn("bg-gradient-to-br p-5 relative h-40", gradient)}>
+        {manageMode && (
+          <div
+            className={cn(
+              "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+              selected
+                ? "bg-primary border-primary text-white"
+                : "bg-white/20 border-white/60"
             )}
-            <div className="flex items-start justify-between mb-6">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
-                {account.institution || account.name}
-              </p>
-              <div className="flex gap-1">
-                <div className="w-7 h-5 rounded bg-white/20" />
-                <div className="w-7 h-5 rounded bg-white/10 -ms-3" />
-              </div>
-            </div>
-            <p className="text-sm font-mono tracking-[0.2em] text-white/90 mb-4">
-              •••• •••• •••• {last4}
-            </p>
-            <div>
-              <p className="text-[9px] uppercase tracking-widest text-white/50 mb-0.5">
-                {t("cardholder")}
-              </p>
-              <p className="text-xs font-bold uppercase tracking-wider text-white">
-                {account.name}
-              </p>
-            </div>
+            aria-hidden="true"
+          >
+            {selected && <span className="text-xs font-bold">✓</span>}
           </div>
-
-          {/* Stats below the card face */}
-          <div className="p-4 space-y-3">
-            {account.credit_limit != null && (
-              <UtilizationBar
-                balanceMinor={account.displayed_balance_minor}
-                creditLimitMinor={account.credit_limit}
-                currency={account.currency}
-              />
-            )}
-            <div className="grid grid-cols-3 gap-2 pt-1">
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-                  {t("creditLimit")}
-                </p>
-                <p className="text-xs font-semibold">
-                  {account.credit_limit != null
-                    ? formatAmount(account.credit_limit, account.currency)
-                    : "—"}
-                </p>
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-                  {t("amountDue")}
-                </p>
-                <p className="text-xs font-semibold text-destructive">
-                  {formatAmount(
-                    Math.abs(account.displayed_balance_minor),
-                    account.currency
-                  )}
-                </p>
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-                  {t("available")}
-                </p>
-                <p className="text-xs font-semibold text-primary">
-                  {available != null
-                    ? formatAmount(available, account.currency)
-                    : "—"}
-                </p>
-              </div>
-            </div>
+        )}
+        <div className="flex items-start justify-between mb-6">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+            {account.institution || account.name}
+          </p>
+          <div className="flex gap-1">
+            <div className="w-7 h-5 rounded bg-white/20" />
+            <div className="w-7 h-5 rounded bg-white/10 -ms-3" />
           </div>
         </div>
-      </Link>
+        <p className="text-sm font-mono tracking-[0.2em] text-white/90 mb-4">
+          •••• •••• •••• {last4}
+        </p>
+        <div>
+          <p className="text-[9px] uppercase tracking-widest text-white/50 mb-0.5">
+            {t("cardholder")}
+          </p>
+          <p className="text-xs font-bold uppercase tracking-wider text-white">
+            {account.name}
+          </p>
+        </div>
+      </div>
+
+      {/* Stats below the card face */}
+      <div className="p-4 space-y-3">
+        {account.credit_limit != null && (
+          <UtilizationBar
+            balanceMinor={account.displayed_balance_minor}
+            creditLimitMinor={account.credit_limit}
+            currency={account.currency}
+          />
+        )}
+        <div className="grid grid-cols-3 gap-2 pt-1">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {t("creditLimit")}
+            </p>
+            <p className="text-xs font-semibold">
+              {account.credit_limit != null
+                ? formatAmount(account.credit_limit, account.currency)
+                : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {t("amountDue")}
+            </p>
+            <p className="text-xs font-semibold text-destructive">
+              {formatAmount(
+                Math.abs(account.displayed_balance_minor),
+                account.currency
+              )}
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {t("available")}
+            </p>
+            <p className="text-xs font-semibold text-primary">
+              {available != null
+                ? formatAmount(available, account.currency)
+                : "—"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
+      {manageMode ? (
+        <button
+          type="button"
+          className="w-full text-start block"
+          onClick={() => onSelect?.(account.id)}
+          aria-label={selected ? t("deselectAccount") : t("selectAccount")}
+        >
+          {cardContent}
+        </button>
+      ) : (
+        <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
+      )}
 
       {!manageMode && (
         <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
@@ -226,44 +238,56 @@ function BankAccountCard({
 }) {
   const t = useTranslations("accounts");
 
+  const cardContent = (
+    <div className="bg-card rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+      {manageMode && (
+        <div
+          className={cn(
+            "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+            selected
+              ? "bg-primary border-primary text-white"
+              : "bg-background/90 border-border"
+          )}
+          aria-hidden="true"
+        >
+          {selected && <span className="text-xs font-bold">✓</span>}
+        </div>
+      )}
+      {account.institution && (
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+          {account.institution}
+        </p>
+      )}
+      <p className="text-sm font-medium text-foreground mb-3">{account.name}</p>
+      <MoneyDisplay
+        amount={account.displayed_balance_minor}
+        currency={account.currency}
+        size="lg"
+        colorize
+      />
+      <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
+        <div className={cn("w-2 h-2 rounded-full", account.is_active !== false ? "bg-primary" : "bg-muted-foreground")} />
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {account.is_active !== false ? t("accountStatusActive") : t("accountStatusInactive")}
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
-      <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
-        <div className="bg-card rounded-lg p-5 shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer">
-          {manageMode && (
-            <button
-              onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
-              className={cn(
-                "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
-                selected
-                  ? "bg-primary border-primary text-white"
-                  : "bg-background/90 border-border"
-              )}
-              aria-label={selected ? t("deselectAccount") : t("selectAccount")}
-            >
-              {selected && <span className="text-xs font-bold">✓</span>}
-            </button>
-          )}
-          {account.institution && (
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
-              {account.institution}
-            </p>
-          )}
-          <p className="text-sm font-medium text-foreground mb-3">{account.name}</p>
-          <MoneyDisplay
-            amount={account.displayed_balance_minor}
-            currency={account.currency}
-            size="lg"
-            colorize
-          />
-          <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
-            <div className={cn("w-2 h-2 rounded-full", account.is_active !== false ? "bg-primary" : "bg-muted-foreground")} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {account.is_active !== false ? t("accountStatusActive") : t("accountStatusInactive")}
-            </span>
-          </div>
-        </div>
-      </Link>
+      {manageMode ? (
+        <button
+          type="button"
+          className="w-full text-start block"
+          onClick={() => onSelect?.(account.id)}
+          aria-label={selected ? t("deselectAccount") : t("selectAccount")}
+        >
+          {cardContent}
+        </button>
+      ) : (
+        <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
+      )}
       {!manageMode && (
         <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
           <Button
@@ -318,44 +342,56 @@ function OtherAccountCard({
   // Extract just the background color class for the accent stripe
   const accentBg = iconColor.split(" ")[0]; // e.g. "bg-green-100"
 
+  const cardContent = (
+    <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
+      {/* Left accent stripe */}
+      <div className={cn("w-1.5 shrink-0", accentBg)} />
+      {/* Card content */}
+      <div className="flex-1 p-5">
+        {manageMode && (
+          <div
+            className={cn(
+              "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+              selected
+                ? "bg-primary border-primary text-white"
+                : "bg-background/90 border-border"
+            )}
+            aria-hidden="true"
+          >
+            {selected && <span className="text-xs font-bold">✓</span>}
+          </div>
+        )}
+        <div className={cn("inline-flex rounded-lg p-2 mb-3", iconColor)}>
+          <Icon className="h-4 w-4" />
+        </div>
+        <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
+        {account.institution && (
+          <p className="text-xs text-muted-foreground mb-3">{account.institution}</p>
+        )}
+        <MoneyDisplay
+          amount={account.displayed_balance_minor}
+          currency={account.currency}
+          size="lg"
+          colorize
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className={cn("relative group", selected && "ring-2 ring-primary rounded-lg")}>
-      <Link href={manageMode ? "#" : `/accounts/${account.id}`} onClick={manageMode ? (e) => { e.preventDefault(); onSelect?.(account.id); } : undefined}>
-        <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
-          {/* Left accent stripe */}
-          <div className={cn("w-1.5 shrink-0", accentBg)} />
-          {/* Card content */}
-          <div className="flex-1 p-5">
-            {manageMode && (
-              <button
-                onClick={(e) => { e.preventDefault(); onSelect?.(account.id); }}
-                className={cn(
-                  "absolute top-2 end-2 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
-                  selected
-                    ? "bg-primary border-primary text-white"
-                    : "bg-background/90 border-border"
-                )}
-                aria-label={selected ? t("deselectAccount") : t("selectAccount")}
-              >
-                {selected && <span className="text-xs font-bold">✓</span>}
-              </button>
-            )}
-            <div className={cn("inline-flex rounded-lg p-2 mb-3", iconColor)}>
-              <Icon className="h-4 w-4" />
-            </div>
-            <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
-            {account.institution && (
-              <p className="text-xs text-muted-foreground mb-3">{account.institution}</p>
-            )}
-            <MoneyDisplay
-              amount={account.displayed_balance_minor}
-              currency={account.currency}
-              size="lg"
-              colorize
-            />
-          </div>
-        </div>
-      </Link>
+      {manageMode ? (
+        <button
+          type="button"
+          className="w-full text-start block"
+          onClick={() => onSelect?.(account.id)}
+          aria-label={selected ? t("deselectAccount") : t("selectAccount")}
+        >
+          {cardContent}
+        </button>
+      ) : (
+        <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
+      )}
       {!manageMode && (
         <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
           <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"

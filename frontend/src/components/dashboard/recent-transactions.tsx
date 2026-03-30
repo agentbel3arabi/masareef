@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { CreditCard } from "lucide-react";
 import { useTransactions } from "@/hooks/use-transactions";
 import { MoneyDisplay } from "@/components/shared/money-display";
-import { CategoryIcon } from "@/lib/category-icon";
+import { CategoryIcon, getCategoryIcon } from "@/lib/category-icon";
 
 export function RecentTransactions() {
   const t = useTranslations("dashboard");
@@ -52,7 +52,7 @@ export function RecentTransactions() {
           className="flex items-center gap-3 px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
         >
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            {tx.category?.icon
+            {tx.category?.icon && getCategoryIcon(tx.category.icon)
               ? <CategoryIcon icon={tx.category.icon} className="h-4 w-4" />
               : <CreditCard className="h-4 w-4" />}
           </div>

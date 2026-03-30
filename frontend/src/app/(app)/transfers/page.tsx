@@ -174,6 +174,7 @@ export default function TransfersPage() {
           if (checked) setSelectedTransferIds(new Set(transfers.map((tr) => tr.transfer_id)));
           else setSelectedTransferIds(new Set());
         }}
+        aria-label={t("transfers.selectAll")}
       />
     ),
     className: "w-10",
@@ -187,6 +188,7 @@ export default function TransfersPage() {
             return next;
           });
         }}
+        aria-label={t("transfers.selectTransfer", { id: row.transfer_id.slice(0, 8) })}
       />
     ),
   };

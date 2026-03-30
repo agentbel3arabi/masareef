@@ -93,7 +93,8 @@
     "sectionPlanning": "Planning",
     "sectionSettings": "Settings",
     "toggleTheme": "Toggle Theme",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "notifications": "Notifications"
   },
   "auth": {
     "login": "Log In",
@@ -267,7 +268,9 @@
     "deleteConfirmTitle": "Delete Transfer",
     "deleteConfirmDescription": "Are you sure you want to delete this transfer? This action cannot be undone.",
     "actions": "Actions",
-    "selected": "selected"
+    "selected": "selected",
+    "selectAll": "Select all transfers",
+    "selectTransfer": "Select transfer {id}"
   },
   "dashboard": {
     "title": "Dashboard",

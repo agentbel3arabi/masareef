@@ -75,8 +75,12 @@ export default function AccountDetailPage() {
           <span className="text-sm text-muted-foreground">{t("transactions.selectedCount", { count: selectedIds.size })}</span>
           <Select
             onValueChange={async (val) => {
-              await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
-              setBulkMode(false); setSelectedIds(new Set());
+              try {
+                await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
+                setBulkMode(false); setSelectedIds(new Set());
+              } catch (error) {
+                console.error("Bulk categorize failed:", error);
+              }
             }}
             disabled={bulkCategorize.isPending}
           >
@@ -99,8 +103,12 @@ export default function AccountDetailPage() {
             size="sm"
             disabled={bulkDelete.isPending}
             onClick={async () => {
-              await bulkDelete.mutateAsync({ ids: [...selectedIds] });
-              setBulkMode(false); setSelectedIds(new Set());
+              try {
+                await bulkDelete.mutateAsync({ ids: [...selectedIds] });
+                setBulkMode(false); setSelectedIds(new Set());
+              } catch (error) {
+                console.error("Bulk delete failed:", error);
+              }
             }}
           >
             <Trash2 className="h-3.5 w-3.5 me-1" />

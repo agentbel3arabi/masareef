@@ -274,14 +274,22 @@ export function TransactionRow({
                 onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
               >
                 <SelectTrigger className="w-full">
-                  {categoryId !== "" && categoriesData?.data?.find(c => c.id === categoryId) ? (
-                    <span className="flex items-center gap-2">
-                      <CategoryIcon icon={categoriesData.data.find(c => c.id === categoryId)!.icon} className="h-4 w-4 shrink-0" />
-                      {(() => { const cat = categoriesData.data.find(c => c.id === categoryId)!; return locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en; })()}
-                    </span>
-                  ) : (
-                    <SelectValue placeholder={t("transactions.uncategorized")} />
-                  )}
+                  {(() => {
+                    const selectedCategory = categoryId !== ""
+                      ? categoriesData?.data?.find((c) => c.id === categoryId)
+                      : undefined;
+                    if (selectedCategory) {
+                      return (
+                        <span className="flex items-center gap-2">
+                          <CategoryIcon icon={selectedCategory.icon} className="h-4 w-4 shrink-0" />
+                          {locale === "ar" && selectedCategory.name_ar
+                            ? selectedCategory.name_ar
+                            : selectedCategory.name_en}
+                        </span>
+                      );
+                    }
+                    return <SelectValue placeholder={t("transactions.uncategorized")} />;
+                  })()}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__uncategorized__">{t("transactions.uncategorized")}</SelectItem>

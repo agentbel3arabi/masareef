@@ -103,8 +103,12 @@ export default function TransactionsPage() {
           </span>
           <Select
             onValueChange={async (val) => {
-              await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
-              exitBulkMode();
+              try {
+                await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
+                exitBulkMode();
+              } catch (error) {
+                console.error("Bulk categorize failed:", error);
+              }
             }}
             disabled={bulkCategorize.isPending}
           >
@@ -127,8 +131,12 @@ export default function TransactionsPage() {
             size="sm"
             disabled={bulkDelete.isPending}
             onClick={async () => {
-              await bulkDelete.mutateAsync({ ids: [...selectedIds] });
-              exitBulkMode();
+              try {
+                await bulkDelete.mutateAsync({ ids: [...selectedIds] });
+                exitBulkMode();
+              } catch (error) {
+                console.error("Bulk delete failed:", error);
+              }
             }}
           >
             <Trash2 className="h-3.5 w-3.5 me-1" />

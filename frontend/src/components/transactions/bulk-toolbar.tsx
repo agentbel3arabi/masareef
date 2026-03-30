@@ -55,10 +55,15 @@ export function BulkToolbar({ selectedIds, onCancel }: BulkToolbarProps) {
         </span>
         <div className="grow" />
         <Select
-          onValueChange={(val) => {
+          onValueChange={async (val) => {
             const categoryId = Number(val);
             if (!categoryId) return;
-            void bulkCategorize.mutateAsync({ ids: selectedIds, category_id: categoryId }).then(() => onCancel());
+            try {
+              await bulkCategorize.mutateAsync({ ids: selectedIds, category_id: categoryId });
+              onCancel();
+            } catch (error) {
+              console.error("Failed to bulk categorize transactions:", error);
+            }
           }}
           disabled={bulkCategorize.isPending}
         >

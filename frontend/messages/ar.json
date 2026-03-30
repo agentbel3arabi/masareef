@@ -93,7 +93,8 @@
     "sectionPlanning": "التخطيط",
     "sectionSettings": "الإعدادات",
     "toggleTheme": "تبديل المظهر",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "notifications": "الإشعارات"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -267,7 +268,9 @@
     "deleteConfirmTitle": "حذف التحويل",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذا التحويل؟ لا يمكن التراجع عن هذا الإجراء.",
     "actions": "الإجراءات",
-    "selected": "محدد"
+    "selected": "محدد",
+    "selectAll": "تحديد جميع التحويلات",
+    "selectTransfer": "تحديد التحويل {id}"
   },
   "dashboard": {
     "title": "لوحة التحكم",

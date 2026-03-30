@@ -72,7 +72,7 @@ export function Navbar() {
         {actions}
         <button
           className="rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          aria-label="Notifications"
+          aria-label={t("notifications")}
         >
           <Bell className="h-4 w-4" />
         </button>
