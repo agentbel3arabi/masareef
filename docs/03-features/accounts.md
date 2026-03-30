@@ -29,6 +29,26 @@ Accounts are the foundation of all financial tracking. Every transaction, debt, 
 - Available credit = `credit_limit + balance`
 - Billing cycle: statement generated on `billing_cycle_day`, due on `payment_due_day`
 
+### Credit Card Utilization
+
+**Calculation:** `utilization = (abs(displayed_balance_minor) / credit_limit) * 100`
+
+**Color thresholds:**
+- Green: <50% utilized
+- Amber: 50–80% utilized
+- Red: >80% utilized
+
+**Display:** Progress bar on account cards (`credit_card` and `financing_app` types only), shown when `credit_limit` is set.
+
+### Deferred: Credit Card Statement Cycle (Phase 3)
+
+The following features are deferred to Phase 3 (Debts & Installments):
+- Statement generation date
+- Current balance vs statement balance distinction
+- Minimum payment calculation
+- Payment reminder integration
+- Transaction pending vs posted state
+
 ### Multi-Currency
 - Each account has an explicit `currency` code
 - Net worth dashboard aggregates across currencies using exchange rates
