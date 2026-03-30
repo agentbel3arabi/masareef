@@ -234,7 +234,10 @@
     "bulkDeleted": "Transactions deleted",
     "bulkCategorized": "Transactions re-categorized",
     "selectTransaction": "Select transaction {id}",
-    "netFlow": "Net Flow"
+    "netFlow": "Net Flow",
+    "subtitle": "Review and manage your financial movement across all connected accounts.",
+    "count": "Transactions",
+    "list": "Transaction List"
   },
   "transfers": {
     "title": "Transfers",

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Plus, Receipt, Search } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { Plus, Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash } from "lucide-react";
 import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useAccounts } from "@/hooks/use-accounts";
 import { TransactionTable } from "@/components/transactions/transaction-table";
@@ -12,7 +12,9 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { BulkToolbar } from "@/components/transactions/bulk-toolbar";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
+import { StatCard } from "@/components/shared/stat-card";
 import { Button } from "@/components/ui/button";
+import { formatAmount, formatAmountAr } from "@/lib/money";
 import type { Account } from "@/hooks/use-accounts";
 
 function hasActiveFilters(filters: TransactionFilters): boolean {
@@ -32,6 +34,8 @@ export default function TransactionsPage() {
   const router = useRouter();
   const t = useTranslations();
   const tEmpty = useTranslations("emptyStates");
+  const locale = useLocale();
+
   const [filters, setFilters] = useState<TransactionFilters>({
     page: 1,
     page_size: 50,
@@ -70,20 +74,53 @@ export default function TransactionsPage() {
     setSelectedIds(new Set());
   };
 
+  // Page-level summary stats from current page data
+  const visibleTxs = data?.data ?? [];
+  const firstCurrency = visibleTxs[0]?.currency ?? "EGP";
+  const pageIncome = visibleTxs
+    .filter((tx) => tx.type === "credit")
+    .reduce((sum, tx) => sum + tx.amount_minor, 0);
+  const pageExpenses = visibleTxs
+    .filter((tx) => tx.type === "debit")
+    .reduce((sum, tx) => sum + Math.abs(tx.amount_minor), 0);
+  const pageNet = pageIncome - pageExpenses;
+  const totalCount = data?.meta?.total ?? 0;
+
+  const fmt = (amount: number) =>
+    locale === "ar"
+      ? formatAmountAr(amount, firstCurrency)
+      : formatAmount(amount, firstCurrency);
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{t("nav.transactions")}</h1>
-        <Button
-          variant={bulkMode ? "secondary" : "outline"}
-          size="sm"
-          onClick={() => {
-            if (bulkMode) exitBulkMode();
-            else setBulkMode(true);
-          }}
-        >
-          {bulkMode ? t("transactions.cancel") : t("transactions.manage")}
-        </Button>
+    <div className="space-y-6">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">{t("nav.transactions")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("transactions.subtitle")}</p>
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={TrendingUp}
+          label={t("transactions.income")}
+          value={visibleTxs.length > 0 ? fmt(pageIncome) : "—"}
+        />
+        <StatCard
+          icon={TrendingDown}
+          label={t("transactions.expenses")}
+          value={visibleTxs.length > 0 ? fmt(pageExpenses) : "—"}
+        />
+        <StatCard
+          icon={ArrowLeftRight}
+          label={t("transactions.netFlow")}
+          value={visibleTxs.length > 0 ? fmt(pageNet) : "—"}
+        />
+        <StatCard
+          icon={Hash}
+          label={t("transactions.count")}
+          value={isLoading ? "..." : String(totalCount)}
+        />
       </div>
 
       {isLoading ? (
@@ -94,9 +131,30 @@ export default function TransactionsPage() {
       ) : (
         <>
           <TransactionFilterBar filters={filters} onChange={setFilters} />
+
+          {/* Section header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {t("transactions.list")}
+            </h2>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={bulkMode ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => {
+                  if (bulkMode) exitBulkMode();
+                  else setBulkMode(true);
+                }}
+              >
+                {bulkMode ? t("transactions.cancel") : t("transactions.manage")}
+              </Button>
+            </div>
+          </div>
+
           {bulkMode && selectedIds.size > 0 && (
             <BulkToolbar selectedIds={[...selectedIds]} onCancel={exitBulkMode} />
           )}
+
           {isEmpty ? (
             filtersActive ? (
               <EmptyState
@@ -112,12 +170,8 @@ export default function TransactionsPage() {
                 action={{
                   label: tEmpty("transactions.action"),
                   onClick: () => {
-                    if (firstAccountId !== undefined) {
-                      setCreateOpen(true);
-                    } else {
-                      // No accounts yet — direct user to create one first
-                      router.push("/accounts");
-                    }
+                    if (firstAccountId !== undefined) setCreateOpen(true);
+                    else router.push("/accounts");
                   },
                 }}
               />
