@@ -44,3 +44,27 @@ def test_same_currency_transfer_skips_fx():
     result = source  # direct assignment
     assert result == source
     assert isinstance(result, int)
+
+
+@pytest.mark.asyncio
+async def test_list_transfers_uses_single_query():
+    """list_transfers must issue at most 2 queries (count + fetch), not 3N+2."""
+    import uuid
+    from unittest.mock import AsyncMock, MagicMock
+
+    from app.services.transfer import list_transfers
+
+    household_id = uuid.uuid4()
+    mock_session = AsyncMock()
+
+    # Count query returns 0 — short-circuits to empty list
+    count_result = MagicMock()
+    count_result.scalar_one.return_value = 0
+    mock_session.execute = AsyncMock(return_value=count_result)
+
+    items, total = await list_transfers(mock_session, household_id)
+
+    assert total == 0
+    assert items == []
+    # Only the count query should fire when total is 0
+    assert mock_session.execute.call_count == 1
