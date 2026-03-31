@@ -1,6 +1,7 @@
-import pytest
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -34,8 +35,9 @@ async def test_get_household_for_user_returns_household_id():
 
 def test_household_create_schema_validation():
     """HouseholdCreate rejects empty names and invalid currencies."""
-    from app.schemas.household import HouseholdCreate
     from pydantic import ValidationError
+
+    from app.schemas.household import HouseholdCreate
 
     with pytest.raises(ValidationError):
         HouseholdCreate(name="", base_currency="EGP")
