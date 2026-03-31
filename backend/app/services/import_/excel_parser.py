@@ -6,7 +6,7 @@ import io
 import openpyxl
 
 from app.schemas.import_ import ParsedRow
-from app.services.import_.row_validator import validate_row
+from app.services.import_.row_validator import _DATE_FORMAT_MAP, validate_row
 
 
 def get_sheet_names(raw_bytes: bytes) -> list[str]:
@@ -59,16 +59,17 @@ def parse_excel(
     credit_idx = col_idx("credit")
     amount_idx = col_idx("amount")
 
+    _date_fmt = _DATE_FORMAT_MAP.get(date_format, date_format)
+
     def cell_str(row_data: tuple, idx: int) -> str:
         if idx < 0 or idx >= len(row_data):
             return ""
         val = row_data[idx]
         if val is None:
             return ""
-        if isinstance(val, datetime.datetime):
-            return val.strftime("%d/%m/%Y")
-        if isinstance(val, datetime.date):
-            return val.strftime("%d/%m/%Y")
+        if isinstance(val, (datetime.datetime, datetime.date)):
+            d = val.date() if isinstance(val, datetime.datetime) else val
+            return d.strftime(_date_fmt)
         return str(val)
 
     rows: list[ParsedRow] = []

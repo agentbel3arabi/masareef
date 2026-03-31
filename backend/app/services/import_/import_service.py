@@ -34,18 +34,21 @@ from app.services.import_.excel_parser import get_sheet_names, parse_excel
 from app.services.import_.header_mapper import get_auto_suggest
 from app.services.import_.pdf_parser import is_scanned
 from app.services.import_.presets.registry import detect_preset
+from app.services.money import CURRENCIES
 
-# Currency exponent lookup (minor unit divisor = 10 ** exponent).
-# KWD uses 3 decimal places; all other supported currencies use 2.
-_CURRENCY_EXPONENTS: dict[str, int] = {
-    "EGP": 2,
-    "USD": 2,
-    "EUR": 2,
-    "GBP": 2,
-    "SAR": 2,
-    "AED": 2,
-    "KWD": 3,
-}
+
+def _parse_error(fmt: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail={
+            "error": {
+                "code": "PARSE_ERROR",
+                "message": (
+                    f"Failed to parse {fmt} file. Check that the file is valid and not corrupted."
+                ),
+            }
+        },
+    )
 
 
 def _detect_format(filename: str, content_type: str | None) -> str:
@@ -61,8 +64,7 @@ def _detect_format(filename: str, content_type: str | None) -> str:
                 "error": {
                     "code": "UNSUPPORTED_FORMAT",
                     "message": (
-                        "Legacy .xls files are not supported."
-                        " Please save as .xlsx and re-upload."
+                        "Legacy .xls files are not supported. Please save as .xlsx and re-upload."
                     ),
                 }
             },
@@ -131,7 +133,7 @@ async def parse_upload(
 
     # Derive currency and exponent from the account (authoritative source).
     account_currency = account.currency
-    currency_exponent = _CURRENCY_EXPONENTS.get(account_currency, 2)
+    currency_exponent = CURRENCIES.get(account_currency, {}).get("exponent", 2)
 
     existing_hashes = await load_existing_hashes(session, account_id, household_id)
 
@@ -152,69 +154,90 @@ async def parse_upload(
                 },
             )
 
-        rows = preset.parse(
-            raw_bytes, currency=account_currency, currency_exponent=currency_exponent
-        )
+        try:
+            rows = preset.parse(
+                raw_bytes, currency=account_currency, currency_exponent=currency_exponent
+            )
+        except Exception:
+            raise _parse_error("PDF")
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, preset.preset_id)
 
     # ── CSV / Excel with explicit mapping (second parse call) ──────────────
     if column_mapping:
         if fmt == "csv":
-            rows = parse_csv(
-                raw_bytes,
-                column_mapping,
-                date_format=date_format,
-                skip_rows=skip_rows,
-                currency=account_currency,
-                currency_exponent=currency_exponent,
-            )
+            try:
+                rows = parse_csv(
+                    raw_bytes,
+                    column_mapping,
+                    date_format=date_format,
+                    skip_rows=skip_rows,
+                    currency=account_currency,
+                    currency_exponent=currency_exponent,
+                )
+            except Exception:
+                raise _parse_error("CSV")
         else:
-            rows = parse_excel(
-                raw_bytes,
-                column_mapping,
-                sheet_name=sheet_name,
-                skip_rows=skip_rows,
-                date_format=date_format,
-                currency=account_currency,
-                currency_exponent=currency_exponent,
-            )
+            try:
+                rows = parse_excel(
+                    raw_bytes,
+                    column_mapping,
+                    sheet_name=sheet_name,
+                    skip_rows=skip_rows,
+                    date_format=date_format,
+                    currency=account_currency,
+                    currency_exponent=currency_exponent,
+                )
+            except Exception:
+                raise _parse_error("Excel")
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, None)
 
     # ── CSV: try preset, else needs_mapping ────────────────────────────────
     if fmt == "csv":
-        headers = csv_headers(raw_bytes, skip_rows=skip_rows)
+        try:
+            headers = csv_headers(raw_bytes, skip_rows=skip_rows)
+        except Exception:
+            raise _parse_error("CSV")
         preset = detect_preset(raw_bytes, headers)
         if preset and preset.get_column_mapping():
-            rows = parse_csv(
-                raw_bytes,
-                preset.get_column_mapping(),  # type: ignore[arg-type]
-                date_format=preset.get_date_format(),
-                skip_rows=skip_rows,
-                currency=account_currency,
-                currency_exponent=currency_exponent,
-            )
+            try:
+                rows = parse_csv(
+                    raw_bytes,
+                    preset.get_column_mapping(),  # type: ignore[arg-type]
+                    date_format=preset.get_date_format(),
+                    skip_rows=skip_rows,
+                    currency=account_currency,
+                    currency_exponent=currency_exponent,
+                )
+            except Exception:
+                raise _parse_error("CSV")
             mark_duplicates(rows, account_id, existing_hashes)
             return _complete(rows, preset.preset_id)
         auto_suggest = get_auto_suggest(headers)
         return NeedsMappingResponse(headers=headers, auto_suggest=auto_suggest)
 
     # ── Excel: try preset, else needs_mapping with sheet info ─────────────
-    sheets = get_sheet_names(raw_bytes)
-    active_sheet = sheet_name or (sheets[0] if sheets else None)
-    headers = excel_headers(raw_bytes, sheet_name=active_sheet, skip_rows=skip_rows)
+    try:
+        sheets = get_sheet_names(raw_bytes)
+        active_sheet = sheet_name or (sheets[0] if sheets else None)
+        headers = excel_headers(raw_bytes, sheet_name=active_sheet, skip_rows=skip_rows)
+    except Exception:
+        raise _parse_error("Excel")
     preset = detect_preset(raw_bytes, headers)
     if preset and preset.get_column_mapping():
-        rows = parse_excel(
-            raw_bytes,
-            preset.get_column_mapping(),  # type: ignore[arg-type]
-            sheet_name=active_sheet,
-            skip_rows=skip_rows,
-            date_format=preset.get_date_format(),
-            currency=account_currency,
-            currency_exponent=currency_exponent,
-        )
+        try:
+            rows = parse_excel(
+                raw_bytes,
+                preset.get_column_mapping(),  # type: ignore[arg-type]
+                sheet_name=active_sheet,
+                skip_rows=skip_rows,
+                date_format=preset.get_date_format(),
+                currency=account_currency,
+                currency_exponent=currency_exponent,
+            )
+        except Exception:
+            raise _parse_error("Excel")
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, preset.preset_id)
     auto_suggest = get_auto_suggest(headers)
