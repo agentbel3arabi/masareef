@@ -14,11 +14,26 @@ _DATE_FORMAT_MAP: dict[str, str] = {
     "YYYY/MM/DD": "%Y/%m/%d",
 }
 
+_AUTO_DETECT_VALUES = {"auto-detect", "auto detect", "auto", ""}
+
 
 def _parse_date(raw: str, date_format: str) -> datetime.date | None:
+    raw_stripped = raw.strip()
+    if not raw_stripped:
+        return None
+
+    if date_format.lower() in _AUTO_DETECT_VALUES:
+        # Try all known formats
+        for fmt in _DATE_FORMAT_MAP.values():
+            try:
+                return datetime.datetime.strptime(raw_stripped, fmt).date()
+            except (ValueError, AttributeError):
+                continue
+        return None
+
     fmt = _DATE_FORMAT_MAP.get(date_format, date_format)
     try:
-        return datetime.datetime.strptime(raw.strip(), fmt).date()
+        return datetime.datetime.strptime(raw_stripped, fmt).date()
     except (ValueError, AttributeError):
         return None
 

@@ -83,7 +83,9 @@ class HsbcCcPreset(BankPreset):
     def get_pdf_config(self) -> PdfColumnConfig:
         return HSBC_CC_PDF_CONFIG
 
-    def parse(self, content: bytes, currency: str = "EGP") -> list[ParsedRow]:
+    def parse(
+        self, content: bytes, currency: str = "EGP", currency_exponent: int = 2
+    ) -> list[ParsedRow]:
         """Extract transactions from HSBC CC PDF using X-range column bucketing."""
         config = self.get_pdf_config()
         rows: list[ParsedRow] = []
@@ -139,6 +141,7 @@ class HsbcCcPreset(BankPreset):
                         credit_raw=credit_text,
                         date_format="DD/MM/YYYY",
                         currency=currency,
+                        currency_exponent=currency_exponent,
                     )
                     rows.append(row)
                     row_index += 1

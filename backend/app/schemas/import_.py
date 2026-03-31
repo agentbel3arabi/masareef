@@ -51,7 +51,6 @@ class CommitRow(BaseModel):
     date: datetime.date
     description: str = ""
     amount_minor: int
-    currency: str
     type: Literal["debit", "credit"]
     apply_to_balance: bool = True
     original_currency: str | None = None
