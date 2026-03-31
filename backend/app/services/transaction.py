@@ -4,7 +4,7 @@ import datetime
 import uuid
 from typing import Any
 
-from sqlalchemy import delete, func, or_, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
@@ -222,9 +222,11 @@ async def create_splits(
     splits: list[SplitItem],
 ) -> list[TransactionSplit]:
     """Replace all splits for a transaction. Returns the new splits."""
-    # Hard-delete existing splits for this transaction.
+    # Soft-delete existing splits for this transaction (consistent with bulk_delete path).
     await session.execute(
-        delete(TransactionSplit).where(TransactionSplit.transaction_id == transaction_id)
+        update(TransactionSplit)
+        .where(TransactionSplit.transaction_id == transaction_id)
+        .values(is_active=False)
     )
 
     new_splits: list[TransactionSplit] = []

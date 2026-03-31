@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Wallet, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MoneyDisplay } from "@/components/shared/money-display";
-import { typeIcons, typeColors } from "./account-card";
+import { typeIcons, typeColors } from "./account-card.constants";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 

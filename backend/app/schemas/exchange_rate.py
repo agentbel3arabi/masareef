@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from decimal import ROUND_HALF_UP, Decimal
 
 from pydantic import BaseModel, field_validator
 
@@ -37,5 +38,7 @@ class ManualRateRequest(BaseModel):
 
     @property
     def rate_scaled(self) -> int:
-        """Convert user-supplied rate to scaled integer (rate × 10 000)."""
-        return round(self.rate * 10_000)
+        """Convert user-supplied rate to scaled integer (rate × 10 000), using ROUND_HALF_UP."""
+        return int(
+            (Decimal(str(self.rate)) * 10_000).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+        )
