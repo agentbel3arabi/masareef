@@ -43,11 +43,12 @@ async def create_transfer(
 
     source_amount = abs(data.amount_minor)
 
-    # Compute target amount
+    # Compute target amount — pure integer arithmetic, no float intermediates
     if data.fx_rate_minor_units is not None:
         if from_acct.currency == to_acct.currency:
             raise ValueError("FX rate must not be provided for same-currency transfers")
-        target_amount = round(source_amount * data.fx_rate_minor_units / 10000)
+        # Round-half-up: add half the divisor before integer division
+        target_amount = (source_amount * data.fx_rate_minor_units + 5000) // 10000
     elif from_acct.currency != to_acct.currency:
         raise ValueError("FX rate required for cross-currency transfer")
     else:
