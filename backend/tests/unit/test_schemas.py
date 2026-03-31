@@ -1,0 +1,136 @@
+import pytest
+from pydantic import ValidationError
+
+
+def test_account_create_rejects_invalid_type():
+    from app.schemas.account import AccountCreate
+
+    with pytest.raises(ValidationError) as exc_info:
+        AccountCreate(name="Test", type="invalid_type", currency="EGP")  # type: ignore[arg-type]
+    assert "type" in str(exc_info.value)
+
+
+def test_account_create_accepts_valid_types():
+    from app.models.enums import AccountType
+    from app.schemas.account import AccountCreate
+
+    for account_type in AccountType:
+        schema = AccountCreate(name="Test", type=account_type, currency="EGP")
+        assert schema.type == account_type
+
+
+def test_transaction_create_rejects_invalid_type():
+    import datetime
+
+    from app.schemas.transaction import TransactionCreate
+
+    with pytest.raises(ValidationError) as exc_info:
+        TransactionCreate(
+            account_id=1,
+            date=datetime.date.today(),
+            description="Test",
+            amount_minor=1000,
+            type="invalid",  # type: ignore[arg-type]
+        )
+    assert "type" in str(exc_info.value)
+
+
+def test_transaction_create_accepts_debit_credit():
+    import datetime
+
+    from app.models.enums import TransactionType
+    from app.schemas.transaction import TransactionCreate
+
+    for tx_type in (TransactionType.DEBIT, TransactionType.CREDIT):
+        schema = TransactionCreate(
+            account_id=1,
+            date=datetime.date.today(),
+            description="Test",
+            amount_minor=1000,
+            type=tx_type,
+        )
+        assert schema.type == tx_type
+
+
+def test_category_create_rejects_invalid_type():
+    from app.schemas.category import CategoryCreate
+
+    with pytest.raises(ValidationError) as exc_info:
+        CategoryCreate(name_en="Food", type="bad_type")  # type: ignore[arg-type]
+    assert "type" in str(exc_info.value)
+
+
+def test_category_create_accepts_valid_types():
+    from app.models.enums import CategoryType
+    from app.schemas.category import CategoryCreate
+
+    for cat_type in CategoryType:
+        schema = CategoryCreate(name_en="Food", type=cat_type)
+        assert schema.type == cat_type
+
+
+def test_manual_rate_request_rejects_negative_rate():
+    import datetime
+
+    from app.schemas.exchange_rate import ManualRateRequest
+
+    with pytest.raises(ValidationError):
+        ManualRateRequest(date=datetime.date.today(), to_currency="USD", rate=-1.0)
+
+
+def test_manual_rate_request_rejects_zero_rate():
+    import datetime
+
+    from app.schemas.exchange_rate import ManualRateRequest
+
+    with pytest.raises(ValidationError):
+        ManualRateRequest(date=datetime.date.today(), to_currency="USD", rate=0.0)
+
+
+def test_manual_rate_request_rate_scaled_property():
+    import datetime
+
+    from app.schemas.exchange_rate import ManualRateRequest
+
+    req = ManualRateRequest(date=datetime.date.today(), to_currency="USD", rate=48.5)
+    assert req.rate_scaled == 485000  # 48.5 * 10000
+    assert isinstance(req.rate_scaled, int)
+
+
+def test_transaction_create_rejects_negative_amount():
+    import datetime
+
+    from app.models.enums import TransactionType
+    from app.schemas.transaction import TransactionCreate
+
+    with pytest.raises(ValidationError):
+        TransactionCreate(
+            account_id=1,
+            date=datetime.date.today(),
+            description="Test",
+            amount_minor=-100,
+            type=TransactionType.DEBIT,
+        )
+
+
+def test_transaction_create_rejects_zero_amount():
+    import datetime
+
+    from app.models.enums import TransactionType
+    from app.schemas.transaction import TransactionCreate
+
+    with pytest.raises(ValidationError):
+        TransactionCreate(
+            account_id=1,
+            date=datetime.date.today(),
+            description="Test",
+            amount_minor=0,
+            type=TransactionType.DEBIT,
+        )
+
+
+def test_transaction_create_has_no_currency_field():
+    from app.schemas.transaction import TransactionCreate
+
+    fields = TransactionCreate.model_fields
+    assert "currency" not in fields, "currency field must not exist in TransactionCreate"

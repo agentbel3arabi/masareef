@@ -1,3 +1,4 @@
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -8,11 +9,14 @@ from app.config import Settings
 from app.routers import accounts, categories, transactions, transfers
 from app.routers.households import router as households_router
 
+logger = logging.getLogger(__name__)
+
 # Load settings — will use .env file at runtime
 try:
     _settings = Settings()  # type: ignore[call-arg]
     _cors_origins = _settings.CORS_ORIGINS
-except Exception:
+except Exception as e:
+    logger.warning("Failed to load Settings — falling back to localhost CORS: %s", e)
     _cors_origins = ["http://localhost:3000"]
 
 

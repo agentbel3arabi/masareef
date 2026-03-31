@@ -3,14 +3,15 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.models.enums import TransactionType
+
 
 class TransactionCreate(BaseModel):
     account_id: int
     date: datetime.date
     description: str
-    amount_minor: int  # Always positive — backend computes sign from type
-    type: str  # "debit" or "credit"
-    currency: str
+    amount_minor: int = Field(gt=0)  # Always positive — backend computes sign from type
+    type: TransactionType
     category_id: int | None = None
     notes: str | None = None
     gam3eya_id: int | None = None
@@ -21,7 +22,7 @@ class TransactionUpdate(BaseModel):
     date: datetime.date | None = None
     description: str | None = None
     amount_minor: int | None = None
-    type: str | None = None
+    type: TransactionType | None = None
     category_id: int | None = None
     notes: str | None = None
 

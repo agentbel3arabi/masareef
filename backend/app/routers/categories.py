@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.models.enums import CategoryType
 from app.schemas.category import CategoryCreate, CategoryResponse, CategoryUpdate
 from app.schemas.common import (
     ErrorDetail,
@@ -18,7 +19,7 @@ router = APIRouter(prefix="/api/v1/categories", tags=["categories"])
 
 @router.get("")
 async def list_categories(
-    type: str | None = None,
+    type: CategoryType | None = None,
     active_only: bool = True,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),

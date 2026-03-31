@@ -4,8 +4,9 @@ import datetime
 import uuid
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from app.models.account import Account
 from app.models.category import Category
@@ -43,11 +44,12 @@ async def create_transfer(
 
     source_amount = abs(data.amount_minor)
 
-    # Compute target amount
+    # Compute target amount — pure integer arithmetic, no float intermediates
     if data.fx_rate_minor_units is not None:
         if from_acct.currency == to_acct.currency:
             raise ValueError("FX rate must not be provided for same-currency transfers")
-        target_amount = round(source_amount * data.fx_rate_minor_units / 10000)
+        # Round-half-up: add half the divisor before integer division
+        target_amount = (source_amount * data.fx_rate_minor_units + 5000) // 10000
     elif from_acct.currency != to_acct.currency:
         raise ValueError("FX rate required for cross-currency transfer")
     else:
@@ -161,90 +163,74 @@ async def list_transfers(
     page: int = 1,
     page_size: int = 50,
 ) -> tuple[list[dict[str, Any]], int]:
-    """List transfers (debit legs only to avoid double-counting).
+    """List transfers (debit legs only) using a JOIN. Returns (items, total_count)."""
+    # Aliases for the JOIN
+    credit_leg = aliased(Transaction, name="credit_leg")
+    from_acct = aliased(Account, name="from_acct")
+    to_acct = aliased(Account, name="to_acct")
 
-    Returns (list_of_transfer_dicts, total_count).
-    """
     base_filters = [
         Transaction.household_id == household_id,
         Transaction.is_active.is_(True),
         Transaction.type == "debit",
         Transaction.transfer_id.is_not(None),
     ]
-
     if account_id is not None:
         base_filters.append(Transaction.account_id == account_id)
-
     if date_from is not None:
         base_filters.append(Transaction.date >= date_from)
-
     if date_to is not None:
         base_filters.append(Transaction.date <= date_to)
 
-    # Count
+    # Count query (debit legs only)
     count_q = select(func.count(Transaction.id)).where(*base_filters)
     total: int = (await session.execute(count_q)).scalar_one()
 
-    # Fetch debit legs with pagination
+    if total == 0:
+        return [], 0
+
+    # Single JOIN query: debit leg + credit leg + both accounts
     fetch_q = (
-        select(Transaction)
+        select(Transaction, credit_leg, from_acct, to_acct)
+        .join(
+            credit_leg,
+            and_(
+                credit_leg.transfer_id == Transaction.transfer_id,
+                credit_leg.type == "credit",
+                credit_leg.is_active.is_(True),
+                credit_leg.household_id == household_id,
+            ),
+            isouter=True,
+        )
+        .join(from_acct, from_acct.id == Transaction.account_id, isouter=True)
+        .join(to_acct, to_acct.id == credit_leg.account_id, isouter=True)
         .where(*base_filters)
         .order_by(Transaction.date.desc(), Transaction.id.desc())
         .offset((page - 1) * page_size)
         .limit(page_size)
     )
-    debit_legs = list((await session.execute(fetch_q)).scalars().all())
+    rows = (await session.execute(fetch_q)).all()
 
-    # Build response dicts
+    def _acct_dict(a: Account | None) -> dict | None:
+        if a is None:
+            return None
+        return {
+            "id": a.id,
+            "name": a.name,
+            "currency": a.currency,
+            "type": a.type.value if hasattr(a.type, "value") else a.type,
+            "institution": a.institution,
+        }
+
     items: list[dict[str, Any]] = []
-    for debit in debit_legs:
-        # Find credit leg via transfer_id
-        credit_q = select(Transaction).where(
-            Transaction.transfer_id == debit.transfer_id,
-            Transaction.household_id == household_id,
-            Transaction.type == "credit",
-            Transaction.is_active.is_(True),
-        )
-        credit_result = await session.execute(credit_q)
-        credit = credit_result.scalar_one_or_none()
-
-        # Load accounts for display info
-        from_acct = await session.get(Account, debit.account_id)
-        to_acct = await session.get(Account, credit.account_id) if credit else None
-
+    for debit, credit, fa, ta in rows:
         items.append(
             {
                 "transfer_id": debit.transfer_id,
                 "date": debit.date,
                 "description": debit.description,
-                "from_account": (
-                    {
-                        "id": from_acct.id,
-                        "name": from_acct.name,
-                        "currency": from_acct.currency,
-                        "type": (
-                            from_acct.type.value
-                            if hasattr(from_acct.type, "value")
-                            else from_acct.type
-                        ),
-                        "institution": from_acct.institution,
-                    }
-                    if from_acct
-                    else None
-                ),
-                "to_account": (
-                    {
-                        "id": to_acct.id,
-                        "name": to_acct.name,
-                        "currency": to_acct.currency,
-                        "type": (
-                            to_acct.type.value if hasattr(to_acct.type, "value") else to_acct.type
-                        ),
-                        "institution": to_acct.institution,
-                    }
-                    if to_acct
-                    else None
-                ),
+                "from_account": _acct_dict(fa),
+                "to_account": _acct_dict(ta),
                 "source_amount": abs(int(debit.amount_minor)),
                 "target_amount": abs(int(credit.amount_minor)) if credit else 0,
                 "fx_rate_minor_units": debit.fx_rate_minor_units,

@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Wallet, ArrowLeftRight, Plus, Trash2 } from "lucide-react";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { useAccounts, useNetWorth, useDeleteAccount } from "@/hooks/use-accounts";
+import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { AccountGrid } from "@/components/accounts/account-grid";
 import { CreateAccountDialog } from "@/components/accounts/create-account-dialog";
 import { TransferForm } from "@/components/transfers/transfer-form";
@@ -29,8 +30,14 @@ export default function AccountsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>("EGP");
-  const [manageMode, setManageMode] = useState(false);
-  const [selectedAccountIds, setSelectedAccountIds] = useState<Set<number>>(new Set());
+  const {
+    bulkMode: manageMode,
+    selectedIds: selectedAccountIds,
+    enterBulkMode: enterManageMode,
+    exitBulkMode: exitManageMode,
+    toggleSelect: toggleSelectAccount,
+    selectAll: selectAllAccounts,
+  } = useBulkSelection();
 
   const deleteAccount = useDeleteAccount();
 
@@ -40,7 +47,7 @@ export default function AccountsPage() {
     if (!manageMode) {
       setActions(
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setManageMode(true)}>
+          <Button variant="outline" size="sm" onClick={enterManageMode}>
             {t("manage")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
@@ -55,7 +62,7 @@ export default function AccountsPage() {
       );
     } else if (selectedAccountIds.size === 0) {
       setActions(
-        <Button variant="secondary" size="sm" onClick={() => { setManageMode(false); setSelectedAccountIds(new Set()); }}>
+        <Button variant="secondary" size="sm" onClick={exitManageMode}>
           {t("cancel")}
         </Button>
       );
@@ -78,17 +85,17 @@ export default function AccountsPage() {
                 idsArray.filter((_, i) => results[i].status === "rejected")
               );
               if (failedIds.size === 0) {
-                setManageMode(false);
-                setSelectedAccountIds(new Set());
+                exitManageMode();
               } else {
-                setSelectedAccountIds(failedIds);
+                // Keep only the failed IDs selected; remain in manage mode for retry
+                selectAllAccounts([...failedIds]);
               }
             }}
           >
             <Trash2 className="h-3.5 w-3.5 me-1" />
             {t("deleteSelected")}
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => { setManageMode(false); setSelectedAccountIds(new Set()); }}>
+          <Button variant="ghost" size="sm" onClick={exitManageMode}>
             {t("cancel")}
           </Button>
         </div>
@@ -201,13 +208,7 @@ export default function AccountsPage() {
           accounts={accounts}
           manageMode={manageMode}
           selectedIds={selectedAccountIds}
-          onSelect={(id) =>
-            setSelectedAccountIds((prev) => {
-              const next = new Set(prev);
-              next.has(id) ? next.delete(id) : next.add(id);
-              return next;
-            })
-          }
+          onSelect={toggleSelectAccount}
         />
       )}
       {!isLoading && accounts.length === 0 && (

@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
+from app.models.household import Household
 from app.models.transaction import Transaction
 from app.schemas.account import AccountCreate, AccountUpdate
 
@@ -27,7 +28,7 @@ async def list_accounts(
     # Fetch
     q = (
         select(Account)
-        .where(Account.household_id == household_id, Account.is_active == True)  # noqa: E712
+        .where(Account.household_id == household_id, Account.is_active.is_(True))
         .offset((page - 1) * page_size)
         .limit(page_size)
         .order_by(Account.id)
@@ -121,17 +122,40 @@ async def compute_net_worth(
     session: AsyncSession,
     household_id: uuid.UUID,
 ) -> dict:
-    """Compute net worth across all active accounts."""
+    """Compute net worth across all active accounts. Uses a single bulk query."""
     accounts, _ = await list_accounts(session, household_id, page=1, page_size=1000)
+
+    # Partition accounts: those without opened_at (bulk-queryable) vs. with opened_at (individual)
+    no_filter_ids = [a.id for a in accounts if a.opened_at is None]
+
+    # Single aggregate query for all accounts without an opened_at cutoff
+    tx_sums: dict[int, int] = {}
+    if no_filter_ids:
+        rows = await session.execute(
+            select(
+                Transaction.account_id,
+                func.coalesce(func.sum(Transaction.amount_minor), 0).label("tx_sum"),
+            )
+            .where(
+                Transaction.household_id == household_id,
+                Transaction.is_active.is_(True),
+                Transaction.applies_to_balance.is_(True),
+                Transaction.account_id.in_(no_filter_ids),
+            )
+            .group_by(Transaction.account_id)
+        )
+        tx_sums = {row.account_id: int(row.tx_sum) for row in rows}
 
     by_currency: dict[str, int] = {}
     for acct in accounts:
-        bal = await compute_displayed_balance(session, acct)
+        if acct.opened_at is None:
+            bal = acct.balance_minor + tx_sums.get(acct.id, 0)
+        else:
+            # Rare case: account has an opened_at filter — individual query
+            bal = await compute_displayed_balance(session, acct)
         by_currency[acct.currency] = by_currency.get(acct.currency, 0) + bal
 
     # Fetch household base currency
-    from app.models.household import Household
-
     hh = await session.get(Household, household_id)
     base_currency = hh.base_currency if hh else "EGP"
 
