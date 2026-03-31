@@ -134,3 +134,31 @@ def test_transaction_create_has_no_currency_field():
 
     fields = TransactionCreate.model_fields
     assert "currency" not in fields, "currency field must not exist in TransactionCreate"
+
+
+def test_transaction_update_rejects_zero_amount():
+    from app.schemas.transaction import TransactionUpdate
+
+    with pytest.raises(ValidationError):
+        TransactionUpdate(amount_minor=0)
+
+
+def test_transaction_update_rejects_negative_amount():
+    from app.schemas.transaction import TransactionUpdate
+
+    with pytest.raises(ValidationError):
+        TransactionUpdate(amount_minor=-100)
+
+
+def test_transaction_update_accepts_none_amount():
+    from app.schemas.transaction import TransactionUpdate
+
+    obj = TransactionUpdate(amount_minor=None)
+    assert obj.amount_minor is None
+
+
+def test_transaction_update_accepts_positive_amount():
+    from app.schemas.transaction import TransactionUpdate
+
+    obj = TransactionUpdate(amount_minor=1000)
+    assert obj.amount_minor == 1000
