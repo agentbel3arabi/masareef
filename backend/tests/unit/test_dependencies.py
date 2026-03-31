@@ -1,13 +1,14 @@
-import asyncio
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 @pytest.mark.asyncio
 async def test_fetch_jwks_is_async():
     """_fetch_jwks must be an async coroutine, not a blocking sync call."""
-    from app.dependencies import _fetch_jwks
     import inspect
+
+    from app.dependencies import _fetch_jwks
     assert inspect.iscoroutinefunction(_fetch_jwks), "_fetch_jwks must be async def"
 
 
