@@ -1,0 +1,63 @@
+"""Duplicate transaction detection for import pipeline.
+
+Strategy: load all existing transaction hashes for the account in one query (O(N)),
+then check each parsed row in O(1). Total: one DB round trip per import session.
+"""
+
+import datetime
+import hashlib
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.transaction import Transaction
+from app.schemas.import_ import ParsedRow
+
+
+def _make_hash(account_id: int, date: datetime.date, amount_minor: int, description: str) -> str:
+    """Create a stable dedup hash for (account, date, amount, description)."""
+    key = f"{account_id}|{date.isoformat()}|{amount_minor}|{description.lower().strip()}"
+    return hashlib.md5(key.encode()).hexdigest()  # noqa: S324
+
+
+async def load_existing_hashes(session: AsyncSession, account_id: int) -> set[str]:
+    """Load all transaction dedup hashes for an account in one query."""
+    result = await session.execute(
+        select(Transaction.date, Transaction.amount_minor, Transaction.description).where(
+            Transaction.account_id == account_id,
+            Transaction.is_active.is_(True),
+        )
+    )
+    return {
+        _make_hash(account_id, row.date, row.amount_minor, row.description or "")
+        for row in result.all()
+    }
+
+
+def is_duplicate(
+    account_id: int,
+    date: datetime.date,
+    amount_minor: int,
+    description: str,
+    existing_hashes: set[str],
+) -> bool:
+    """Check if a transaction already exists in the hash set."""
+    return _make_hash(account_id, date, amount_minor, description) in existing_hashes
+
+
+def mark_duplicates(
+    rows: list[ParsedRow],
+    account_id: int,
+    existing_hashes: set[str],
+) -> list[ParsedRow]:
+    """Mark rows as 'duplicate' and deselect them. Mutates and returns rows."""
+    for row in rows:
+        if row.status != "valid":
+            continue
+        if row.date is not None and row.amount_minor is not None:
+            if is_duplicate(
+                account_id, row.date, row.amount_minor, row.description, existing_hashes
+            ):
+                row.status = "duplicate"
+                row.selected = False
+    return rows
