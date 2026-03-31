@@ -3,6 +3,7 @@
 Handles: Arabic-Indic numerals, DR/CR suffixes, parentheses negation,
 comma/dot as thousands or decimal separator, European format (1.234,56).
 """
+
 import re
 from decimal import Decimal, InvalidOperation
 
@@ -30,9 +31,7 @@ def parse_amount_to_minor(raw: str, currency_exponent: int = 2) -> int | None:
 
     # Determine sign
     negative = (
-        text.startswith("-")
-        or "DR" in text_upper
-        or (text.startswith("(") and text.endswith(")"))
+        text.startswith("-") or "DR" in text_upper or (text.startswith("(") and text.endswith(")"))
     )
     positive_override = "CR" in text_upper or text.startswith("+")
     if positive_override:
