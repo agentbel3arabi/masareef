@@ -69,7 +69,7 @@ export function MappingStep({
       {sheetNames.length > 1 && (
         <div className="space-y-2">
           <Label>Sheet</Label>
-          <Select value={sheet} onValueChange={setSheet}>
+          <Select value={sheet} onValueChange={(v) => setSheet(v ?? "")}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -107,7 +107,7 @@ export function MappingStep({
             </Label>
             <Select
               value={mapping[field] ?? ""}
-              onValueChange={(v) => setMapping((prev) => ({ ...prev, [field]: v }))}
+              onValueChange={(v) => setMapping((prev) => ({ ...prev, [field]: v ?? "" }))}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t("selectColumn")} />
@@ -126,7 +126,7 @@ export function MappingStep({
       {/* Date format */}
       <div className="space-y-2">
         <Label>{t("dateFormat")}</Label>
-        <Select value={dateFormat} onValueChange={setDateFormat}>
+        <Select value={dateFormat} onValueChange={(v) => setDateFormat(v ?? "DD/MM/YYYY")}>
           <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>

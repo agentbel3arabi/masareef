@@ -110,7 +110,7 @@ export function useCommitImport() {
     mutationFn: (data: CommitRequest) =>
       apiPost<CommitResponse>("/api/v1/import/commit", data),
     successMessage: t("importComplete"),
-    onSuccess: (_data, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
