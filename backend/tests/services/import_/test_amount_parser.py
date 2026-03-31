@@ -55,3 +55,15 @@ def test_whitespace_returns_none():
 
 def test_text_only_returns_none():
     assert parse_amount_to_minor("N/A") is None
+
+
+def test_kwd_comma_decimal_not_treated_as_thousands():
+    """1,250 with KWD exponent=3 should parse as 1.250 KWD = 1250 fils, not 1250 KWD."""
+    result = parse_amount_to_minor("1,250", currency_exponent=3)
+    assert result == 1250  # 1.250 KWD = 1250 fils
+
+
+def test_kwd_thousands_still_works():
+    """1,250,000 with KWD should still be treated as thousands separator."""
+    result = parse_amount_to_minor("1,250,000", currency_exponent=3)
+    assert result == 1_250_000_000  # 1,250,000.000 KWD = 1,250,000,000 fils
