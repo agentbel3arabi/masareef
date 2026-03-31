@@ -64,11 +64,17 @@ async def test_delete_template(client: AsyncClient, db_session):
         skip_rows=0,
     )
     db_session.add(template)
-    await db_session.flush()
     await db_session.commit()
+    template_id = template.id
 
-    resp = await client.delete(f"/api/v1/import/templates/{template.id}")
+    resp = await client.delete(f"/api/v1/import/templates/{template_id}")
     assert resp.status_code == 204
+
+    # Verify soft-deleted template is not returned in list
+    resp = await client.get("/api/v1/import/templates")
+    assert resp.status_code == 200
+    ids = [t["id"] for t in resp.json()["data"]]
+    assert template_id not in ids
 
 
 @pytest.mark.asyncio

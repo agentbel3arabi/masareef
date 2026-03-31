@@ -1,4 +1,5 @@
 """Import template CRUD service."""
+
 import uuid
 
 from sqlalchemy import delete, select
@@ -8,12 +9,13 @@ from app.models.import_template import AccountImportTemplate, ImportTemplate
 from app.schemas.import_template import ImportTemplateCreate, ImportTemplateUpdate
 
 
-async def list_templates(
-    session: AsyncSession, household_id: uuid.UUID
-) -> list[ImportTemplate]:
+async def list_templates(session: AsyncSession, household_id: uuid.UUID) -> list[ImportTemplate]:
     result = await session.execute(
         select(ImportTemplate)
-        .where(ImportTemplate.household_id == household_id)
+        .where(
+            ImportTemplate.household_id == household_id,
+            ImportTemplate.is_active.is_(True),
+        )
         .order_by(ImportTemplate.id)
     )
     return list(result.scalars().all())
@@ -26,6 +28,7 @@ async def get_template(
         select(ImportTemplate).where(
             ImportTemplate.id == template_id,
             ImportTemplate.household_id == household_id,
+            ImportTemplate.is_active.is_(True),
         )
     )
     return result.scalar_one_or_none()
@@ -65,13 +68,11 @@ async def update_template(
 
 
 async def delete_template(session: AsyncSession, template: ImportTemplate) -> None:
-    # Remove all account links first
+    # Remove all account links first (junction rows, hard delete is OK)
     await session.execute(
-        delete(AccountImportTemplate).where(
-            AccountImportTemplate.template_id == template.id
-        )
+        delete(AccountImportTemplate).where(AccountImportTemplate.template_id == template.id)
     )
-    await session.delete(template)
+    template.is_active = False
     await session.flush()
 
 
@@ -80,9 +81,7 @@ async def link_template(
 ) -> AccountImportTemplate:
     # Upsert: delete existing link for this account, then create new one
     await session.execute(
-        delete(AccountImportTemplate).where(
-            AccountImportTemplate.account_id == account_id
-        )
+        delete(AccountImportTemplate).where(AccountImportTemplate.account_id == account_id)
     )
     link = AccountImportTemplate(account_id=account_id, template_id=template_id)
     session.add(link)
@@ -90,9 +89,7 @@ async def link_template(
     return link
 
 
-async def unlink_template(
-    session: AsyncSession, template_id: int, account_id: int
-) -> None:
+async def unlink_template(session: AsyncSession, template_id: int, account_id: int) -> None:
     await session.execute(
         delete(AccountImportTemplate).where(
             AccountImportTemplate.account_id == account_id,
@@ -102,9 +99,7 @@ async def unlink_template(
     await session.flush()
 
 
-async def get_linked_template(
-    session: AsyncSession, account_id: int
-) -> ImportTemplate | None:
+async def get_linked_template(session: AsyncSession, account_id: int) -> ImportTemplate | None:
     """Return the default import template linked to an account, or None."""
     result = await session.execute(
         select(ImportTemplate)
@@ -112,14 +107,15 @@ async def get_linked_template(
             AccountImportTemplate,
             AccountImportTemplate.template_id == ImportTemplate.id,
         )
-        .where(AccountImportTemplate.account_id == account_id)
+        .where(
+            AccountImportTemplate.account_id == account_id,
+            ImportTemplate.is_active.is_(True),
+        )
     )
     return result.scalar_one_or_none()
 
 
-async def get_linked_account_ids(
-    session: AsyncSession, template_id: int
-) -> list[int]:
+async def get_linked_account_ids(session: AsyncSession, template_id: int) -> list[int]:
     result = await session.execute(
         select(AccountImportTemplate.account_id).where(
             AccountImportTemplate.template_id == template_id

@@ -3,9 +3,11 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.models.account import Account
 from app.schemas.common import SuccessResponse
 from app.schemas.import_template import (
     ImportTemplateCreate,
@@ -98,6 +100,15 @@ async def link_template_to_account(
     template = await template_service.get_template(session, household_id, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
+    # Verify account belongs to the same household
+    acct_result = await session.execute(
+        select(Account).where(
+            Account.id == account_id,
+            Account.household_id == household_id,
+        )
+    )
+    if acct_result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail="Account not found")
     await template_service.link_template(session, template_id, account_id)
     return SuccessResponse(data={"linked": True})
 
