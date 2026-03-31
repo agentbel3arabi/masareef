@@ -59,6 +59,7 @@ def parse_csv(
                 date_format,
                 currency,
                 currency_exponent,
+                single_amount=True,  # preserve sign from signed amount column
             )
         else:
             row = validate_row(

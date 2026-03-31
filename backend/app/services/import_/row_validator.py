@@ -47,8 +47,16 @@ def validate_row(
     date_format: str,
     currency: str,
     currency_exponent: int = 2,
+    single_amount: bool = False,
 ) -> ParsedRow:
-    """Validate and normalise a raw row into a ParsedRow with status."""
+    """Validate and normalise a raw row into a ParsedRow with status.
+
+    Args:
+        single_amount: Set to True when the value comes from a single signed
+            amount column (positive = credit, negative = debit). When False
+            (default), the value is treated as a debit column entry and is
+            always stored as a negative amount.
+    """
     parsed_date = _parse_date(date_raw, date_format)
     if parsed_date is None:
         return ParsedRow(
@@ -64,8 +72,13 @@ def validate_row(
     if debit_raw and debit_raw.strip():
         val = parse_amount_to_minor(debit_raw, currency_exponent)
         if val is not None:
-            amount_minor = -abs(val)  # debits always negative
-            row_type = "debit"
+            if single_amount:
+                # Preserve sign: negative = debit, positive = credit
+                amount_minor = val
+                row_type = "credit" if val > 0 else "debit"
+            else:
+                amount_minor = -abs(val)  # debit column → always negative
+                row_type = "debit"
 
     if credit_raw and credit_raw.strip():
         val = parse_amount_to_minor(credit_raw, currency_exponent)

@@ -37,3 +37,23 @@ def test_yyyy_mm_dd_format():
 def test_row_index_preserved():
     row = validate_row(42, "15/03/2026", "MERCHANT", "100.00", "", "DD/MM/YYYY", "EGP")
     assert row.row_index == 42
+
+
+def test_single_amount_positive_is_credit():
+    """Positive value in single-amount column should be stored as credit."""
+    row = validate_row(
+        0, "15/03/2026", "SALARY", "5000.00", "", "DD/MM/YYYY", "EGP", single_amount=True
+    )
+    assert row.status == "valid"
+    assert row.amount_minor == 500000  # positive = credit
+    assert row.type == "credit"
+
+
+def test_single_amount_negative_is_debit():
+    """Negative value in single-amount column should be stored as debit."""
+    row = validate_row(
+        0, "15/03/2026", "CARREFOUR", "-1250.00", "", "DD/MM/YYYY", "EGP", single_amount=True
+    )
+    assert row.status == "valid"
+    assert row.amount_minor == -125000  # negative = debit
+    assert row.type == "debit"
