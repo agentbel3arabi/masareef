@@ -18,4 +18,4 @@ Reason: pdfplumber is the plan default, is pure Python (no system dependencies),
 
 ## Impact on Plan 2A
 
-Proceeding with pdfplumber as specified in Task 11.
+Proceeding with pdfplumber as specified in the PDF parser task in the Phase 2A plan.
