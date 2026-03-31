@@ -2,6 +2,8 @@
 
 Strategy: load all existing transaction hashes for the account in one query (O(N)),
 then check each parsed row in O(1). Total: one DB round trip per import session.
+
+Deduplication uses SHA-256 fingerprints of (account_id, date, amount_minor, description).
 """
 
 import datetime

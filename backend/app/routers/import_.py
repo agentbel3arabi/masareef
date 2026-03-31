@@ -1,6 +1,7 @@
 """Import HTTP router. Thin layer — all logic in import_service."""
 
 import json
+import logging
 import uuid
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
@@ -15,6 +16,7 @@ from app.services.import_ import import_service
 from app.services.import_.presets.registry import list_presets
 
 router = APIRouter(prefix="/api/v1/import", tags=["import"])
+logger = logging.getLogger(__name__)
 
 _MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB
 
@@ -22,7 +24,8 @@ try:
     _settings = Settings()  # type: ignore[call-arg]
     _parse_limit = f"{_settings.import_parse_rate_limit}/minute"
     _commit_limit = f"{_settings.import_commit_rate_limit}/minute"
-except Exception:
+except Exception as exc:
+    logger.warning("Failed to load Settings for rate limits, using defaults: %s", exc)
     _parse_limit = "20/minute"
     _commit_limit = "5/minute"
 
@@ -33,7 +36,6 @@ async def parse_file(
     request: Request,
     file: UploadFile = File(...),
     account_id: int = Form(...),
-    currency: str = Form(default="EGP"),
     column_mapping: str | None = Form(default=None),
     date_format: str = Form(default="DD/MM/YYYY"),
     sheet_name: str | None = Form(default=None),
@@ -86,7 +88,6 @@ async def parse_file(
         raw_bytes=raw_bytes,
         filename=file.filename or "upload",
         account_id=account_id,
-        currency=currency,
         session=session,
         household_id=household_id,
         column_mapping=mapping,

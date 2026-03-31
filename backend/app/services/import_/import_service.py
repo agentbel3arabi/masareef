@@ -52,8 +52,21 @@ def _detect_format(filename: str, content_type: str | None) -> str:
     name = filename.lower()
     if name.endswith(".csv"):
         return "csv"
-    if name.endswith((".xlsx", ".xls")):
+    if name.endswith(".xlsx"):
         return "excel"
+    if name.endswith(".xls"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error": {
+                    "code": "UNSUPPORTED_FORMAT",
+                    "message": (
+                        "Legacy .xls files are not supported."
+                        " Please save as .xlsx and re-upload."
+                    ),
+                }
+            },
+        )
     if name.endswith(".pdf"):
         return "pdf"
     if content_type:
@@ -69,7 +82,7 @@ def _detect_format(filename: str, content_type: str | None) -> str:
         detail={
             "error": {
                 "code": "UNSUPPORTED_FORMAT",
-                "message": "Only CSV, Excel (.xlsx/.xls), and PDF are supported",
+                "message": "Only CSV, Excel (.xlsx), and PDF are supported",
             }
         },
     )
@@ -90,7 +103,6 @@ async def parse_upload(
     raw_bytes: bytes,
     filename: str,
     account_id: int,
-    currency: str,
     session: AsyncSession,
     household_id: uuid.UUID,
     column_mapping: dict[str, str] | None = None,
@@ -118,8 +130,6 @@ async def parse_upload(
         )
 
     # Derive currency and exponent from the account (authoritative source).
-    # The client-provided `currency` param is intentionally ignored here to
-    # prevent client-side spoofing of the currency used for amount conversion.
     account_currency = account.currency
     currency_exponent = _CURRENCY_EXPONENTS.get(account_currency, 2)
 
@@ -190,10 +200,23 @@ async def parse_upload(
         auto_suggest = get_auto_suggest(headers)
         return NeedsMappingResponse(headers=headers, auto_suggest=auto_suggest)
 
-    # ── Excel: return sheet info + headers + auto_suggest ─────────────────
+    # ── Excel: try preset, else needs_mapping with sheet info ─────────────
     sheets = get_sheet_names(raw_bytes)
     active_sheet = sheet_name or (sheets[0] if sheets else None)
     headers = excel_headers(raw_bytes, sheet_name=active_sheet, skip_rows=skip_rows)
+    preset = detect_preset(raw_bytes, headers)
+    if preset and preset.get_column_mapping():
+        rows = parse_excel(
+            raw_bytes,
+            preset.get_column_mapping(),  # type: ignore[arg-type]
+            sheet_name=active_sheet,
+            skip_rows=skip_rows,
+            date_format=preset.get_date_format(),
+            currency=account_currency,
+            currency_exponent=currency_exponent,
+        )
+        mark_duplicates(rows, account_id, existing_hashes)
+        return _complete(rows, preset.preset_id)
     auto_suggest = get_auto_suggest(headers)
     return NeedsMappingResponse(
         headers=headers,

@@ -32,7 +32,7 @@ async def test_parse_returns_needs_mapping_for_csv(client: AsyncClient, seeded_a
     csv_bytes = b"Date,Description,Debit,Credit\n15/03/2026,MERCHANT,100.00,\n"
     resp = await client.post(
         "/api/v1/import/parse",
-        data={"account_id": str(seeded_account.id), "currency": "EGP"},
+        data={"account_id": str(seeded_account.id)},
         files={"file": ("statement.csv", io.BytesIO(csv_bytes), "text/csv")},
     )
     assert resp.status_code == 200
@@ -51,7 +51,6 @@ async def test_parse_with_column_mapping_returns_complete(
         "/api/v1/import/parse",
         data={
             "account_id": str(seeded_account.id),
-            "currency": "EGP",
             "column_mapping": mapping,
         },
         files={"file": ("statement.csv", io.BytesIO(csv_bytes), "text/csv")},
@@ -68,7 +67,7 @@ async def test_parse_scanned_pdf_returns_scanned(client: AsyncClient, seeded_acc
     with patch("app.services.import_.import_service.is_scanned", return_value=True):
         resp = await client.post(
             "/api/v1/import/parse",
-            data={"account_id": str(seeded_account.id), "currency": "EGP"},
+            data={"account_id": str(seeded_account.id)},
             files={"file": ("statement.pdf", io.BytesIO(b"%PDF-1.4"), "application/pdf")},
         )
     assert resp.status_code == 200
@@ -79,7 +78,7 @@ async def test_parse_scanned_pdf_returns_scanned(client: AsyncClient, seeded_acc
 async def test_parse_unsupported_format_returns_400(client: AsyncClient, seeded_account: Account):
     resp = await client.post(
         "/api/v1/import/parse",
-        data={"account_id": str(seeded_account.id), "currency": "EGP"},
+        data={"account_id": str(seeded_account.id)},
         files={"file": ("document.docx", io.BytesIO(b"data"), "application/octet-stream")},
     )
     assert resp.status_code == 400
@@ -91,7 +90,7 @@ async def test_parse_unknown_account_returns_404(client: AsyncClient):
     csv_bytes = b"Date,Description,Debit,Credit\n15/03/2026,MERCHANT,100.00,\n"
     resp = await client.post(
         "/api/v1/import/parse",
-        data={"account_id": "99999", "currency": "EGP"},
+        data={"account_id": "99999"},
         files={"file": ("statement.csv", io.BytesIO(csv_bytes), "text/csv")},
     )
     assert resp.status_code == 404

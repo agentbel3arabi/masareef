@@ -47,7 +47,7 @@ Phase 2 builds the primary user onramp for Masareef. Since Egypt has no Open Ban
 10. **Row validator** — `services/import_/row_validator.py` (date format validation, amount parseability, required fields)
 11. **Duplicate checker** — `services/import_/duplicate_checker.py` (load existing transaction hashes for account in one query; O(1) per row check; hash key: account_id + date + amount_minor + description)
 12. **Parse endpoint** — `routers/import_.py` → `POST /api/v1/import/parse`
-13. **Commit endpoint** — `POST /api/v1/import/commit` (atomic: INSERT rows + UPDATE account balance; generate import_batch_id UUID; queue AI categorization background task — **stub in Phase 2, implemented in Phase 9**)
+13. **Commit endpoint** — `POST /api/v1/import/commit` (atomic: INSERT rows only — do NOT UPDATE account balance; balance is computed dynamically as `accounts.balance_minor` seed + sum of transactions; generate import_batch_id UUID; queue AI categorization background task — **stub in Phase 2, implemented in Phase 9**)
 14. **Presets list endpoint** — `GET /api/v1/import/presets`
 15. **Rate limiting** — slowapi on import router; limits read from `settings.import_parse_rate_limit` and `settings.import_commit_rate_limit`
 
@@ -127,7 +127,7 @@ User confirms mapping (step: mapping)
 
 User commits (step: preview)
   → POST /api/v1/import/commit (account_id + selected rows)
-  → Backend: atomic INSERT + balance UPDATE + queue AI categorization
+  → Backend: atomic INSERT rows (balance is computed dynamically; no balance column update) + queue AI categorization
   → Frontend: navigate to /accounts/{id}                             → step: done
 ```
 
@@ -144,7 +144,7 @@ receive file
   │   ├── chars/page < 50 → return {scanned: true}
   │   └── try presets in registry order
   │       ├── HSBC CC match → parse with preset → deduplicate → return rows
-  │       └── no match → return {needs_mapping, headers, auto_suggest}
+  │       └── no match → 422 UNSUPPORTED_FORMAT (Phase 2A only supports HSBC CC PDF preset)
   │   CSV / Excel
   │   ├── try presets in registry order
   │   │   └── match → parse with preset → deduplicate → return rows
@@ -211,9 +211,11 @@ frontend/src/
 | Scenario | HTTP | Message |
 |---|---|---|
 | File > 10MB | 400 | "File exceeds 10MB limit" |
-| Unsupported file type | 400 | "Only CSV, Excel, and PDF are supported" |
+| Unsupported file type | 400 | "Only CSV, Excel (.xlsx), and PDF are supported" |
+| Legacy .xls file | 400 | "Legacy .xls files are not supported. Please save as .xlsx and re-upload." |
 | All rows unparseable | 422 | "No valid rows found. Check file format." |
 | Scanned PDF (any user) | 200 | `{scanned: true}` — frontend shows upgrade prompt |
+| PDF with no matching preset | 422 | "PDF format not recognized. Supported: HSBC Credit Card PDF" |
 | Single row parse error | 200 | Row status = `error`, shown in preview table |
 | Commit with 0 selected rows | 422 | "Select at least one row to import" |
 | Household mismatch on account | 403 | Standard 403 envelope |
@@ -265,7 +267,7 @@ tests/import_/
 - [ ] Duplicate detection correctly flags existing transactions
 - [ ] Duplicate rows auto-deselected; user can override
 - [ ] Commit is atomic — all rows inserted or none
-- [ ] Account balance updates correctly after commit
+- [ ] Account balance reflected correctly after commit (computed dynamically: seed + sum; no `balance_minor` column update)
 - [ ] import_batch_id groups all rows from same session
 - [ ] AI categorization queued as background task after commit
 - [ ] Arabic amount formats parse correctly
