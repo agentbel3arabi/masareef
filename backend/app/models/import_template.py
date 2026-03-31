@@ -1,4 +1,5 @@
 """Import template models — user-saved column mappings for reuse."""
+
 import uuid
 from typing import Any
 
@@ -32,9 +33,7 @@ class AccountImportTemplate(Base):
 
     __tablename__ = "account_import_templates"
 
-    account_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("accounts.id"), primary_key=True
-    )
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), primary_key=True)
     template_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("import_templates.id"), nullable=False
     )

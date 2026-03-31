@@ -34,6 +34,7 @@ from app.services.import_.excel_parser import get_sheet_names, parse_excel
 from app.services.import_.header_mapper import get_auto_suggest
 from app.services.import_.pdf_parser import is_scanned
 from app.services.import_.presets.registry import detect_preset
+from app.services.import_template import get_linked_template
 from app.services.money import CURRENCIES
 
 
@@ -139,6 +140,39 @@ async def parse_upload(
     # It is deferred to just before each mark_duplicates() call so that
     # early-return paths (ScannedResponse, NeedsMappingResponse) skip the DB
     # query entirely.
+
+    # ── Check for account-linked template ─────────────────────────────────
+    if not column_mapping:
+        linked_template = await get_linked_template(session, account_id)
+        if linked_template and fmt in ("csv", "excel"):
+            if fmt == "csv":
+                try:
+                    rows = parse_csv(
+                        raw_bytes,
+                        dict(linked_template.columns),
+                        date_format=linked_template.date_format,
+                        skip_rows=linked_template.skip_rows,
+                        currency=account_currency,
+                        currency_exponent=currency_exponent,
+                    )
+                except Exception:
+                    raise _parse_error("CSV")
+            else:
+                try:
+                    rows = parse_excel(
+                        raw_bytes,
+                        dict(linked_template.columns),
+                        sheet_name=linked_template.sheet_name,
+                        skip_rows=linked_template.skip_rows,
+                        date_format=linked_template.date_format,
+                        currency=account_currency,
+                        currency_exponent=currency_exponent,
+                    )
+                except Exception:
+                    raise _parse_error("Excel")
+            existing_hashes = await load_existing_hashes(session, account_id, household_id)
+            mark_duplicates(rows, account_id, existing_hashes)
+            return _complete(rows, None)
 
     # ── PDF path ───────────────────────────────────────────────────────────
     if fmt == "pdf":
