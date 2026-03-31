@@ -10,16 +10,17 @@ def test_account_create_rejects_invalid_type():
 
 
 def test_account_create_accepts_valid_types():
-    from app.schemas.account import AccountCreate
     from app.models.enums import AccountType
+    from app.schemas.account import AccountCreate
     for account_type in AccountType:
         schema = AccountCreate(name="Test", type=account_type, currency="EGP")
         assert schema.type == account_type
 
 
 def test_transaction_create_rejects_invalid_type():
-    from app.schemas.transaction import TransactionCreate
     import datetime
+
+    from app.schemas.transaction import TransactionCreate
     with pytest.raises(ValidationError) as exc_info:
         TransactionCreate(
             account_id=1, date=datetime.date.today(),
@@ -29,8 +30,9 @@ def test_transaction_create_rejects_invalid_type():
 
 
 def test_transaction_create_accepts_debit_credit():
-    from app.schemas.transaction import TransactionCreate
     import datetime
+
+    from app.schemas.transaction import TransactionCreate
     for tx_type in ("debit", "credit"):
         schema = TransactionCreate(
             account_id=1, date=datetime.date.today(),
@@ -47,38 +49,42 @@ def test_category_create_rejects_invalid_type():
 
 
 def test_category_create_accepts_valid_types():
-    from app.schemas.category import CategoryCreate
     from app.models.enums import CategoryType
+    from app.schemas.category import CategoryCreate
     for cat_type in CategoryType:
         schema = CategoryCreate(name_en="Food", type=cat_type)
         assert schema.type == cat_type
 
 
 def test_manual_rate_request_rejects_negative_rate():
-    from app.schemas.exchange_rate import ManualRateRequest
     import datetime
+
+    from app.schemas.exchange_rate import ManualRateRequest
     with pytest.raises(ValidationError):
         ManualRateRequest(date=datetime.date.today(), to_currency="USD", rate=-1.0)
 
 
 def test_manual_rate_request_rejects_zero_rate():
-    from app.schemas.exchange_rate import ManualRateRequest
     import datetime
+
+    from app.schemas.exchange_rate import ManualRateRequest
     with pytest.raises(ValidationError):
         ManualRateRequest(date=datetime.date.today(), to_currency="USD", rate=0.0)
 
 
 def test_manual_rate_request_rate_scaled_property():
-    from app.schemas.exchange_rate import ManualRateRequest
     import datetime
+
+    from app.schemas.exchange_rate import ManualRateRequest
     req = ManualRateRequest(date=datetime.date.today(), to_currency="USD", rate=48.5)
     assert req.rate_scaled == 485000  # 48.5 * 10000
     assert isinstance(req.rate_scaled, int)
 
 
 def test_transaction_create_rejects_negative_amount():
-    from app.schemas.transaction import TransactionCreate
     import datetime
+
+    from app.schemas.transaction import TransactionCreate
     with pytest.raises(ValidationError):
         TransactionCreate(
             account_id=1, date=datetime.date.today(),
@@ -87,8 +93,9 @@ def test_transaction_create_rejects_negative_amount():
 
 
 def test_transaction_create_rejects_zero_amount():
-    from app.schemas.transaction import TransactionCreate
     import datetime
+
+    from app.schemas.transaction import TransactionCreate
     with pytest.raises(ValidationError):
         TransactionCreate(
             account_id=1, date=datetime.date.today(),
@@ -97,7 +104,7 @@ def test_transaction_create_rejects_zero_amount():
 
 
 def test_transaction_create_has_no_currency_field():
+
     from app.schemas.transaction import TransactionCreate
-    import inspect
     fields = TransactionCreate.model_fields
     assert "currency" not in fields, "currency field must not exist in TransactionCreate"

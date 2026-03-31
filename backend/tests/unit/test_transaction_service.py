@@ -1,6 +1,7 @@
-import pytest
-from unittest.mock import AsyncMock, MagicMock, call, patch
 import uuid
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -25,7 +26,7 @@ async def test_bulk_delete_issues_single_update():
 @pytest.mark.asyncio
 async def test_bulk_categorize_issues_single_update():
     """bulk_categorize must use a single UPDATE statement."""
-    from app.services.transaction import bulk_categorize, validate_category_access
+    from app.services.transaction import bulk_categorize
 
     mock_session = AsyncMock()
     mock_result = MagicMock()
