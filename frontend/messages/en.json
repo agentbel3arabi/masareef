@@ -334,6 +334,62 @@
       "description": "Try adjusting your filters or search terms."
     }
   },
+  "import": {
+    "title": "Import",
+    "subtitle": "Import bank statement",
+    "step": {
+      "upload": "Upload",
+      "mapping": "Map Columns",
+      "preview": "Preview & Confirm"
+    },
+    "upload": {
+      "dragDrop": "Drag & drop your bank statement here",
+      "or": "or",
+      "browse": "Browse file",
+      "supported": "Supported: CSV, Excel (.xlsx), PDF",
+      "account": "Import into account",
+      "selectAccount": "Select account"
+    },
+    "mapping": {
+      "title": "Map columns",
+      "subtitle": "Match your file's columns to the fields below",
+      "fieldDate": "Date",
+      "fieldDescription": "Description",
+      "fieldDebit": "Debit (money out)",
+      "fieldCredit": "Credit (money in)",
+      "fieldBalance": "Balance (optional)",
+      "selectColumn": "Select column",
+      "suggested": "suggested",
+      "dateFormat": "Date format",
+      "skipRows": "Skip header rows",
+      "singleAmount": "Single amount column",
+      "back": "Back",
+      "parse": "Parse"
+    },
+    "preview": {
+      "title": "Review transactions",
+      "commit": "Import {count} transactions",
+      "back": "Back",
+      "valid": "{count} valid",
+      "duplicate": "{count} duplicate",
+      "error": "{count} error"
+    },
+    "scanned": {
+      "title": "Scanned PDF detected",
+      "description": "This looks like a scanned document. Upgrade to Premium to import scanned bank statements.",
+      "upgrade": "Upgrade to Premium",
+      "back": "Try another file"
+    },
+    "done": {
+      "success": "Successfully imported {count} transactions"
+    },
+    "errors": {
+      "noFile": "Please select a file",
+      "noAccount": "Please select an account",
+      "parseFailed": "Failed to parse file",
+      "commitFailed": "Failed to import transactions"
+    }
+  },
   "landing": {
     "nav": {
       "features": "Features",

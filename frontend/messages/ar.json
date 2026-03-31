@@ -334,6 +334,62 @@
       "description": "حاول تعديل الفلاتر أو مصطلحات البحث."
     }
   },
+  "import": {
+    "title": "استيراد",
+    "subtitle": "استيراد كشف حساب",
+    "step": {
+      "upload": "رفع الملف",
+      "mapping": "تعيين الأعمدة",
+      "preview": "مراجعة وتأكيد"
+    },
+    "upload": {
+      "dragDrop": "اسحب وأفلت كشف حسابك هنا",
+      "or": "أو",
+      "browse": "تصفح الملفات",
+      "supported": "الصيغ المدعومة: CSV، Excel، PDF",
+      "account": "الاستيراد إلى الحساب",
+      "selectAccount": "اختر حساباً"
+    },
+    "mapping": {
+      "title": "تعيين الأعمدة",
+      "subtitle": "طابق أعمدة ملفك مع الحقول أدناه",
+      "fieldDate": "التاريخ",
+      "fieldDescription": "الوصف",
+      "fieldDebit": "سحب (خروج)",
+      "fieldCredit": "إيداع (دخول)",
+      "fieldBalance": "الرصيد (اختياري)",
+      "selectColumn": "اختر عموداً",
+      "suggested": "مقترح",
+      "dateFormat": "صيغة التاريخ",
+      "skipRows": "تخطي صفوف الرأس",
+      "singleAmount": "عمود مبلغ واحد",
+      "back": "رجوع",
+      "parse": "تحليل"
+    },
+    "preview": {
+      "title": "مراجعة المعاملات",
+      "commit": "استيراد {count} معاملات",
+      "back": "رجوع",
+      "valid": "{count} صالح",
+      "duplicate": "{count} مكرر",
+      "error": "{count} خطأ"
+    },
+    "scanned": {
+      "title": "تم اكتشاف ملف ممسوح ضوئياً",
+      "description": "يبدو أن هذا المستند ممسوح ضوئياً. قم بالترقية إلى Premium لاستيراد كشوف الحسابات الممسوحة.",
+      "upgrade": "الترقية إلى Premium",
+      "back": "جرب ملفاً آخر"
+    },
+    "done": {
+      "success": "تم استيراد {count} معاملات بنجاح"
+    },
+    "errors": {
+      "noFile": "يرجى اختيار ملف",
+      "noAccount": "يرجى اختيار حساب",
+      "parseFailed": "فشل تحليل الملف",
+      "commitFailed": "فشل استيراد المعاملات"
+    }
+  },
   "landing": {
     "nav": {
       "features": "المميزات",
