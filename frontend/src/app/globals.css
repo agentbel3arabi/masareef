@@ -41,6 +41,7 @@
   --color-sidebar-ring: hsl(var(--sidebar-ring));
   --color-surface: hsl(var(--surface));
   --color-surface-foreground: hsl(var(--foreground));
+  --color-auth-panel: hsl(var(--auth-panel));
   --radius-button: 0.375rem;
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 4px);
@@ -91,6 +92,7 @@
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 142.1 76.2% 36.3%;
     --surface: 210 40% 98%;
+    --auth-panel: 222.2 47.4% 11.2%;
     --radius-button: 0.375rem;
   }
 

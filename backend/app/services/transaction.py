@@ -4,7 +4,7 @@ import datetime
 import uuid
 from typing import Any
 
-from sqlalchemy import delete, func, or_, select
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
@@ -108,10 +108,12 @@ async def soft_delete_transaction(
     session: AsyncSession,
     tx: Transaction,
 ) -> None:
-    """Soft-delete a transaction, reverse its balance contribution, hard-delete splits."""
-    # Hard-delete splits first (TransactionSplit has no is_active column).
-    await session.execute(delete(TransactionSplit).where(TransactionSplit.transaction_id == tx.id))
-
+    """Soft-delete a transaction and its splits."""
+    await session.execute(
+        update(TransactionSplit)
+        .where(TransactionSplit.transaction_id == tx.id)
+        .values(is_active=False)
+    )
     tx.is_active = False
     await session.flush()
 
@@ -220,9 +222,11 @@ async def create_splits(
     splits: list[SplitItem],
 ) -> list[TransactionSplit]:
     """Replace all splits for a transaction. Returns the new splits."""
-    # Hard-delete existing splits for this transaction.
+    # Soft-delete existing splits for this transaction (consistent with bulk_delete path).
     await session.execute(
-        delete(TransactionSplit).where(TransactionSplit.transaction_id == transaction_id)
+        update(TransactionSplit)
+        .where(TransactionSplit.transaction_id == transaction_id)
+        .values(is_active=False)
     )
 
     new_splits: list[TransactionSplit] = []
@@ -250,14 +254,35 @@ async def bulk_delete(
     household_id: uuid.UUID,
     ids: list[int],
 ) -> int:
-    """Bulk soft-delete transactions. Returns count of deleted."""
-    count = 0
-    for tx_id in ids:
-        tx = await get_transaction(session, household_id, tx_id)
-        if tx:
-            await soft_delete_transaction(session, tx)
-            count += 1
-    return count
+    """Bulk soft-delete transactions. Returns count of actually deleted."""
+    if not ids:
+        return 0
+
+    # Verify ownership — only delete IDs that belong to this household and are active
+    verify_q = select(Transaction.id).where(
+        Transaction.id.in_(ids),
+        Transaction.household_id == household_id,
+        Transaction.is_active.is_(True),
+    )
+    result = await session.execute(verify_q)
+    verified_ids = [row[0] for row in result]
+
+    if not verified_ids:
+        return 0
+
+    # Soft-delete splits for these transactions
+    await session.execute(
+        update(TransactionSplit)
+        .where(TransactionSplit.transaction_id.in_(verified_ids))
+        .values(is_active=False)
+    )
+
+    # Bulk soft-delete transactions in a single UPDATE
+    await session.execute(
+        update(Transaction).where(Transaction.id.in_(verified_ids)).values(is_active=False)
+    )
+
+    return len(verified_ids)
 
 
 async def validate_category_access(
@@ -292,12 +317,18 @@ async def bulk_categorize(
     category_id: int,
 ) -> int:
     """Bulk categorize transactions. Returns count updated."""
+    if not ids:
+        return 0
+
     await validate_category_access(session, category_id, household_id)
-    count = 0
-    for tx_id in ids:
-        tx = await get_transaction(session, household_id, tx_id)
-        if tx:
-            tx.category_id = category_id
-            count += 1
-    await session.flush()
-    return count
+
+    result = await session.execute(
+        update(Transaction)
+        .where(
+            Transaction.id.in_(ids),
+            Transaction.household_id == household_id,
+            Transaction.is_active.is_(True),
+        )
+        .values(category_id=category_id)
+    )
+    return result.rowcount  # type: ignore[union-attr]

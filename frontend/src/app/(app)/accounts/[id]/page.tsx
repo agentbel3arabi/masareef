@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Receipt, Plus, ArrowLeftRight, Trash2 } from "lucide-react";
 import { useAccount } from "@/hooks/use-accounts";
 import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useCategories } from "@/hooks/use-categories";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { AccountBalanceHeader } from "@/components/accounts/account-balance-header";
@@ -29,8 +30,7 @@ export default function AccountDetailPage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
-  const [bulkMode, setBulkMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const { bulkMode, selectedIds, enterBulkMode, exitBulkMode, toggleSelect, selectAll } = useBulkSelection();
 
   const { data: categoriesData } = useCategories();
   const bulkDelete = useBulkDeleteTransactions();
@@ -55,7 +55,7 @@ export default function AccountDetailPage() {
         <Button size="sm" variant="outline" disabled>
           {tAccounts("accountStatements")}
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setBulkMode(true)}>
+        <Button variant="outline" size="sm" onClick={enterBulkMode}>
           {t("transactions.manage")}
         </Button>
       </div>
@@ -65,7 +65,7 @@ export default function AccountDetailPage() {
       setActions(normalActions);
     } else if (selectedIds.size === 0) {
       setActions(
-        <Button variant="secondary" size="sm" onClick={() => { setBulkMode(false); setSelectedIds(new Set()); }}>
+        <Button variant="secondary" size="sm" onClick={exitBulkMode}>
           {t("transactions.cancel")}
         </Button>
       );
@@ -77,7 +77,7 @@ export default function AccountDetailPage() {
             onValueChange={async (val) => {
               try {
                 await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
-                setBulkMode(false); setSelectedIds(new Set());
+                exitBulkMode();
               } catch (error) {
                 console.error("Bulk categorize failed:", error);
               }
@@ -105,7 +105,7 @@ export default function AccountDetailPage() {
             onClick={async () => {
               try {
                 await bulkDelete.mutateAsync({ ids: [...selectedIds] });
-                setBulkMode(false); setSelectedIds(new Set());
+                exitBulkMode();
               } catch (error) {
                 console.error("Bulk delete failed:", error);
               }
@@ -114,7 +114,7 @@ export default function AccountDetailPage() {
             <Trash2 className="h-3.5 w-3.5 me-1" />
             {t("transactions.deleteSelected")}
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => { setBulkMode(false); setSelectedIds(new Set()); }}>
+          <Button variant="ghost" size="sm" onClick={exitBulkMode}>
             {t("transactions.cancel")}
           </Button>
         </div>
@@ -164,12 +164,8 @@ export default function AccountDetailPage() {
             onPageChange={(p) => setTxFilters({ ...txFilters, page: p })}
             bulkMode={bulkMode}
             selectedIds={selectedIds}
-            onToggleSelect={(id) => setSelectedIds(prev => {
-              const next = new Set(prev);
-              next.has(id) ? next.delete(id) : next.add(id);
-              return next;
-            })}
-            onSelectAll={(ids) => setSelectedIds(ids.length === 0 ? new Set() : new Set(ids))}
+            onToggleSelect={toggleSelect}
+            onSelectAll={selectAll}
           />
         )}
       </div>

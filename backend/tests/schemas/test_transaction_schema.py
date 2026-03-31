@@ -3,6 +3,7 @@ from datetime import date
 import pytest
 from pydantic import ValidationError
 
+from app.models.enums import CategoryType, TransactionType
 from app.schemas.category import CategoryCreate
 from app.schemas.transaction import SplitItem, TransactionCreate
 from app.schemas.transfer import TransferCreate
@@ -14,8 +15,7 @@ def test_transaction_create_requires_amount_minor_integer():
         date=date(2026, 3, 20),
         description="Test transaction",
         amount_minor=125000,
-        type="debit",
-        currency="EGP",
+        type=TransactionType.DEBIT,
     )
     assert data.amount_minor == 125000
 
@@ -26,8 +26,7 @@ def test_transaction_create_rejects_float_amount():
             account_id=1,
             date=date(2026, 3, 20),
             amount_minor=1250.50,  # type: ignore[arg-type]
-            type="debit",
-            currency="EGP",
+            type=TransactionType.DEBIT,
         )
 
 
@@ -49,6 +48,6 @@ def test_transfer_create_requires_two_accounts():
 def test_category_create_requires_name_en():
     data = CategoryCreate(
         name_en="Kids School",
-        type="expense",
+        type=CategoryType.EXPENSE,
     )
     assert data.name_en == "Kids School"

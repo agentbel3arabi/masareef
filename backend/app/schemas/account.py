@@ -2,10 +2,12 @@ from datetime import date
 
 from pydantic import BaseModel, Field
 
+from app.models.enums import AccountType
+
 
 class AccountCreate(BaseModel):
     name: str
-    type: str  # AccountType value
+    type: AccountType
     currency: str = Field(max_length=3)
     initial_balance: int = 0  # Minor units, integer only
     institution: str | None = None
