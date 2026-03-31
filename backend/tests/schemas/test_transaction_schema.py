@@ -15,7 +15,6 @@ def test_transaction_create_requires_amount_minor_integer():
         description="Test transaction",
         amount_minor=125000,
         type="debit",
-        currency="EGP",
     )
     assert data.amount_minor == 125000
 
@@ -27,7 +26,6 @@ def test_transaction_create_rejects_float_amount():
             date=date(2026, 3, 20),
             amount_minor=1250.50,  # type: ignore[arg-type]
             type="debit",
-            currency="EGP",
         )
 
 

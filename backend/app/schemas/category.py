@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
+from app.models.enums import CategoryType
+
 
 class CategoryCreate(BaseModel):
     name_en: str
     name_ar: str | None = None
-    type: str  # "expense", "income", "special"
+    type: CategoryType
     icon: str | None = None
     color: str | None = None
 
