@@ -356,7 +356,17 @@
       "mockupGoal": "Monthly Savings Goal",
       "mockupProgress": "75% Achieved",
       "mockupGam3eya": "Gam3eya",
-      "mockupPayout": "Payout: July 1st"
+      "mockupPayout": "Payout: July 1st",
+      "mockupTxTitle": "Recent Transactions",
+      "mockupTx1": "Carrefour Groceries",
+      "mockupTx1Amount": "- EGP 1,250",
+      "mockupTx2": "Salary Deposit",
+      "mockupTx2Amount": "+ EGP 35,000",
+      "mockupTx3": "Vodafone Bill",
+      "mockupTx3Amount": "- EGP 350",
+      "trustFree": "Free forever",
+      "trustLang": "Arabic & English",
+      "trustNoCard": "No card needed"
     },
     "features": {
       "title": "Built for the way you handle money",
@@ -440,7 +450,8 @@
       "description": "Start tracking your finances today — in your language, on your terms.",
       "button": "Join the Waitlist",
       "subtext": "No credit card required",
-      "quote": "Wealth is not about how much you make, but how much you keep."
+      "quote": "اللي يحسب مصاريفه، ميجيش بره طاقته",
+      "quoteTranslation": "He who tracks his expenses will never exceed his means."
     },
     "footer": {
       "description": "All your finances in one place. Built with care in Egypt for the modern Arab world.",
