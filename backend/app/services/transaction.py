@@ -331,4 +331,4 @@ async def bulk_categorize(
         )
         .values(category_id=category_id)
     )
-    return result.rowcount
+    return result.rowcount  # type: ignore[union-attr]

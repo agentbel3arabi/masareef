@@ -6,7 +6,7 @@ def test_account_create_rejects_invalid_type():
     from app.schemas.account import AccountCreate
 
     with pytest.raises(ValidationError) as exc_info:
-        AccountCreate(name="Test", type="invalid_type", currency="EGP")
+        AccountCreate(name="Test", type="invalid_type", currency="EGP")  # type: ignore[arg-type]
     assert "type" in str(exc_info.value)
 
 
@@ -30,7 +30,7 @@ def test_transaction_create_rejects_invalid_type():
             date=datetime.date.today(),
             description="Test",
             amount_minor=1000,
-            type="invalid",
+            type="invalid",  # type: ignore[arg-type]
         )
     assert "type" in str(exc_info.value)
 
@@ -38,9 +38,10 @@ def test_transaction_create_rejects_invalid_type():
 def test_transaction_create_accepts_debit_credit():
     import datetime
 
+    from app.models.enums import TransactionType
     from app.schemas.transaction import TransactionCreate
 
-    for tx_type in ("debit", "credit"):
+    for tx_type in (TransactionType.DEBIT, TransactionType.CREDIT):
         schema = TransactionCreate(
             account_id=1,
             date=datetime.date.today(),
@@ -55,7 +56,7 @@ def test_category_create_rejects_invalid_type():
     from app.schemas.category import CategoryCreate
 
     with pytest.raises(ValidationError) as exc_info:
-        CategoryCreate(name_en="Food", type="bad_type")
+        CategoryCreate(name_en="Food", type="bad_type")  # type: ignore[arg-type]
     assert "type" in str(exc_info.value)
 
 
@@ -99,6 +100,7 @@ def test_manual_rate_request_rate_scaled_property():
 def test_transaction_create_rejects_negative_amount():
     import datetime
 
+    from app.models.enums import TransactionType
     from app.schemas.transaction import TransactionCreate
 
     with pytest.raises(ValidationError):
@@ -107,13 +109,14 @@ def test_transaction_create_rejects_negative_amount():
             date=datetime.date.today(),
             description="Test",
             amount_minor=-100,
-            type="debit",
+            type=TransactionType.DEBIT,
         )
 
 
 def test_transaction_create_rejects_zero_amount():
     import datetime
 
+    from app.models.enums import TransactionType
     from app.schemas.transaction import TransactionCreate
 
     with pytest.raises(ValidationError):
@@ -122,12 +125,11 @@ def test_transaction_create_rejects_zero_amount():
             date=datetime.date.today(),
             description="Test",
             amount_minor=0,
-            type="debit",
+            type=TransactionType.DEBIT,
         )
 
 
 def test_transaction_create_has_no_currency_field():
-
     from app.schemas.transaction import TransactionCreate
 
     fields = TransactionCreate.model_fields

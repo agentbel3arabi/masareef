@@ -1,13 +1,14 @@
 import pytest
 from pydantic import ValidationError
 
+from app.models.enums import AccountType
 from app.schemas.account import AccountCreate, AccountResponse
 
 
 def test_account_create_minimal():
     data = AccountCreate(
         name="CIB Savings",
-        type="bank_account",
+        type=AccountType.BANK_ACCOUNT,
         currency="EGP",
     )
     assert data.name == "CIB Savings"
@@ -17,7 +18,7 @@ def test_account_create_minimal():
 def test_account_create_with_credit_card_fields():
     data = AccountCreate(
         name="HSBC CC",
-        type="credit_card",
+        type=AccountType.CREDIT_CARD,
         currency="EGP",
         initial_balance=-450000,
         credit_limit=10000000,
@@ -31,7 +32,7 @@ def test_account_create_rejects_float_balance():
     with pytest.raises(ValidationError):
         AccountCreate(
             name="Test",
-            type="bank_account",
+            type=AccountType.BANK_ACCOUNT,
             currency="EGP",
             initial_balance=1250.50,  # type: ignore[arg-type]
         )

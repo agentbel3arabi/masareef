@@ -43,7 +43,7 @@ def test_household_create_schema_validation():
         HouseholdCreate(name="", base_currency="EGP")
 
     with pytest.raises(ValidationError):
-        HouseholdCreate(name="Test", base_currency="JPY")  # not in allowed list
+        HouseholdCreate(name="Test", base_currency="JPY")  # type: ignore[arg-type]  # not in allowed list
 
     valid = HouseholdCreate(name="My Home", base_currency="EGP")
     assert valid.name == "My Home"
