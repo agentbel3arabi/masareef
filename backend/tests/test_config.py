@@ -23,3 +23,20 @@ def test_settings_cors_origins_parsed_from_comma_separated():
         CORS_ORIGINS="http://localhost:3000,https://masareef.app",  # type: ignore[arg-type]
     )
     assert settings.CORS_ORIGINS == ["http://localhost:3000", "https://masareef.app"]
+
+
+def test_import_rate_limit_defaults():
+    from app.config import Settings
+    import os
+    # Ensure env vars not set
+    os.environ.pop("IMPORT_PARSE_RATE_LIMIT", None)
+    os.environ.pop("IMPORT_COMMIT_RATE_LIMIT", None)
+    s = Settings(
+        SUPABASE_URL="http://x",
+        SUPABASE_ANON_KEY="x",
+        SUPABASE_SERVICE_ROLE_KEY="x",
+        SUPABASE_JWT_SECRET="x",
+        DATABASE_URL="sqlite+aiosqlite://",
+    )
+    assert s.import_parse_rate_limit == 20
+    assert s.import_commit_rate_limit == 5
