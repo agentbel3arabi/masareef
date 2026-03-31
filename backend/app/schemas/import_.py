@@ -50,7 +50,7 @@ class ParseCompleteResponse(BaseModel):
 class CommitRow(BaseModel):
     date: datetime.date
     description: str = ""
-    amount_minor: int
+    amount_minor: int = Field(gt=0)
     type: Literal["debit", "credit"]
     apply_to_balance: bool = True
     original_currency: str | None = None

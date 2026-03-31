@@ -162,3 +162,10 @@ def test_transaction_update_accepts_positive_amount():
 
     obj = TransactionUpdate(amount_minor=1000)
     assert obj.amount_minor == 1000
+
+
+def test_transaction_update_accepts_omitted_amount():
+    from app.schemas.transaction import TransactionUpdate
+
+    obj = TransactionUpdate()
+    assert obj.amount_minor is None
