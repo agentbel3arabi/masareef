@@ -1,7 +1,5 @@
 """Shared slowapi limiter instance with per-user key function."""
 
-import base64
-import json as _json
 import logging
 
 from slowapi import Limiter
@@ -12,20 +10,45 @@ logger = logging.getLogger(__name__)
 
 
 def _user_or_ip_key(request: Request) -> str:
-    """Rate limit key: JWT sub claim when present, else client IP.
+    """Rate limit key: verified JWT sub claim when present, else client IP.
 
-    Extracts the subject from the Bearer token without full verification
-    (slowapi key functions run before auth dependencies). The actual
-    token verification is enforced by get_current_user in each route.
+    Verifies the HS256 signature using SUPABASE_JWT_SECRET before trusting
+    the sub claim. Falls back to IP if token is absent, invalid, or unverified.
     """
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
         token = auth_header[len("Bearer ") :]
         try:
-            # Decode without verification — we only need the sub for rate limiting.
-            # Security is enforced by the auth dependency on each route.
-            payload_b64 = token.split(".")[1]
-            # Add padding if needed
+            import base64
+            import hashlib
+            import hmac
+            import json as _json
+
+            parts = token.split(".")
+            if len(parts) != 3:
+                raise ValueError("Not a JWT")
+
+            header_b64, payload_b64, sig_b64 = parts
+
+            # Verify signature using SUPABASE_JWT_SECRET
+            from app.config import Settings
+
+            try:
+                secret = Settings().SUPABASE_JWT_SECRET  # type: ignore[call-arg]
+            except Exception:
+                # If settings unavailable, fall back to IP
+                raise ValueError("Settings unavailable")
+
+            signing_input = f"{header_b64}.{payload_b64}".encode()
+            expected_sig = base64.urlsafe_b64encode(
+                hmac.new(secret.encode(), signing_input, hashlib.sha256).digest()
+            ).rstrip(b"=")
+            actual_sig = sig_b64.encode().rstrip(b"=")
+
+            if not hmac.compare_digest(expected_sig, actual_sig):
+                raise ValueError("Invalid signature")
+
+            # Signature verified — safe to trust the payload
             padding = 4 - len(payload_b64) % 4
             if padding != 4:
                 payload_b64 += "=" * padding
@@ -34,7 +57,7 @@ def _user_or_ip_key(request: Request) -> str:
             if sub:
                 return f"user:{sub}"
         except Exception as exc:
-            logger.debug("Could not extract JWT sub for rate limiting: %s", exc)
+            logger.debug("JWT verification failed for rate limiting, using IP: %s", exc)
 
     return f"ip:{get_remote_address(request)}"
 

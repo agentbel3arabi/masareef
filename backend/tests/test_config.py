@@ -25,14 +25,11 @@ def test_settings_cors_origins_parsed_from_comma_separated():
     assert settings.CORS_ORIGINS == ["http://localhost:3000", "https://masareef.app"]
 
 
-def test_import_rate_limit_defaults():
-    import os
-
+def test_import_rate_limit_defaults(monkeypatch):
     from app.config import Settings
 
-    # Ensure env vars not set
-    os.environ.pop("IMPORT_PARSE_RATE_LIMIT", None)
-    os.environ.pop("IMPORT_COMMIT_RATE_LIMIT", None)
+    monkeypatch.delenv("IMPORT_PARSE_RATE_LIMIT", raising=False)
+    monkeypatch.delenv("IMPORT_COMMIT_RATE_LIMIT", raising=False)
     s = Settings(
         SUPABASE_URL="http://x",
         SUPABASE_ANON_KEY="x",
