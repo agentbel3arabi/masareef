@@ -10,6 +10,7 @@
     "transferDeleted": "Transfer deleted",
     "bulkDeleted": "Transactions deleted",
     "bulkCategorized": "Transactions re-categorized",
+    "importComplete": "Import complete",
     "error": "Something went wrong",
     "tryAgain": "Please try again"
   },

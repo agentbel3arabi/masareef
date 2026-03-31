@@ -10,6 +10,7 @@
     "transferDeleted": "تم حذف التحويل",
     "bulkDeleted": "تم حذف المعاملات",
     "bulkCategorized": "تم إعادة تصنيف المعاملات",
+    "importComplete": "اكتمل الاستيراد",
     "error": "حدث خطأ ما",
     "tryAgain": "يرجى المحاولة مرة أخرى"
   },
