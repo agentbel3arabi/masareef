@@ -30,27 +30,28 @@ _jwks_cache_time: float = 0
 _JWKS_CACHE_TTL = 3600  # 1 hour
 
 
-def _fetch_jwks() -> dict:
-    """Fetch JWKS from Supabase and cache for 1 hour."""
+async def _fetch_jwks() -> dict:
+    """Fetch JWKS from Supabase and cache for 1 hour. Async — does not block event loop."""
     global _jwks_cache, _jwks_cache_time
     now = time.time()
     if _jwks_cache and (now - _jwks_cache_time) < _JWKS_CACHE_TTL:
         return _jwks_cache
     jwks_url = f"{_supabase_url}/auth/v1/.well-known/jwks.json"
-    resp = httpx.get(jwks_url, timeout=10)
-    resp.raise_for_status()
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(jwks_url, timeout=10)
+        resp.raise_for_status()
     _jwks_cache = resp.json()
     _jwks_cache_time = now
     return _jwks_cache  # type: ignore[return-value]
 
 
-def decode_jwt(token: str) -> dict:
+async def decode_jwt(token: str) -> dict:
     """Decode a Supabase JWT (ES256 or HS256). Separated for easy mocking in tests."""
     header = jwt.get_unverified_header(token)
     alg = header.get("alg", "HS256")
 
     if alg == "ES256":
-        jwks = _fetch_jwks()
+        jwks = await _fetch_jwks()
         return jwt.decode(
             token,
             jwks,
@@ -89,7 +90,7 @@ async def get_current_user(
         )
 
     try:
-        payload = decode_jwt(credentials.credentials)
+        payload = await decode_jwt(credentials.credentials)
         user_id = payload.get("sub")
         if not user_id:
             raise HTTPException(
