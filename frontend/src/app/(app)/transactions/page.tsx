@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { Plus, Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2 } from "lucide-react";
 import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCategories } from "@/hooks/use-categories";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
@@ -45,8 +46,7 @@ export default function TransactionsPage() {
     sort: "-date",
   });
   const [createOpen, setCreateOpen] = useState(false);
-  const [bulkMode, setBulkMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const { bulkMode, selectedIds, enterBulkMode, exitBulkMode, toggleSelect, selectAll } = useBulkSelection();
 
   const { setActions } = useNavbarActions();
   const { data: categoriesData } = useCategories();
@@ -64,28 +64,10 @@ export default function TransactionsPage() {
     accountsMap[acc.id] = acc;
   }
 
-  const toggleSelect = (id: number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const selectAll = (ids: number[]) => {
-    setSelectedIds(ids.length === 0 ? new Set() : new Set(ids));
-  };
-
-  const exitBulkMode = () => {
-    setBulkMode(false);
-    setSelectedIds(new Set());
-  };
-
   useEffect(() => {
     if (!bulkMode) {
       setActions(
-        <Button variant="outline" size="sm" onClick={() => setBulkMode(true)}>
+        <Button variant="outline" size="sm" onClick={enterBulkMode}>
           {t("transactions.manage")}
         </Button>
       );
