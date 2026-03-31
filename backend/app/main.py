@@ -4,10 +4,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.config import Settings
 from app.routers import accounts, categories, transactions, transfers
 from app.routers.households import router as households_router
+from app.routers.import_ import router as import_router
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +22,8 @@ try:
 except Exception as e:
     logger.warning("Failed to load Settings — falling back to localhost CORS: %s", e)
     _cors_origins = ["http://localhost:3000"]
+
+limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
@@ -33,6 +39,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
@@ -47,6 +56,7 @@ app.include_router(accounts.router)
 app.include_router(categories.router)
 app.include_router(transactions.router)
 app.include_router(transfers.router)
+app.include_router(import_router)
 
 
 @app.get("/health")
