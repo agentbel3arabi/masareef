@@ -12,6 +12,7 @@ from app.limiter import limiter
 from app.routers import accounts, categories, transactions, transfers
 from app.routers.households import router as households_router
 from app.routers.import_ import router as import_router
+from app.routers.import_templates import router as import_templates_router
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,7 @@ app.include_router(categories.router)
 app.include_router(transactions.router)
 app.include_router(transfers.router)
 app.include_router(import_router)
+app.include_router(import_templates_router)
 
 
 @app.get("/health")
