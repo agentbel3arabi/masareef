@@ -1,9 +1,8 @@
-import pytest
 from app.services.import_.encoding import decode_bytes, detect_encoding
 
 
 def test_detect_utf8_returns_utf8():
-    raw = "CARREFOUR CITY STARS 1,250.00".encode("utf-8")
+    raw = b"CARREFOUR CITY STARS 1,250.00"
     enc = detect_encoding(raw)
     assert "utf" in enc.lower()
 

@@ -1,7 +1,6 @@
 """Tests for duplicate transaction detection in import pipeline."""
-import datetime
 
-import pytest
+import datetime
 
 from app.schemas.import_ import ParsedRow
 from app.services.import_.duplicate_checker import _make_hash, is_duplicate, mark_duplicates

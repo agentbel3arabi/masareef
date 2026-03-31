@@ -1,4 +1,3 @@
-import pytest
 from app.services.import_.amount_parser import normalize_arabic_numerals, parse_amount_to_minor
 
 
