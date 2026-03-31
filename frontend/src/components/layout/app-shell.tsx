@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <NavbarActionsProvider>
       <SidebarProvider>
-        <div className="flex h-screen bg-[#f7f9fb] dark:bg-background">
+        <div className="flex h-screen bg-surface dark:bg-background">
           <Sidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
             <Navbar />
