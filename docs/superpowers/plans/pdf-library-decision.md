@@ -12,9 +12,9 @@
 
 ## Decision
 
-**Winner: pdfplumber**
+**Provisional winner: pdfplumber** *(pending evaluation against a real HSBC CC PDF)*
 
-Reason: pdfplumber is the plan default, is pure Python (no system dependencies), and provides positional word extraction via `extract_words()` with x0/top coordinates — exactly what the HSBC CC preset requires. This decision should be validated by running `eval_pdf_library.py` against a real HSBC CC PDF when available.
+Reason: pdfplumber is the plan default, is pure Python (no system dependencies), and provides positional word extraction via `extract_words()` with x0/top coordinates — exactly what the HSBC CC preset requires. **This decision must be validated by running `eval_pdf_library.py` against a real HSBC CC PDF before production use.**
 
 ## Impact on Plan 2A
 

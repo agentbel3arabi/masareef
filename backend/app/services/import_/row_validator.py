@@ -57,6 +57,10 @@ def validate_row(
         if val is not None:
             amount_minor = abs(val)  # credits always positive
             row_type = "credit"
+            # Note: if both debit_raw and credit_raw are non-empty, credit wins.
+            # This is intentional — typical bank CSV formats use separate debit/credit
+            # columns where only one is populated per row. If both are present,
+            # treating the row as a credit is the safer assumption (avoids double-counting).
 
     if amount_minor is None:
         return ParsedRow(

@@ -5,7 +5,7 @@ comma/dot as thousands or decimal separator, European format (1.234,56).
 """
 
 import re
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 # Arabic-Indic digit → ASCII digit
 _ARABIC_INDIC_MAP = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
@@ -66,5 +66,6 @@ def parse_amount_to_minor(raw: str, currency_exponent: int = 2) -> int | None:
     except InvalidOperation:
         return None
 
-    minor = int(amount * (10**currency_exponent))
+    quantized = amount.quantize(Decimal(10) ** -currency_exponent, rounding=ROUND_HALF_UP)
+    minor = int(quantized * (10**currency_exponent))
     return -minor if negative else minor

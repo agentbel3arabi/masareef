@@ -4,11 +4,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from app.config import Settings
+from app.limiter import limiter
 from app.routers import accounts, categories, transactions, transfers
 from app.routers.households import router as households_router
 from app.routers.import_ import router as import_router
@@ -22,8 +22,6 @@ try:
 except Exception as e:
     logger.warning("Failed to load Settings — falling back to localhost CORS: %s", e)
     _cors_origins = ["http://localhost:3000"]
-
-limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
