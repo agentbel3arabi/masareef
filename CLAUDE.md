@@ -24,6 +24,7 @@ The table below lists every doc file and when to load it:
 | [stitch-screen-map.md](./docs/stitch-screen-map.md)            | Maps every feature and phase to its matching Stitch design screen(s)                                         | Planning any phase with frontend work                    |
 | [stitch-designs/stitch-project-reference.md](./docs/stitch-designs/stitch-project-reference.md) | Masareef v2 Stitch project ID, design system asset ID, all 8 approved screen IDs with verified titles | Any frontend phase using Stitch MCP to generate or implement screens |
 | [backend-dependencies.md](./docs/backend-dependencies.md) | UI elements from Phase 1.75 redesign that need future backend endpoints, mapped to roadmap phases | Planning Phase 2+ — check before scoping any backend work |
+| [superpowers/handoff/](./docs/superpowers/handoff/) | Session handoff notes — what was completed, key decisions, known gaps, what's next | **Start of any implementation unit** — read the most recent handoff for the current phase before writing a single line of code |
 
 ```
 masareef/
@@ -68,7 +69,10 @@ masareef/
 │   │   ├── screenshots/                # 32 PNG screenshots (visual reference)
 │   │   ├── html/                       # 32 HTML files (code reference)
 │   │   └── stitch-project-reference.md # Masareef v2 Stitch project ID + approved screen IDs
-│   └── stitch-prompts/                 # Prompts used to generate each design
+│   ├── stitch-prompts/                 # Prompts used to generate each design
+│   ├── handoff-template.md             # Template for session handoff notes
+│   └── superpowers/
+│       └── handoff/                    # Session handoff notes (phase-N-unit-X.md)
 ```
 
 ## C — Task Router
@@ -84,6 +88,7 @@ Load only what's relevant. **Do not load all files at once.**
 | Testing                        | `CLAUDE.md` + `guides/08-testing.md` + feature spec                                              | —                                              |
 | Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | —                                              |
 | Full-stack feature (Phase N)   | `CLAUDE.md` + `05-roadmap.md` (Phase N section) + feature spec(s) listed there                   | All files listed in phase's "Required Reading" |
+| Starting any implementation unit | `CLAUDE.md` + plan file + feature spec                                                          | Most recent `docs/superpowers/handoff/phase-N-unit-X.md` — **always read this first** |
 
 ### Frontend Planning Rule
 
@@ -229,7 +234,9 @@ Frontend subscribes to these channels for live updates:
 
 8. **Track every "coming soon" UI element in `backend-dependencies.md`.** Any time frontend code shows `"—"`, a disabled button, a "Coming soon" tooltip, or a placeholder instead of real data — because the backend endpoint doesn't exist yet — you MUST add a row to `docs/backend-dependencies.md` with: the UI element name, the page it appears on, the exact endpoint needed, and the target phase. This file is read by Phase 2+ planners to know what's already wired up and waiting. Failure to track here creates silent gaps between frontend and backend work.
 
-9. **Backend Stack Strictness:** Use **Python 3.12**. Build an asynchronous FastAPI application (`async def`). Use Pydantic V2 for all data validation and serialization — call `model.model_dump()` exclusively; `model.dict()` is **forbidden** (Pydantic V1 syntax). Database interactions must use asynchronous SQLAlchemy. Use **uv** for dependency management (`pyproject.toml` + `uv.lock`). Do not use Poetry or Conda. Use **`fastapi.BackgroundTasks`** for fire-and-forget logic (e.g., triggering AI categorization after an import commit). Use **APScheduler** for recurring cron-style jobs (e.g., nightly exchange rate refresh, forecast recalculation).
+9. **Backend Stack Strictness:** Use **Python 3.12**.
+
+10. **Session handoff notes are mandatory.** At the **start** of any implementation unit, read the most recent handoff note in `docs/superpowers/handoff/` before writing any code — it contains decisions, surprises, and gaps that aren't visible in the code. At the **end** of any implementation unit, create a new handoff note at `docs/superpowers/handoff/phase-N-unit-X.md` using the template at `docs/handoff-template.md`, commit it to main, and push. Do not end a session without this note in place. Build an asynchronous FastAPI application (`async def`). Use Pydantic V2 for all data validation and serialization — call `model.model_dump()` exclusively; `model.dict()` is **forbidden** (Pydantic V1 syntax). Database interactions must use asynchronous SQLAlchemy. Use **uv** for dependency management (`pyproject.toml` + `uv.lock`). Do not use Poetry or Conda. Use **`fastapi.BackgroundTasks`** for fire-and-forget logic (e.g., triggering AI categorization after an import commit). Use **APScheduler** for recurring cron-style jobs (e.g., nightly exchange rate refresh, forecast recalculation).
 
 ## F — Tooling
 
