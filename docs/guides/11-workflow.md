@@ -8,6 +8,16 @@ How to execute Masareef work units from planning through code review and merge.
 
 Every work unit follows an 8-step process from plan to production:
 
+### Step 0: Read Handoff
+
+Before doing anything else, check for a handoff note from the previous unit:
+
+```
+docs/superpowers/handoff/phase-N-unit-X-1.md
+```
+
+If it exists, read it fully. It contains decisions, surprises, and known gaps that aren't visible in the code. Skip this step only if there is no prior unit in the current phase.
+
 ### Step 1: Plan
 Write or review the plan file at `docs/superpowers/plans/phase-N/unit-X.md`. The plan includes:
 - Which docs to read
@@ -70,6 +80,28 @@ Squash merge the PR to `main`:
 - GitHub UI: "Squash and merge"
 - Head branch is auto-deleted after merge
 - `main` history remains linear and readable
+
+### Step 9: Write Handoff
+
+After the PR is merged, create a session handoff note before closing the session:
+
+```
+docs/superpowers/handoff/phase-N-unit-X.md
+```
+
+Use the template at `docs/handoff-template.md`. The note must cover:
+- **What Was Completed** — every deliverable with its file path
+- **Key Decisions & Rationale** — architectural choices the next session needs to understand
+- **Known Gaps / Deferred** — what was intentionally left out and why
+- **What's Next** — next unit slug and plan file path
+
+Commit the handoff note directly to `main` and push. Do not end the session without this in place — it is the only continuity mechanism between sessions.
+
+```bash
+git add docs/superpowers/handoff/phase-N-unit-X.md
+git commit -m "docs(handoff): phase-N unit-X session handoff"
+git push origin main
+```
 
 ---
 
@@ -200,6 +232,7 @@ Handoff: docs/superpowers/handoff/phase-N-unit-X.md (if exists)
 Claude will load CLAUDE.md automatically, then the plan, handoff note, and required docs.
 
 **Execution checklist**:
+- [ ] Handoff note from previous unit read (`docs/superpowers/handoff/`)
 - [ ] Plan approved by user
 - [ ] Branch cut from `main`
 - [ ] TDD: tests written before implementation
@@ -211,5 +244,6 @@ Claude will load CLAUDE.md automatically, then the plan, handoff note, and requi
 - [ ] UAT checklist run (docs/guides/12-uat-template.md)
 - [ ] Squash merged to main
 - [ ] Head branch auto-deleted
+- [ ] Handoff note written, committed, and pushed (`docs/superpowers/handoff/phase-N-unit-X.md`)
 
 ---
