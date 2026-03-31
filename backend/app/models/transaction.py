@@ -72,7 +72,7 @@ class Transaction(TimestampMixin, SoftDeleteMixin, Base):
     splits: Mapped[list["TransactionSplit"]] = relationship(back_populates="transaction")
 
 
-class TransactionSplit(Base):
+class TransactionSplit(SoftDeleteMixin, Base):
     __tablename__ = "transaction_splits"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

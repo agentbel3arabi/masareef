@@ -108,10 +108,12 @@ async def soft_delete_transaction(
     session: AsyncSession,
     tx: Transaction,
 ) -> None:
-    """Soft-delete a transaction, reverse its balance contribution, hard-delete splits."""
-    # Hard-delete splits first (TransactionSplit has no is_active column).
-    await session.execute(delete(TransactionSplit).where(TransactionSplit.transaction_id == tx.id))
-
+    """Soft-delete a transaction and its splits."""
+    await session.execute(
+        update(TransactionSplit)
+        .where(TransactionSplit.transaction_id == tx.id)
+        .values(is_active=False)
+    )
     tx.is_active = False
     await session.flush()
 
@@ -266,9 +268,11 @@ async def bulk_delete(
     if not verified_ids:
         return 0
 
-    # Hard-delete splits for these transactions
+    # Soft-delete splits for these transactions
     await session.execute(
-        delete(TransactionSplit).where(TransactionSplit.transaction_id.in_(verified_ids))
+        update(TransactionSplit)
+        .where(TransactionSplit.transaction_id.in_(verified_ids))
+        .values(is_active=False)
     )
 
     # Bulk soft-delete transactions in a single UPDATE
@@ -318,7 +322,7 @@ async def bulk_categorize(
 
     await validate_category_access(session, category_id, household_id)
 
-    await session.execute(
+    result = await session.execute(
         update(Transaction)
         .where(
             Transaction.id.in_(ids),
@@ -327,4 +331,4 @@ async def bulk_categorize(
         )
         .values(category_id=category_id)
     )
-    return len(ids)
+    return result.rowcount

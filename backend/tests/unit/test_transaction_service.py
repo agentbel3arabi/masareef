@@ -29,6 +29,7 @@ async def test_bulk_categorize_issues_single_update():
 
     mock_session = AsyncMock()
     mock_result = MagicMock()
+    mock_result.rowcount = 2  # fewer than len(ids) — proves we use rowcount, not len(ids)
     mock_session.execute = AsyncMock(return_value=mock_result)
 
     household_id = uuid.uuid4()
@@ -38,4 +39,5 @@ async def test_bulk_categorize_issues_single_update():
 
     # Must call execute exactly once for the bulk UPDATE (after validate_category_access)
     assert mock_session.execute.call_count == 1
-    assert count == 3
+    # Returns actual rowcount, not len(ids) — so 2, not 3
+    assert count == 2
