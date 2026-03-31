@@ -2,7 +2,6 @@
 
 import uuid
 
-from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -55,14 +54,6 @@ async def create_template(
     await session.flush()
 
     if data.link_to_account_id:
-        acct_result = await session.execute(
-            select(Account).where(
-                Account.id == data.link_to_account_id,
-                Account.household_id == household_id,
-            )
-        )
-        if acct_result.scalar_one_or_none() is None:
-            raise HTTPException(status_code=404, detail="Account not found")
         await link_template(session, template.id, data.link_to_account_id)
 
     return template

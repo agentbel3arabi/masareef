@@ -56,6 +56,16 @@ async def create_template(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
+    if data.link_to_account_id is not None:
+        acct_result = await session.execute(
+            select(Account).where(
+                Account.id == data.link_to_account_id,
+                Account.household_id == household_id,
+                Account.is_active.is_(True),
+            )
+        )
+        if acct_result.scalar_one_or_none() is None:
+            raise HTTPException(status_code=404, detail="Account not found")
     template = await template_service.create_template(session, household_id, data)
     linked = await template_service.get_linked_account_ids(session, template.id)
     return SuccessResponse(data=_to_response(template, linked).model_dump())
@@ -99,11 +109,12 @@ async def link_template_to_account(
     template = await template_service.get_template(session, household_id, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    # Verify account belongs to the same household
+    # Verify account belongs to the same household and is active
     acct_result = await session.execute(
         select(Account).where(
             Account.id == account_id,
             Account.household_id == household_id,
+            Account.is_active.is_(True),
         )
     )
     if acct_result.scalar_one_or_none() is None:
