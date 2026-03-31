@@ -215,7 +215,7 @@ frontend/src/
 | All rows unparseable | 422 | "No valid rows found. Check file format." |
 | Scanned PDF (any user) | 200 | `{scanned: true}` — frontend shows upgrade prompt |
 | Single row parse error | 200 | Row status = `error`, shown in preview table |
-| Commit with 0 selected rows | 400 | "Select at least one row to import" |
+| Commit with 0 selected rows | 422 | "Select at least one row to import" |
 | Household mismatch on account | 403 | Standard 403 envelope |
 | DB failure mid-commit | 500 | Transaction rolled back; error envelope confirms rollback |
 

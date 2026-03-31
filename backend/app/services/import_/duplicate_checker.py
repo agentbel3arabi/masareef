@@ -6,6 +6,7 @@ then check each parsed row in O(1). Total: one DB round trip per import session.
 
 import datetime
 import hashlib
+import uuid
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,12 +21,21 @@ def _make_hash(account_id: int, date: datetime.date, amount_minor: int, descript
     return hashlib.md5(key.encode()).hexdigest()  # noqa: S324
 
 
-async def load_existing_hashes(session: AsyncSession, account_id: int) -> set[str]:
+async def load_existing_hashes(
+    session: AsyncSession,
+    account_id: int,
+    household_id: uuid.UUID | None = None,
+) -> set[str]:
     """Load all transaction dedup hashes for an account in one query."""
+    conditions = [
+        Transaction.account_id == account_id,
+        Transaction.is_active.is_(True),
+    ]
+    if household_id is not None:
+        conditions.append(Transaction.household_id == household_id)
     result = await session.execute(
         select(Transaction.date, Transaction.amount_minor, Transaction.description).where(
-            Transaction.account_id == account_id,
-            Transaction.is_active.is_(True),
+            *conditions
         )
     )
     return {

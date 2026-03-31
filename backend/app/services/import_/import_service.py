@@ -88,7 +88,23 @@ async def parse_upload(
 ) -> ScannedResponse | NeedsMappingResponse | ParseCompleteResponse:
     """Orchestrate file parsing. Returns one of three response variants."""
     fmt = _detect_format(filename, content_type)
-    existing_hashes = await load_existing_hashes(session, account_id)
+
+    # Verify account belongs to this household before any parsing/dedup work
+    account_result = await session.execute(
+        select(Account).where(
+            Account.id == account_id,
+            Account.household_id == household_id,
+            Account.is_active.is_(True),
+        )
+    )
+    account = account_result.scalar_one_or_none()
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
+        )
+
+    existing_hashes = await load_existing_hashes(session, account_id, household_id)
 
     # ── PDF path ───────────────────────────────────────────────────────────
     if fmt == "pdf":
@@ -170,46 +186,41 @@ async def commit_import(
             Account.is_active.is_(True),
         )
     )
-    if result.scalar_one_or_none() is None:
+    account = result.scalar_one_or_none()
+    if account is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
         )
 
-    # Validate currencies before inserting anything
-    _VALID_CURRENCIES = {"EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"}
-    for i, commit_row in enumerate(data.rows):
-        if commit_row.currency not in _VALID_CURRENCIES:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail={
-                    "error": {
-                        "code": "INVALID_CURRENCY",
-                        "message": f"Row {i}: unsupported currency '{commit_row.currency}'",
-                    }
-                },
-            )
+    account_currency = account.currency  # derive currency from account, not client
 
     batch_id = uuid.uuid4()
     balance_delta = 0
 
     all_txs: list[Transaction] = []
     for commit_row in data.rows:
+        tx_type = TransactionType(commit_row.type)
+        # Enforce correct sign based on transaction type (server-side, not client-trusted)
+        if tx_type == TransactionType.DEBIT:
+            signed_amount = -abs(commit_row.amount_minor)
+        else:
+            signed_amount = abs(commit_row.amount_minor)
         tx = Transaction(
             household_id=household_id,
             account_id=data.account_id,
             date=commit_row.date,
             description=commit_row.description,
-            amount_minor=commit_row.amount_minor,
-            currency=commit_row.currency,
-            type=TransactionType(commit_row.type),
+            amount_minor=signed_amount,
+            currency=account_currency,
+            type=tx_type,
             applies_to_balance=commit_row.apply_to_balance,
             import_batch_id=batch_id,
         )
         session.add(tx)
         all_txs.append(tx)
         if commit_row.apply_to_balance:
-            balance_delta += commit_row.amount_minor
+            balance_delta += signed_amount
 
     await session.flush()  # single flush for all rows
 
