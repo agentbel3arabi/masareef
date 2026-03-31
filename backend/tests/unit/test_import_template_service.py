@@ -14,6 +14,7 @@ async def test_create_template():
 
     household_id = uuid.uuid4()
     from app.schemas.import_template import ImportTemplateCreate
+
     data = ImportTemplateCreate(
         name="CIB CSV",
         format="csv",
