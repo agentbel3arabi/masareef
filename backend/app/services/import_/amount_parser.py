@@ -54,7 +54,7 @@ def parse_amount_to_minor(raw: str, currency_exponent: int = 2) -> int | None:
             cleaned = cleaned.replace(".", "").replace(",", ".")
     elif "," in cleaned:
         parts = cleaned.split(",")
-        if len(parts) == 2 and len(parts[1]) <= 2:
+        if len(parts) == 2 and len(parts[1]) <= currency_exponent:
             # 1234,56 → decimal
             cleaned = cleaned.replace(",", ".")
         else:
