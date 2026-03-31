@@ -1,4 +1,4 @@
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     # App
     APP_ENV: str = "development"
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+
+    # Import rate limits (requests per minute per user)
+    import_parse_rate_limit: int = Field(default=20)
+    import_commit_rate_limit: int = Field(default=5)
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
