@@ -26,8 +26,10 @@ def test_settings_cors_origins_parsed_from_comma_separated():
 
 
 def test_import_rate_limit_defaults():
-    from app.config import Settings
     import os
+
+    from app.config import Settings
+
     # Ensure env vars not set
     os.environ.pop("IMPORT_PARSE_RATE_LIMIT", None)
     os.environ.pop("IMPORT_COMMIT_RATE_LIMIT", None)

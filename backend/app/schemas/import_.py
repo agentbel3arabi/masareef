@@ -1,4 +1,5 @@
 """Pydantic schemas for the import pipeline."""
+
 import datetime
 from typing import Literal
 

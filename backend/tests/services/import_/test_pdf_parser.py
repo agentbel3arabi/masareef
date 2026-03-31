@@ -1,7 +1,4 @@
-import io
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from app.services.import_.pdf_parser import is_scanned
 

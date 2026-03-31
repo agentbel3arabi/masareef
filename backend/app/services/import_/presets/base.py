@@ -1,7 +1,13 @@
 """Abstract base class for all bank import presets."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.schemas.import_ import ParsedRow
 
 
 @dataclass
@@ -59,3 +65,7 @@ class BankPreset(ABC):
     def get_date_format(self) -> str:
         """Expected date format string (user-facing notation)."""
         return "DD/MM/YYYY"
+
+    def parse(self, content: bytes, currency: str = "EGP") -> list[ParsedRow]:
+        """Parse transactions from file content. Implement in concrete presets."""
+        raise NotImplementedError

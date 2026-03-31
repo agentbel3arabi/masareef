@@ -1,6 +1,6 @@
-import io
 import datetime
-import pytest
+import io
+
 import openpyxl
 
 from app.services.import_.excel_parser import get_headers, get_sheet_names, parse_excel
@@ -10,6 +10,7 @@ def _make_xlsx(rows: list[list]) -> bytes:
     """Helper: create in-memory XLSX from a list of rows."""
     wb = openpyxl.Workbook()
     ws = wb.active
+    assert ws is not None  # openpyxl always creates an active sheet on a new Workbook
     for row in rows:
         ws.append(row)
     buf = io.BytesIO()
@@ -17,11 +18,13 @@ def _make_xlsx(rows: list[list]) -> bytes:
     return buf.getvalue()
 
 
-_XLSX_BYTES = _make_xlsx([
-    ["Date", "Description", "Debit", "Credit"],
-    ["15/03/2026", "CARREFOUR", 1250.00, None],
-    ["16/03/2026", "SALARY", None, 50000.00],
-])
+_XLSX_BYTES = _make_xlsx(
+    [
+        ["Date", "Description", "Debit", "Credit"],
+        ["15/03/2026", "CARREFOUR", 1250.00, None],
+        ["16/03/2026", "SALARY", None, 50000.00],
+    ]
+)
 
 _MAPPING = {"date": "Date", "description": "Description", "debit": "Debit", "credit": "Credit"}
 
@@ -52,19 +55,25 @@ def test_datetime_cell_parsed():
     """Excel may return datetime objects for date cells."""
     wb = openpyxl.Workbook()
     ws = wb.active
+    assert ws is not None
     ws.append(["Date", "Description", "Debit"])
     ws.append([datetime.datetime(2026, 3, 15), "MERCHANT", 100])
     buf = io.BytesIO()
     wb.save(buf)
     raw = buf.getvalue()
-    rows = parse_excel(raw, {"date": "Date", "description": "Description", "debit": "Debit"},
-                       date_format="DD/MM/YYYY", currency="EGP")
+    rows = parse_excel(
+        raw,
+        {"date": "Date", "description": "Description", "debit": "Debit"},
+        date_format="DD/MM/YYYY",
+        currency="EGP",
+    )
     assert rows[0].date == datetime.date(2026, 3, 15)
 
 
 def test_multi_sheet_selection():
     wb = openpyxl.Workbook()
     ws1 = wb.active
+    assert ws1 is not None
     ws1.title = "Summary"
     ws1.append(["Date", "Description", "Debit"])
     ws1.append(["15/03/2026", "MERCHANT", 100])
@@ -75,7 +84,12 @@ def test_multi_sheet_selection():
     wb.save(buf)
     raw = buf.getvalue()
 
-    rows = parse_excel(raw, {"date": "Date", "description": "Description", "debit": "Debit"},
-                       sheet_name="Transactions", date_format="DD/MM/YYYY", currency="EGP")
+    rows = parse_excel(
+        raw,
+        {"date": "Date", "description": "Description", "debit": "Debit"},
+        sheet_name="Transactions",
+        date_format="DD/MM/YYYY",
+        currency="EGP",
+    )
     assert len(rows) == 1
     assert rows[0].description == "SALARY"

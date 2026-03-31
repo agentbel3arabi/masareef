@@ -8,6 +8,7 @@ Usage:
 Evaluates pdfplumber vs PyMuPDF (tabula-py and camelot require Java/Ghostscript
 and are not practical for containerised deployment — they are noted but not tested).
 """
+
 import sys
 import time
 
@@ -33,7 +34,7 @@ def test_pdfplumber(path: str) -> None:
 
 def test_pymupdf(path: str) -> None:
     try:
-        import fitz  # PyMuPDF
+        import fitz  # type: ignore[import-untyped]  # PyMuPDF — optional dep
 
         t = time.time()
         doc = fitz.open(path)
