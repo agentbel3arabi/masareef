@@ -30,7 +30,7 @@ def test_fx_calculation_rounding():
 
 def test_fx_calculation_large_amounts():
     """Large EGP amounts (multi-million) must not lose precision."""
-    source = 100_000_000_00  # 1,000,000,000.00 EGP (1 billion)
+    source = 100_000_000_00  # 100,000,000.00 EGP
     rate = 485_000  # 48.5 USD/EGP
     result = (source * rate + 5000) // 10000
     assert isinstance(result, int)
