@@ -1,22 +1,16 @@
+# backend/app/routers/households.py
 import uuid
-from typing import Any, Literal
+from typing import Any
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_current_user, get_db_session
-from app.models.enums import HouseholdRole
-from app.models.household import Household, HouseholdMember
+from app.schemas.household import HouseholdCreate
+from app.services import household as household_service
 
 router = APIRouter(prefix="/api/v1", tags=["households"])
-
-
-class HouseholdCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
-    base_currency: Literal["EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"] = "EGP"
 
 
 @router.get("/auth/household-status")
@@ -25,10 +19,7 @@ async def get_household_status(
     user_id: uuid.UUID = Depends(get_current_user),
 ) -> dict:
     """Check if authenticated user has a household. Does NOT auto-provision."""
-    result = await session.execute(
-        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id).limit(1)
-    )
-    household_id = result.scalar_one_or_none()
+    household_id = await household_service.get_household_for_user(session, user_id)
     return {"data": {"has_household": household_id is not None}}
 
 
@@ -39,11 +30,9 @@ async def create_household(
     user_id: uuid.UUID = Depends(get_current_user),
 ) -> Any:
     """Create a household and add the current user as admin. Called during onboarding."""
-    # Prevent creating a second household
-    existing = await session.execute(
-        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id).limit(1)
-    )
-    if existing.scalar_one_or_none():
+    try:
+        household = await household_service.create_household(session, user_id, data)
+    except ValueError:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content={
@@ -53,19 +42,6 @@ async def create_household(
                 }
             },
         )
-
-    household = Household(name=data.name, base_currency=data.base_currency)
-    session.add(household)
-    await session.flush()
-
-    member = HouseholdMember(
-        household_id=household.id,
-        user_id=user_id,
-        role=HouseholdRole.ADMIN,
-        display_name="Owner",
-    )
-    session.add(member)
-    # session.commit() is handled by get_db_session dependency
     return {
         "data": {
             "id": str(household.id),
