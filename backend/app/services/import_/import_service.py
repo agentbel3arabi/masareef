@@ -311,7 +311,9 @@ async def commit_import(
 
     first_tx_id = all_txs[0].id if all_txs else 0
 
-    # AI categorization stub — Phase 9 implements this
+    # AI categorization stub — Phase 9 implements this.
+    # Before activating: add `background_tasks: BackgroundTasks` to this function's
+    # signature and plumb it through the router call site.
     # background_tasks.add_task(ai_categorize_batch, str(batch_id))
 
     return CommitResponse(
