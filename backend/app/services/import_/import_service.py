@@ -135,7 +135,10 @@ async def parse_upload(
     account_currency = account.currency
     currency_exponent = CURRENCIES.get(account_currency, {}).get("exponent", 2)
 
-    existing_hashes = await load_existing_hashes(session, account_id, household_id)
+    # NOTE: existing_hashes is intentionally NOT loaded here.
+    # It is deferred to just before each mark_duplicates() call so that
+    # early-return paths (ScannedResponse, NeedsMappingResponse) skip the DB
+    # query entirely.
 
     # ── PDF path ───────────────────────────────────────────────────────────
     if fmt == "pdf":
@@ -160,6 +163,7 @@ async def parse_upload(
             )
         except Exception:
             raise _parse_error("PDF")
+        existing_hashes = await load_existing_hashes(session, account_id, household_id)
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, preset.preset_id)
 
@@ -190,6 +194,7 @@ async def parse_upload(
                 )
             except Exception:
                 raise _parse_error("Excel")
+        existing_hashes = await load_existing_hashes(session, account_id, household_id)
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, None)
 
@@ -212,6 +217,7 @@ async def parse_upload(
                 )
             except Exception:
                 raise _parse_error("CSV")
+            existing_hashes = await load_existing_hashes(session, account_id, household_id)
             mark_duplicates(rows, account_id, existing_hashes)
             return _complete(rows, preset.preset_id)
         auto_suggest = get_auto_suggest(headers)
@@ -238,6 +244,7 @@ async def parse_upload(
             )
         except Exception:
             raise _parse_error("Excel")
+        existing_hashes = await load_existing_hashes(session, account_id, household_id)
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, preset.preset_id)
     auto_suggest = get_auto_suggest(headers)

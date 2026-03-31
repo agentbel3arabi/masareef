@@ -16,15 +16,23 @@ def get_sheet_names(raw_bytes: bytes) -> list[str]:
 
 
 def get_headers(raw_bytes: bytes, sheet_name: str | None = None, skip_rows: int = 0) -> list[str]:
-    """Return column headers (first data row after skip_rows)."""
+    """Return column headers (first data row after skip_rows) using lazy iteration."""
     wb = openpyxl.load_workbook(io.BytesIO(raw_bytes), read_only=True, data_only=True)
     ws = wb[sheet_name] if sheet_name and sheet_name in wb.sheetnames else wb.active
     if ws is None:
         return []
-    all_rows = list(ws.iter_rows(values_only=True))
-    if not all_rows or skip_rows >= len(all_rows):
+    rows_iter = ws.iter_rows(values_only=True)
+    # Consume and discard the first skip_rows rows
+    for _ in range(skip_rows):
+        try:
+            next(rows_iter)
+        except StopIteration:
+            return []
+    try:
+        header_row = next(rows_iter)
+    except StopIteration:
         return []
-    return [str(c) if c is not None else "" for c in all_rows[skip_rows]]
+    return [str(c) if c is not None else "" for c in header_row]
 
 
 def parse_excel(
@@ -36,18 +44,29 @@ def parse_excel(
     currency: str = "EGP",
     currency_exponent: int = 2,
 ) -> list[ParsedRow]:
-    """Parse an Excel file into ParsedRow list using the provided column mapping."""
+    """Parse an Excel file into ParsedRow list using the provided column mapping.
+
+    Rows are streamed lazily via iter_rows() to avoid loading the entire
+    worksheet into memory at once.
+    """
     wb = openpyxl.load_workbook(io.BytesIO(raw_bytes), read_only=True, data_only=True)
     ws = wb[sheet_name] if sheet_name and sheet_name in wb.sheetnames else wb.active
     if ws is None:
         return []
 
-    all_rows = list(ws.iter_rows(values_only=True))
-    if not all_rows or skip_rows >= len(all_rows):
+    rows_iter = ws.iter_rows(values_only=True)
+    # Consume and discard the first skip_rows rows
+    for _ in range(skip_rows):
+        try:
+            next(rows_iter)
+        except StopIteration:
+            return []
+    try:
+        header_row = next(rows_iter)
+    except StopIteration:
         return []
 
-    headers = [str(c) if c is not None else "" for c in all_rows[skip_rows]]
-    data_rows = all_rows[skip_rows + 1 :]
+    headers = [str(c) if c is not None else "" for c in header_row]
 
     def col_idx(field: str) -> int:
         header = column_mapping.get(field, "")
@@ -73,7 +92,7 @@ def parse_excel(
         return str(val)
 
     rows: list[ParsedRow] = []
-    for idx, row_data in enumerate(data_rows):
+    for idx, row_data in enumerate(rows_iter):  # stream data rows — no list() needed
         date_raw = cell_str(row_data, date_idx)
         desc_raw = cell_str(row_data, desc_idx)
 
@@ -87,6 +106,7 @@ def parse_excel(
                 date_format,
                 currency,
                 currency_exponent,
+                single_amount=True,  # preserve sign from signed amount column
             )
         else:
             row = validate_row(
