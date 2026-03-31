@@ -1,0 +1,208 @@
+"""Import pipeline orchestrator.
+
+parse_upload() runs the decision tree and returns one of:
+  - ScannedResponse      → frontend shows upgrade prompt
+  - NeedsMappingResponse → frontend shows column mapper
+  - ParseCompleteResponse → frontend shows preview table
+
+commit_import() atomically inserts transactions. Balance is NOT updated on the
+account model (balance is computed dynamically: seed + sum of transactions).
+"""
+
+import uuid
+
+from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.account import Account
+from app.models.enums import TransactionType
+from app.models.transaction import Transaction
+from app.schemas.import_ import (
+    CommitRequest,
+    CommitResponse,
+    NeedsMappingResponse,
+    ParseCompleteResponse,
+    ParsedRow,
+    ScannedResponse,
+)
+from app.services.import_.csv_parser import get_headers as csv_headers
+from app.services.import_.csv_parser import parse_csv
+from app.services.import_.duplicate_checker import load_existing_hashes, mark_duplicates
+from app.services.import_.excel_parser import get_headers as excel_headers
+from app.services.import_.excel_parser import get_sheet_names, parse_excel
+from app.services.import_.header_mapper import get_auto_suggest
+from app.services.import_.pdf_parser import is_scanned
+from app.services.import_.presets.registry import detect_preset
+
+
+def _detect_format(filename: str, content_type: str | None) -> str:
+    name = filename.lower()
+    if name.endswith(".csv"):
+        return "csv"
+    if name.endswith((".xlsx", ".xls")):
+        return "excel"
+    if name.endswith(".pdf"):
+        return "pdf"
+    if content_type:
+        ct = content_type.lower()
+        if "csv" in ct or "text/plain" in ct:
+            return "csv"
+        if "spreadsheet" in ct or "excel" in ct:
+            return "excel"
+        if "pdf" in ct:
+            return "pdf"
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail={
+            "error": {
+                "code": "UNSUPPORTED_FORMAT",
+                "message": "Only CSV, Excel (.xlsx/.xls), and PDF are supported",
+            }
+        },
+    )
+
+
+def _complete(rows: list[ParsedRow], preset_id: str | None) -> ParseCompleteResponse:
+    return ParseCompleteResponse(
+        rows=rows,
+        detected_preset=preset_id,
+        total_rows=len(rows),
+        valid_rows=sum(1 for r in rows if r.status == "valid"),
+        error_rows=sum(1 for r in rows if r.status == "error"),
+        duplicate_rows=sum(1 for r in rows if r.status == "duplicate"),
+    )
+
+
+async def parse_upload(
+    raw_bytes: bytes,
+    filename: str,
+    account_id: int,
+    currency: str,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    column_mapping: dict[str, str] | None = None,
+    date_format: str = "DD/MM/YYYY",
+    sheet_name: str | None = None,
+    content_type: str | None = None,
+) -> ScannedResponse | NeedsMappingResponse | ParseCompleteResponse:
+    """Orchestrate file parsing. Returns one of three response variants."""
+    fmt = _detect_format(filename, content_type)
+    existing_hashes = await load_existing_hashes(session, account_id)
+
+    # ── PDF path ───────────────────────────────────────────────────────────
+    if fmt == "pdf":
+        if is_scanned(raw_bytes):
+            return ScannedResponse()
+
+        preset = detect_preset(raw_bytes)
+        if preset is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "error": {
+                        "code": "UNSUPPORTED_FORMAT",
+                        "message": "PDF format not recognized. Supported: HSBC Credit Card PDF",
+                    }
+                },
+            )
+
+        rows = preset.parse(raw_bytes, currency=currency)
+        mark_duplicates(rows, account_id, existing_hashes)
+        return _complete(rows, preset.preset_id)
+
+    # ── CSV / Excel with explicit mapping (second parse call) ──────────────
+    if column_mapping:
+        if fmt == "csv":
+            rows = parse_csv(raw_bytes, column_mapping, date_format=date_format, currency=currency)
+        else:
+            rows = parse_excel(
+                raw_bytes,
+                column_mapping,
+                sheet_name=sheet_name,
+                date_format=date_format,
+                currency=currency,
+            )
+        mark_duplicates(rows, account_id, existing_hashes)
+        return _complete(rows, None)
+
+    # ── CSV: try preset, else needs_mapping ────────────────────────────────
+    if fmt == "csv":
+        headers = csv_headers(raw_bytes)
+        preset = detect_preset(raw_bytes, headers)
+        if preset and preset.get_column_mapping():
+            rows = parse_csv(
+                raw_bytes,
+                preset.get_column_mapping(),  # type: ignore[arg-type]
+                date_format=preset.get_date_format(),
+                currency=currency,
+            )
+            mark_duplicates(rows, account_id, existing_hashes)
+            return _complete(rows, preset.preset_id)
+        auto_suggest = get_auto_suggest(headers)
+        return NeedsMappingResponse(headers=headers, auto_suggest=auto_suggest)
+
+    # ── Excel: return sheet info + headers + auto_suggest ─────────────────
+    sheets = get_sheet_names(raw_bytes)
+    active_sheet = sheet_name or (sheets[0] if sheets else None)
+    headers = excel_headers(raw_bytes, sheet_name=active_sheet)
+    auto_suggest = get_auto_suggest(headers)
+    return NeedsMappingResponse(
+        headers=headers,
+        sheet_names=sheets,
+        selected_sheet=active_sheet,
+        auto_suggest=auto_suggest,
+    )
+
+
+async def commit_import(
+    data: CommitRequest,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+) -> CommitResponse:
+    """Atomically insert transactions. Does NOT update account.balance_minor
+    (displayed balance is computed from seed + sum of transactions)."""
+    # Verify account belongs to household
+    result = await session.execute(
+        select(Account).where(
+            Account.id == data.account_id,
+            Account.household_id == household_id,
+            Account.is_active.is_(True),
+        )
+    )
+    if result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account not found")
+
+    batch_id = uuid.uuid4()
+    first_tx_id: int | None = None
+    balance_delta = 0
+
+    for commit_row in data.rows:
+        tx = Transaction(
+            household_id=household_id,
+            account_id=data.account_id,
+            date=commit_row.date,
+            description=commit_row.description,
+            amount_minor=commit_row.amount_minor,
+            currency=commit_row.currency,
+            type=TransactionType(commit_row.type),
+            applies_to_balance=commit_row.apply_to_balance,
+            import_batch_id=batch_id,
+        )
+        session.add(tx)
+        await session.flush()
+
+        if first_tx_id is None:
+            first_tx_id = tx.id
+        if commit_row.apply_to_balance:
+            balance_delta += commit_row.amount_minor
+
+    # AI categorization stub — Phase 9 implements this
+    # background_tasks.add_task(ai_categorize_batch, str(batch_id))
+
+    return CommitResponse(
+        batch_id=str(batch_id),
+        count=len(data.rows),
+        first_transaction_id=first_tx_id or 0,
+        balance_delta=balance_delta,
+    )
