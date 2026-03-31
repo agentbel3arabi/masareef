@@ -1,5 +1,7 @@
 """Money formatting and conversion utilities. All amounts are integer minor units."""
 
+from decimal import Decimal
+
 from app.seed import CURRENCIES
 
 
@@ -10,8 +12,8 @@ def format_amount(amount_minor: int, currency: str) -> str:
     Example: format_amount(125000, "KWD") -> "125.000"
     """
     exponent = CURRENCIES.get(currency, {}).get("exponent", 2)
-    divisor = 10**exponent
-    major = amount_minor / divisor
+    divisor = Decimal(10**exponent)
+    major = Decimal(amount_minor) / divisor
     return f"{major:,.{exponent}f}"
 
 

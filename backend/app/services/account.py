@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
+from app.models.household import Household
 from app.models.transaction import Transaction
 from app.schemas.account import AccountCreate, AccountUpdate
 
@@ -27,7 +28,7 @@ async def list_accounts(
     # Fetch
     q = (
         select(Account)
-        .where(Account.household_id == household_id, Account.is_active == True)  # noqa: E712
+        .where(Account.household_id == household_id, Account.is_active.is_(True))
         .offset((page - 1) * page_size)
         .limit(page_size)
         .order_by(Account.id)
@@ -130,8 +131,6 @@ async def compute_net_worth(
         by_currency[acct.currency] = by_currency.get(acct.currency, 0) + bal
 
     # Fetch household base currency
-    from app.models.household import Household
-
     hh = await session.get(Household, household_id)
     base_currency = hh.base_currency if hh else "EGP"
 
