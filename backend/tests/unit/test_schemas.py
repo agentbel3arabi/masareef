@@ -172,21 +172,27 @@ def test_transaction_update_accepts_omitted_amount():
 
 
 def test_commit_row_rejects_zero_amount():
+    import datetime
+
     from app.schemas.import_ import CommitRow
 
     with pytest.raises(ValidationError):
-        CommitRow(date="2026-01-01", description="test", amount_minor=0, type="debit")
+        CommitRow(date=datetime.date(2026, 1, 1), description="test", amount_minor=0, type="debit")
 
 
 def test_commit_row_rejects_negative_amount():
+    import datetime
+
     from app.schemas.import_ import CommitRow
 
     with pytest.raises(ValidationError):
-        CommitRow(date="2026-01-01", description="test", amount_minor=-125000, type="debit")
+        CommitRow(date=datetime.date(2026, 1, 1), description="test", amount_minor=-125000, type="debit")
 
 
 def test_commit_row_accepts_positive_amount():
+    import datetime
+
     from app.schemas.import_ import CommitRow
 
-    obj = CommitRow(date="2026-01-01", description="test", amount_minor=125000, type="debit")
+    obj = CommitRow(date=datetime.date(2026, 1, 1), description="test", amount_minor=125000, type="debit")
     assert obj.amount_minor == 125000
