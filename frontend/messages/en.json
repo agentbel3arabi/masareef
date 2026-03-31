@@ -401,6 +401,7 @@
       "noFile": "Please select a file",
       "noAccount": "Please select an account",
       "parseFailed": "Failed to parse file",
+      "unsupportedFormat": "This PDF format is not supported. Supported: HSBC Credit Card PDF",
       "commitFailed": "Failed to import transactions"
     }
   },

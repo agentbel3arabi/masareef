@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslations } from "next-intl";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -65,7 +65,14 @@ export function UploadStep({ selectedAccountId, onAccountChange, onFileSelected 
           onValueChange={(v) => onAccountChange(Number(v))}
         >
           <SelectTrigger id="account-select" className="w-full">
-            <SelectValue placeholder={t("selectAccount")} />
+            {selectedAccountId ? (
+              <span className="flex items-center gap-2">
+                <Wallet className="h-4 w-4 shrink-0 text-muted-foreground" />
+                {accounts.find((a) => a.id === selectedAccountId)?.name}
+              </span>
+            ) : (
+              <SelectValue placeholder={t("selectAccount")} />
+            )}
           </SelectTrigger>
           <SelectContent>
             {accounts.map((acct) => (

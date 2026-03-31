@@ -11,6 +11,7 @@ import { PreviewStep } from "@/components/import/preview-step";
 import { ScannedPrompt } from "@/components/import/scanned-prompt";
 import { useParseImport, useCommitImport } from "@/hooks/use-import";
 import type { ParsedRow } from "@/hooks/use-import";
+import { ApiError } from "@/lib/api-client";
 import { useAccounts } from "@/hooks/use-accounts";
 import { Button } from "@/components/ui/button";
 
@@ -135,8 +136,12 @@ export default function ImportPage() {
           file: selectedFile,
         });
       }
-    } catch {
-      toast.error(t("errors.parseFailed"));
+    } catch (err) {
+      if (err instanceof ApiError && err.code === "UNSUPPORTED_FORMAT") {
+        toast.error(t("errors.unsupportedFormat"));
+      } else {
+        toast.error(t("errors.parseFailed"));
+      }
     }
   }
 

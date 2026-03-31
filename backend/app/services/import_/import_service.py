@@ -178,7 +178,11 @@ async def parse_upload(
 
     # ── PDF path ───────────────────────────────────────────────────────────
     if fmt == "pdf":
-        if is_scanned(raw_bytes):
+        try:
+            scanned = is_scanned(raw_bytes)
+        except Exception:
+            scanned = False
+        if scanned:
             return ScannedResponse()
 
         preset = detect_preset(raw_bytes)

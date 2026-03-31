@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Wallet, ArrowLeftRight, Plus, Trash2 } from "lucide-react";
+import { Wallet, ArrowLeftRight, Plus, Trash2, Upload } from "lucide-react";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { useAccounts, useNetWorth, useDeleteAccount } from "@/hooks/use-accounts";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
@@ -22,7 +23,9 @@ export default function AccountsPage() {
   const t = useTranslations("accounts");
   const tEmpty = useTranslations("emptyStates");
   const tTransfers = useTranslations("transfers");
+  const tImport = useTranslations("nav");
   const locale = useLocale();
+  const router = useRouter();
 
   const { data, isLoading, error } = useAccounts();
   const { data: nwResponse } = useNetWorth();
@@ -49,6 +52,10 @@ export default function AccountsPage() {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={enterManageMode}>
             {t("manage")}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => router.push("/import")}>
+            <Upload className="h-4 w-4 me-1" />
+            {tImport("import")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
             <ArrowLeftRight className="h-4 w-4 me-1" />
