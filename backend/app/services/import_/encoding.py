@@ -1,4 +1,5 @@
 """Encoding detection for bank statement files (handles Windows-1256 Arabic CSVs)."""
+
 import chardet
 
 
