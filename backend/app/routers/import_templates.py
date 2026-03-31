@@ -44,10 +44,9 @@ async def list_templates(
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
     templates = await template_service.list_templates(session, household_id)
-    items = []
-    for t in templates:
-        linked = await template_service.get_linked_account_ids(session, t.id)
-        items.append(_to_response(t, linked).model_dump())
+    template_ids = [t.id for t in templates]
+    linked_map = await template_service.get_all_linked_account_ids(session, template_ids)
+    items = [_to_response(t, linked_map.get(t.id, [])).model_dump() for t in templates]
     return SuccessResponse(data=items)
 
 

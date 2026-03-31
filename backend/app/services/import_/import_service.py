@@ -143,7 +143,9 @@ async def parse_upload(
 
     # ── Check for account-linked template ─────────────────────────────────
     if not column_mapping:
-        linked_template = await get_linked_template(session, account_id)
+        linked_template = await get_linked_template(session, account_id, household_id)
+        if linked_template and linked_template.format != fmt:
+            linked_template = None  # format mismatch — fall through to normal flow
         if linked_template and fmt in ("csv", "excel"):
             if fmt == "csv":
                 try:

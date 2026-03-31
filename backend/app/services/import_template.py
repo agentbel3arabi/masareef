@@ -2,9 +2,11 @@
 
 import uuid
 
+from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.account import Account
 from app.models.import_template import AccountImportTemplate, ImportTemplate
 from app.schemas.import_template import ImportTemplateCreate, ImportTemplateUpdate
 
@@ -53,6 +55,14 @@ async def create_template(
     await session.flush()
 
     if data.link_to_account_id:
+        acct_result = await session.execute(
+            select(Account).where(
+                Account.id == data.link_to_account_id,
+                Account.household_id == household_id,
+            )
+        )
+        if acct_result.scalar_one_or_none() is None:
+            raise HTTPException(status_code=404, detail="Account not found")
         await link_template(session, template.id, data.link_to_account_id)
 
     return template
@@ -99,16 +109,17 @@ async def unlink_template(session: AsyncSession, template_id: int, account_id: i
     await session.flush()
 
 
-async def get_linked_template(session: AsyncSession, account_id: int) -> ImportTemplate | None:
+async def get_linked_template(
+    session: AsyncSession, account_id: int, household_id: uuid.UUID
+) -> ImportTemplate | None:
     """Return the default import template linked to an account, or None."""
     result = await session.execute(
         select(ImportTemplate)
-        .join(
-            AccountImportTemplate,
-            AccountImportTemplate.template_id == ImportTemplate.id,
-        )
+        .join(AccountImportTemplate, AccountImportTemplate.template_id == ImportTemplate.id)
+        .join(Account, Account.id == AccountImportTemplate.account_id)
         .where(
             AccountImportTemplate.account_id == account_id,
+            Account.household_id == household_id,
             ImportTemplate.is_active.is_(True),
         )
     )
@@ -122,3 +133,20 @@ async def get_linked_account_ids(session: AsyncSession, template_id: int) -> lis
         )
     )
     return list(result.scalars().all())
+
+
+async def get_all_linked_account_ids(
+    session: AsyncSession, template_ids: list[int]
+) -> dict[int, list[int]]:
+    """Return a dict mapping template_id → [account_ids] for a batch of templates."""
+    if not template_ids:
+        return {}
+    result = await session.execute(
+        select(AccountImportTemplate.template_id, AccountImportTemplate.account_id).where(
+            AccountImportTemplate.template_id.in_(template_ids)
+        )
+    )
+    mapping: dict[int, list[int]] = {tid: [] for tid in template_ids}
+    for template_id, account_id in result.all():
+        mapping[template_id].append(account_id)
+    return mapping
