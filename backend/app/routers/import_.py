@@ -6,6 +6,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import Settings
 from app.dependencies import get_db_session, get_household_id
 from app.limiter import limiter
 from app.schemas.common import SuccessResponse
@@ -17,9 +18,17 @@ router = APIRouter(prefix="/api/v1/import", tags=["import"])
 
 _MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB
 
+try:
+    _settings = Settings()  # type: ignore[call-arg]
+    _parse_limit = f"{_settings.import_parse_rate_limit}/minute"
+    _commit_limit = f"{_settings.import_commit_rate_limit}/minute"
+except Exception:
+    _parse_limit = "20/minute"
+    _commit_limit = "5/minute"
+
 
 @router.post("/parse")
-@limiter.limit("20/minute")  # type: ignore[misc]
+@limiter.limit(_parse_limit)  # type: ignore[misc]
 async def parse_file(
     request: Request,
     file: UploadFile = File(...),
@@ -55,6 +64,20 @@ async def parse_file(
                     }
                 },
             )
+        if not isinstance(mapping, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in mapping.items()
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "error": {
+                        "code": "INVALID_COLUMN_MAPPING",
+                        "message": (
+                            "column_mapping must be a JSON object with string keys and values"
+                        ),
+                    }
+                },
+            )
     else:
         mapping = None
 
@@ -74,7 +97,7 @@ async def parse_file(
 
 
 @router.post("/commit", status_code=status.HTTP_200_OK)
-@limiter.limit("5/minute")  # type: ignore[misc]
+@limiter.limit(_commit_limit)  # type: ignore[misc]
 async def commit_import(
     request: Request,
     data: CommitRequest,

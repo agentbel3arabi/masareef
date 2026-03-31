@@ -4,14 +4,35 @@ from unittest.mock import patch
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.account import Account
+from app.models.enums import AccountType
+from tests.conftest import TEST_HOUSEHOLD_ID
+
+
+@pytest.fixture
+async def seeded_account(db_session: AsyncSession) -> Account:
+    """Seed a household-owned account for import tests."""
+    acct = Account(
+        household_id=TEST_HOUSEHOLD_ID,
+        name="Import Test Account",
+        type=AccountType.BANK_ACCOUNT,
+        currency="EGP",
+        balance_minor=0,
+    )
+    db_session.add(acct)
+    await db_session.flush()
+    await db_session.commit()
+    return acct
 
 
 @pytest.mark.asyncio
-async def test_parse_returns_needs_mapping_for_csv(client: AsyncClient):
+async def test_parse_returns_needs_mapping_for_csv(client: AsyncClient, seeded_account: Account):
     csv_bytes = b"Date,Description,Debit,Credit\n15/03/2026,MERCHANT,100.00,\n"
     resp = await client.post(
         "/api/v1/import/parse",
-        data={"account_id": "1", "currency": "EGP"},
+        data={"account_id": str(seeded_account.id), "currency": "EGP"},
         files={"file": ("statement.csv", io.BytesIO(csv_bytes), "text/csv")},
     )
     assert resp.status_code == 200
@@ -21,12 +42,18 @@ async def test_parse_returns_needs_mapping_for_csv(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_parse_with_column_mapping_returns_complete(client: AsyncClient):
+async def test_parse_with_column_mapping_returns_complete(
+    client: AsyncClient, seeded_account: Account
+):
     csv_bytes = b"Date,Description,Debit,Credit\n15/03/2026,CARREFOUR,1250.00,\n"
     mapping = json.dumps({"date": "Date", "description": "Description", "debit": "Debit"})
     resp = await client.post(
         "/api/v1/import/parse",
-        data={"account_id": "1", "currency": "EGP", "column_mapping": mapping},
+        data={
+            "account_id": str(seeded_account.id),
+            "currency": "EGP",
+            "column_mapping": mapping,
+        },
         files={"file": ("statement.csv", io.BytesIO(csv_bytes), "text/csv")},
     )
     assert resp.status_code == 200
@@ -37,11 +64,11 @@ async def test_parse_with_column_mapping_returns_complete(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_parse_scanned_pdf_returns_scanned(client: AsyncClient):
+async def test_parse_scanned_pdf_returns_scanned(client: AsyncClient, seeded_account: Account):
     with patch("app.services.import_.import_service.is_scanned", return_value=True):
         resp = await client.post(
             "/api/v1/import/parse",
-            data={"account_id": "1", "currency": "EGP"},
+            data={"account_id": str(seeded_account.id), "currency": "EGP"},
             files={"file": ("statement.pdf", io.BytesIO(b"%PDF-1.4"), "application/pdf")},
         )
     assert resp.status_code == 200
@@ -49,21 +76,29 @@ async def test_parse_scanned_pdf_returns_scanned(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_parse_unsupported_format_returns_400(client: AsyncClient):
+async def test_parse_unsupported_format_returns_400(client: AsyncClient, seeded_account: Account):
     resp = await client.post(
         "/api/v1/import/parse",
-        data={"account_id": "1", "currency": "EGP"},
+        data={"account_id": str(seeded_account.id), "currency": "EGP"},
         files={"file": ("document.docx", io.BytesIO(b"data"), "application/octet-stream")},
     )
     assert resp.status_code == 400
 
 
 @pytest.mark.asyncio
-async def test_commit_inserts_transactions(client: AsyncClient, db_session):
-    from app.models.account import Account
-    from app.models.enums import AccountType
-    from tests.conftest import TEST_HOUSEHOLD_ID
+async def test_parse_unknown_account_returns_404(client: AsyncClient):
+    """Account not belonging to household returns 404."""
+    csv_bytes = b"Date,Description,Debit,Credit\n15/03/2026,MERCHANT,100.00,\n"
+    resp = await client.post(
+        "/api/v1/import/parse",
+        data={"account_id": "99999", "currency": "EGP"},
+        files={"file": ("statement.csv", io.BytesIO(csv_bytes), "text/csv")},
+    )
+    assert resp.status_code == 404
 
+
+@pytest.mark.asyncio
+async def test_commit_inserts_transactions(client: AsyncClient, db_session):
     # Seed an account
     acct = Account(
         household_id=TEST_HOUSEHOLD_ID,

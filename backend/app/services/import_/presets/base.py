@@ -25,6 +25,7 @@ class PdfColumnConfig:
     credit_x_range: tuple[float, float]
     balance_x_range: tuple[float, float] | None = None
     y_tolerance: float = 3.0  # Group words within 3pt vertically into same row
+    x_tolerance: float = 3.0  # Horizontal word-merging tolerance for extract_words
 
 
 class BankPreset(ABC):

@@ -91,7 +91,13 @@ class HsbcCcPreset(BankPreset):
 
         with pdfplumber.open(io.BytesIO(content)) as pdf:
             for page in pdf.pages:
-                words = page.extract_words(x_tolerance=3, y_tolerance=3) or []
+                words = (
+                    page.extract_words(
+                        x_tolerance=config.x_tolerance,
+                        y_tolerance=config.y_tolerance,
+                    )
+                    or []
+                )
 
                 # Group words into columns by X position, rows by Y proximity
                 date_cols: dict[float, list[str]] = {}
