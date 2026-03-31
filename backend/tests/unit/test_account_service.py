@@ -14,8 +14,11 @@ async def test_compute_net_worth_uses_bulk_query():
     # Mock list_accounts to return 3 accounts (none with opened_at)
     def mock_acct(aid: int, currency: str, balance: int) -> MagicMock:
         return MagicMock(
-            id=aid, currency=currency, balance_minor=balance,
-            opened_at=None, household_id=household_id,
+            id=aid,
+            currency=currency,
+            balance_minor=balance,
+            opened_at=None,
+            household_id=household_id,
         )
 
     accounts = [mock_acct(1, "EGP", 100000), mock_acct(2, "EGP", 50000), mock_acct(3, "USD", 20000)]

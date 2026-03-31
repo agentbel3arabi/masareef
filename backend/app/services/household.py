@@ -17,9 +17,7 @@ async def get_household_for_user(
 ) -> uuid.UUID | None:
     """Return the household_id for a user, or None if they have no household."""
     result = await session.execute(
-        select(HouseholdMember.household_id)
-        .where(HouseholdMember.user_id == user_id)
-        .limit(1)
+        select(HouseholdMember.household_id).where(HouseholdMember.user_id == user_id).limit(1)
     )
     return result.scalar_one_or_none()
 

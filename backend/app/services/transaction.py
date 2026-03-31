@@ -277,9 +277,7 @@ async def bulk_delete(
 
     # Bulk soft-delete transactions in a single UPDATE
     await session.execute(
-        update(Transaction)
-        .where(Transaction.id.in_(verified_ids))
-        .values(is_active=False)
+        update(Transaction).where(Transaction.id.in_(verified_ids)).values(is_active=False)
     )
 
     return len(verified_ids)

@@ -9,6 +9,7 @@ async def test_fetch_jwks_is_async():
     import inspect
 
     from app.dependencies import _fetch_jwks
+
     assert inspect.iscoroutinefunction(_fetch_jwks), "_fetch_jwks must be async def"
 
 
@@ -29,6 +30,7 @@ async def test_fetch_jwks_uses_async_client():
             with patch("app.dependencies._jwks_cache", None):
                 with patch("app.dependencies._jwks_cache_time", 0):
                     from app.dependencies import _fetch_jwks
+
                     result = await _fetch_jwks()
                     assert result == {"keys": []}
                     mock_client.get.assert_awaited_once()
@@ -46,6 +48,7 @@ async def test_fetch_jwks_returns_cache_when_fresh():
         with patch("app.dependencies._jwks_cache_time", time.time()):
             with patch("app.dependencies.httpx.AsyncClient") as mock_cls:
                 from app.dependencies import _fetch_jwks
+
                 result = await _fetch_jwks()
                 assert result == cached
                 mock_cls.assert_not_called()
