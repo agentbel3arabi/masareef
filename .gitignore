@@ -64,3 +64,5 @@ playwright-report/
 # Audit screenshots (large PNGs)
 # =========================
 docs/superpowers/reports/screenshots/
+
+.claude/scheduled_tasks.lock
