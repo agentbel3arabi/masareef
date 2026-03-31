@@ -48,7 +48,7 @@ export function MappingStep({
   const fieldLabels: Record<string, string> = {
     date: t("fieldDate"),
     description: t("fieldDescription"),
-    debit: singleAmount ? "Amount" : t("fieldDebit"),
+    debit: singleAmount ? t("fieldAmount") : t("fieldDebit"),
     credit: t("fieldCredit"),
     balance: t("fieldBalance"),
   };
@@ -155,7 +155,7 @@ export function MappingStep({
       <div className="flex gap-3 pt-2">
         <Button variant="outline" onClick={onBack}>{t("back")}</Button>
         <Button onClick={handleSubmit} disabled={isLoading || !mapping.date}>
-          {isLoading ? "Parsing…" : t("parse")}
+          {isLoading ? t("loadingParse") : t("parse")}
         </Button>
       </div>
     </div>

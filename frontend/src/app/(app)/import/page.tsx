@@ -36,8 +36,7 @@ type WizardState =
       currency: string;
       file: File;
     }
-  | { step: "scanned" }
-  | { step: "done"; count: number; firstTransactionId: number; accountId: number };
+  | { step: "scanned" };
 
 // ── Step indicator ────────────────────────────────────────────────────────────
 
@@ -184,7 +183,7 @@ export default function ImportPage() {
     const { accountId, currency } = state;
 
     try {
-      const result = await commitMutation.mutateAsync({
+      await commitMutation.mutateAsync({
         account_id: accountId,
         rows: selectedRows.map((r) => ({
           date: r.date!,
@@ -196,8 +195,6 @@ export default function ImportPage() {
         })),
       });
 
-      const data = result.data;
-      setState({ step: "done", count: data.count, firstTransactionId: data.first_transaction_id, accountId });
       router.push(`/accounts/${accountId}`);
     } catch {
       toast.error(t("errors.commitFailed"));
@@ -230,7 +227,7 @@ export default function ImportPage() {
             disabled={!selectedFile || !selectedAccountId || parseMutation.isPending}
             className="w-full"
           >
-            {parseMutation.isPending ? "Analysing…" : "Next"}
+            {parseMutation.isPending ? t("upload.analysing") : t("upload.next")}
           </Button>
         </div>
       )}

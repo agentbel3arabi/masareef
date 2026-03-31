@@ -350,7 +350,11 @@
       "browse": "تصفح الملفات",
       "supported": "الصيغ المدعومة: CSV، Excel، PDF",
       "account": "الاستيراد إلى الحساب",
-      "selectAccount": "اختر حساباً"
+      "selectAccount": "اختر حساباً",
+      "next": "التالي",
+      "analysing": "جارٍ التحليل…",
+      "errorFileTooLarge": "حجم الملف كبير جداً. الحد الأقصى ١٠ ميجابايت.",
+      "errorFileType": "نوع الملف غير صالح. يرجى استخدام CSV أو Excel أو PDF."
     },
     "mapping": {
       "title": "تعيين الأعمدة",
@@ -365,6 +369,8 @@
       "dateFormat": "صيغة التاريخ",
       "skipRows": "تخطي صفوف الرأس",
       "singleAmount": "عمود مبلغ واحد",
+      "fieldAmount": "المبلغ",
+      "loadingParse": "جارٍ التحليل…",
       "back": "رجوع",
       "parse": "تحليل"
     },
@@ -374,13 +380,19 @@
       "back": "رجوع",
       "valid": "{count} صالح",
       "duplicate": "{count} مكرر",
-      "error": "{count} خطأ"
+      "error": "{count} خطأ",
+      "date": "التاريخ",
+      "description": "الوصف",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "importing": "جارٍ الاستيراد…"
     },
     "scanned": {
       "title": "تم اكتشاف ملف ممسوح ضوئياً",
       "description": "يبدو أن هذا المستند ممسوح ضوئياً. قم بالترقية إلى Premium لاستيراد كشوف الحسابات الممسوحة.",
       "upgrade": "الترقية إلى Premium",
-      "back": "جرب ملفاً آخر"
+      "back": "جرب ملفاً آخر",
+      "comingSoon": "استيراد OCR قادم قريباً"
     },
     "done": {
       "success": "تم استيراد {count} معاملات بنجاح"

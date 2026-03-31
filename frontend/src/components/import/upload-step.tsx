@@ -41,7 +41,7 @@ export function UploadStep({ selectedAccountId, onAccountChange, onFileSelected 
     [onFileSelected]
   );
 
-  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles, fileRejections } = useDropzone({
     onDrop,
     accept: {
       "text/csv": [".csv"],
@@ -98,6 +98,15 @@ export function UploadStep({ selectedAccountId, onAccountChange, onFileSelected 
         </div>
         <p className="text-xs text-muted-foreground">{t("supported")}</p>
       </div>
+
+      {/* File rejection error */}
+      {fileRejections.length > 0 && (
+        <p className="text-sm text-destructive">
+          {fileRejections[0].errors[0]?.code === "file-too-large"
+            ? t("errorFileTooLarge")
+            : t("errorFileType")}
+        </p>
+      )}
 
       {/* Selected file badge */}
       {selectedFile && (

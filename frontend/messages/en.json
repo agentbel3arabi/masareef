@@ -350,7 +350,11 @@
       "browse": "Browse file",
       "supported": "Supported: CSV, Excel (.xlsx), PDF",
       "account": "Import into account",
-      "selectAccount": "Select account"
+      "selectAccount": "Select account",
+      "next": "Next",
+      "analysing": "Analysing…",
+      "errorFileTooLarge": "File is too large. Maximum size is 10MB.",
+      "errorFileType": "Invalid file type. Please use CSV, Excel, or PDF."
     },
     "mapping": {
       "title": "Map columns",
@@ -365,6 +369,8 @@
       "dateFormat": "Date format",
       "skipRows": "Skip header rows",
       "singleAmount": "Single amount column",
+      "fieldAmount": "Amount",
+      "loadingParse": "Parsing…",
       "back": "Back",
       "parse": "Parse"
     },
@@ -374,13 +380,19 @@
       "back": "Back",
       "valid": "{count} valid",
       "duplicate": "{count} duplicate",
-      "error": "{count} error"
+      "error": "{count} error",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "importing": "Importing…"
     },
     "scanned": {
       "title": "Scanned PDF detected",
       "description": "This looks like a scanned document. Upgrade to Premium to import scanned bank statements.",
       "upgrade": "Upgrade to Premium",
-      "back": "Try another file"
+      "back": "Try another file",
+      "comingSoon": "OCR import coming soon"
     },
     "done": {
       "success": "Successfully imported {count} transactions"

@@ -20,6 +20,7 @@ Tracks UI elements added during Phase 1.75 page redesign that require backend en
 | 10 | Accurate period totals (Income/Expenses/Net) | Transactions | `GET /api/v1/transactions/summary` with active filters | Phase 2 | ⏳ Pending |
 | 11 | Currency conversion — net worth in USD/SAR | Accounts | Exchange rates + base conversion via `/api/v1/exchange-rates` | Phase 2+ | ⏳ Pending |
 | 12 | Currency conversion — assets/liabilities in USD/SAR | Accounts | Same as #11 | Phase 2+ | ⏳ Pending |
+| 13 | "Upgrade to Premium" (disabled button in ScannedPrompt) | `/import` — scanned PDF state | OCR/scanned PDF import: `POST /api/v1/import/parse` with OCR support (or a dedicated `POST /api/v1/import/parse-scanned` endpoint) | Phase 3+ | ⏳ Pending |
 
 ---
 
