@@ -21,7 +21,7 @@ class TransactionCreate(BaseModel):
 class TransactionUpdate(BaseModel):
     date: datetime.date | None = None
     description: str | None = None
-    amount_minor: int | None = None
+    amount_minor: int | None = Field(default=None, gt=0)
     type: TransactionType | None = None
     category_id: int | None = None
     notes: str | None = None
