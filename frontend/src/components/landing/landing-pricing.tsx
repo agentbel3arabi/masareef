@@ -11,6 +11,7 @@ interface PricingPlan {
   periodKey: string;
   featureKeys: string[];
   ctaKey: string;
+  ctaHref: string;
   highlighted?: boolean;
 }
 
@@ -25,6 +26,7 @@ const plans: PricingPlan[] = [
       "pricing.freeFeature3",
     ],
     ctaKey: "pricing.freeCta",
+    ctaHref: "/signup",
   },
   {
     nameKey: "pricing.premium",
@@ -38,6 +40,7 @@ const plans: PricingPlan[] = [
       "pricing.premiumFeature5",
     ],
     ctaKey: "pricing.premiumCta",
+    ctaHref: "/signup",
     highlighted: true,
   },
   {
@@ -51,6 +54,7 @@ const plans: PricingPlan[] = [
       "pricing.businessFeature4",
     ],
     ctaKey: "pricing.businessCta",
+    ctaHref: "mailto:hello@masareef.app",
   },
 ];
 
@@ -121,7 +125,13 @@ export function LandingPricing() {
                 className="w-full"
                 variant={plan.highlighted ? "default" : "outline"}
                 nativeButton={false}
-                render={<Link href="/signup" />}
+                render={
+                  plan.ctaHref.startsWith("mailto:") ? (
+                    <a href={plan.ctaHref} />
+                  ) : (
+                    <Link href={plan.ctaHref} />
+                  )
+                }
               >
                 {t(plan.ctaKey as Parameters<typeof t>[0])}
               </Button>

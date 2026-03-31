@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function LandingCta() {
   const t = useTranslations("landing");
+  const quoteTranslation = t("cta.quoteTranslation");
 
   return (
     <section id="about" className="px-6 py-20">
@@ -31,11 +32,19 @@ export function LandingCta() {
           </div>
         </div>
 
-        {/* Right column: quote */}
+        {/* Right column: Arabic proverb */}
         <div className="rounded-2xl bg-primary/10 p-8 md:p-10">
-          <blockquote className="text-xl font-semibold italic leading-relaxed text-primary md:text-2xl">
+          <blockquote
+            className="text-xl font-semibold leading-relaxed text-primary md:text-2xl"
+            dir="rtl"
+          >
             &ldquo;{t("cta.quote")}&rdquo;
           </blockquote>
+          {quoteTranslation && (
+            <p className="mt-3 text-sm italic text-muted-foreground">
+              — {quoteTranslation}
+            </p>
+          )}
         </div>
       </div>
     </section>
