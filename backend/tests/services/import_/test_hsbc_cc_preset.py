@@ -1,9 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from app.services.import_.presets.hsbc_cc import HsbcCcPreset
-
 
 preset = HsbcCcPreset()
 
