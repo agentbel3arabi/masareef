@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Receipt, Plus, ArrowLeftRight, Trash2 } from "lucide-react";
+import { Receipt, Plus, ArrowLeftRight, Trash2, Upload } from "lucide-react";
 import { useAccount } from "@/hooks/use-accounts";
 import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
@@ -25,6 +25,7 @@ export default function AccountDetailPage() {
   const tAccounts = useTranslations("accounts");
   const locale = useLocale();
   const params = useParams();
+  const router = useRouter();
   const accountId = Number(params.id);
   const { setActions } = useNavbarActions();
 
@@ -48,6 +49,10 @@ export default function AccountDetailPage() {
   useEffect(() => {
     const normalActions = (
       <div className="flex items-center gap-2">
+        <Button size="sm" variant="outline" onClick={() => router.push(`/import?accountId=${accountId}`)}>
+          <Upload className="size-4 me-2" />
+          {t("nav.import")}
+        </Button>
         <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
           <ArrowLeftRight className="h-4 w-4 me-1" />
           {tAccounts("transferFunds")}
