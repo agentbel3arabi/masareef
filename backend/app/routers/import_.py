@@ -3,10 +3,11 @@
 import json
 import uuid
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.limiter import limiter
 from app.schemas.common import SuccessResponse
 from app.schemas.import_ import CommitRequest, PresetInfo
 from app.services.import_ import import_service
@@ -14,9 +15,13 @@ from app.services.import_.presets.registry import list_presets
 
 router = APIRouter(prefix="/api/v1/import", tags=["import"])
 
+_MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB
+
 
 @router.post("/parse")
+@limiter.limit("20/minute")  # type: ignore[misc]
 async def parse_file(
+    request: Request,
     file: UploadFile = File(...),
     account_id: int = Form(...),
     currency: str = Form(default="EGP"),
@@ -28,7 +33,30 @@ async def parse_file(
 ) -> SuccessResponse:
     """Parse and preview a bank statement file."""
     raw_bytes = await file.read()
-    mapping = json.loads(column_mapping) if column_mapping else None
+
+    # Reject files over 10 MB
+    if len(raw_bytes) > _MAX_FILE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": {"code": "FILE_TOO_LARGE", "message": "File exceeds 10MB limit"}},
+        )
+
+    # Parse column_mapping JSON safely
+    if column_mapping:
+        try:
+            mapping = json.loads(column_mapping)
+        except json.JSONDecodeError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "error": {
+                        "code": "INVALID_COLUMN_MAPPING",
+                        "message": "column_mapping must be valid JSON",
+                    }
+                },
+            )
+    else:
+        mapping = None
 
     result = await import_service.parse_upload(
         raw_bytes=raw_bytes,
@@ -46,7 +74,9 @@ async def parse_file(
 
 
 @router.post("/commit", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")  # type: ignore[misc]
 async def commit_import(
+    request: Request,
     data: CommitRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),

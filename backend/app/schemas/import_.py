@@ -14,8 +14,8 @@ class ParsedRow(BaseModel):
     credit_raw: str = ""
     amount_minor: int | None = None
     currency: str = "EGP"
-    type: str = "debit"  # "debit" | "credit"
-    status: str = "valid"  # "valid" | "duplicate" | "error"
+    type: Literal["debit", "credit"] = "debit"
+    status: Literal["valid", "duplicate", "error"] = "valid"
     error_message: str | None = None
     selected: bool = True
     apply_to_balance: bool = True
@@ -52,7 +52,7 @@ class CommitRow(BaseModel):
     description: str = ""
     amount_minor: int
     currency: str
-    type: str  # "debit" | "credit"
+    type: Literal["debit", "credit"]
     apply_to_balance: bool = True
     original_currency: str | None = None
     original_amount_minor: int | None = None

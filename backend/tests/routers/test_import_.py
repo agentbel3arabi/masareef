@@ -96,6 +96,17 @@ async def test_commit_inserts_transactions(client: AsyncClient, db_session):
     assert body["balance_delta"] == -125000
     assert "batch_id" in body
 
+    # Verify transaction was actually persisted in DB
+    from sqlalchemy import select
+
+    from app.models.transaction import Transaction
+
+    result = await db_session.execute(select(Transaction).where(Transaction.account_id == acct.id))
+    txs = result.scalars().all()
+    assert len(txs) == 1
+    assert txs[0].amount_minor == -125000
+    assert txs[0].description == "CARREFOUR"
+
 
 @pytest.mark.asyncio
 async def test_commit_empty_rows_returns_422(client: AsyncClient):

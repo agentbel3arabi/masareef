@@ -171,12 +171,29 @@ async def commit_import(
         )
     )
     if result.scalar_one_or_none() is None:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
+        )
+
+    # Validate currencies before inserting anything
+    _VALID_CURRENCIES = {"EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"}
+    for i, commit_row in enumerate(data.rows):
+        if commit_row.currency not in _VALID_CURRENCIES:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "error": {
+                        "code": "INVALID_CURRENCY",
+                        "message": f"Row {i}: unsupported currency '{commit_row.currency}'",
+                    }
+                },
+            )
 
     batch_id = uuid.uuid4()
-    first_tx_id: int | None = None
     balance_delta = 0
 
+    all_txs: list[Transaction] = []
     for commit_row in data.rows:
         tx = Transaction(
             household_id=household_id,
@@ -190,12 +207,13 @@ async def commit_import(
             import_batch_id=batch_id,
         )
         session.add(tx)
-        await session.flush()
-
-        if first_tx_id is None:
-            first_tx_id = tx.id
+        all_txs.append(tx)
         if commit_row.apply_to_balance:
             balance_delta += commit_row.amount_minor
+
+    await session.flush()  # single flush for all rows
+
+    first_tx_id = all_txs[0].id if all_txs else 0
 
     # AI categorization stub — Phase 9 implements this
     # background_tasks.add_task(ai_categorize_batch, str(batch_id))
@@ -203,6 +221,6 @@ async def commit_import(
     return CommitResponse(
         batch_id=str(batch_id),
         count=len(data.rows),
-        first_transaction_id=first_tx_id or 0,
+        first_transaction_id=first_tx_id,
         balance_delta=balance_delta,
     )
