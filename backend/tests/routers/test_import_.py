@@ -118,7 +118,6 @@ async def test_commit_inserts_transactions(client: AsyncClient, db_session):
                 "date": "2026-03-15",
                 "description": "CARREFOUR",
                 "amount_minor": -125000,
-                "currency": "EGP",
                 "type": "debit",
                 "apply_to_balance": True,
             }

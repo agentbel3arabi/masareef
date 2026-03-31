@@ -18,7 +18,7 @@ from app.schemas.import_ import ParsedRow
 def _make_hash(account_id: int, date: datetime.date, amount_minor: int, description: str) -> str:
     """Create a stable dedup hash for (account, date, amount, description)."""
     key = f"{account_id}|{date.isoformat()}|{amount_minor}|{description.lower().strip()}"
-    return hashlib.md5(key.encode()).hexdigest()  # noqa: S324
+    return hashlib.sha256(key.encode()).hexdigest()
 
 
 async def load_existing_hashes(

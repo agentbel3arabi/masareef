@@ -35,6 +35,18 @@ from app.services.import_.header_mapper import get_auto_suggest
 from app.services.import_.pdf_parser import is_scanned
 from app.services.import_.presets.registry import detect_preset
 
+# Currency exponent lookup (minor unit divisor = 10 ** exponent).
+# KWD uses 3 decimal places; all other supported currencies use 2.
+_CURRENCY_EXPONENTS: dict[str, int] = {
+    "EGP": 2,
+    "USD": 2,
+    "EUR": 2,
+    "GBP": 2,
+    "SAR": 2,
+    "AED": 2,
+    "KWD": 3,
+}
+
 
 def _detect_format(filename: str, content_type: str | None) -> str:
     name = filename.lower()
@@ -85,6 +97,7 @@ async def parse_upload(
     date_format: str = "DD/MM/YYYY",
     sheet_name: str | None = None,
     content_type: str | None = None,
+    skip_rows: int = 0,
 ) -> ScannedResponse | NeedsMappingResponse | ParseCompleteResponse:
     """Orchestrate file parsing. Returns one of three response variants."""
     fmt = _detect_format(filename, content_type)
@@ -103,6 +116,12 @@ async def parse_upload(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
         )
+
+    # Derive currency and exponent from the account (authoritative source).
+    # The client-provided `currency` param is intentionally ignored here to
+    # prevent client-side spoofing of the currency used for amount conversion.
+    account_currency = account.currency
+    currency_exponent = _CURRENCY_EXPONENTS.get(account_currency, 2)
 
     existing_hashes = await load_existing_hashes(session, account_id, household_id)
 
@@ -123,35 +142,48 @@ async def parse_upload(
                 },
             )
 
-        rows = preset.parse(raw_bytes, currency=currency)
+        rows = preset.parse(
+            raw_bytes, currency=account_currency, currency_exponent=currency_exponent
+        )
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, preset.preset_id)
 
     # ── CSV / Excel with explicit mapping (second parse call) ──────────────
     if column_mapping:
         if fmt == "csv":
-            rows = parse_csv(raw_bytes, column_mapping, date_format=date_format, currency=currency)
+            rows = parse_csv(
+                raw_bytes,
+                column_mapping,
+                date_format=date_format,
+                skip_rows=skip_rows,
+                currency=account_currency,
+                currency_exponent=currency_exponent,
+            )
         else:
             rows = parse_excel(
                 raw_bytes,
                 column_mapping,
                 sheet_name=sheet_name,
+                skip_rows=skip_rows,
                 date_format=date_format,
-                currency=currency,
+                currency=account_currency,
+                currency_exponent=currency_exponent,
             )
         mark_duplicates(rows, account_id, existing_hashes)
         return _complete(rows, None)
 
     # ── CSV: try preset, else needs_mapping ────────────────────────────────
     if fmt == "csv":
-        headers = csv_headers(raw_bytes)
+        headers = csv_headers(raw_bytes, skip_rows=skip_rows)
         preset = detect_preset(raw_bytes, headers)
         if preset and preset.get_column_mapping():
             rows = parse_csv(
                 raw_bytes,
                 preset.get_column_mapping(),  # type: ignore[arg-type]
                 date_format=preset.get_date_format(),
-                currency=currency,
+                skip_rows=skip_rows,
+                currency=account_currency,
+                currency_exponent=currency_exponent,
             )
             mark_duplicates(rows, account_id, existing_hashes)
             return _complete(rows, preset.preset_id)
@@ -161,7 +193,7 @@ async def parse_upload(
     # ── Excel: return sheet info + headers + auto_suggest ─────────────────
     sheets = get_sheet_names(raw_bytes)
     active_sheet = sheet_name or (sheets[0] if sheets else None)
-    headers = excel_headers(raw_bytes, sheet_name=active_sheet)
+    headers = excel_headers(raw_bytes, sheet_name=active_sheet, skip_rows=skip_rows)
     auto_suggest = get_auto_suggest(headers)
     return NeedsMappingResponse(
         headers=headers,

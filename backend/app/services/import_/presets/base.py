@@ -67,6 +67,8 @@ class BankPreset(ABC):
         """Expected date format string (user-facing notation)."""
         return "DD/MM/YYYY"
 
-    def parse(self, content: bytes, currency: str = "EGP") -> list[ParsedRow]:
+    def parse(
+        self, content: bytes, currency: str = "EGP", currency_exponent: int = 2
+    ) -> list[ParsedRow]:
         """Parse transactions from file content. Implement in concrete presets."""
         raise NotImplementedError

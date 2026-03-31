@@ -37,6 +37,7 @@ async def parse_file(
     column_mapping: str | None = Form(default=None),
     date_format: str = Form(default="DD/MM/YYYY"),
     sheet_name: str | None = Form(default=None),
+    skip_rows: int = Form(default=0, ge=0),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
@@ -92,6 +93,7 @@ async def parse_file(
         date_format=date_format,
         sheet_name=sheet_name,
         content_type=file.content_type,
+        skip_rows=skip_rows,
     )
     return SuccessResponse(data=result.model_dump())
 
