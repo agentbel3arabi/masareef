@@ -1,6 +1,6 @@
-import pytest
 import uuid
-from app.models.import_template import ImportTemplate, AccountImportTemplate
+
+from app.models.import_template import AccountImportTemplate, ImportTemplate
 
 
 def test_import_template_fields():
