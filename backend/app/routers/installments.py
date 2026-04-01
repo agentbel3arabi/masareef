@@ -113,7 +113,13 @@ async def update_installment(
                 error=ErrorDetail(code="NOT_FOUND", message="Installment plan not found")
             ).model_dump(),
         )
-    plan = await installment_service.update_installment(session, plan, data)
+    try:
+        plan = await installment_service.update_installment(session, plan, data)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
+        )
     return SuccessResponse(data=_plan_to_response(plan).model_dump())
 
 

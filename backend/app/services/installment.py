@@ -32,6 +32,8 @@ def compute_installment_status(
     stored = plan.status.value if hasattr(plan.status, "value") else plan.status
     if stored == "completed" or months_elapsed >= plan.total_months:
         effective_status = "completed"
+        remaining_minor = 0
+        remaining_months = 0
     else:
         effective_status = "active"
 
@@ -144,7 +146,14 @@ async def update_installment(
     data: InstallmentUpdate,
 ) -> InstallmentPlan:
     """Update mutable fields of an installment plan."""
-    for field, value in data.model_dump(exclude_unset=True).items():
+    updates = data.model_dump(exclude_unset=True)
+
+    if "linked_account_id" in updates and updates["linked_account_id"] is not None:
+        acct = await session.get(Account, updates["linked_account_id"])
+        if not acct or acct.household_id != plan.household_id:
+            raise ValueError("ACCOUNT_NOT_FOUND")
+
+    for field, value in updates.items():
         setattr(plan, field, value)
     await session.flush()
     return plan

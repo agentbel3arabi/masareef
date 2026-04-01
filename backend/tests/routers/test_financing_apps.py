@@ -18,7 +18,15 @@ async def _create_fa_account(client, *, name="ValU", credit_limit=5000000):
     return resp.json()["data"]["id"]
 
 
-async def _create_fa_plan(client, *, source_account_id, name="Purchase", total=1800000, monthly=150000, months=12):
+async def _create_fa_plan(
+    client,
+    *,
+    source_account_id,
+    name="Purchase",
+    total=1800000,
+    monthly=150000,
+    months=12,
+):
     resp = await client.post(
         "/api/v1/installments",
         json={
@@ -41,9 +49,30 @@ async def _create_fa_plan(client, *, source_account_id, name="Purchase", total=1
 async def test_financing_apps_summary_with_plans(client):
     valu_id = await _create_fa_account(client, name="ValU", credit_limit=5000000)
     souhoola_id = await _create_fa_account(client, name="Souhoola", credit_limit=3000000)
-    await _create_fa_plan(client, source_account_id=valu_id, name="iPhone", total=1800000, monthly=150000, months=12)
-    await _create_fa_plan(client, source_account_id=valu_id, name="Fridge", total=1200000, monthly=100000, months=12)
-    await _create_fa_plan(client, source_account_id=souhoola_id, name="AC", total=1500000, monthly=125000, months=12)
+    await _create_fa_plan(
+        client,
+        source_account_id=valu_id,
+        name="iPhone",
+        total=1800000,
+        monthly=150000,
+        months=12,
+    )
+    await _create_fa_plan(
+        client,
+        source_account_id=valu_id,
+        name="Fridge",
+        total=1200000,
+        monthly=100000,
+        months=12,
+    )
+    await _create_fa_plan(
+        client,
+        source_account_id=souhoola_id,
+        name="AC",
+        total=1500000,
+        monthly=125000,
+        months=12,
+    )
 
     resp = await client.get("/api/v1/financing-apps/summary")
     assert resp.status_code == 200

@@ -1,12 +1,11 @@
-from datetime import date
 import uuid
+from datetime import date
 
 import pytest
 
 from app.models.account import Account
-from app.models.enums import AccountType
 from app.models.installment_plan import InstallmentPlan
-from app.schemas.installment import InstallmentCreate
+from app.schemas.installment import InstallmentCreate, InstallmentUpdate
 from app.services.installment import (
     complete_installment,
     compute_installment_status,
@@ -16,13 +15,20 @@ from app.services.installment import (
     soft_delete_installment,
     update_installment,
 )
-from app.schemas.installment import InstallmentUpdate
 
 
 class FakePlan:
     """Lightweight stand-in for InstallmentPlan ORM object."""
 
-    def __init__(self, *, start_month, total_months, total_amount_minor, monthly_amount_minor, status="active"):
+    def __init__(
+        self,
+        *,
+        start_month,
+        total_months,
+        total_amount_minor,
+        monthly_amount_minor,
+        status="active",
+    ):
         self.start_month = start_month
         self.total_months = total_months
         self.total_amount_minor = total_amount_minor
@@ -103,7 +109,9 @@ def _cc_create_data(**overrides):
     return InstallmentCreate(**payload)
 
 
-async def _seed_account(session, *, account_type="credit_card", household_id=None, credit_limit=10000000):
+async def _seed_account(
+    session, *, account_type="credit_card", household_id=None, credit_limit=10000000
+):
     """Create and flush a test account."""
     acct = Account(
         household_id=household_id or TEST_HOUSEHOLD_ID,
@@ -186,7 +194,9 @@ class TestCreateInstallment:
         assert plan.start_month == date(2024, 6, 1)
 
 
-async def _create_test_plan(session, *, plan_type="credit_card", household_id=None, source_account_id=None, **kwargs):
+async def _create_test_plan(
+    session, *, plan_type="credit_card", household_id=None, source_account_id=None, **kwargs
+):
     """Seed an installment plan directly via ORM for test isolation."""
     hid = household_id or TEST_HOUSEHOLD_ID
     plan = InstallmentPlan(
@@ -242,9 +252,7 @@ class TestGetInstallment:
 class TestUpdateInstallment:
     async def test_update_name(self, db_session):
         plan = await _create_test_plan(db_session, name="Old Name")
-        updated = await update_installment(
-            db_session, plan, InstallmentUpdate(name="New Name")
-        )
+        updated = await update_installment(db_session, plan, InstallmentUpdate(name="New Name"))
         assert updated.name == "New Name"
 
 

@@ -53,8 +53,14 @@ async def test_create_cc_installment_returns_201(client):
 @pytest.mark.asyncio
 async def test_list_installments_returns_paginated(client):
     acct_id = await _create_account(client)
-    await client.post("/api/v1/installments", json=_cc_payload(source_account_id=acct_id, name="Plan A"))
-    await client.post("/api/v1/installments", json=_cc_payload(source_account_id=acct_id, name="Plan B"))
+    await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=acct_id, name="Plan A"),
+    )
+    await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=acct_id, name="Plan B"),
+    )
     resp = await client.get("/api/v1/installments")
     assert resp.status_code == 200
     body = resp.json()
@@ -65,7 +71,10 @@ async def test_list_installments_returns_paginated(client):
 @pytest.mark.asyncio
 async def test_list_filters_by_type(client):
     cc_id = await _create_account(client, account_type="credit_card")
-    await client.post("/api/v1/installments", json=_cc_payload(source_account_id=cc_id, name="CC Plan"))
+    await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=cc_id, name="CC Plan"),
+    )
     await client.post(
         "/api/v1/installments",
         json={
@@ -88,7 +97,10 @@ async def test_list_filters_by_type(client):
 @pytest.mark.asyncio
 async def test_get_installment_by_id(client):
     acct_id = await _create_account(client)
-    create_resp = await client.post("/api/v1/installments", json=_cc_payload(source_account_id=acct_id))
+    create_resp = await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=acct_id),
+    )
     plan_id = create_resp.json()["data"]["id"]
     resp = await client.get(f"/api/v1/installments/{plan_id}")
     assert resp.status_code == 200
@@ -104,7 +116,10 @@ async def test_get_nonexistent_returns_404(client):
 @pytest.mark.asyncio
 async def test_update_installment(client):
     acct_id = await _create_account(client)
-    create_resp = await client.post("/api/v1/installments", json=_cc_payload(source_account_id=acct_id))
+    create_resp = await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=acct_id),
+    )
     plan_id = create_resp.json()["data"]["id"]
     resp = await client.put(f"/api/v1/installments/{plan_id}", json={"name": "Updated Name"})
     assert resp.status_code == 200
@@ -114,7 +129,10 @@ async def test_update_installment(client):
 @pytest.mark.asyncio
 async def test_delete_installment_soft_deletes(client):
     acct_id = await _create_account(client)
-    create_resp = await client.post("/api/v1/installments", json=_cc_payload(source_account_id=acct_id))
+    create_resp = await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=acct_id),
+    )
     plan_id = create_resp.json()["data"]["id"]
     del_resp = await client.delete(f"/api/v1/installments/{plan_id}")
     assert del_resp.status_code == 204
@@ -126,7 +144,10 @@ async def test_delete_installment_soft_deletes(client):
 @pytest.mark.asyncio
 async def test_complete_installment(client):
     acct_id = await _create_account(client)
-    create_resp = await client.post("/api/v1/installments", json=_cc_payload(source_account_id=acct_id))
+    create_resp = await client.post(
+        "/api/v1/installments",
+        json=_cc_payload(source_account_id=acct_id),
+    )
     plan_id = create_resp.json()["data"]["id"]
     resp = await client.post(f"/api/v1/installments/{plan_id}/complete")
     assert resp.status_code == 200
