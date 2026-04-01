@@ -17,9 +17,7 @@ async def _person_to_response(
     person,
 ) -> dict:
     """Map Person ORM object to PersonResponse dict with computed balances."""
-    balances = await person_service.compute_person_balances(
-        session, household_id, person.id
-    )
+    balances = await person_service.compute_person_balances(session, household_id, person.id)
     resp = PersonResponse(
         id=person.id,
         name=person.name,

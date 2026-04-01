@@ -1,6 +1,6 @@
-import pytest
 from datetime import date
-from app.schemas.debt import DebtCreate, SplitInput, P2PDebtSplitResponse
+
+from app.schemas.debt import DebtCreate, P2PDebtSplitResponse, SplitInput
 
 
 class TestDebtCreateP2P:
@@ -53,7 +53,7 @@ class TestDebtCreateP2P:
             repayment_mode="custom_splits",
             splits=splits,
         )
-        assert len(data.splits) == 2
+        assert data.splits is not None and len(data.splits) == 2
         assert data.splits[0].amount_minor == 300000
 
     def test_bank_loan_type_still_accepted(self):

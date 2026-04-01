@@ -1,4 +1,3 @@
-import pytest
 from datetime import date
 
 from app.services.debt import generate_equal_splits, generate_lump_sum_split

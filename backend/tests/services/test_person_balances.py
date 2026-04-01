@@ -1,13 +1,11 @@
-import pytest
-import uuid
 from datetime import date
 
+import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
 from app.models.enums import DebtStatus, DebtType
-from app.models.exchange_rate import ExchangeRate
 from app.models.person import Person
 from app.services.person import compute_person_balances
 from tests.conftest import TEST_HOUSEHOLD_ID
@@ -161,7 +159,7 @@ async def test_multi_currency_balances(db_session: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_paid_off_debts_excluded(db_session: AsyncSession):
-    """Paid-off debts are still active (is_active=True) but status=paid_off; they should still be counted."""
+    """Paid-off debts (is_active=True, status=paid_off) should still be counted."""
     person = Person(household_id=TEST_HOUSEHOLD_ID, name="Paid Off")
     db_session.add(person)
     await db_session.flush()

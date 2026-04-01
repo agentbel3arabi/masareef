@@ -1,6 +1,4 @@
 import pytest
-from tests.conftest import TEST_HOUSEHOLD_ID
-from app.models.person import Person
 
 
 def _create_p2p_payload(person_id: int, **overrides):
@@ -100,7 +98,7 @@ async def test_create_p2p_custom_splits_sum_mismatch_fails(client):
 @pytest.mark.asyncio
 async def test_create_p2p_without_person_fails(client):
     payload = _create_p2p_payload(
-        person_id=None,
+        person_id=0,  # placeholder, overridden below
         type="personal_lent",
     )
     payload["person_id"] = None

@@ -4,7 +4,6 @@ import uuid
 from datetime import date, timedelta
 
 from dateutil.relativedelta import relativedelta
-
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -131,7 +130,9 @@ async def create_p2p_debt(
 
     monthly_payment = data.principal_minor // data.tenure_months
 
-    debt_type = DebtType.PERSONAL_LENT if data.type == "personal_lent" else DebtType.PERSONAL_BORROWED
+    debt_type = (
+        DebtType.PERSONAL_LENT if data.type == "personal_lent" else DebtType.PERSONAL_BORROWED
+    )
     repayment_mode_enum = RepaymentMode(mode) if mode else None
 
     debt = Debt(
@@ -156,12 +157,16 @@ async def create_p2p_debt(
     await session.flush()
 
     raw_splits: list[dict] = []
-    if mode == "lump_sum":
+    if mode == "lump_sum" and data.due_date is not None:
         raw_splits = generate_lump_sum_split(data.principal_minor, data.due_date)
-    elif mode == "equal_splits":
-        raw_splits = generate_equal_splits(data.principal_minor, data.split_count, data.start_date)
-    elif mode == "custom_splits":
-        raw_splits = [{"amount_minor": s.amount_minor, "due_date": s.due_date} for s in data.splits]
+    elif mode == "equal_splits" and data.split_count is not None:
+        raw_splits = generate_equal_splits(
+            data.principal_minor, data.split_count, data.start_date
+        )
+    elif mode == "custom_splits" and data.splits is not None:
+        raw_splits = [
+            {"amount_minor": s.amount_minor, "due_date": s.due_date} for s in data.splits
+        ]
 
     for s in raw_splits:
         split = P2PDebtSplit(
@@ -180,11 +185,7 @@ async def get_splits(
     debt_id: int,
 ) -> list[P2PDebtSplit]:
     """Return all splits for a debt, ordered by due_date."""
-    q = (
-        select(P2PDebtSplit)
-        .where(P2PDebtSplit.debt_id == debt_id)
-        .order_by(P2PDebtSplit.due_date)
-    )
+    q = select(P2PDebtSplit).where(P2PDebtSplit.debt_id == debt_id).order_by(P2PDebtSplit.due_date)
     result = await session.execute(q)
     return list(result.scalars().all())
 
