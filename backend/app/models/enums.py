@@ -25,3 +25,39 @@ class HouseholdRole(enum.StrEnum):
     MEMBER = "member"
     VIEWER = "viewer"
     CHILD = "child"
+
+
+class DebtType(enum.StrEnum):
+    BANK_LOAN = "bank_loan"
+    PERSONAL_LENT = "personal_lent"
+    PERSONAL_BORROWED = "personal_borrowed"
+
+
+class DebtStatus(enum.StrEnum):
+    ACTIVE = "active"
+    PAID_OFF = "paid_off"
+
+
+class InstallmentType(enum.StrEnum):
+    CREDIT_CARD = "credit_card"
+    STORE = "store"
+    FINANCING_APP = "financing_app"
+
+
+class LifecycleStatus(enum.StrEnum):
+    ACTIVE = "active"
+    COMPLETED = "completed"
+
+
+class PersonRelationship(enum.StrEnum):
+    FAMILY = "family"
+    FRIEND = "friend"
+    COLLEAGUE = "colleague"
+    BUSINESS = "business"
+    OTHER = "other"
+
+
+class RepaymentMode(enum.StrEnum):
+    LUMP_SUM = "lump_sum"
+    EQUAL_SPLITS = "equal_splits"
+    CUSTOM_SPLITS = "custom_splits"
