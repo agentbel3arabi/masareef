@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date as dt_date
 
 from sqlalchemy import BigInteger, Date, ForeignKey, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -15,7 +15,7 @@ class DebtPayment(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     debt_id: Mapped[int] = mapped_column(Integer, ForeignKey("debts.id"), nullable=False)
-    date: Mapped[date] = mapped_column(Date, nullable=False)
+    date: Mapped[dt_date] = mapped_column(Date, nullable=False)
     amount_minor: Mapped[int] = mapped_column(BigInteger, nullable=False)
     principal_minor: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     interest_minor: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
