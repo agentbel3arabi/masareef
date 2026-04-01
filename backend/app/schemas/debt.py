@@ -4,21 +4,30 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
+class SplitInput(BaseModel):
+    """User-provided split for custom_splits repayment mode."""
+
+    amount_minor: int = Field(gt=0)
+    due_date: date
+
+
 class DebtCreate(BaseModel):
-    type: Literal["bank_loan"]  # extend to Union[Literal[...]] in 3B for P2P types
+    type: Literal["bank_loan", "personal_lent", "personal_borrowed"]
     name: str
     institution: str | None = None
     principal_minor: int = Field(gt=0)
     currency: str = Field(min_length=3, max_length=3)
-    annual_rate_percent: float = Field(ge=0, default=0)  # Backend converts to bps
+    annual_rate_percent: float = Field(ge=0, default=0)
     tenure_months: int = Field(gt=0)
     start_date: date
     linked_account_id: int | None = None
     notes: str | None = None
-    # P2P fields (used in 3B, ignored for bank_loan)
+    # P2P fields
     person_id: int | None = None
     repayment_mode: str | None = None
     due_date: date | None = None
+    split_count: int | None = Field(default=None, gt=0)
+    splits: list[SplitInput] | None = None
 
 
 class DebtUpdate(BaseModel):
@@ -30,7 +39,7 @@ class DebtUpdate(BaseModel):
 
 class DebtResponse(BaseModel):
     id: int
-    type: str  # kept as str — service may return P2P types from DB before 3B schemas update
+    type: str
     person_id: int | None = None
     linked_account_id: int | None = None
     name: str
@@ -87,4 +96,16 @@ class MatchSuggestion(BaseModel):
     date: date
     amount_minor: int
     description: str
-    score: float = Field(ge=0.0, le=1.0)  # 0.0 = no match, 1.0 = exact match
+    score: float = Field(ge=0.0, le=1.0)
+
+
+class P2PDebtSplitResponse(BaseModel):
+    id: int
+    debt_id: int
+    amount_minor: int
+    due_date: date
+    paid: bool
+    payment_id: int | None = None
+    status: Literal["paid", "overdue", "upcoming"]
+
+    model_config = {"from_attributes": True}

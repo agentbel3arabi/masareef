@@ -2,13 +2,14 @@
 
 import uuid
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, case, func, literal_column, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.debt import Debt
-from app.models.enums import DebtStatus
+from app.models.debt_payment import DebtPayment
+from app.models.enums import DebtStatus, DebtType
 from app.models.person import Person
-from app.schemas.person import PersonCreate, PersonUpdate
+from app.schemas.person import PersonBalances, PersonCreate, PersonUpdate
 
 
 async def list_persons(
@@ -99,3 +100,189 @@ async def soft_delete_person(
 ) -> None:
     person.is_active = False
     await session.flush()
+
+
+async def compute_person_balances(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    person_id: int,
+) -> PersonBalances:
+    """Compute per-currency net balances for a person across all their P2P debts.
+
+    Algorithm per currency:
+        lent_total = SUM(principal_minor) WHERE type=personal_lent
+        borrowed_total = SUM(principal_minor) WHERE type=personal_borrowed
+        lent_paid = SUM(debt_payments.amount_minor) for lent debts
+        borrowed_paid = SUM(debt_payments.amount_minor) for borrowed debts
+        net = (lent_total - lent_paid) - (borrowed_total - borrowed_paid)
+        Positive = they owe you, Negative = you owe them.
+    """
+    debt_q = (
+        select(
+            Debt.currency,
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_LENT, Debt.principal_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("lent_total"),
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_BORROWED, Debt.principal_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("borrowed_total"),
+        )
+        .where(
+            Debt.household_id == household_id,
+            Debt.person_id == person_id,
+            Debt.is_active.is_(True),
+            Debt.type.in_([DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED]),
+        )
+        .group_by(Debt.currency)
+    )
+    debt_rows = (await session.execute(debt_q)).all()
+
+    if not debt_rows:
+        return PersonBalances()
+
+    payment_q = (
+        select(
+            Debt.currency,
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_LENT, DebtPayment.amount_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("lent_paid"),
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_BORROWED, DebtPayment.amount_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("borrowed_paid"),
+        )
+        .join(Debt, and_(DebtPayment.debt_id == Debt.id))
+        .where(
+            Debt.household_id == household_id,
+            Debt.person_id == person_id,
+            Debt.is_active.is_(True),
+            Debt.type.in_([DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED]),
+        )
+        .group_by(Debt.currency)
+    )
+    payment_rows = (await session.execute(payment_q)).all()
+    payment_map = {row.currency: (row.lent_paid, row.borrowed_paid) for row in payment_rows}
+
+    by_currency: dict[str, int] = {}
+    for row in debt_rows:
+        lent_paid, borrowed_paid = payment_map.get(row.currency, (0, 0))
+        net = (row.lent_total - lent_paid) - (row.borrowed_total - borrowed_paid)
+        if net != 0:
+            by_currency[row.currency] = net
+
+    return PersonBalances(by_currency=by_currency)
+
+
+async def compute_persons_balances_bulk(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    person_ids: list[int],
+) -> dict[int, PersonBalances]:
+    """Batch-compute balances for multiple persons in 2 queries instead of 2*N."""
+    if not person_ids:
+        return {}
+
+    debt_q = (
+        select(
+            Debt.person_id,
+            Debt.currency,
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_LENT, Debt.principal_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("lent_total"),
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_BORROWED, Debt.principal_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("borrowed_total"),
+        )
+        .where(
+            Debt.household_id == household_id,
+            Debt.person_id.in_(person_ids),
+            Debt.is_active.is_(True),
+            Debt.type.in_([DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED]),
+        )
+        .group_by(Debt.person_id, Debt.currency)
+    )
+    debt_rows = (await session.execute(debt_q)).all()
+
+    payment_q = (
+        select(
+            Debt.person_id,
+            Debt.currency,
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_LENT, DebtPayment.amount_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("lent_paid"),
+            func.coalesce(
+                func.sum(
+                    case(
+                        (Debt.type == DebtType.PERSONAL_BORROWED, DebtPayment.amount_minor),
+                        else_=literal_column("0"),
+                    )
+                ),
+                0,
+            ).label("borrowed_paid"),
+        )
+        .join(Debt, and_(DebtPayment.debt_id == Debt.id))
+        .where(
+            Debt.household_id == household_id,
+            Debt.person_id.in_(person_ids),
+            Debt.is_active.is_(True),
+            Debt.type.in_([DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED]),
+        )
+        .group_by(Debt.person_id, Debt.currency)
+    )
+    payment_rows = (await session.execute(payment_q)).all()
+
+    # Build payment lookup: (person_id, currency) -> (lent_paid, borrowed_paid)
+    payment_map: dict[tuple[int, str], tuple[int, int]] = {}
+    for row in payment_rows:
+        payment_map[(row.person_id, row.currency)] = (row.lent_paid, row.borrowed_paid)
+
+    # Build result: person_id -> PersonBalances
+    result: dict[int, dict[str, int]] = {}
+    for row in debt_rows:
+        lent_paid, borrowed_paid = payment_map.get((row.person_id, row.currency), (0, 0))
+        net = (row.lent_total - lent_paid) - (row.borrowed_total - borrowed_paid)
+        if net != 0:
+            result.setdefault(row.person_id, {})[row.currency] = net
+
+    return {pid: PersonBalances(by_currency=by_currency) for pid, by_currency in result.items()}
