@@ -304,7 +304,7 @@ async def compute_debt_totals(
     """
     total_paid = await _total_paid(session, debt_id)
     principal_paid = await _principal_paid(session, debt_id)
-    return total_paid, principal_minor - principal_paid
+    return total_paid, max(principal_minor - principal_paid, 0)
 
 
 async def batch_compute_debt_totals(
