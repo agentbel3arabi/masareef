@@ -129,8 +129,8 @@ class HsbcCcPreset(BankPreset):
           x0≈150+ Description (multiple words)
           x0≈496+ Amount (single column; "CR" suffix → credit, else debit)
 
-        Consecutive deduplication removes rendering artifacts where the same visual
-        row appears 4–6 times at ~8pt Y intervals in the PDF stream.
+        The table uses a uniform ~8.2pt row height. Every row at a distinct Y
+        position is a real transaction — no deduplication is applied.
         """
         config = self.get_pdf_config()
         rows: list[ParsedRow] = []
@@ -170,7 +170,6 @@ class HsbcCcPreset(BankPreset):
                     elif config.debit_x_range[0] <= x0 <= config.debit_x_range[1]:
                         amount_cols.setdefault(y, []).append(text)
 
-                prev_key: tuple[str, str, str, str] | None = None
                 for y in sorted(posting_cols):
                     posting_text = " ".join(posting_cols[y])
                     txn_text = " ".join(txn_cols.get(y, []))
@@ -183,13 +182,6 @@ class HsbcCcPreset(BankPreset):
                     # Skip rows with no amount
                     if not amount_text:
                         continue
-
-                    # Consecutive dedup: PDF rendering artifact causes the same visual
-                    # row to appear 4–6 times at ~8pt Y intervals. Keep only the first.
-                    key = (posting_text, txn_text, desc_text, amount_text)
-                    if key == prev_key:
-                        continue
-                    prev_key = key
 
                     # Determine debit vs credit from "CR" suffix in amount text
                     if "CR" in amount_text.upper():
