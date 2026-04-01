@@ -230,7 +230,33 @@ Physical directional CSS classes are **strictly forbidden**. The app must work i
 
 ---
 
-## 15. What NOT to Do
+## 15. Unit Execution Workflow (mandatory)
+
+Every work unit follows these steps — no exceptions:
+
+1. **Read handoff** — check `docs/superpowers/handoff/` for the prior unit's note before writing any code
+2. **Branch** — cut `feature/N-short-slug` (or `fix/`, `chore/`) from `main`; never commit implementation directly to `main`
+3. **Execute** — TDD: tests first, then implementation; commit frequently with Conventional Commits format
+4. **Push** — `git push -u origin feature/N-short-slug`
+5. **PR** — open a Pull Request: concise title, 2–3 bullet summary, link to plan file, any deviations from spec
+6. **Copilot review** — request Copilot review via GitHub UI (Reviewers → gear → "Request Copilot review"); do **not** merge until review is complete and all blocking issues are resolved
+7. **UAT** — run through `docs/guides/12-uat-template.md` after CI passes and Copilot review is approved
+8. **Squash merge** — merge via GitHub UI "Squash and merge" only; head branch auto-deletes
+9. **Handoff note** — create `docs/superpowers/handoff/phase-N-unit-X.md` using `docs/handoff-template.md`; commit directly to `main` and push
+
+**Branch naming:**
+- `feature/N-short-slug` — new features
+- `fix/N-short-slug` — bug fixes
+- `chore/short-slug` — tooling / deps (no N- prefix)
+
+**Merge blockers** — do not merge if:
+- CI is not passing
+- Copilot review is incomplete or has unresolved blocking issues
+- UAT found critical bugs
+
+---
+
+## 16. What NOT to Do
 
 - Never use floats for money
 - Never hard-delete user data
