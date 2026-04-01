@@ -38,7 +38,7 @@ export function PreviewStep({
     () =>
       new Set(
         rows
-          .filter((r) => r.status !== "error")
+          .filter((r) => r.status !== "error" && (r.selected ?? true))
           .map((r) => r.row_index)
       )
   );

@@ -13,10 +13,10 @@ import logging
 import uuid
 
 from fastapi import HTTPException, status
-
-logger = logging.getLogger(__name__)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger(__name__)
 
 from app.models.account import Account
 from app.models.category import Category

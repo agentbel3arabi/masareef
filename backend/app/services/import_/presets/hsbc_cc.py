@@ -24,7 +24,8 @@ _VARIANT_PATTERNS: dict[str, str] = {
 
 # Calibrated against HSBC Premier, Cashback, Evolution, Platinum PDFs.
 # Two date columns exist: posting date (x0≈60) and transaction date (x0≈110).
-# We extract both for deduplication; the transaction date is used as the row date.
+# The transaction date is captured and used as the row date; the posting date
+# is also captured so the DDMMM→ISO resolver can detect year-boundary crossings.
 # A single amount column at x0≈496-510 carries amounts; "CR" suffix = credit.
 HSBC_CC_PDF_CONFIG = PdfColumnConfig(
     date_x_range=(50.0, 95.0),          # Posting date x0≈60; excludes header text at x0=46
@@ -89,32 +90,38 @@ class HsbcCcPreset(BankPreset):
     # DDMMM dates like "04JUN" have no year; this pattern confirms the format.
     _DATE_RE = re.compile(r"^\d{2}[A-Z]{3}$")
 
-    # "Statement Date 09JUN2025" — extract the year from the statement header.
-    _STMT_DATE_RE = re.compile(r"Statement\s+Date\s+\d{2}[A-Z]{3}(\d{4})", re.IGNORECASE)
+    # "Statement Date 09JUN2025" — extract year and month from the statement header.
+    _STMT_DATE_RE = re.compile(r"Statement\s+Date\s+(\d{2})([A-Z]{3})(\d{4})", re.IGNORECASE)
 
     @staticmethod
-    def _extract_statement_year(pdf: "pdfplumber.PDF") -> int | None:  # type: ignore[name-defined]
-        """Return the year from 'Statement Date DDMMMYYYY' on page 1 or 2, or None."""
+    def _extract_statement_date(pdf: "pdfplumber.PDF") -> tuple[int, int] | None:  # type: ignore[name-defined]
+        """Return (year, month) from 'Statement Date DDMMMYYYY' on page 1 or 2, or None."""
         for page in pdf.pages[:2]:
             text = page.extract_text() or ""
             m = HsbcCcPreset._STMT_DATE_RE.search(text)
             if m:
-                return int(m.group(1))
+                try:
+                    month = datetime.datetime.strptime(m.group(2), "%b").month
+                    return int(m.group(3)), month
+                except ValueError:
+                    continue
         return None
 
     @staticmethod
-    def _resolve_ddmmm(raw: str, statement_year: int) -> str:
-        """Convert a DDMMM token (e.g. '12MAY') to an ISO date string using the
-        known statement year, rolling back one year if the month is after the
-        statement month (handles Jan statements with Dec transactions).
+    def _resolve_ddmmm(raw: str, statement_year: int, statement_month: int) -> str:
+        """Convert a DDMMM token (e.g. '12MAY') to an ISO date string.
+
+        Uses the statement year; rolls back one year when the transaction month
+        is later than the statement month — this handles December transactions
+        appearing on a January statement (common for CC billing cycles that
+        cross year boundaries).
         """
         try:
             dt = datetime.datetime.strptime(raw + str(statement_year), "%d%b%Y").date()
         except ValueError:
             return raw  # not a valid DDMMM; validate_row will surface the error
-        # If the resolved date is more than 2 months after the statement year's end,
-        # it belongs to the previous year (e.g. Dec txn in Jan statement).
-        if dt > datetime.date(statement_year, 12, 31) + datetime.timedelta(days=60):
+        # Transaction month > statement month means it crossed a year boundary
+        if dt.month > statement_month:
             dt = dt.replace(year=statement_year - 1)
         return dt.isoformat()
 
@@ -137,9 +144,11 @@ class HsbcCcPreset(BankPreset):
         row_index = 0
 
         with pdfplumber.open(io.BytesIO(content)) as pdf:
-            # Extract the statement year once; used to resolve year-less DDMMM dates.
+            # Extract statement year + month once; used to resolve year-less DDMMM dates.
             # Falls back to heuristic year inference in row_validator if not found.
-            statement_year = self._extract_statement_year(pdf)
+            stmt_date = self._extract_statement_date(pdf)
+            statement_year = stmt_date[0] if stmt_date else None
+            statement_month = stmt_date[1] if stmt_date else None
 
             for page in pdf.pages:
                 words = (
@@ -191,9 +200,9 @@ class HsbcCcPreset(BankPreset):
 
                     # Use the transaction date (when purchase happened) as the primary date
                     date_raw = txn_text or posting_text
-                    # Resolve DDMMM to ISO using the statement year when available
-                    if statement_year and self._DATE_RE.match(date_raw):
-                        date_raw = self._resolve_ddmmm(date_raw, statement_year)
+                    # Resolve DDMMM to ISO using the statement year+month when available
+                    if statement_year and statement_month and self._DATE_RE.match(date_raw):
+                        date_raw = self._resolve_ddmmm(date_raw, statement_year, statement_month)
                         date_format = "YYYY-MM-DD"
                     else:
                         date_format = "DDMMM"
