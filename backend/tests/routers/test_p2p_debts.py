@@ -323,3 +323,37 @@ async def test_person_list_includes_balances(client):
     persons = response.json()["data"]
     person_data = next(p for p in persons if p["id"] == person_id)
     assert person_data["balances"]["by_currency"]["EGP"] == 300000
+
+
+@pytest.mark.asyncio
+async def test_list_debts_filter_by_personal_lent(client):
+    person_id = await _create_person(client, "Filter Test")
+    # Create bank loan
+    await client.post(
+        "/api/v1/debts",
+        json={
+            "type": "bank_loan",
+            "name": "Bank Loan",
+            "principal_minor": 1000000,
+            "currency": "EGP",
+            "annual_rate_percent": 10,
+            "tenure_months": 12,
+            "start_date": "2024-01-01",
+        },
+    )
+    # Create P2P debt
+    await client.post(
+        "/api/v1/debts",
+        json=_create_p2p_payload(person_id, type="personal_lent"),
+    )
+
+    # Filter by personal_lent
+    response = await client.get("/api/v1/debts?type=personal_lent")
+    assert response.status_code == 200
+    debts = response.json()["data"]
+    assert len(debts) >= 1
+    assert all(d["type"] == "personal_lent" for d in debts)
+
+    # Filter by bank_loan should not include P2P
+    response2 = await client.get("/api/v1/debts?type=bank_loan")
+    assert all(d["type"] == "bank_loan" for d in response2.json()["data"])
