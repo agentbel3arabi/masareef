@@ -23,9 +23,7 @@ def compute_installment_status(
     with the required attributes.
     """
     ref = as_of or date.today()
-    months_elapsed = (ref.year - plan.start_month.year) * 12 + (
-        ref.month - plan.start_month.month
-    )
+    months_elapsed = (ref.year - plan.start_month.year) * 12 + (ref.month - plan.start_month.month)
     months_paid = max(0, min(months_elapsed, plan.total_months))
     remaining_months = plan.total_months - months_paid
     remaining_minor = plan.total_amount_minor - (months_paid * plan.monthly_amount_minor)
@@ -116,9 +114,7 @@ async def list_installments(
 
     if status_filter:
         all_plans = [
-            p
-            for p in all_plans
-            if compute_installment_status(p)["status"] == status_filter
+            p for p in all_plans if compute_installment_status(p)["status"] == status_filter
         ]
 
     total = len(all_plans)

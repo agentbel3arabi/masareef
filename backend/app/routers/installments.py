@@ -93,9 +93,7 @@ async def create_installment(
             status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(
             status_code=status_code,
-            detail=ErrorResponse(
-                error=ErrorDetail(code=err_code, message=err_code)
-            ).model_dump(),
+            detail=ErrorResponse(error=ErrorDetail(code=err_code, message=err_code)).model_dump(),
         )
     return SuccessResponse(data=_plan_to_response(plan).model_dump())
 
