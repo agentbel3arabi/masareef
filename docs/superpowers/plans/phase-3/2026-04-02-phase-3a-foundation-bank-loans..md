@@ -18,40 +18,41 @@
 
 ### New Files (17)
 
-| File | Responsibility |
-|------|---------------|
-| `backend/app/models/person.py` | Person SQLAlchemy model |
-| `backend/app/models/debt.py` | Debt SQLAlchemy model |
-| `backend/app/models/debt_payment.py` | DebtPayment SQLAlchemy model |
-| `backend/app/models/p2p_debt_split.py` | P2PDebtSplit SQLAlchemy model |
-| `backend/app/models/installment_plan.py` | InstallmentPlan SQLAlchemy model |
-| `backend/app/schemas/person.py` | Person Pydantic schemas |
-| `backend/app/schemas/debt.py` | Debt + Payment Pydantic schemas |
-| `backend/app/services/amortization.py` | Pure PMT computation + schedule generation |
-| `backend/app/services/person.py` | Person CRUD service |
-| `backend/app/services/debt.py` | Debt CRUD + payment + auto-match service |
-| `backend/app/routers/persons.py` | Persons REST endpoints |
-| `backend/app/routers/debts.py` | Debts REST endpoints |
-| `backend/alembic/versions/005_create_phase3_tables.py` | Migration for all Phase 3 tables + enums |
-| `backend/tests/services/test_amortization.py` | Unit tests for PMT + schedule |
-| `backend/tests/routers/test_persons.py` | Person API integration tests |
-| `backend/tests/routers/test_debts.py` | Debt API integration tests |
-| `backend/tests/models/test_debt_models.py` | Model instantiation + constraint tests |
+| File                                                   | Responsibility                             |
+| ------------------------------------------------------ | ------------------------------------------ |
+| `backend/app/models/person.py`                         | Person SQLAlchemy model                    |
+| `backend/app/models/debt.py`                           | Debt SQLAlchemy model                      |
+| `backend/app/models/debt_payment.py`                   | DebtPayment SQLAlchemy model               |
+| `backend/app/models/p2p_debt_split.py`                 | P2PDebtSplit SQLAlchemy model              |
+| `backend/app/models/installment_plan.py`               | InstallmentPlan SQLAlchemy model           |
+| `backend/app/schemas/person.py`                        | Person Pydantic schemas                    |
+| `backend/app/schemas/debt.py`                          | Debt + Payment Pydantic schemas            |
+| `backend/app/services/amortization.py`                 | Pure PMT computation + schedule generation |
+| `backend/app/services/person.py`                       | Person CRUD service                        |
+| `backend/app/services/debt.py`                         | Debt CRUD + payment + auto-match service   |
+| `backend/app/routers/persons.py`                       | Persons REST endpoints                     |
+| `backend/app/routers/debts.py`                         | Debts REST endpoints                       |
+| `backend/alembic/versions/005_create_phase3_tables.py` | Migration for all Phase 3 tables + enums   |
+| `backend/tests/services/test_amortization.py`          | Unit tests for PMT + schedule              |
+| `backend/tests/routers/test_persons.py`                | Person API integration tests               |
+| `backend/tests/routers/test_debts.py`                  | Debt API integration tests                 |
+| `backend/tests/models/test_debt_models.py`             | Model instantiation + constraint tests     |
 
 ### Modified Files (3)
 
-| File | Changes |
-|------|---------|
-| `backend/app/models/enums.py` | Add 6 new enums |
-| `backend/app/models/__init__.py` | Export 5 new models + 6 new enums |
-| `backend/app/main.py` | Register `persons` and `debts` routers |
-| `backend/tests/conftest.py` | Import 5 new models so Base.metadata sees them |
+| File                             | Changes                                        |
+| -------------------------------- | ---------------------------------------------- |
+| `backend/app/models/enums.py`    | Add 6 new enums                                |
+| `backend/app/models/__init__.py` | Export 5 new models + 6 new enums              |
+| `backend/app/main.py`            | Register `persons` and `debts` routers         |
+| `backend/tests/conftest.py`      | Import 5 new models so Base.metadata sees them |
 
 ---
 
 ## Task 1: Add Phase 3 Enums
 
 **Files:**
+
 - Modify: `backend/app/models/enums.py`
 - Test: `backend/tests/models/test_enums.py` (existing — extend)
 
@@ -175,6 +176,7 @@ git commit -m "feat(debts): add 6 Phase 3 enums (DebtType, DebtStatus, Installme
 ## Task 2: Create SQLAlchemy Models (5 files)
 
 **Files:**
+
 - Create: `backend/app/models/person.py`
 - Create: `backend/app/models/debt.py`
 - Create: `backend/app/models/debt_payment.py`
@@ -644,6 +646,7 @@ git commit -m "feat(debts): add 5 Phase 3 SQLAlchemy models (Person, Debt, DebtP
 ## Task 3: Create Alembic Migration
 
 **Files:**
+
 - Create: `backend/alembic/versions/005_create_phase3_tables.py`
 
 - [ ] **Step 1: Create the migration file**
@@ -881,6 +884,7 @@ git commit -m "feat(debts): add Alembic migration for Phase 3 tables (persons, d
 ## Task 4: Amortization Engine (Pure Computation)
 
 **Files:**
+
 - Create: `backend/app/services/amortization.py`
 - Test: `backend/tests/services/test_amortization.py`
 
@@ -1198,6 +1202,7 @@ git commit -m "feat(debts): add amortization engine with PMT formula and schedul
 ## Task 5: Person Schemas + Service + Router
 
 **Files:**
+
 - Create: `backend/app/schemas/person.py`
 - Create: `backend/app/services/person.py`
 - Create: `backend/app/routers/persons.py`
@@ -1599,11 +1604,13 @@ async def delete_person(
 - [ ] **Step 6: Register persons router in `backend/app/main.py`**
 
 Add to imports:
+
 ```python
 from app.routers.persons import router as persons_router
 ```
 
 Add after the last `app.include_router(...)` line:
+
 ```python
 app.include_router(persons_router)
 ```
@@ -1632,6 +1639,7 @@ git commit -m "feat(persons): add Person CRUD with soft-delete guard for active 
 ## Task 6: Debt Schemas
 
 **Files:**
+
 - Create: `backend/app/schemas/debt.py`
 
 - [ ] **Step 1: Create debt schemas**
@@ -1742,6 +1750,7 @@ git commit -m "feat(debts): add Pydantic schemas for debts, payments, schedule, 
 ## Task 7: Debt Service (Bank Loans + Payments + Auto-Match)
 
 **Files:**
+
 - Create: `backend/app/services/debt.py`
 
 - [ ] **Step 1: Create the debt service**
@@ -2088,6 +2097,7 @@ git commit -m "feat(debts): add debt service with bank loan CRUD, payments, auto
 ## Task 8: Debts Router + Integration Tests
 
 **Files:**
+
 - Create: `backend/app/routers/debts.py`
 - Modify: `backend/app/main.py`
 - Test: `backend/tests/routers/test_debts.py`
@@ -2627,11 +2637,13 @@ async def mark_debt_paid(
 - [ ] **Step 4: Register debts router in `backend/app/main.py`**
 
 Add to imports:
+
 ```python
 from app.routers.debts import router as debts_router
 ```
 
 Add after `app.include_router(persons_router)`:
+
 ```python
 app.include_router(debts_router)
 ```
@@ -2694,18 +2706,19 @@ Check GitHub Actions for the backend workflow. All checks (ruff, pyright, pytest
 
 After all tasks are complete:
 
-| Artifact | Count |
-|----------|-------|
-| New enums | 6 (DebtType, DebtStatus, InstallmentType, LifecycleStatus, PersonRelationship, RepaymentMode) |
-| New models | 5 (Person, Debt, DebtPayment, P2PDebtSplit, InstallmentPlan) |
-| New schemas | 2 files (person.py, debt.py) |
-| New services | 3 (amortization.py, person.py, debt.py) |
-| New routers | 2 (persons.py, debts.py) |
-| Alembic migration | 1 (005_create_phase3_tables.py) |
-| New test files | 4 (test_amortization.py, test_debt_models.py, test_persons.py, test_debts.py) |
-| Commits | ~8 atomic commits |
+| Artifact          | Count                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| New enums         | 6 (DebtType, DebtStatus, InstallmentType, LifecycleStatus, PersonRelationship, RepaymentMode) |
+| New models        | 5 (Person, Debt, DebtPayment, P2PDebtSplit, InstallmentPlan)                                  |
+| New schemas       | 2 files (person.py, debt.py)                                                                  |
+| New services      | 3 (amortization.py, person.py, debt.py)                                                       |
+| New routers       | 2 (persons.py, debts.py)                                                                      |
+| Alembic migration | 1 (005_create_phase3_tables.py)                                                               |
+| New test files    | 4 (test_amortization.py, test_debt_models.py, test_persons.py, test_debts.py)                 |
+| Commits           | ~8 atomic commits                                                                             |
 
 **Endpoints delivered:**
+
 - `GET/POST /api/v1/persons` + `GET/PUT/DELETE /api/v1/persons/{id}`
 - `GET/POST /api/v1/debts` + `GET/PUT/DELETE /api/v1/debts/{id}`
 - `GET /api/v1/debts/{id}/amortization`
