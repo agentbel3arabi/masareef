@@ -21,15 +21,11 @@ class Debt(TimestampMixin, SoftDeleteMixin, Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    household_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), nullable=False
-    )
+    household_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     type: Mapped[str] = mapped_column(
         SAEnum(DebtType, values_callable=_enum_values, create_type=False), nullable=False
     )
-    person_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("persons.id"), nullable=True
-    )
+    person_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("persons.id"), nullable=True)
     linked_account_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("accounts.id"), nullable=True
     )

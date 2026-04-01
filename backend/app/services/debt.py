@@ -129,9 +129,7 @@ async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
     await session.flush()
 
 
-async def get_amortization_schedule(
-    session: AsyncSession, debt: Debt
-) -> list[dict]:
+async def get_amortization_schedule(session: AsyncSession, debt: Debt) -> list[dict]:
     payments = await _get_payments(session, debt.id)
     return generate_schedule(
         principal_minor=debt.principal_minor,
@@ -180,10 +178,7 @@ async def record_payment(
         # Find the matching schedule row by calendar month
         matching_row = None
         for row in schedule:
-            if (
-                row["date"].month == payment_date.month
-                and row["date"].year == payment_date.year
-            ):
+            if row["date"].month == payment_date.month and row["date"].year == payment_date.year:
                 matching_row = row
                 break
         if not matching_row:
@@ -215,7 +210,8 @@ async def record_payment(
     await session.flush()
 
     # Check if debt is fully paid off using principal balance, not total cash paid.
-    new_principal_paid = principal_paid + (principal_portion if principal_portion is not None else amount_minor)
+    principal_portion_value = principal_portion if principal_portion is not None else amount_minor
+    new_principal_paid = principal_paid + principal_portion_value
     if new_principal_paid >= debt.principal_minor:
         debt.status = DebtStatus.PAID_OFF
         await session.flush()
@@ -223,9 +219,7 @@ async def record_payment(
     return payment
 
 
-async def get_payments(
-    session: AsyncSession, debt_id: int
-) -> list[DebtPayment]:
+async def get_payments(session: AsyncSession, debt_id: int) -> list[DebtPayment]:
     return await _get_payments(session, debt_id)
 
 
@@ -295,9 +289,7 @@ async def get_match_suggestions(
     return result
 
 
-async def compute_debt_totals(
-    session: AsyncSession, debt_id: int
-) -> tuple[int, int]:
+async def compute_debt_totals(session: AsyncSession, debt_id: int) -> tuple[int, int]:
     """Return (total_paid, remaining_principal) for a debt.
 
     total_paid     — sum of all payment amounts (principal + interest cash out)
@@ -305,18 +297,16 @@ async def compute_debt_totals(
     """
     total_paid = await _total_paid(session, debt_id)
     principal_paid = await _principal_paid(session, debt_id)
-    debt = (await session.execute(select(Debt).where(Debt.id == debt_id, Debt.is_active.is_(True)))).scalar_one()
+    q = select(Debt).where(Debt.id == debt_id, Debt.is_active.is_(True))
+    debt = (await session.execute(q)).scalar_one()
     return total_paid, debt.principal_minor - principal_paid
 
 
 # --- Private helpers ---
 
+
 async def _get_payments(session: AsyncSession, debt_id: int) -> list[DebtPayment]:
-    q = (
-        select(DebtPayment)
-        .where(DebtPayment.debt_id == debt_id)
-        .order_by(DebtPayment.date)
-    )
+    q = select(DebtPayment).where(DebtPayment.debt_id == debt_id).order_by(DebtPayment.date)
     result = await session.execute(q)
     return list(result.scalars().all())
 
@@ -336,7 +326,7 @@ async def _principal_paid(session: AsyncSession, debt_id: int) -> int:
     return (await session.execute(q)).scalar_one()
 
 
-
+async def _validate_linked_account(
     session: AsyncSession,
     household_id: uuid.UUID,
     account_id: int,
@@ -351,7 +341,8 @@ async def _principal_paid(session: AsyncSession, debt_id: int) -> int:
     account = (await session.execute(q)).scalar_one_or_none()
     if not account:
         raise ValueError("LINKED_ACCOUNT_NOT_FOUND")
-    
+
     # Account.type is an AccountType enum member, compare with expected_type
     if account.type != expected_type:
-        raise ValueError(f"INVALID_ACCOUNT_TYPE: expected {expected_type.value}, got {account.type.value}")
+        msg = f"INVALID_ACCOUNT_TYPE: expected {expected_type.value}, got {account.type.value}"
+        raise ValueError(msg)
