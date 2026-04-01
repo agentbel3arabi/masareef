@@ -43,3 +43,46 @@ def compute_installment_status(
         "remaining_minor": remaining_minor,
         "status": effective_status,
     }
+
+
+async def create_installment(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    data: InstallmentCreate,
+) -> InstallmentPlan:
+    """Create an installment plan with account type validation."""
+    if data.source_account_id is not None:
+        account = await session.get(Account, data.source_account_id)
+        if account is None or not account.is_active or account.household_id != household_id:
+            raise ValueError("ACCOUNT_NOT_FOUND")
+
+        acct_type = account.type.value if hasattr(account.type, "value") else account.type
+
+        if data.type == "credit_card" and acct_type != "credit_card":
+            raise ValueError("INVALID_ACCOUNT_TYPE")
+        elif data.type == "financing_app" and acct_type != "financing_app":
+            raise ValueError("INVALID_ACCOUNT_TYPE")
+        elif data.type == "store" and acct_type != "credit_card":
+            raise ValueError("INVALID_ACCOUNT_TYPE")
+    else:
+        if data.type in ("credit_card", "financing_app"):
+            raise ValueError("SOURCE_ACCOUNT_REQUIRED")
+
+    start_month = data.start_month.replace(day=1)
+
+    plan = InstallmentPlan(
+        household_id=household_id,
+        type=data.type,
+        name=data.name,
+        merchant_name=data.merchant_name,
+        source_account_id=data.source_account_id,
+        linked_account_id=data.linked_account_id,
+        total_amount_minor=data.total_amount_minor,
+        monthly_amount_minor=data.monthly_amount_minor,
+        total_months=data.total_months,
+        start_month=start_month,
+        currency=data.currency,
+    )
+    session.add(plan)
+    await session.flush()
+    return plan
