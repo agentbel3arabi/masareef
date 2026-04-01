@@ -39,7 +39,8 @@ Extended debt system from bank-loan-only to P2P debts (personal_lent, personal_b
 
 ## 3. Known Gaps / Deferred
 
-- **N+1 query in list_persons** — Each person triggers 2 balance queries. Create `compute_persons_balances_bulk()` for batch optimization if performance becomes an issue.
+- ~~**N+1 query in list_persons**~~ — Fixed: `compute_persons_balances_bulk()` uses 2 queries for all persons.
+- ~~**repayment_mode None validation**~~ — Fixed: P2P debts now require a valid repayment_mode.
 - **Partial payment tracking on splits** — Splits can only be "paid" or "unpaid" (boolean). No partial payment tracking. Adequate for MVP; may need `paid_amount` field later.
 - **No P2P notification on payment** — No notification sent when a P2P payment is recorded. Target: Phase 4 (notifications).
 - **No P2P debt edit** — Editing P2P debt fields (person, repayment mode, splits) not implemented. Only bank_loan edit exists. Target: future phase.
