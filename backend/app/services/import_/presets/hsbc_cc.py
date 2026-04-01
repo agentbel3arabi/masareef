@@ -28,10 +28,10 @@ _VARIANT_PATTERNS: dict[str, str] = {
 # is also captured so the DDMMM→ISO resolver can detect year-boundary crossings.
 # A single amount column at x0≈496-510 carries amounts; "CR" suffix = credit.
 HSBC_CC_PDF_CONFIG = PdfColumnConfig(
-    date_x_range=(50.0, 95.0),          # Posting date x0≈60; excludes header text at x0=46
-    description_x_range=(140.0, 420.0), # Description x0≈150-400; skips booking date at x0≈110
-    debit_x_range=(455.0, 525.0),       # Single amount column x0≈496-510
-    credit_x_range=(455.0, 525.0),      # Same range; credit vs debit determined from "CR" suffix
+    date_x_range=(50.0, 95.0),  # Posting date x0≈60; excludes header text at x0=46
+    description_x_range=(140.0, 420.0),  # Description x0≈150-400; skips booking date at x0≈110
+    debit_x_range=(455.0, 525.0),  # Single amount column x0≈496-510
+    credit_x_range=(455.0, 525.0),  # Same range; credit vs debit determined from "CR" suffix
     y_tolerance=3.0,
 )
 
@@ -161,7 +161,7 @@ class HsbcCcPreset(BankPreset):
 
                 # Bucket words by X range into per-Y-position lists
                 posting_cols: dict[float, list[str]] = {}  # x0≈60  (posting date)
-                txn_cols: dict[float, list[str]] = {}       # x0≈110 (transaction date)
+                txn_cols: dict[float, list[str]] = {}  # x0≈110 (transaction date)
                 desc_cols: dict[float, list[str]] = {}
                 amount_cols: dict[float, list[str]] = {}
 

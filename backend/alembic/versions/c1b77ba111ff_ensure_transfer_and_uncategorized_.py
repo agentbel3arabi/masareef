@@ -8,6 +8,7 @@ Ensures that the predefined "Transfer" and "Uncategorized" special categories
 exist. The initial seed only ran once; later additions to PREDEFINED_CATEGORIES
 are not automatically applied to existing databases.
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
