@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class PersonCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1)
     name_ar: str | None = None
     phone: str | None = None
     email: str | None = None

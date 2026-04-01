@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.debt import Debt
+from app.models.enums import DebtStatus
 from app.models.person import Person
 from app.schemas.person import PersonCreate, PersonUpdate
 
@@ -86,7 +87,7 @@ async def has_active_debts(
     q = select(func.count(Debt.id)).where(
         Debt.person_id == person_id,
         Debt.is_active.is_(True),
-        Debt.status == "active",
+        Debt.status == DebtStatus.ACTIVE,
     )
     count = (await session.execute(q)).scalar_one()
     return count > 0
