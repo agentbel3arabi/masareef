@@ -16,7 +16,7 @@ Phase 3 delivers the complete debt management system: bank loans with amortizati
 
 ## 2. Decomposition
 
-Phase 3 is decomposed into 4 sub-phases, executed sequentially:
+Phase 3 is decomposed into 5 sub-phases, executed sequentially:
 
 | Sub-Phase | Scope | Depends On |
 |-----------|-------|------------|
@@ -24,12 +24,9 @@ Phase 3 is decomposed into 4 sub-phases, executed sequentially:
 | **3B** | P2P debts — 3 repayment modes, splits, person card balance computation (per-currency + FX conversion) | 3A |
 | **3C** | Installment plans — CC installments, store installments, financing app installments, financing apps summary endpoint | 3A |
 | **3D** | Frontend — 5-tab debts page, loan detail, P2P person card, installment forms, person management, dashboard stat cards | 3A + 3B + 3C |
+| **3E** | CC statement cycle — statement generation date, current vs statement balance, minimum payment + transaction pending/posted state | 3A + 3D |
 
-**Rationale:** Backend-first (3A→3B→3C), then frontend (3D). The 5-tab debts page needs all backend endpoints to be useful — partial frontend is awkward. This matches the project's existing pattern.
-
-**Deferred from Phase 3:**
-- Credit card statement cycle (statement generation date, current vs statement balance, minimum payment) — tangential to core debt tracking; better as Phase 3.5 or Phase 4
-- Transaction pending/posted state — affects the transaction model broadly; not debt-specific
+**Rationale:** Backend-first (3A→3B→3C), then frontend (3D), then CC-specific enhancements (3E). The statement cycle touches both the account and transaction models and benefits from having the full debt system in place first.
 
 ---
 
@@ -555,7 +552,92 @@ Each sub-phase includes its own tests:
 
 ---
 
-## 11. Open Questions
+## 11. Sub-Phase 3E: CC Statement Cycle & Pending/Posted Transactions
+
+These two deferred Phase 1.5 items are now included in Phase 3.
+
+### 11.1 Credit Card Statement Cycle
+
+**Purpose:** Credit cards in Egypt have a billing cycle. The `statement_balance` is locked on `billing_cycle_day`; the `current_balance` continues to accumulate. Minimum payment is computed from the statement balance.
+
+**Backend changes:**
+
+Add to `accounts` table (new migration):
+- `statement_balance_minor BIGINT NULL` — balance locked on last billing cycle date
+- `last_statement_date DATE NULL` — when the last statement was generated
+- `minimum_payment_minor BIGINT NULL` — computed minimum payment for current cycle
+
+**Service: `services/statement_cycle.py`**
+- `compute_statement_balance(session, account) -> int` — sum of transactions up to `billing_cycle_day` of current month
+- `compute_minimum_payment(statement_balance_minor, rate_bps) -> int` — typically max(fixed_minimum, percentage × statement_balance)
+- Egyptian CC minimum payment: typically 5% of statement balance or 100 EGP, whichever is higher (configurable per account)
+
+**New endpoint:**
+- `POST /api/v1/accounts/{id}/close-statement` — manually trigger statement close (lock balance, compute minimum payment)
+- `GET /api/v1/accounts/{id}/statement` — current vs statement balance, minimum payment, due date
+
+**Display fields in AccountResponse:**
+- `statement_balance_minor` — balance as of last statement date
+- `current_balance_minor` — live balance (same as displayed_balance)
+- `minimum_payment_minor` — minimum due this cycle
+- `payment_due_date` — derived from `payment_due_day`
+
+### 11.2 Transaction Pending vs Posted State
+
+**Purpose:** CC transactions have a lifecycle: `pending` (authorization hold) → `posted` (settled). Pending transactions affect available credit but not the statement balance.
+
+**Backend changes:**
+
+Add to `transactions` table (new migration):
+- `posting_status TEXT NOT NULL DEFAULT 'posted'` — enum: `pending`, `posted`
+- Only applicable for credit card and financing app accounts; bank_account/cash/digital always `posted`
+
+**Business logic:**
+- Pending transactions DO count toward `displayed_balance` and `available_credit`
+- Pending transactions DO NOT count toward `statement_balance`
+- When a pending transaction transitions to `posted`, no balance change (already counted)
+- Pending transactions older than 7 days auto-flag for review (background task)
+
+**New endpoints:**
+- `POST /api/v1/transactions/{id}/post` — transition pending → posted
+- `GET /api/v1/transactions?posting_status=pending` — filter by posting status
+
+### 11.3 Frontend Changes (3E)
+
+- Account detail: show statement balance vs current balance (CC/financing_app only)
+- Account detail: show minimum payment amount and due date
+- Transaction list: visual indicator for pending transactions (e.g., dotted border, "Pending" badge)
+- Transaction list: filter by posting status
+- Account card: distinguish current vs statement balance
+
+### 11.4 Tests (3E)
+
+- Statement balance computation with billing cycle boundary
+- Minimum payment computation
+- Pending → posted transition
+- Statement close flow
+- Pending transactions excluded from statement balance but included in displayed balance
+
+### 11.5 Files Created/Modified (3E)
+
+**New files:**
+- `backend/app/services/statement_cycle.py`
+- `backend/alembic/versions/xxx_add_statement_cycle_columns.py`
+- `backend/tests/unit/test_statement_cycle.py`
+
+**Modified files:**
+- `backend/app/models/account.py` — add statement columns
+- `backend/app/models/transaction.py` — add posting_status column
+- `backend/app/schemas/account.py` — add statement fields to response
+- `backend/app/schemas/transaction.py` — add posting_status
+- `backend/app/routers/accounts.py` — add statement endpoints
+- `backend/app/routers/transactions.py` — add post endpoint, posting_status filter
+- `backend/app/services/account.py` — statement balance computation
+- Frontend account detail + transaction list components
+
+---
+
+## 12. Open Questions
 
 1. **Exchange rates endpoint:** The `exchange_rates` model exists but there's no router. Phase 3B needs FX conversion for person card. Should we add a minimal `GET /api/v1/exchange-rates/latest` endpoint in 3B, or seed rates manually for now?
    - **Decision:** Add minimal endpoint in 3B — it's needed for person card and will be reused by dashboard net worth (backend-dependencies #11, #12).
@@ -565,3 +647,6 @@ Each sub-phase includes its own tests:
 
 3. **Sidebar navigation position:** Debts tab should go where in the sidebar?
    - **Decision:** After Transactions, before Settings. Matches the natural user flow: accounts → transactions → debts → settings.
+
+4. **Minimum payment formula:** Egyptian banks vary. Should we make it configurable per account or use a standard default?
+   - **Decision:** Configurable — add `minimum_payment_percent` (default 5%) and `minimum_payment_floor_minor` (default 10000 = 100 EGP) to accounts table. User can override per CC.
