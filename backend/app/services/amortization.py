@@ -1,7 +1,7 @@
 """Amortization engine — pure computation, no DB, no HTTP awareness."""
 
-import math
 from datetime import date
+from decimal import ROUND_CEILING, Decimal
 from typing import Any
 
 from dateutil.relativedelta import relativedelta
@@ -16,7 +16,7 @@ def compute_monthly_payment(principal_minor: int, annual_rate_bps: int, tenure_m
         tenure_months: Number of monthly payments.
 
     Returns:
-        Monthly payment in minor units, rounded up (math.ceil).
+        Monthly payment in minor units, rounded up (ceiling).
     """
     if tenure_months <= 0:
         raise ValueError("tenure_months must be positive")
@@ -24,12 +24,12 @@ def compute_monthly_payment(principal_minor: int, annual_rate_bps: int, tenure_m
         raise ValueError("principal_minor must be positive")
 
     if annual_rate_bps == 0:
-        return math.ceil(principal_minor / tenure_months)
+        return (principal_minor + tenure_months - 1) // tenure_months
 
-    monthly_rate = annual_rate_bps / (10_000 * 12)
-    factor = (1 + monthly_rate) ** tenure_months
-    payment = principal_minor * (monthly_rate * factor) / (factor - 1)
-    return math.ceil(payment)
+    monthly_rate = Decimal(annual_rate_bps) / Decimal(10_000 * 12)
+    factor = (Decimal(1) + monthly_rate) ** tenure_months
+    payment = Decimal(principal_minor) * (monthly_rate * factor) / (factor - Decimal(1))
+    return int(payment.to_integral_value(rounding=ROUND_CEILING))
 
 
 def generate_schedule(
@@ -52,7 +52,10 @@ def generate_schedule(
         List of schedule row dicts, one per month.
     """
     monthly_payment = compute_monthly_payment(principal_minor, annual_rate_bps, tenure_months)
-    monthly_rate = annual_rate_bps / (10_000 * 12) if annual_rate_bps > 0 else 0.0
+    if annual_rate_bps > 0:
+        monthly_rate = Decimal(annual_rate_bps) / Decimal(10_000 * 12)
+    else:
+        monthly_rate = Decimal(0)
 
     # Index payments by approximate month for status lookup
     payment_dates = set()
@@ -73,9 +76,10 @@ def generate_schedule(
                 # Final payment absorbs remainder
                 principal_portion = remaining
             else:
-                principal_portion = math.ceil(principal_minor / tenure_months)
+                principal_portion = (principal_minor + tenure_months - 1) // tenure_months
         else:
-            interest = math.ceil(remaining * monthly_rate)
+            raw_interest = Decimal(remaining) * monthly_rate
+            interest = int(raw_interest.to_integral_value(rounding=ROUND_CEILING))
             if i == tenure_months - 1:
                 # Final payment absorbs rounding error
                 principal_portion = remaining
@@ -83,7 +87,13 @@ def generate_schedule(
             else:
                 principal_portion = monthly_payment - interest
 
+        # Cap principal_portion to remaining balance before subtracting
+        if remaining <= 0:
+            principal_portion = 0
+        elif principal_portion > remaining:
+            principal_portion = remaining
         remaining -= principal_portion
+        remaining = max(remaining, 0)
 
         # Determine status
         has_payment = any(_dates_match_month(pd, payment_date) for pd in payment_dates)
