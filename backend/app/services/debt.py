@@ -175,6 +175,20 @@ async def create_p2p_debt(
     return debt
 
 
+async def get_splits(
+    session: AsyncSession,
+    debt_id: int,
+) -> list[P2PDebtSplit]:
+    """Return all splits for a debt, ordered by due_date."""
+    q = (
+        select(P2PDebtSplit)
+        .where(P2PDebtSplit.debt_id == debt_id)
+        .order_by(P2PDebtSplit.due_date)
+    )
+    result = await session.execute(q)
+    return list(result.scalars().all())
+
+
 async def update_debt(
     session: AsyncSession,
     household_id: uuid.UUID,
@@ -278,6 +292,10 @@ async def record_payment(
         # 0% interest — entire payment reduces principal
         principal_portion = amount_minor
         interest_portion = 0
+    else:
+        # P2P debts — no interest, entire payment is principal
+        principal_portion = amount_minor
+        interest_portion = 0
 
     payment = DebtPayment(
         debt_id=debt.id,
@@ -290,6 +308,23 @@ async def record_payment(
     )
     session.add(payment)
     await session.flush()
+
+    # For P2P debts, find the earliest unpaid split and mark it paid
+    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
+        unpaid_q = (
+            select(P2PDebtSplit)
+            .where(
+                P2PDebtSplit.debt_id == debt.id,
+                P2PDebtSplit.paid.is_(False),
+            )
+            .order_by(P2PDebtSplit.due_date)
+            .limit(1)
+        )
+        unpaid_split = (await session.execute(unpaid_q)).scalar_one_or_none()
+        if unpaid_split:
+            unpaid_split.paid = True
+            unpaid_split.payment_id = payment.id
+            await session.flush()
 
     # Check if debt is fully paid off using principal balance, not total cash paid.
     principal_portion_value = principal_portion if principal_portion is not None else amount_minor
