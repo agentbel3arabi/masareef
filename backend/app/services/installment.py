@@ -4,11 +4,12 @@ import uuid
 from datetime import date
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
 from app.models.debt import Debt
+from app.models.enums import AccountType
 from app.models.installment_plan import InstallmentPlan
 from app.schemas.installment import InstallmentCreate, InstallmentUpdate
 
@@ -68,6 +69,12 @@ async def create_installment(
         if data.type in ("credit_card", "financing_app"):
             raise ValueError("SOURCE_ACCOUNT_REQUIRED")
 
+    # Validate linked_account_id if provided
+    if data.linked_account_id is not None:
+        linked = await session.get(Account, data.linked_account_id)
+        if not linked or not linked.is_active or linked.household_id != household_id:
+            raise ValueError("ACCOUNT_NOT_FOUND")
+
     start_month = data.start_month.replace(day=1)
 
     plan = InstallmentPlan(
@@ -99,7 +106,8 @@ async def list_installments(
 ) -> tuple[list[InstallmentPlan], int]:
     """List installment plans with optional filters.
 
-    Status filtering is done in Python because effective status is computed.
+    When status_filter is set, all plans are loaded and filtered in Python
+    because effective status is computed. Otherwise DB-level pagination is used.
     """
     query = select(InstallmentPlan).where(
         InstallmentPlan.household_id == household_id,
@@ -111,17 +119,26 @@ async def list_installments(
         query = query.where(InstallmentPlan.source_account_id == source_account_id)
 
     query = query.order_by(InstallmentPlan.created_at.desc())
-    result = await session.execute(query)
-    all_plans = list(result.scalars().all())
 
     if status_filter:
+        # Must load all to compute status in Python
+        result = await session.execute(query)
+        all_plans = list(result.scalars().all())
         all_plans = [
             p for p in all_plans if compute_installment_status(p)["status"] == status_filter
         ]
+        total = len(all_plans)
+        start = (page - 1) * page_size
+        page_plans = all_plans[start : start + page_size]
+    else:
+        # DB-level pagination
+        count_query = select(func.count()).select_from(query.subquery())
+        total = (await session.execute(count_query)).scalar_one()
+        offset = (page - 1) * page_size
+        paginated = query.offset(offset).limit(page_size)
+        result = await session.execute(paginated)
+        page_plans = list(result.scalars().all())
 
-    total = len(all_plans)
-    start = (page - 1) * page_size
-    page_plans = all_plans[start : start + page_size]
     return page_plans, total
 
 
@@ -150,7 +167,7 @@ async def update_installment(
 
     if "linked_account_id" in updates and updates["linked_account_id"] is not None:
         acct = await session.get(Account, updates["linked_account_id"])
-        if not acct or acct.household_id != plan.household_id:
+        if not acct or acct.household_id != plan.household_id or not acct.is_active:
             raise ValueError("ACCOUNT_NOT_FOUND")
 
     for field, value in updates.items():
@@ -187,7 +204,7 @@ async def get_financing_apps_summary(
     acct_query = select(Account).where(
         Account.household_id == household_id,
         Account.is_active.is_(True),
-        Account.type == "financing_app",
+        Account.type == AccountType.FINANCING_APP,
     )
     acct_result = await session.execute(acct_query)
     accounts = list(acct_result.scalars().all())
@@ -224,6 +241,7 @@ async def get_financing_apps_summary(
     apps = []
     total_limit = 0
     total_used = 0
+    total_available = 0
     total_monthly = 0
     total_remaining = 0
 
@@ -238,8 +256,8 @@ async def get_financing_apps_summary(
 
         credit_limit = acct.credit_limit or 0
         balance = acct.balance_minor or 0
-        used = abs(balance)
-        available = credit_limit + balance  # balance is negative when owed
+        used = max(-balance, 0)  # only count negative balance as utilization
+        available = max(credit_limit + balance, 0)
 
         utilization = (used / credit_limit * 100) if credit_limit > 0 else 0.0
 
@@ -259,10 +277,9 @@ async def get_financing_apps_summary(
 
         total_limit += credit_limit
         total_used += used
+        total_available += available
         total_monthly += monthly_commitment
         total_remaining += remaining
-
-    total_available = total_limit - total_used
 
     return {
         "apps": apps,
