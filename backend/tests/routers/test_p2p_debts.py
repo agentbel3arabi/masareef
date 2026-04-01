@@ -355,3 +355,13 @@ async def test_list_debts_filter_by_personal_lent(client):
     # Filter by bank_loan should not include P2P
     response2 = await client.get("/api/v1/debts?type=bank_loan")
     assert all(d["type"] == "bank_loan" for d in response2.json()["data"])
+
+
+@pytest.mark.asyncio
+async def test_create_p2p_without_repayment_mode_fails(client):
+    person_id = await _create_person(client, "No Mode Person")
+    payload = _create_p2p_payload(person_id, type="personal_lent")
+    payload.pop("repayment_mode", None)
+    response = await client.post("/api/v1/debts", json=payload)
+    assert response.status_code == 422
+    assert "INVALID_REPAYMENT_MODE" in response.json()["detail"]["error"]["code"]

@@ -117,6 +117,9 @@ async def create_p2p_debt(
         raise ValueError("PERSON_NOT_FOUND")
 
     mode = data.repayment_mode
+    valid_modes = {"lump_sum", "equal_splits", "custom_splits"}
+    if not mode or mode not in valid_modes:
+        raise ValueError("INVALID_REPAYMENT_MODE")
     if mode == "lump_sum" and not data.due_date:
         raise ValueError("DUE_DATE_REQUIRED")
     if mode == "equal_splits" and not data.split_count:
@@ -160,13 +163,9 @@ async def create_p2p_debt(
     if mode == "lump_sum" and data.due_date is not None:
         raw_splits = generate_lump_sum_split(data.principal_minor, data.due_date)
     elif mode == "equal_splits" and data.split_count is not None:
-        raw_splits = generate_equal_splits(
-            data.principal_minor, data.split_count, data.start_date
-        )
+        raw_splits = generate_equal_splits(data.principal_minor, data.split_count, data.start_date)
     elif mode == "custom_splits" and data.splits is not None:
-        raw_splits = [
-            {"amount_minor": s.amount_minor, "due_date": s.due_date} for s in data.splits
-        ]
+        raw_splits = [{"amount_minor": s.amount_minor, "due_date": s.due_date} for s in data.splits]
 
     for s in raw_splits:
         split = P2PDebtSplit(

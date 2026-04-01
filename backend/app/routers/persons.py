@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.models.enums import PersonRelationship
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
-from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate
+from app.schemas.person import PersonBalances, PersonCreate, PersonResponse, PersonUpdate
 from app.services import person as person_service
 
 router = APIRouter(prefix="/api/v1/persons", tags=["persons"])
@@ -40,7 +41,25 @@ async def list_persons(
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
     persons, total = await person_service.list_persons(session, household_id, page, page_size)
-    items = [await _person_to_response(session, household_id, p) for p in persons]
+    person_ids = [p.id for p in persons]
+    balances_map = await person_service.compute_persons_balances_bulk(
+        session, household_id, person_ids
+    )
+    items = []
+    for p in persons:
+        balances = balances_map.get(p.id, PersonBalances())
+        resp = PersonResponse(
+            id=p.id,
+            name=p.name,
+            name_ar=p.name_ar,
+            phone=p.phone,
+            email=p.email,
+            relationship=PersonRelationship(p.relationship) if p.relationship else None,
+            notes=p.notes,
+            is_active=p.is_active,
+            balances=balances,
+        )
+        items.append(resp.model_dump())
     return SuccessResponse(
         data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),
