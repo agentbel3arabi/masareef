@@ -114,20 +114,25 @@ async def create_debt(
     try:
         if data.type == "bank_loan":
             debt = await debt_service.create_bank_loan(session, household_id, data)
+        elif data.type in ("personal_lent", "personal_borrowed"):
+            debt = await debt_service.create_p2p_debt(session, household_id, data)
         else:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=ErrorResponse(
                     error=ErrorDetail(
                         code="UNSUPPORTED_DEBT_TYPE",
-                        message=f"Debt type '{data.type}' is not supported in this phase",
+                        message=f"Debt type '{data.type}' is not supported",
                     )
                 ).model_dump(),
             )
     except ValueError as e:
         err_code = str(e)
+        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        if err_code == "PERSON_NOT_FOUND":
+            status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status_code,
             detail=ErrorResponse(error=ErrorDetail(code=err_code, message=err_code)).model_dump(),
         )
     return SuccessResponse(data=_debt_to_response(debt).model_dump())

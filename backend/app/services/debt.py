@@ -11,7 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.account import Account
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
-from app.models.enums import AccountType, DebtStatus, DebtType
+from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode
+from app.models.p2p_debt_split import P2PDebtSplit
+from app.models.person import Person
 from app.models.transaction import Transaction
 from app.schemas.debt import DebtCreate, DebtUpdate
 from app.services.amortization import compute_monthly_payment, generate_schedule
@@ -94,6 +96,82 @@ async def create_bank_loan(
     )
     session.add(debt)
     await session.flush()
+    return debt
+
+
+async def create_p2p_debt(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    data: DebtCreate,
+) -> Debt:
+    """Create a P2P debt with splits based on repayment mode."""
+    if not data.person_id:
+        raise ValueError("PERSON_REQUIRED")
+
+    person_q = select(Person).where(
+        Person.id == data.person_id,
+        Person.household_id == household_id,
+        Person.is_active.is_(True),
+    )
+    person = (await session.execute(person_q)).scalar_one_or_none()
+    if not person:
+        raise ValueError("PERSON_NOT_FOUND")
+
+    mode = data.repayment_mode
+    if mode == "lump_sum" and not data.due_date:
+        raise ValueError("DUE_DATE_REQUIRED")
+    if mode == "equal_splits" and not data.split_count:
+        raise ValueError("SPLIT_COUNT_REQUIRED")
+    if mode == "custom_splits":
+        if not data.splits:
+            raise ValueError("SPLITS_REQUIRED")
+        splits_total = sum(s.amount_minor for s in data.splits)
+        if splits_total != data.principal_minor:
+            raise ValueError("SPLITS_SUM_MISMATCH")
+
+    monthly_payment = data.principal_minor // data.tenure_months
+
+    debt_type = DebtType.PERSONAL_LENT if data.type == "personal_lent" else DebtType.PERSONAL_BORROWED
+    repayment_mode_enum = RepaymentMode(mode) if mode else None
+
+    debt = Debt(
+        household_id=household_id,
+        type=debt_type,
+        person_id=data.person_id,
+        name=data.name,
+        institution=data.institution,
+        principal_minor=data.principal_minor,
+        currency=data.currency,
+        annual_rate_bps=0,
+        tenure_months=data.tenure_months,
+        start_date=data.start_date,
+        monthly_payment_minor=monthly_payment,
+        repayment_mode=repayment_mode_enum,
+        due_date=data.due_date,
+        linked_account_id=data.linked_account_id,
+        notes=data.notes,
+        status=DebtStatus.ACTIVE,
+    )
+    session.add(debt)
+    await session.flush()
+
+    raw_splits: list[dict] = []
+    if mode == "lump_sum":
+        raw_splits = generate_lump_sum_split(data.principal_minor, data.due_date)
+    elif mode == "equal_splits":
+        raw_splits = generate_equal_splits(data.principal_minor, data.split_count, data.start_date)
+    elif mode == "custom_splits":
+        raw_splits = [{"amount_minor": s.amount_minor, "due_date": s.due_date} for s in data.splits]
+
+    for s in raw_splits:
+        split = P2PDebtSplit(
+            debt_id=debt.id,
+            amount_minor=s["amount_minor"],
+            due_date=s["due_date"],
+        )
+        session.add(split)
+    await session.flush()
+
     return debt
 
 
