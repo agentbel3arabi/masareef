@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +11,7 @@ from app.schemas.debt import (
     DebtResponse,
     DebtUpdate,
     MatchSuggestion,
+    P2PDebtSplitResponse,
     PaymentCreate,
     PaymentResponse,
     ScheduleRow,
@@ -114,20 +116,25 @@ async def create_debt(
     try:
         if data.type == "bank_loan":
             debt = await debt_service.create_bank_loan(session, household_id, data)
+        elif data.type in ("personal_lent", "personal_borrowed"):
+            debt = await debt_service.create_p2p_debt(session, household_id, data)
         else:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=ErrorResponse(
                     error=ErrorDetail(
                         code="UNSUPPORTED_DEBT_TYPE",
-                        message=f"Debt type '{data.type}' is not supported in this phase",
+                        message=f"Debt type '{data.type}' is not supported",
                     )
                 ).model_dump(),
             )
     except ValueError as e:
         err_code = str(e)
+        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        if err_code == "PERSON_NOT_FOUND":
+            status_code = status.HTTP_404_NOT_FOUND
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status_code,
             detail=ErrorResponse(error=ErrorDetail(code=err_code, message=err_code)).model_dump(),
         )
     return SuccessResponse(data=_debt_to_response(debt).model_dump())
@@ -277,3 +284,41 @@ async def mark_debt_paid(
     debt = await debt_service.mark_paid(session, debt)
     paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
+
+
+@router.get("/{debt_id}/splits")
+async def get_splits(
+    debt_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+) -> SuccessResponse:
+    debt = await debt_service.get_debt(session, household_id, debt_id)
+    if not debt:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
+            ).model_dump(),
+        )
+    splits = await debt_service.get_splits(session, debt.id)
+    today = date.today()
+    items = []
+    for s in splits:
+        if s.paid:
+            split_status = "paid"
+        elif s.due_date < today:
+            split_status = "overdue"
+        else:
+            split_status = "upcoming"
+        items.append(
+            P2PDebtSplitResponse(
+                id=s.id,
+                debt_id=s.debt_id,
+                amount_minor=s.amount_minor,
+                due_date=s.due_date,
+                paid=s.paid,
+                payment_id=s.payment_id,
+                status=split_status,
+            ).model_dump()
+        )
+    return SuccessResponse(data=items)

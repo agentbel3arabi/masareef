@@ -3,13 +3,16 @@
 import uuid
 from datetime import date, timedelta
 
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
-from app.models.enums import AccountType, DebtStatus, DebtType
+from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode
+from app.models.p2p_debt_split import P2PDebtSplit
+from app.models.person import Person
 from app.models.transaction import Transaction
 from app.schemas.debt import DebtCreate, DebtUpdate
 from app.services.amortization import compute_monthly_payment, generate_schedule
@@ -93,6 +96,97 @@ async def create_bank_loan(
     session.add(debt)
     await session.flush()
     return debt
+
+
+async def create_p2p_debt(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    data: DebtCreate,
+) -> Debt:
+    """Create a P2P debt with splits based on repayment mode."""
+    if not data.person_id:
+        raise ValueError("PERSON_REQUIRED")
+
+    person_q = select(Person).where(
+        Person.id == data.person_id,
+        Person.household_id == household_id,
+        Person.is_active.is_(True),
+    )
+    person = (await session.execute(person_q)).scalar_one_or_none()
+    if not person:
+        raise ValueError("PERSON_NOT_FOUND")
+
+    mode = data.repayment_mode
+    valid_modes = {"lump_sum", "equal_splits", "custom_splits"}
+    if not mode or mode not in valid_modes:
+        raise ValueError("INVALID_REPAYMENT_MODE")
+    if mode == "lump_sum" and not data.due_date:
+        raise ValueError("DUE_DATE_REQUIRED")
+    if mode == "equal_splits" and not data.split_count:
+        raise ValueError("SPLIT_COUNT_REQUIRED")
+    if mode == "custom_splits":
+        if not data.splits:
+            raise ValueError("SPLITS_REQUIRED")
+        splits_total = sum(s.amount_minor for s in data.splits)
+        if splits_total != data.principal_minor:
+            raise ValueError("SPLITS_SUM_MISMATCH")
+
+    monthly_payment = data.principal_minor // data.tenure_months
+
+    debt_type = (
+        DebtType.PERSONAL_LENT if data.type == "personal_lent" else DebtType.PERSONAL_BORROWED
+    )
+    repayment_mode_enum = RepaymentMode(mode) if mode else None
+
+    debt = Debt(
+        household_id=household_id,
+        type=debt_type,
+        person_id=data.person_id,
+        name=data.name,
+        institution=data.institution,
+        principal_minor=data.principal_minor,
+        currency=data.currency,
+        annual_rate_bps=0,
+        tenure_months=data.tenure_months,
+        start_date=data.start_date,
+        monthly_payment_minor=monthly_payment,
+        repayment_mode=repayment_mode_enum,
+        due_date=data.due_date,
+        linked_account_id=data.linked_account_id,
+        notes=data.notes,
+        status=DebtStatus.ACTIVE,
+    )
+    session.add(debt)
+    await session.flush()
+
+    raw_splits: list[dict] = []
+    if mode == "lump_sum" and data.due_date is not None:
+        raw_splits = generate_lump_sum_split(data.principal_minor, data.due_date)
+    elif mode == "equal_splits" and data.split_count is not None:
+        raw_splits = generate_equal_splits(data.principal_minor, data.split_count, data.start_date)
+    elif mode == "custom_splits" and data.splits is not None:
+        raw_splits = [{"amount_minor": s.amount_minor, "due_date": s.due_date} for s in data.splits]
+
+    for s in raw_splits:
+        split = P2PDebtSplit(
+            debt_id=debt.id,
+            amount_minor=s["amount_minor"],
+            due_date=s["due_date"],
+        )
+        session.add(split)
+    await session.flush()
+
+    return debt
+
+
+async def get_splits(
+    session: AsyncSession,
+    debt_id: int,
+) -> list[P2PDebtSplit]:
+    """Return all splits for a debt, ordered by due_date."""
+    q = select(P2PDebtSplit).where(P2PDebtSplit.debt_id == debt_id).order_by(P2PDebtSplit.due_date)
+    result = await session.execute(q)
+    return list(result.scalars().all())
 
 
 async def update_debt(
@@ -198,6 +292,10 @@ async def record_payment(
         # 0% interest — entire payment reduces principal
         principal_portion = amount_minor
         interest_portion = 0
+    else:
+        # P2P debts — no interest, entire payment is principal
+        principal_portion = amount_minor
+        interest_portion = 0
 
     payment = DebtPayment(
         debt_id=debt.id,
@@ -210,6 +308,23 @@ async def record_payment(
     )
     session.add(payment)
     await session.flush()
+
+    # For P2P debts, find the earliest unpaid split and mark it paid
+    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
+        unpaid_q = (
+            select(P2PDebtSplit)
+            .where(
+                P2PDebtSplit.debt_id == debt.id,
+                P2PDebtSplit.paid.is_(False),
+            )
+            .order_by(P2PDebtSplit.due_date)
+            .limit(1)
+        )
+        unpaid_split = (await session.execute(unpaid_q)).scalar_one_or_none()
+        if unpaid_split:
+            unpaid_split.paid = True
+            unpaid_split.payment_id = payment.id
+            await session.flush()
 
     # Check if debt is fully paid off using principal balance, not total cash paid.
     principal_portion_value = principal_portion if principal_portion is not None else amount_minor
@@ -338,6 +453,36 @@ async def batch_compute_debt_totals(
         if debt_id not in result:
             result[debt_id] = (0, max(principal_minor, 0))
     return result
+
+
+def generate_equal_splits(
+    principal_minor: int,
+    split_count: int,
+    start_date: date,
+) -> list[dict]:
+    """Generate N equal monthly splits. Last split absorbs rounding remainder.
+
+    Pure computation — no DB access.
+    """
+    base_amount = principal_minor // split_count
+    remainder = principal_minor - (base_amount * split_count)
+    splits = []
+    for i in range(split_count):
+        amount = base_amount + (remainder if i == split_count - 1 else 0)
+        due = start_date + relativedelta(months=i + 1)
+        splits.append({"amount_minor": amount, "due_date": due})
+    return splits
+
+
+def generate_lump_sum_split(
+    principal_minor: int,
+    due_date: date,
+) -> list[dict]:
+    """Single split at the given due date.
+
+    Pure computation — no DB access.
+    """
+    return [{"amount_minor": principal_minor, "due_date": due_date}]
 
 
 # --- Private helpers ---

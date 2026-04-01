@@ -4,25 +4,33 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.models.enums import PersonRelationship
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
-from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate
+from app.schemas.person import PersonBalances, PersonCreate, PersonResponse, PersonUpdate
 from app.services import person as person_service
 
 router = APIRouter(prefix="/api/v1/persons", tags=["persons"])
 
 
-def _person_to_response(person) -> PersonResponse:
-    rel = person.relationship
-    return PersonResponse(
+async def _person_to_response(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    person,
+) -> dict:
+    """Map Person ORM object to PersonResponse dict with computed balances."""
+    balances = await person_service.compute_person_balances(session, household_id, person.id)
+    resp = PersonResponse(
         id=person.id,
         name=person.name,
         name_ar=person.name_ar,
         phone=person.phone,
         email=person.email,
-        relationship=rel.value if hasattr(rel, "value") else rel,
+        relationship=person.relationship,
         notes=person.notes,
         is_active=person.is_active,
+        balances=balances,
     )
+    return resp.model_dump()
 
 
 @router.get("")
@@ -33,7 +41,25 @@ async def list_persons(
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
     persons, total = await person_service.list_persons(session, household_id, page, page_size)
-    items = [_person_to_response(p).model_dump() for p in persons]
+    person_ids = [p.id for p in persons]
+    balances_map = await person_service.compute_persons_balances_bulk(
+        session, household_id, person_ids
+    )
+    items = []
+    for p in persons:
+        balances = balances_map.get(p.id, PersonBalances())
+        resp = PersonResponse(
+            id=p.id,
+            name=p.name,
+            name_ar=p.name_ar,
+            phone=p.phone,
+            email=p.email,
+            relationship=PersonRelationship(p.relationship) if p.relationship else None,
+            notes=p.notes,
+            is_active=p.is_active,
+            balances=balances,
+        )
+        items.append(resp.model_dump())
     return SuccessResponse(
         data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),
@@ -54,7 +80,7 @@ async def get_person(
                 error=ErrorDetail(code="NOT_FOUND", message="Person not found")
             ).model_dump(),
         )
-    return SuccessResponse(data=_person_to_response(person).model_dump())
+    return SuccessResponse(data=await _person_to_response(session, household_id, person))
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -64,7 +90,7 @@ async def create_person(
     household_id: uuid.UUID = Depends(get_household_id),
 ) -> SuccessResponse:
     person = await person_service.create_person(session, household_id, data)
-    return SuccessResponse(data=_person_to_response(person).model_dump())
+    return SuccessResponse(data=await _person_to_response(session, household_id, person))
 
 
 @router.put("/{person_id}")
@@ -83,7 +109,7 @@ async def update_person(
             ).model_dump(),
         )
     person = await person_service.update_person(session, person, data)
-    return SuccessResponse(data=_person_to_response(person).model_dump())
+    return SuccessResponse(data=await _person_to_response(session, household_id, person))
 
 
 @router.delete("/{person_id}", status_code=status.HTTP_204_NO_CONTENT)
