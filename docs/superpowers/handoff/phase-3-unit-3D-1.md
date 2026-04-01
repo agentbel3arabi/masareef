@@ -1,7 +1,7 @@
 # Session Handoff Note — Phase 3D-1: Debts Frontend Foundation
 
 **Date:** 2025-07-12
-**PR:** TBD
+**PR:** #47 — feat(debts): Phase 3D-1 — Debts Frontend Foundation
 **Branch:** `feature/phase-3d-1-debts-frontend-foundation`
 
 ---
@@ -63,7 +63,7 @@ Complete frontend foundation for the debts feature: types, hooks, i18n, navigati
 
 ## 5. PRs Merged
 
-- **PR TBD** — Phase 3D-1: Debts Frontend Foundation — pending review
+- **PR #47** — feat(debts): Phase 3D-1 — Debts Frontend Foundation — pending review
 
 ---
 
