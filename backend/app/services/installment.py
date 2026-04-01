@@ -170,3 +170,99 @@ async def complete_installment(
     plan.status = "completed"
     await session.flush()
     return plan
+
+
+async def get_financing_apps_summary(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+) -> dict[str, Any]:
+    """Compute per-app utilization and cross-app totals for financing apps."""
+    # 1. Get all financing_app accounts
+    acct_query = select(Account).where(
+        Account.household_id == household_id,
+        Account.is_active.is_(True),
+        Account.type == "financing_app",
+    )
+    acct_result = await session.execute(acct_query)
+    accounts = list(acct_result.scalars().all())
+
+    if not accounts:
+        return {
+            "apps": [],
+            "totals": {
+                "total_limit_minor": 0,
+                "total_used_minor": 0,
+                "total_available_minor": 0,
+                "total_monthly_minor": 0,
+                "total_remaining_minor": 0,
+            },
+        }
+
+    # 2. Get all active installment plans for these accounts in one query
+    acct_ids = [a.id for a in accounts]
+    plan_query = select(InstallmentPlan).where(
+        InstallmentPlan.household_id == household_id,
+        InstallmentPlan.is_active.is_(True),
+        InstallmentPlan.source_account_id.in_(acct_ids),
+    )
+    plan_result = await session.execute(plan_query)
+    all_plans = list(plan_result.scalars().all())
+
+    # Group plans by source_account_id
+    plans_by_account: dict[int, list[InstallmentPlan]] = {}
+    for p in all_plans:
+        plans_by_account.setdefault(p.source_account_id, []).append(p)
+
+    apps = []
+    total_limit = 0
+    total_used = 0
+    total_monthly = 0
+    total_remaining = 0
+
+    for acct in accounts:
+        acct_plans = plans_by_account.get(acct.id, [])
+        active_plans = [
+            p for p in acct_plans if compute_installment_status(p)["status"] == "active"
+        ]
+
+        monthly_commitment = sum(p.monthly_amount_minor for p in active_plans)
+        remaining = sum(compute_installment_status(p)["remaining_minor"] for p in active_plans)
+
+        credit_limit = acct.credit_limit or 0
+        balance = acct.balance_minor or 0
+        used = abs(balance)
+        available = credit_limit + balance  # balance is negative when owed
+
+        utilization = (used / credit_limit * 100) if credit_limit > 0 else 0.0
+
+        apps.append(
+            {
+                "account_id": acct.id,
+                "name": acct.name,
+                "name_ar": None,
+                "credit_limit_minor": credit_limit,
+                "balance_minor": balance,
+                "available_minor": available,
+                "utilization_percent": round(utilization, 1),
+                "active_plans_count": len(active_plans),
+                "monthly_commitment_minor": monthly_commitment,
+            }
+        )
+
+        total_limit += credit_limit
+        total_used += used
+        total_monthly += monthly_commitment
+        total_remaining += remaining
+
+    total_available = total_limit - total_used
+
+    return {
+        "apps": apps,
+        "totals": {
+            "total_limit_minor": total_limit,
+            "total_used_minor": total_used,
+            "total_available_minor": total_available,
+            "total_monthly_minor": total_monthly,
+            "total_remaining_minor": total_remaining,
+        },
+    }
