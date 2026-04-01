@@ -336,7 +336,7 @@ async def batch_compute_debt_totals(
     # Fill in debts with no payments
     for debt_id, principal_minor in principal_map.items():
         if debt_id not in result:
-            result[debt_id] = (0, principal_minor)
+            result[debt_id] = (0, max(principal_minor, 0))
     return result
 
 
