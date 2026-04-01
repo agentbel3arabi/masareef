@@ -306,7 +306,7 @@ async def get_splits(
     for s in splits:
         if s.paid:
             split_status = "paid"
-        elif s.due_date <= today:
+        elif s.due_date < today:
             split_status = "overdue"
         else:
             split_status = "upcoming"
