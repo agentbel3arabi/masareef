@@ -11,9 +11,11 @@ from app.config import Settings
 from app.limiter import limiter
 from app.routers import accounts, categories, transactions, transfers
 from app.routers.debts import router as debts_router
+from app.routers.financing_apps import router as financing_apps_router
 from app.routers.households import router as households_router
 from app.routers.import_ import router as import_router
 from app.routers.import_templates import router as import_templates_router
+from app.routers.installments import router as installments_router
 from app.routers.persons import router as persons_router
 
 logger = logging.getLogger(__name__)
@@ -61,6 +63,8 @@ app.include_router(import_router)
 app.include_router(import_templates_router)
 app.include_router(persons_router)
 app.include_router(debts_router)
+app.include_router(installments_router)
+app.include_router(financing_apps_router)
 
 
 @app.get("/health")

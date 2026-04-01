@@ -8,6 +8,7 @@ from app.models.account import Account
 from app.schemas.account import AccountCreate, AccountResponse, AccountUpdate, ReconcileRequest
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.services import account as account_service
+from app.services import installment as installment_service
 
 router = APIRouter(prefix="/api/v1/accounts", tags=["accounts"])
 
@@ -148,3 +149,21 @@ async def reconcile_account(
         session, account, data.actual_balance, data.notes
     )
     return SuccessResponse(data={"discrepancy": discrepancy})
+
+
+@router.get("/{account_id}/obligations")
+async def get_account_obligations(
+    account_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+) -> SuccessResponse:
+    account = await account_service.get_account(session, household_id, account_id)
+    if not account:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Account not found")
+            ).model_dump(),
+        )
+    data = await installment_service.get_account_obligations(session, household_id, account_id)
+    return SuccessResponse(data=data)
