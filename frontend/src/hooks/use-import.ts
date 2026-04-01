@@ -51,7 +51,6 @@ export interface CommitRow {
   date: string;
   description: string;
   amount_minor: number;
-  currency: string;
   type: "debit" | "credit";
   apply_to_balance: boolean;
 }

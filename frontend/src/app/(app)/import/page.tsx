@@ -194,8 +194,7 @@ export default function ImportPage() {
         rows: selectedRows.map((r) => ({
           date: r.date!,
           description: r.description,
-          amount_minor: r.amount_minor!,
-          currency,
+          amount_minor: Math.abs(r.amount_minor!),
           type: r.type,
           apply_to_balance: r.apply_to_balance,
         })),
