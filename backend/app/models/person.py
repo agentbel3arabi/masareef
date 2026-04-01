@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy import Integer, Text
 from sqlalchemy import Enum as SAEnum
+from sqlalchemy import Integer, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -15,9 +15,7 @@ class Person(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "persons"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    household_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), nullable=False, index=True
-    )
+    household_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
     name: Mapped[str] = mapped_column(Text, nullable=False)
     name_ar: Mapped[str | None] = mapped_column(Text, nullable=True)
     phone: Mapped[str | None] = mapped_column(Text, nullable=True)

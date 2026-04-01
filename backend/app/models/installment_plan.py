@@ -20,9 +20,7 @@ class InstallmentPlan(TimestampMixin, SoftDeleteMixin, Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    household_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), nullable=False
-    )
+    household_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     type: Mapped[str] = mapped_column(
         SAEnum(InstallmentType, values_callable=_enum_values, create_type=False),
         nullable=False,

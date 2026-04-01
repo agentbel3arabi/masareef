@@ -7,9 +7,7 @@ from typing import Any
 from dateutil.relativedelta import relativedelta
 
 
-def compute_monthly_payment(
-    principal_minor: int, annual_rate_bps: int, tenure_months: int
-) -> int:
+def compute_monthly_payment(principal_minor: int, annual_rate_bps: int, tenure_months: int) -> int:
     """Compute fixed monthly payment via PMT formula.
 
     Args:
@@ -88,9 +86,7 @@ def generate_schedule(
         remaining -= principal_portion
 
         # Determine status
-        has_payment = any(
-            _dates_match_month(pd, payment_date) for pd in payment_dates
-        )
+        has_payment = any(_dates_match_month(pd, payment_date) for pd in payment_dates)
         if has_payment:
             status = "paid"
         elif payment_date <= today:
