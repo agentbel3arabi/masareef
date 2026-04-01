@@ -43,7 +43,7 @@ class DebtResponse(BaseModel):
     monthly_payment_minor: int
     repayment_mode: str | None = None
     due_date: date | None = None
-    status: Literal["active", "settled", "overdue"]
+    status: Literal["active", "paid_off"]
     notes: str | None = None
     is_active: bool
     total_paid_minor: int = 0
