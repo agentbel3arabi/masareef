@@ -3,6 +3,8 @@
 import uuid
 from datetime import date, timedelta
 
+from dateutil.relativedelta import relativedelta
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -338,6 +340,36 @@ async def batch_compute_debt_totals(
         if debt_id not in result:
             result[debt_id] = (0, max(principal_minor, 0))
     return result
+
+
+def generate_equal_splits(
+    principal_minor: int,
+    split_count: int,
+    start_date: date,
+) -> list[dict]:
+    """Generate N equal monthly splits. Last split absorbs rounding remainder.
+
+    Pure computation — no DB access.
+    """
+    base_amount = principal_minor // split_count
+    remainder = principal_minor - (base_amount * split_count)
+    splits = []
+    for i in range(split_count):
+        amount = base_amount + (remainder if i == split_count - 1 else 0)
+        due = start_date + relativedelta(months=i + 1)
+        splits.append({"amount_minor": amount, "due_date": due})
+    return splits
+
+
+def generate_lump_sum_split(
+    principal_minor: int,
+    due_date: date,
+) -> list[dict]:
+    """Single split at the given due date.
+
+    Pure computation — no DB access.
+    """
+    return [{"amount_minor": principal_minor, "due_date": due_date}]
 
 
 # --- Private helpers ---
