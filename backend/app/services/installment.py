@@ -4,11 +4,10 @@ import uuid
 from datetime import date
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
-from app.models.debt import Debt
 from app.models.installment_plan import InstallmentPlan
 from app.schemas.installment import InstallmentCreate, InstallmentUpdate
 
