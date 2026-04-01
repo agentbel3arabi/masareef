@@ -77,10 +77,10 @@ async def list_debts(
     debts, total = await debt_service.list_debts(
         session, household_id, type, status, page, page_size
     )
-    items = []
-    for d in debts:
-        paid, remaining = await debt_service.compute_debt_totals(session, d.id, d.principal_minor)
-        items.append(_debt_to_response(d, paid, remaining).model_dump())
+    totals = await debt_service.batch_compute_debt_totals(
+        session, [(d.id, d.principal_minor) for d in debts]
+    )
+    items = [_debt_to_response(d, *totals[d.id]).model_dump() for d in debts]
     return SuccessResponse(
         data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),

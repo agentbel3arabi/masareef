@@ -155,7 +155,7 @@ async def record_payment(
     remaining_principal = debt.principal_minor - principal_paid
 
     if remaining_principal <= 0:
-        raise ValueError("PAYMENT_EXCEEDS_REMAINING")
+        raise ValueError("DEBT_ALREADY_PAID")
     # For 0% loans every payment is pure principal; guard against overpayment.
     if debt.annual_rate_bps == 0 and amount_minor > remaining_principal:
         raise ValueError("PAYMENT_EXCEEDS_REMAINING")
@@ -186,8 +186,10 @@ async def record_payment(
             matching_row = schedule[0] if schedule else None
 
         if matching_row and matching_row["payment_minor"] > 0:
-            interest_ratio = matching_row["interest_minor"] / matching_row["payment_minor"]
-            interest_portion = round(amount_minor * interest_ratio)
+            # Integer round-to-nearest: avoid float division for money
+            numerator = amount_minor * matching_row["interest_minor"]
+            denominator = matching_row["payment_minor"]
+            interest_portion = int((numerator + denominator // 2) // denominator)
             principal_portion = amount_minor - interest_portion
         else:
             principal_portion = amount_minor
@@ -302,7 +304,40 @@ async def compute_debt_totals(
     """
     total_paid = await _total_paid(session, debt_id)
     principal_paid = await _principal_paid(session, debt_id)
-    return total_paid, principal_minor - principal_paid
+    return total_paid, max(principal_minor - principal_paid, 0)
+
+
+async def batch_compute_debt_totals(
+    session: AsyncSession, debts: list[tuple[int, int]]
+) -> dict[int, tuple[int, int]]:
+    """Batch version of compute_debt_totals — single GROUP BY query for all debts."""
+    if not debts:
+        return {}
+    debt_ids = [d[0] for d in debts]
+    principal_map = {d[0]: d[1] for d in debts}
+
+    q = (
+        select(
+            DebtPayment.debt_id,
+            func.coalesce(func.sum(DebtPayment.amount_minor), 0).label("total_paid"),
+            func.coalesce(func.sum(DebtPayment.principal_minor), 0).label("principal_paid"),
+        )
+        .where(DebtPayment.debt_id.in_(debt_ids))
+        .group_by(DebtPayment.debt_id)
+    )
+    rows = (await session.execute(q)).all()
+    result: dict[int, tuple[int, int]] = {}
+    for row in rows:
+        principal_minor = principal_map[row.debt_id]
+        principal_paid = row.principal_paid if row.principal_paid is not None else 0
+        remaining = max(principal_minor - principal_paid, 0)
+        result[row.debt_id] = (row.total_paid, remaining)
+
+    # Fill in debts with no payments
+    for debt_id, principal_minor in principal_map.items():
+        if debt_id not in result:
+            result[debt_id] = (0, max(principal_minor, 0))
+    return result
 
 
 # --- Private helpers ---
@@ -349,5 +384,4 @@ async def _validate_linked_account(
 
     # Account.type is an AccountType enum member, compare with expected_type
     if account.type != expected_type:
-        msg = f"INVALID_ACCOUNT_TYPE: expected {expected_type.value}, got {account.type.value}"
-        raise ValueError(msg)
+        raise ValueError("INVALID_ACCOUNT_TYPE")
