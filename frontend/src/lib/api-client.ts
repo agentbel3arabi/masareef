@@ -88,3 +88,23 @@ export async function apiDelete(path: string): Promise<void> {
   const res = await fetch(`${API_BASE}${path}`, { method: "DELETE", headers });
   if (!res.ok && res.status !== 204) await handleError(res);
 }
+
+/**
+ * Post multipart/form-data (for file uploads).
+ * Does NOT set Content-Type — browser sets it automatically with boundary.
+ */
+export async function apiUploadForm<T>(path: string, formData: FormData): Promise<ApiResponse<T>> {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = {};
+  if (session?.access_token) {
+    headers.Authorization = `Bearer ${session.access_token}`;
+  }
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+  if (!res.ok) await handleError(res);
+  return res.json();
+}

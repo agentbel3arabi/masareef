@@ -47,9 +47,7 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ icon, className = "h-4 w-4" }: CategoryIconProps) {
-  if (!icon) return null;
-  const Icon = ICON_MAP[icon];
-  if (!Icon) return null;
+  const Icon = icon ? (ICON_MAP[icon] ?? HelpCircle) : HelpCircle;
   return <Icon className={className} />;
 }
 

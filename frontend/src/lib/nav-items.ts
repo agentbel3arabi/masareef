@@ -1,12 +1,13 @@
 import {
-  LayoutDashboard,
-  Wallet,
   ArrowLeftRight,
-  Receipt,
   HandCoins,
+  LayoutDashboard,
   PiggyBank,
+  Receipt,
   Settings,
+  Upload,
   Users,
+  Wallet,
 } from "lucide-react";
 
 export type NavItem = {
@@ -21,6 +22,7 @@ export const navItems: NavItem[] = [
   { href: "/accounts", icon: Wallet, label: "nav.accounts" },
   { href: "/transactions", icon: Receipt, label: "nav.transactions" },
   { href: "/transfers", icon: ArrowLeftRight, label: "nav.transfers" },
+  { href: "/import", icon: Upload, label: "nav.import" },
   { href: "/budgets", icon: PiggyBank, label: "nav.budgets", disabled: true },
   { href: "/debts", icon: HandCoins, label: "nav.debts", disabled: true },
   { href: "/gam3eya", icon: Users, label: "nav.gam3eya", disabled: true },

@@ -12,9 +12,35 @@ _DATE_FORMAT_MAP: dict[str, str] = {
     "DD-MM-YYYY": "%d-%m-%Y",
     "DD.MM.YYYY": "%d.%m.%Y",
     "YYYY/MM/DD": "%Y/%m/%d",
+    # Day + 3-letter month abbreviation (no year) — used by HSBC CC PDFs
+    # e.g. "04JUN", "12MAY". Year is inferred from context.
+    "DDMMM": "%d%b",
 }
 
 _AUTO_DETECT_VALUES = {"auto-detect", "auto detect", "auto", ""}
+
+
+def _infer_year(dt: datetime.datetime) -> datetime.date:
+    """Replace strptime's default year-1900 placeholder with a sensible calendar year.
+
+    Uses the current year; rolls back one year if the resulting date is more than
+    60 days in the future (handles Jan statements parsed in December, etc.).
+    """
+    today = datetime.date.today()
+    guessed = dt.replace(year=today.year).date()
+    if guessed > today + datetime.timedelta(days=60):
+        guessed = dt.replace(year=today.year - 1).date()
+    return guessed
+
+
+def _try_format(raw: str, fmt: str) -> datetime.date | None:
+    try:
+        dt = datetime.datetime.strptime(raw, fmt)
+        if dt.year == 1900:
+            return _infer_year(dt)
+        return dt.date()
+    except (ValueError, AttributeError):
+        return None
 
 
 def _parse_date(raw: str, date_format: str) -> datetime.date | None:
@@ -23,19 +49,14 @@ def _parse_date(raw: str, date_format: str) -> datetime.date | None:
         return None
 
     if date_format.lower() in _AUTO_DETECT_VALUES:
-        # Try all known formats
         for fmt in _DATE_FORMAT_MAP.values():
-            try:
-                return datetime.datetime.strptime(raw_stripped, fmt).date()
-            except (ValueError, AttributeError):
-                continue
+            result = _try_format(raw_stripped, fmt)
+            if result is not None:
+                return result
         return None
 
     fmt = _DATE_FORMAT_MAP.get(date_format, date_format)
-    try:
-        return datetime.datetime.strptime(raw_stripped, fmt).date()
-    except (ValueError, AttributeError):
-        return None
+    return _try_format(raw_stripped, fmt)
 
 
 def validate_row(
