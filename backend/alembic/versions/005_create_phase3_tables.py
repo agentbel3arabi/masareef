@@ -59,7 +59,8 @@ def upgrade() -> None:
     op.execute(
         sa.text(
             "DO $$ BEGIN"
-            " CREATE TYPE personrelationship AS ENUM ('family','friend','colleague','business','other');"
+            " CREATE TYPE personrelationship AS ENUM"
+            " ('family','friend','colleague','business','other');"
             " EXCEPTION WHEN duplicate_object THEN NULL;"
             " END $$"
         )
@@ -84,13 +85,25 @@ def upgrade() -> None:
         sa.Column("email", sa.Text, nullable=True),
         sa.Column(
             "relationship",
-            sa.Enum("family", "friend", "colleague", "business", "other", name="personrelationship", create_type=False),
+            sa.Enum(
+                "family",
+                "friend",
+                "colleague",
+                "business",
+                "other",
+                name="personrelationship",
+                create_type=False,
+            ),
             nullable=True,
         ),
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="true"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
     op.create_index("ix_persons_household_id", "persons", ["household_id"])
 
@@ -101,7 +114,13 @@ def upgrade() -> None:
         sa.Column("household_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column(
             "type",
-            sa.Enum("bank_loan", "personal_lent", "personal_borrowed", name="debttype", create_type=False),
+            sa.Enum(
+                "bank_loan",
+                "personal_lent",
+                "personal_borrowed",
+                name="debttype",
+                create_type=False,
+            ),
             nullable=False,
         ),
         sa.Column("person_id", sa.Integer, sa.ForeignKey("persons.id"), nullable=True),
@@ -116,7 +135,9 @@ def upgrade() -> None:
         sa.Column("monthly_payment_minor", sa.BigInteger, nullable=False),
         sa.Column(
             "repayment_mode",
-            sa.Enum("lump_sum", "equal_splits", "custom_splits", name="repaymentmode", create_type=False),
+            sa.Enum(
+                "lump_sum", "equal_splits", "custom_splits", name="repaymentmode", create_type=False
+            ),
             nullable=True,
         ),
         sa.Column("due_date", sa.Date, nullable=True),
@@ -128,11 +149,17 @@ def upgrade() -> None:
         ),
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="true"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
     op.create_index("ix_debts_household_type", "debts", ["household_id", "type"])
-    op.create_index("ix_debts_household_linked_account", "debts", ["household_id", "linked_account_id"])
+    op.create_index(
+        "ix_debts_household_linked_account", "debts", ["household_id", "linked_account_id"]
+    )
     op.create_index("ix_debts_household_person", "debts", ["household_id", "person_id"])
 
     # --- debt_payments ---
@@ -146,7 +173,9 @@ def upgrade() -> None:
         sa.Column("interest_minor", sa.BigInteger, nullable=True),
         sa.Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
         sa.Column("notes", sa.Text, nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
     op.create_index("ix_debt_payments_debt_id", "debt_payments", ["debt_id"])
     op.create_index("ix_debt_payments_transaction_id", "debt_payments", ["transaction_id"])
@@ -170,7 +199,9 @@ def upgrade() -> None:
         sa.Column("household_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column(
             "type",
-            sa.Enum("credit_card", "store", "financing_app", name="installmenttype", create_type=False),
+            sa.Enum(
+                "credit_card", "store", "financing_app", name="installmenttype", create_type=False
+            ),
             nullable=False,
         ),
         sa.Column("name", sa.Text, nullable=False),
@@ -189,11 +220,21 @@ def upgrade() -> None:
             server_default="active",
         ),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="true"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
-    op.create_index("ix_installment_plans_household_type", "installment_plans", ["household_id", "type"])
-    op.create_index("ix_installment_plans_household_source", "installment_plans", ["household_id", "source_account_id"])
+    op.create_index(
+        "ix_installment_plans_household_type", "installment_plans", ["household_id", "type"]
+    )
+    op.create_index(
+        "ix_installment_plans_household_source",
+        "installment_plans",
+        ["household_id", "source_account_id"],
+    )
 
 
 def downgrade() -> None:
