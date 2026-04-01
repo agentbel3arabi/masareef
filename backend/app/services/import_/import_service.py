@@ -16,8 +16,6 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-logger = logging.getLogger(__name__)
-
 from app.models.account import Account
 from app.models.category import Category
 from app.models.enums import TransactionType
@@ -40,6 +38,8 @@ from app.services.import_.pdf_parser import is_scanned
 from app.services.import_.presets.registry import detect_preset
 from app.services.import_template import get_linked_template
 from app.services.money import CURRENCIES
+
+logger = logging.getLogger(__name__)
 
 
 def _parse_error(fmt: str) -> HTTPException:
@@ -185,7 +185,10 @@ async def parse_upload(
         try:
             scanned = is_scanned(raw_bytes)
         except Exception:
-            logger.warning("is_scanned() raised an unexpected error; treating PDF as parseable", exc_info=True)
+            logger.warning(
+                "is_scanned() raised an unexpected error; treating PDF as parseable",
+                exc_info=True,
+            )
             scanned = False
         if scanned:
             return ScannedResponse()

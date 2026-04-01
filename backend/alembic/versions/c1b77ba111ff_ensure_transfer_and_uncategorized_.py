@@ -8,15 +8,16 @@ Ensures that the predefined "Transfer" and "Uncategorized" special categories
 exist. The initial seed only ran once; later additions to PREDEFINED_CATEGORIES
 are not automatically applied to existing databases.
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision: str = "c1b77ba111ff"
-down_revision: Union[str, Sequence[str], None] = "af900445891f"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = "af900445891f"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 _SPECIAL_CATEGORIES = [
     {

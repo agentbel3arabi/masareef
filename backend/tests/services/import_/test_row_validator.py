@@ -61,7 +61,9 @@ def test_single_amount_negative_is_debit():
 
 
 def test_ddmmm_format_parses_correctly():
-    """DDMMM dates like '04JUN' should parse to the correct month/day in current or previous year."""
+    """DDMMM dates like '04JUN' should parse to the correct month/day in current or previous year.
+    Fix "today" to 2025-07-01 so 04JUN → 2025-06-04 (not in future).
+    """
     with patch("app.services.import_.row_validator.datetime") as mock_dt:
         # Fix "today" to 2025-07-01 so 04JUN → 2025-06-04 (not in future)
         mock_dt.date.today.return_value = datetime.date(2025, 7, 1)
