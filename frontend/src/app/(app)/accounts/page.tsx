@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Wallet, ArrowLeftRight, Plus, Trash2, Upload } from "lucide-react";
+import { Wallet, ArrowLeftRight, Plus, Trash2, Upload, Settings } from "lucide-react";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { useAccounts, useNetWorth, useDeleteAccount } from "@/hooks/use-accounts";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
@@ -51,6 +51,7 @@ export default function AccountsPage() {
       setActions(
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={enterManageMode}>
+            <Settings className="h-4 w-4 me-1" />
             {t("manage")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => router.push("/import")}>

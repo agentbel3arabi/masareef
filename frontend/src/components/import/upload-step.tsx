@@ -77,7 +77,10 @@ export function UploadStep({ selectedAccountId, onAccountChange, onFileSelected 
           <SelectContent>
             {accounts.map((acct) => (
               <SelectItem key={acct.id} value={String(acct.id)}>
-                {acct.name}
+                <span className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  {acct.name}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>
