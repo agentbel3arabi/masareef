@@ -1,0 +1,327 @@
+"""Debt business logic. No HTTP awareness."""
+
+import uuid
+from datetime import date, timedelta
+
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.account import Account
+from app.models.debt import Debt
+from app.models.debt_payment import DebtPayment
+from app.models.enums import AccountType, DebtStatus, DebtType
+from app.models.transaction import Transaction
+from app.schemas.debt import DebtCreate, DebtUpdate
+from app.services.amortization import compute_monthly_payment, generate_schedule
+
+
+async def list_debts(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    debt_type: str | None = None,
+    status: str | None = None,
+    page: int = 1,
+    page_size: int = 50,
+) -> tuple[list[Debt], int]:
+    base = select(Debt).where(
+        Debt.household_id == household_id,
+        Debt.is_active.is_(True),
+    )
+    count_base = select(func.count(Debt.id)).where(
+        Debt.household_id == household_id,
+        Debt.is_active.is_(True),
+    )
+    if debt_type:
+        base = base.where(Debt.type == debt_type)
+        count_base = count_base.where(Debt.type == debt_type)
+    if status:
+        base = base.where(Debt.status == status)
+        count_base = count_base.where(Debt.status == status)
+
+    total = (await session.execute(count_base)).scalar_one()
+    q = base.offset((page - 1) * page_size).limit(page_size).order_by(Debt.id)
+    result = await session.execute(q)
+    return list(result.scalars().all()), total
+
+
+async def get_debt(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    debt_id: int,
+) -> Debt | None:
+    q = select(Debt).where(
+        Debt.id == debt_id,
+        Debt.household_id == household_id,
+        Debt.is_active.is_(True),
+    )
+    result = await session.execute(q)
+    return result.scalar_one_or_none()
+
+
+async def create_bank_loan(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    data: DebtCreate,
+) -> Debt:
+    """Create a bank loan debt with computed monthly payment."""
+    annual_rate_bps = int(round(data.annual_rate_percent * 100))
+    monthly_payment = compute_monthly_payment(
+        data.principal_minor, annual_rate_bps, data.tenure_months
+    )
+
+    # Validate linked_account_id if provided
+    if data.linked_account_id:
+        await _validate_linked_account(
+            session, household_id, data.linked_account_id, AccountType.BANK_ACCOUNT
+        )
+
+    debt = Debt(
+        household_id=household_id,
+        type=DebtType.BANK_LOAN,
+        name=data.name,
+        institution=data.institution,
+        principal_minor=data.principal_minor,
+        currency=data.currency,
+        annual_rate_bps=annual_rate_bps,
+        tenure_months=data.tenure_months,
+        start_date=data.start_date,
+        monthly_payment_minor=monthly_payment,
+        linked_account_id=data.linked_account_id,
+        notes=data.notes,
+        status=DebtStatus.ACTIVE,
+    )
+    session.add(debt)
+    await session.flush()
+    return debt
+
+
+async def update_debt(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    debt: Debt,
+    data: DebtUpdate,
+) -> Debt:
+    """Update mutable fields."""
+    update_data = data.model_dump(exclude_unset=True)
+
+    # Validate linked_account_id change
+    if "linked_account_id" in update_data and update_data["linked_account_id"] is not None:
+        expected_type = AccountType.BANK_ACCOUNT if debt.type == DebtType.BANK_LOAN else None
+        if expected_type:
+            await _validate_linked_account(
+                session, household_id, update_data["linked_account_id"], expected_type
+            )
+
+    for field, value in update_data.items():
+        setattr(debt, field, value)
+    await session.flush()
+    return debt
+
+
+async def has_payments(session: AsyncSession, debt_id: int) -> bool:
+    q = select(func.count(DebtPayment.id)).where(DebtPayment.debt_id == debt_id)
+    count = (await session.execute(q)).scalar_one()
+    return count > 0
+
+
+async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
+    debt.is_active = False
+    await session.flush()
+
+
+async def get_amortization_schedule(
+    session: AsyncSession, debt: Debt
+) -> list[dict]:
+    payments = await _get_payments(session, debt.id)
+    return generate_schedule(
+        principal_minor=debt.principal_minor,
+        annual_rate_bps=debt.annual_rate_bps,
+        tenure_months=debt.tenure_months,
+        start_date=debt.start_date,
+        payments=payments,
+    )
+
+
+async def record_payment(
+    session: AsyncSession,
+    debt: Debt,
+    payment_date: date,
+    amount_minor: int,
+    transaction_id: int | None = None,
+    notes: str | None = None,
+) -> DebtPayment:
+    """Record a payment, auto-computing principal/interest split for bank loans."""
+    total_paid = await _total_paid(session, debt.id)
+    remaining = debt.principal_minor - total_paid
+
+    if amount_minor > remaining:
+        raise ValueError("PAYMENT_EXCEEDS_REMAINING")
+
+    principal_portion: int | None = None
+    interest_portion: int | None = None
+
+    if debt.type == DebtType.BANK_LOAN and debt.annual_rate_bps > 0:
+        schedule = generate_schedule(
+            principal_minor=debt.principal_minor,
+            annual_rate_bps=debt.annual_rate_bps,
+            tenure_months=debt.tenure_months,
+            start_date=debt.start_date,
+            payments=[],
+        )
+        # Find the matching schedule row by month
+        matching_row = None
+        for row in schedule:
+            if row["status"] != "paid" and row["date"].month == payment_date.month and row["date"].year == payment_date.year:
+                matching_row = row
+                break
+        if not matching_row:
+            # Fallback: use first unpaid row
+            for row in schedule:
+                if row["status"] != "paid":
+                    matching_row = row
+                    break
+
+        if matching_row and matching_row["payment_minor"] > 0:
+            interest_ratio = matching_row["interest_minor"] / matching_row["payment_minor"]
+            interest_portion = round(amount_minor * interest_ratio)
+            principal_portion = amount_minor - interest_portion
+        else:
+            principal_portion = amount_minor
+            interest_portion = 0
+    elif debt.type == DebtType.BANK_LOAN:
+        # 0% interest
+        principal_portion = amount_minor
+        interest_portion = 0
+
+    payment = DebtPayment(
+        debt_id=debt.id,
+        date=payment_date,
+        amount_minor=amount_minor,
+        principal_minor=principal_portion,
+        interest_minor=interest_portion,
+        transaction_id=transaction_id,
+        notes=notes,
+    )
+    session.add(payment)
+    await session.flush()
+
+    # Check if debt is fully paid
+    new_total = total_paid + amount_minor
+    if new_total >= debt.principal_minor:
+        debt.status = DebtStatus.PAID_OFF
+        await session.flush()
+
+    return payment
+
+
+async def get_payments(
+    session: AsyncSession, debt_id: int
+) -> list[DebtPayment]:
+    return await _get_payments(session, debt_id)
+
+
+async def mark_paid(session: AsyncSession, debt: Debt) -> Debt:
+    debt.status = DebtStatus.PAID_OFF
+    await session.flush()
+    return debt
+
+
+async def get_match_suggestions(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    debt: Debt,
+) -> list[dict]:
+    """Find transactions that may match upcoming payments."""
+    if not debt.linked_account_id:
+        return []
+
+    schedule = await get_amortization_schedule(session, debt)
+    unpaid_rows = [r for r in schedule if r["status"] in ("overdue", "upcoming")]
+    if not unpaid_rows:
+        return []
+
+    suggestions = []
+    for row in unpaid_rows[:3]:  # Check next 3 unpaid periods
+        window_start = row["date"] - timedelta(days=5)
+        window_end = row["date"] + timedelta(days=5)
+        expected = row["payment_minor"]
+        tolerance = int(expected * 0.05)
+
+        q = select(Transaction).where(
+            Transaction.household_id == household_id,
+            Transaction.account_id == debt.linked_account_id,
+            Transaction.is_active.is_(True),
+            Transaction.date >= window_start,
+            Transaction.date <= window_end,
+            Transaction.amount_minor < 0,  # Debits only
+        )
+        txs = (await session.execute(q)).scalars().all()
+
+        for tx in txs:
+            tx_amount = abs(tx.amount_minor)
+            if abs(tx_amount - expected) <= tolerance:
+                if tx_amount == expected:
+                    score = 1.0
+                else:
+                    score = 0.8 + 0.2 * (1 - abs(tx_amount - expected) / tolerance)
+                suggestions.append(
+                    {
+                        "transaction_id": tx.id,
+                        "date": tx.date,
+                        "amount_minor": tx_amount,
+                        "description": tx.description,
+                        "score": round(score, 2),
+                    }
+                )
+
+    suggestions.sort(key=lambda s: s["score"], reverse=True)
+    return suggestions
+
+
+async def compute_debt_totals(
+    session: AsyncSession, debt_id: int
+) -> tuple[int, int]:
+    """Return (total_paid, remaining) for a debt."""
+    total_paid = await _total_paid(session, debt_id)
+    debt = (await session.execute(select(Debt).where(Debt.id == debt_id, Debt.is_active.is_(True)))).scalar_one()
+    return total_paid, debt.principal_minor - total_paid
+
+
+# --- Private helpers ---
+
+async def _get_payments(session: AsyncSession, debt_id: int) -> list[DebtPayment]:
+    q = (
+        select(DebtPayment)
+        .where(DebtPayment.debt_id == debt_id)
+        .order_by(DebtPayment.date)
+    )
+    result = await session.execute(q)
+    return list(result.scalars().all())
+
+
+async def _total_paid(session: AsyncSession, debt_id: int) -> int:
+    q = select(func.coalesce(func.sum(DebtPayment.amount_minor), 0)).where(
+        DebtPayment.debt_id == debt_id
+    )
+    return (await session.execute(q)).scalar_one()
+
+
+async def _validate_linked_account(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    account_id: int,
+    expected_type: AccountType,
+) -> None:
+    """Validate that linked account exists, is active, and has the expected type."""
+    q = select(Account).where(
+        Account.id == account_id,
+        Account.household_id == household_id,
+        Account.is_active.is_(True),
+    )
+    account = (await session.execute(q)).scalar_one_or_none()
+    if not account:
+        raise ValueError("LINKED_ACCOUNT_NOT_FOUND")
+    
+    # Account.type is an AccountType enum member, compare with expected_type
+    if account.type != expected_type:
+        raise ValueError(f"INVALID_ACCOUNT_TYPE: expected {expected_type.value}, got {account.type.value}")
