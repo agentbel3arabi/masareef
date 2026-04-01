@@ -132,6 +132,8 @@ Person response includes `balances_by_currency` and `total_net_in_base` — but 
 
 **Create request (bank loan):**
 - Accepts `annual_rate_percent` (e.g., 14.5) — backend converts to `annual_rate_bps` (1450)
+- `linked_account_id` required for bank loans — the bank account where monthly deductions occur
+- Validates: `linked_account_id` must reference a `bank_account` type account
 - Backend computes `monthly_payment_minor` via PMT formula and stores it
 - Validates: principal > 0, tenure_months > 0, rate ≥ 0
 
@@ -310,31 +312,75 @@ When a P2P debt is fully repaid:
 | `/api/v1/installments/{id}` | DELETE | Soft delete |
 | `/api/v1/installments/{id}/complete` | POST | Mark as completed |
 
-### 5.2 Credit Card Installments
+### 5.2 Account Linking Rules
+
+Every debt/installment links to the account where monthly deductions happen:
+
+| Type | `source_account_id` | Required? | Account Type Constraint | Credit Limit Impact |
+|------|---------------------|-----------|------------------------|---------------------|
+| **Bank Loan** | Bank account (deduction source) | Yes | `bank_account` | N/A — bank accounts don't have credit limits |
+| **CC Installment** | Credit card | Yes | `credit_card` | **Remaining balance** of the plan consumes credit limit |
+| **Store Installment** | Credit card (if charged to CC) | Optional | `credit_card` if set | Same as CC if linked, otherwise no impact |
+| **Financing App Installment** | Financing app account | Yes | `financing_app` | **Remaining balance** of the plan consumes credit limit |
+
+### 5.3 Credit Limit Consumption (CC + Financing App)
+
+For credit cards and financing apps, the **remaining plan balance** (not the full purchase amount) counts against the credit limit. As monthly payments are made, the consumed amount decreases.
+
+**Computation:**
+```
+remaining_per_plan = total_amount_minor - (months_paid × monthly_amount_minor)
+total_committed = SUM(remaining_per_plan) for all active plans on this account
+utilization = total_committed / credit_limit × 100
+available = credit_limit - total_committed
+```
+
+Example: iPhone 54,000 EGP / 12 months / 4,500 per month. After 6 payments:
+- Remaining = 54,000 - (6 × 4,500) = 27,000 EGP consumed from limit
+- Monthly due = 4,500 EGP (the only scheduled payment)
+
+### 5.4 Credit Card Installments
 
 - `type = "credit_card"`
-- `source_account_id` → credit card account (required)
+- `source_account_id` → credit card account (required, must be `credit_card` type)
 - Multiple concurrent plans per card
 - **Per-card aggregation:**
   - Monthly commitment = SUM(monthly_amount_minor) for active plans on this card
-  - Total committed = SUM(total_amount_minor) for active plans
-  - Utilization = total_committed / credit_limit × 100
+  - Remaining committed = SUM(remaining_per_plan) for active plans
+  - Utilization = remaining_committed / credit_limit × 100
 
-### 5.3 Store Installments
+### 5.5 Store Installments
 
 - `type = "store"`
 - `merchant_name` required (e.g., "B.TECH", "IKEA")
-- `source_account_id` optional (account charged monthly)
-- No credit card association required
+- `source_account_id` optional — if the store charges a credit card, link it (must be `credit_card` type)
+- If linked to a CC: remaining balance consumes credit limit (same logic as CC installments)
+- If no linked account: standalone plan, no credit limit impact
 - Common in Egypt: 0% interest, 6-36 months
 
-### 5.4 Financing App Installments
+### 5.6 Financing App Installments
 
 - `type = "financing_app"`
-- `source_account_id` → financing app account (required)
-- Same structure as CC installments but linked to financing_app accounts
+- `source_account_id` → financing app account (required, must be `financing_app` type)
+- Remaining plan balance consumes the financing app's credit limit
+- Same utilization computation as CC installments
 
-### 5.5 Financing Apps Summary Endpoint
+### 5.7 Account Detail Integration
+
+Debts and installments linked to an account appear on that account's detail page:
+
+| Account Type | Shows |
+|-------------|-------|
+| `bank_account` | Linked bank loans (name, monthly payment, remaining months, progress bar) |
+| `credit_card` | Linked CC installments + store installments (name, merchant, monthly, remaining, utilization gauge) |
+| `financing_app` | Linked financing app installments (name, merchant, monthly, remaining, utilization gauge) |
+
+This provides a per-account view of financial obligations, complementing the unified 5-tab debts page.
+
+**New endpoint:**
+- `GET /api/v1/accounts/{id}/obligations` — returns debts + installments linked to this account
+
+### 5.8 Financing Apps Summary Endpoint
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -344,7 +390,7 @@ Response follows the spec in `docs/03-features/financing-apps.md`:
 - Per app: account_id, name, credit_limit, balance, available, utilization%, active_plans_count, monthly_commitment
 - Totals: total_limit, total_used, total_available, total_monthly, total_remaining
 
-### 5.6 Installment Status Computation
+### 5.9 Installment Status Computation
 
 Status for each installment plan is computed at query time (not stored):
 - Months elapsed = difference between start_month and current month
@@ -355,13 +401,16 @@ Status for each installment plan is computed at query time (not stored):
 
 Note: Installment plans don't have individual payment records like debts — they represent a commitment that's deducted monthly. The `status` field (`lifecycle_status`) is stored and set to `completed` either manually via `POST /complete` or automatically at query time when `months_elapsed >= total_months`. The account balance reflects actual payments. Future enhancement could add payment tracking per installment.
 
-### 5.7 Tests
+### 5.10 Tests
 
 - **CRUD:** Create, read, update, delete for all 3 types
-- **CC utilization:** Multiple concurrent plans, correct aggregation
-- **Financing apps summary:** Per-app and cross-app totals
+- **Account type validation:** CC installment must link to credit_card account, financing_app to financing_app, etc.
+- **Credit limit consumption:** Remaining balance computed correctly, decreases as months pass
+- **CC utilization:** Multiple concurrent plans, remaining-based aggregation
+- **Financing apps summary:** Per-app and cross-app totals with remaining-based utilization
+- **Account obligations endpoint:** Returns correct debts + installments for each account type
 - **Completion:** Auto-complete after total_months, manual early payoff
-- **Validation:** source_account_id type must match installment type
+- **Store installment with/without CC link:** Utilization impact only when CC linked
 
 ---
 
@@ -375,7 +424,19 @@ Note: Installment plans don't have individual payment records like debts — the
 | `/debts/loans/[id]` | `LoanDetailPage` | Amortization table, payment form, progress bar |
 | `/debts/p2p/[id]` | `P2PDebtDetailPage` | Split schedule, payment recording |
 
-### 6.2 Five-Tab Debts Page
+### 6.2 Account Detail — Obligations Section
+
+Each account detail page gains an "Obligations" section showing linked debts/installments:
+
+| Account Type | Section Content |
+|-------------|-----------------|
+| `bank_account` | "Linked Loans" — card per loan with monthly payment, remaining months, progress bar |
+| `credit_card` | "Installment Plans" — grouped list of CC + store installments with per-plan remaining, plus total utilization from installments |
+| `financing_app` | "Installment Plans" — same as CC but for financing app plans |
+
+Data fetched via `GET /api/v1/accounts/{id}/obligations`.
+
+### 6.3 Five-Tab Debts Page
 
 Tabs correspond to the 5 stitch designs:
 1. **Loans** → `10-debts-loans.html`
@@ -386,38 +447,38 @@ Tabs correspond to the 5 stitch designs:
 
 Each tab uses TanStack Query for data fetching with appropriate query keys for cache invalidation.
 
-### 6.3 Person Management
+### 6.4 Person Management
 
 - Person CRUD integrated into Settings page or a dedicated People sub-page
 - Person selector (dropdown/combobox) in P2P debt creation form
 - Person card component showing per-currency balances and base currency total
 
-### 6.4 Forms
+### 6.5 Forms
 
 | Form | Fields | Notes |
 |------|--------|-------|
-| Bank Loan | name, institution, principal, rate%, tenure, start date, linked account | Rate entered as percent, converted to bps |
+| Bank Loan | name, institution, principal, rate%, tenure, start date, linked bank account | Bank account selector (required) — where monthly deductions happen |
 | P2P Debt | person (select), type (lent/borrowed), amount, currency, mode, due date/splits | Mode selection shows/hides split config |
-| CC Installment | name, source card (select), total, monthly, months, start month | Card selector filtered to credit_card accounts |
-| Store Installment | name, merchant, total, monthly, months, start month, linked account | Linked account optional |
-| Financing App Installment | name, merchant, source app (select), total, monthly, months, start month | App selector filtered to financing_app accounts |
+| CC Installment | name, source card (select), total, monthly, months, start month | Card selector filtered to credit_card accounts (required) |
+| Store Installment | name, merchant, total, monthly, months, start month, linked card (optional) | CC selector optional — if linked, plan consumes credit limit |
+| Financing App Installment | name, merchant, source app (select), total, monthly, months, start month | App selector filtered to financing_app accounts (required) |
 | Record Payment | date, amount, transaction (optional select), notes | For loans: auto-shows principal/interest split |
 
-### 6.5 Dashboard Integration
+### 6.6 Dashboard Integration
 
 Resolves backend-dependencies.md items #2 and #3:
 - **Active Debts stat card** → `GET /api/v1/debts` count where status=active
 - **Upcoming Payments stat card** → computed from amortization schedules + installment due dates within next 30 days
 
-### 6.6 Navigation
+### 6.7 Navigation
 
 Add "Debts" (ديون) to the app sidebar navigation, after Transactions and before Settings.
 
-### 6.7 Stitch Design Reference
+### 6.8 Stitch Design Reference
 
 All 5 tab screens have stitch HTML designs. Frontend implementation follows design tokens (`guides/09-design-tokens.md`) and uses shadcn/ui components. Physical CSS classes converted to logical equivalents.
 
-### 6.8 i18n
+### 6.9 i18n
 
 All labels need Arabic + English translations in `messages/ar.json` and `messages/en.json`. Key namespace: `debts.*`, `persons.*`, `installments.*`.
 
