@@ -87,9 +87,13 @@ def generate_schedule(
             else:
                 principal_portion = monthly_payment - interest
 
+        # Cap principal_portion to remaining balance before subtracting
+        if remaining <= 0:
+            principal_portion = 0
+        elif principal_portion > remaining:
+            principal_portion = remaining
         remaining -= principal_portion
-        if remaining < 0:
-            remaining = 0
+        remaining = max(remaining, 0)
 
         # Determine status
         has_payment = any(_dates_match_month(pd, payment_date) for pd in payment_dates)

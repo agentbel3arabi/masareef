@@ -329,7 +329,8 @@ async def batch_compute_debt_totals(
     result: dict[int, tuple[int, int]] = {}
     for row in rows:
         principal_minor = principal_map[row.debt_id]
-        remaining = principal_minor - (row.principal_paid if row.principal_paid is not None else 0)
+        principal_paid = row.principal_paid if row.principal_paid is not None else 0
+        remaining = max(principal_minor - principal_paid, 0)
         result[row.debt_id] = (row.total_paid, remaining)
 
     # Fill in debts with no payments
