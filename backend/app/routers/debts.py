@@ -79,7 +79,7 @@ async def list_debts(
     )
     items = []
     for d in debts:
-        paid, remaining = await debt_service.compute_debt_totals(session, d.id)
+        paid, remaining = await debt_service.compute_debt_totals(session, d.id, d.principal_minor)
         items.append(_debt_to_response(d, paid, remaining).model_dump())
     return SuccessResponse(
         data=items,
@@ -101,7 +101,7 @@ async def get_debt(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
-    paid, remaining = await debt_service.compute_debt_totals(session, debt.id)
+    paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
 
 
@@ -155,7 +155,7 @@ async def update_debt(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
         )
-    paid, remaining = await debt_service.compute_debt_totals(session, debt.id)
+    paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
 
 
@@ -275,5 +275,5 @@ async def mark_debt_paid(
             ).model_dump(),
         )
     debt = await debt_service.mark_paid(session, debt)
-    paid, remaining = await debt_service.compute_debt_totals(session, debt.id)
+    paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())

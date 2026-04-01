@@ -289,17 +289,20 @@ async def get_match_suggestions(
     return result
 
 
-async def compute_debt_totals(session: AsyncSession, debt_id: int) -> tuple[int, int]:
+async def compute_debt_totals(
+    session: AsyncSession, debt_id: int, principal_minor: int
+) -> tuple[int, int]:
     """Return (total_paid, remaining_principal) for a debt.
 
     total_paid     — sum of all payment amounts (principal + interest cash out)
     remaining      — outstanding principal balance (not total future cash owed)
+
+    Callers must pass principal_minor from the already-loaded Debt object to
+    avoid a redundant query and prevent NoResultFound on concurrent soft-deletes.
     """
     total_paid = await _total_paid(session, debt_id)
     principal_paid = await _principal_paid(session, debt_id)
-    q = select(Debt).where(Debt.id == debt_id, Debt.is_active.is_(True))
-    debt = (await session.execute(q)).scalar_one()
-    return total_paid, debt.principal_minor - principal_paid
+    return total_paid, principal_minor - principal_paid
 
 
 # --- Private helpers ---
