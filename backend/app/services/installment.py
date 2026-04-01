@@ -86,3 +86,88 @@ async def create_installment(
     session.add(plan)
     await session.flush()
     return plan
+
+
+async def list_installments(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    installment_type: str | None = None,
+    status_filter: str | None = None,
+    source_account_id: int | None = None,
+    page: int = 1,
+    page_size: int = 50,
+) -> tuple[list[InstallmentPlan], int]:
+    """List installment plans with optional filters.
+
+    Status filtering is done in Python because effective status is computed.
+    """
+    query = select(InstallmentPlan).where(
+        InstallmentPlan.household_id == household_id,
+        InstallmentPlan.is_active.is_(True),
+    )
+    if installment_type:
+        query = query.where(InstallmentPlan.type == installment_type)
+    if source_account_id is not None:
+        query = query.where(InstallmentPlan.source_account_id == source_account_id)
+
+    query = query.order_by(InstallmentPlan.created_at.desc())
+    result = await session.execute(query)
+    all_plans = list(result.scalars().all())
+
+    if status_filter:
+        all_plans = [
+            p
+            for p in all_plans
+            if compute_installment_status(p)["status"] == status_filter
+        ]
+
+    total = len(all_plans)
+    start = (page - 1) * page_size
+    page_plans = all_plans[start : start + page_size]
+    return page_plans, total
+
+
+async def get_installment(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    plan_id: int,
+) -> InstallmentPlan | None:
+    """Get a single installment plan by ID, scoped to household."""
+    query = select(InstallmentPlan).where(
+        InstallmentPlan.id == plan_id,
+        InstallmentPlan.household_id == household_id,
+        InstallmentPlan.is_active.is_(True),
+    )
+    result = await session.execute(query)
+    return result.scalar_one_or_none()
+
+
+async def update_installment(
+    session: AsyncSession,
+    plan: InstallmentPlan,
+    data: InstallmentUpdate,
+) -> InstallmentPlan:
+    """Update mutable fields of an installment plan."""
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(plan, field, value)
+    await session.flush()
+    return plan
+
+
+async def soft_delete_installment(
+    session: AsyncSession,
+    plan: InstallmentPlan,
+) -> None:
+    """Soft-delete an installment plan."""
+    plan.is_active = False
+    await session.flush()
+
+
+async def complete_installment(
+    session: AsyncSession,
+    plan: InstallmentPlan,
+) -> InstallmentPlan:
+    """Manually mark an installment plan as completed (early payoff)."""
+    plan.status = "completed"
+    await session.flush()
+    return plan
