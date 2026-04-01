@@ -1,14 +1,15 @@
 from datetime import date
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
 class DebtCreate(BaseModel):
-    type: str  # "bank_loan" (P2P types added in 3B)
+    type: Literal["bank_loan"]  # extend to Union[Literal[...]] in 3B for P2P types
     name: str
     institution: str | None = None
     principal_minor: int = Field(gt=0)
-    currency: str = Field(max_length=3)
+    currency: str = Field(min_length=3, max_length=3)
     annual_rate_percent: float = Field(ge=0, default=0)  # Backend converts to bps
     tenure_months: int = Field(gt=0)
     start_date: date
@@ -29,7 +30,7 @@ class DebtUpdate(BaseModel):
 
 class DebtResponse(BaseModel):
     id: int
-    type: str
+    type: str  # kept as str — service may return P2P types from DB before 3B schemas update
     person_id: int | None = None
     linked_account_id: int | None = None
     name: str
@@ -42,7 +43,7 @@ class DebtResponse(BaseModel):
     monthly_payment_minor: int
     repayment_mode: str | None = None
     due_date: date | None = None
-    status: str
+    status: Literal["active", "settled", "overdue"]
     notes: str | None = None
     is_active: bool
     total_paid_minor: int = 0
@@ -78,7 +79,7 @@ class ScheduleRow(BaseModel):
     principal_minor: int
     interest_minor: int
     remaining_minor: int
-    status: str  # paid | overdue | upcoming
+    status: Literal["paid", "overdue", "upcoming"]
 
 
 class MatchSuggestion(BaseModel):
@@ -86,4 +87,4 @@ class MatchSuggestion(BaseModel):
     date: date
     amount_minor: int
     description: str
-    score: float  # 0.0–1.0
+    score: float = Field(ge=0.0, le=1.0)  # 0.0 = no match, 1.0 = exact match
