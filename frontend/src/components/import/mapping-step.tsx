@@ -17,7 +17,7 @@ import {
 const TARGET_FIELDS = ["date", "description", "debit", "credit", "balance"] as const;
 type FieldKey = (typeof TARGET_FIELDS)[number];
 
-const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD-MM-YYYY", "Auto-detect"];
+const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD-MM-YYYY", "DDMMM", "Auto-detect"];
 
 interface MappingStepProps {
   headers: string[];

@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import patch
 
 from app.services.import_.row_validator import validate_row
 
@@ -57,3 +58,43 @@ def test_single_amount_negative_is_debit():
     assert row.status == "valid"
     assert row.amount_minor == -125000  # negative = debit
     assert row.type == "debit"
+
+
+def test_ddmmm_format_parses_correctly():
+    """DDMMM dates like '04JUN' should parse to the correct month/day in current or previous year."""
+    with patch("app.services.import_.row_validator.datetime") as mock_dt:
+        # Fix "today" to 2025-07-01 so 04JUN → 2025-06-04 (not in future)
+        mock_dt.date.today.return_value = datetime.date(2025, 7, 1)
+        mock_dt.timedelta = datetime.timedelta
+        mock_dt.datetime.strptime = datetime.datetime.strptime
+        row = validate_row(0, "04JUN", "MY FAWRY", "10080.00", "", "DDMMM", "EGP")
+    assert row.status == "valid"
+    assert row.date is not None
+    assert row.date.month == 6
+    assert row.date.day == 4
+
+
+def test_ddmmm_rolls_back_year_for_future_date():
+    """DDMMM dates that are more than 60 days in the future use the previous year."""
+    with patch("app.services.import_.row_validator.datetime") as mock_dt:
+        # Fix "today" to 2025-01-15 so 04JUN → 2025-06-04 which is >60 days ahead → 2024-06-04
+        mock_dt.date.today.return_value = datetime.date(2025, 1, 15)
+        mock_dt.timedelta = datetime.timedelta
+        mock_dt.datetime.strptime = datetime.datetime.strptime
+        row = validate_row(0, "04JUN", "MY FAWRY", "10080.00", "", "DDMMM", "EGP")
+    assert row.status == "valid"
+    assert row.date is not None
+    assert row.date.year == 2024
+    assert row.date.month == 6
+
+
+def test_ddmmm_credit_suffix():
+    """Amount with CR suffix in DDMMM row is treated as credit."""
+    with patch("app.services.import_.row_validator.datetime") as mock_dt:
+        mock_dt.date.today.return_value = datetime.date(2025, 7, 1)
+        mock_dt.timedelta = datetime.timedelta
+        mock_dt.datetime.strptime = datetime.datetime.strptime
+        row = validate_row(0, "04JUN", "CASHBACK", "", "569.42CR", "DDMMM", "EGP")
+    assert row.status == "valid"
+    assert row.amount_minor == 56942  # credit → positive
+    assert row.type == "credit"
