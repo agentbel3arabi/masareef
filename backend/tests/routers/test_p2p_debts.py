@@ -285,3 +285,41 @@ async def test_get_splits_for_bank_loan_returns_empty(client):
     response = await client.get(f"/api/v1/debts/{debt_id}/splits")
     assert response.status_code == 200
     assert response.json()["data"] == []
+
+
+@pytest.mark.asyncio
+async def test_person_response_includes_balances(client):
+    """After creating a P2P debt, person GET includes balance data."""
+    person_id = await _create_person(client, "Balance Person")
+    payload = _create_p2p_payload(
+        person_id,
+        principal_minor=500000,
+        split_count=5,
+        tenure_months=5,
+    )
+    await client.post("/api/v1/debts", json=payload)
+
+    response = await client.get(f"/api/v1/persons/{person_id}")
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert "balances" in data
+    assert data["balances"]["by_currency"]["EGP"] == 500000
+
+
+@pytest.mark.asyncio
+async def test_person_list_includes_balances(client):
+    """List persons also includes balance data."""
+    person_id = await _create_person(client, "List Balance")
+    payload = _create_p2p_payload(
+        person_id,
+        principal_minor=300000,
+        split_count=3,
+        tenure_months=3,
+    )
+    await client.post("/api/v1/debts", json=payload)
+
+    response = await client.get("/api/v1/persons")
+    assert response.status_code == 200
+    persons = response.json()["data"]
+    person_data = next(p for p in persons if p["id"] == person_id)
+    assert person_data["balances"]["by_currency"]["EGP"] == 300000
