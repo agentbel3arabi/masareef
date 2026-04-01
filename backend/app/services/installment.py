@@ -217,7 +217,9 @@ async def get_financing_apps_summary(
     # Group plans by source_account_id
     plans_by_account: dict[int, list[InstallmentPlan]] = {}
     for p in all_plans:
-        plans_by_account.setdefault(p.source_account_id, []).append(p)
+        acct_id = p.source_account_id
+        if acct_id is not None:
+            plans_by_account.setdefault(acct_id, []).append(p)
 
     apps = []
     total_limit = 0
@@ -300,8 +302,8 @@ async def get_account_obligations(
 
     debt_items = []
     for d in debts:
-        debt_type = d.type.value if hasattr(d.type, "value") else d.type
-        debt_status = d.status.value if hasattr(d.status, "value") else d.status
+        debt_type = d.type.value if hasattr(d.type, "value") else str(d.type)  # type: ignore[union-attr]
+        debt_status = d.status.value if hasattr(d.status, "value") else str(d.status)  # type: ignore[union-attr]
         debt_items.append(
             {
                 "id": d.id,
@@ -317,7 +319,7 @@ async def get_account_obligations(
     installment_items = []
     for p in plans:
         computed = compute_installment_status(p)
-        plan_type = p.type.value if hasattr(p.type, "value") else p.type
+        plan_type = p.type.value if hasattr(p.type, "value") else str(p.type)  # type: ignore[union-attr]
         installment_items.append(
             {
                 "id": p.id,

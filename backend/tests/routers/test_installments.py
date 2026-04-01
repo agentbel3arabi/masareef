@@ -156,7 +156,7 @@ async def test_complete_installment(client):
 
 @pytest.mark.asyncio
 async def test_cc_with_wrong_account_type_returns_422(client):
-    bank_id = await _create_account(client, account_type="bank_account", credit_limit=None)
+    bank_id = await _create_account(client, account_type="bank_account", credit_limit=0)
     payload = _cc_payload(source_account_id=bank_id)
     resp = await client.post("/api/v1/installments", json=payload)
     assert resp.status_code == 422

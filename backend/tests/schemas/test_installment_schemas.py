@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from pydantic import ValidationError
 
@@ -34,7 +36,7 @@ def test_valid_store_installment():
         total_amount_minor=1200000,
         monthly_amount_minor=100000,
         total_months=12,
-        start_month="2024-06-01",
+        start_month=date(2024, 6, 1),
         currency="EGP",
     )
     assert schema.type == "store"
@@ -50,7 +52,7 @@ def test_valid_financing_app_installment():
         total_amount_minor=1500000,
         monthly_amount_minor=125000,
         total_months=12,
-        start_month="2024-06-01",
+        start_month=date(2024, 6, 1),
         currency="EGP",
     )
     assert schema.type == "financing_app"
