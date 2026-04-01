@@ -326,7 +326,9 @@ async def _principal_paid(session: AsyncSession, debt_id: int) -> int:
     q = select(func.coalesce(func.sum(DebtPayment.principal_minor), 0)).where(
         DebtPayment.debt_id == debt_id
     )
-    return (await session.execute(q)).scalar_one()
+    result = (await session.execute(q)).scalar_one()
+    # coalesce guarantees non-null at runtime; guard satisfies pyright (principal_minor is nullable)
+    return result if result is not None else 0
 
 
 async def _validate_linked_account(
