@@ -18,7 +18,7 @@ const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
   {
     label: "nav.sectionFinance",
     items: navItems.filter((i) =>
-      ["/accounts", "/transactions", "/transfers"].includes(i.href)
+      ["/accounts", "/transactions", "/transfers", "/import"].includes(i.href)
     ),
   },
   {

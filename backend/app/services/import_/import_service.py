@@ -9,6 +9,7 @@ commit_import() atomically inserts transactions. Balance is NOT updated on the
 account model (balance is computed dynamically: seed + sum of transactions).
 """
 
+import logging
 import uuid
 
 from fastapi import HTTPException, status
@@ -16,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
+from app.models.category import Category
 from app.models.enums import TransactionType
 from app.models.transaction import Transaction
 from app.schemas.import_ import (
@@ -36,6 +38,8 @@ from app.services.import_.pdf_parser import is_scanned
 from app.services.import_.presets.registry import detect_preset
 from app.services.import_template import get_linked_template
 from app.services.money import CURRENCIES
+
+logger = logging.getLogger(__name__)
 
 
 def _parse_error(fmt: str) -> HTTPException:
@@ -178,7 +182,15 @@ async def parse_upload(
 
     # ── PDF path ───────────────────────────────────────────────────────────
     if fmt == "pdf":
-        if is_scanned(raw_bytes):
+        try:
+            scanned = is_scanned(raw_bytes)
+        except Exception:
+            logger.warning(
+                "is_scanned() raised an unexpected error; treating PDF as parseable",
+                exc_info=True,
+            )
+            scanned = False
+        if scanned:
             return ScannedResponse()
 
         preset = detect_preset(raw_bytes)
@@ -316,6 +328,17 @@ async def commit_import(
 
     account_currency = account.currency  # derive currency from account, not client
 
+    # Look up the predefined "Uncategorized" category once for the whole batch
+    uncategorized_result = await session.execute(
+        select(Category).where(
+            Category.name_en == "Uncategorized",
+            Category.is_predefined.is_(True),
+            Category.is_active.is_(True),
+        )
+    )
+    uncategorized_category = uncategorized_result.scalar_one_or_none()
+    uncategorized_id: int | None = uncategorized_category.id if uncategorized_category else None
+
     batch_id = uuid.uuid4()
     balance_delta = 0
 
@@ -335,6 +358,7 @@ async def commit_import(
             amount_minor=signed_amount,
             currency=account_currency,
             type=tx_type,
+            category_id=uncategorized_id,
             applies_to_balance=commit_row.apply_to_balance,
             import_batch_id=batch_id,
         )

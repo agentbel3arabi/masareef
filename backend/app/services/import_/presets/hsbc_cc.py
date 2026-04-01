@@ -2,12 +2,9 @@
 
 Detection: scans page 1 header for card variant keywords.
 Extraction: X-range column bucketing with pdfplumber positional words.
-
-⚠️  X-ranges in HSBC_CC_PDF_CONFIG are starting estimates.
-Calibrate against a real HSBC CC PDF before going to production.
-See calibration note in Task 12 of the implementation plan.
 """
 
+import datetime
 import io
 import re
 
@@ -25,13 +22,16 @@ _VARIANT_PATTERNS: dict[str, str] = {
     "premier": r"PREMIER",
 }
 
-# ⚠️  Calibrate these X-ranges from a real HSBC CC PDF (see plan Task 12 note)
+# Calibrated against HSBC Premier, Cashback, Evolution, Platinum PDFs.
+# Two date columns exist: posting date (x0≈60) and transaction date (x0≈110).
+# The transaction date is captured and used as the row date; the posting date
+# is also captured so the DDMMM→ISO resolver can detect year-boundary crossings.
+# A single amount column at x0≈496-510 carries amounts; "CR" suffix = credit.
 HSBC_CC_PDF_CONFIG = PdfColumnConfig(
-    date_x_range=(30.0, 90.0),
-    description_x_range=(90.0, 340.0),
-    debit_x_range=(340.0, 420.0),
-    credit_x_range=(420.0, 500.0),
-    balance_x_range=(500.0, 580.0),
+    date_x_range=(50.0, 95.0),  # Posting date x0≈60; excludes header text at x0=46
+    description_x_range=(140.0, 420.0),  # Description x0≈150-400; skips booking date at x0≈110
+    debit_x_range=(455.0, 525.0),  # Single amount column x0≈496-510
+    credit_x_range=(455.0, 525.0),  # Same range; credit vs debit determined from "CR" suffix
     y_tolerance=3.0,
 )
 
@@ -83,15 +83,73 @@ class HsbcCcPreset(BankPreset):
     def get_pdf_config(self) -> PdfColumnConfig:
         return HSBC_CC_PDF_CONFIG
 
+    # X-range for the transaction date (second date column, x0≈110).
+    # Separate from the config's date_x_range (posting date) so we can capture both.
+    _TXN_DATE_X: tuple[float, float] = (100.0, 140.0)
+
+    # DDMMM dates like "04JUN" have no year; this pattern confirms the format.
+    _DATE_RE = re.compile(r"^\d{2}[A-Z]{3}$")
+
+    # "Statement Date 09JUN2025" — extract year and month from the statement header.
+    _STMT_DATE_RE = re.compile(r"Statement\s+Date\s+(\d{2})([A-Z]{3})(\d{4})", re.IGNORECASE)
+
+    @staticmethod
+    def _extract_statement_date(pdf: "pdfplumber.PDF") -> tuple[int, int] | None:  # type: ignore[name-defined]
+        """Return (year, month) from 'Statement Date DDMMMYYYY' on page 1 or 2, or None."""
+        for page in pdf.pages[:2]:
+            text = page.extract_text() or ""
+            m = HsbcCcPreset._STMT_DATE_RE.search(text)
+            if m:
+                try:
+                    month = datetime.datetime.strptime(m.group(2), "%b").month
+                    return int(m.group(3)), month
+                except ValueError:
+                    continue
+        return None
+
+    @staticmethod
+    def _resolve_ddmmm(raw: str, statement_year: int, statement_month: int) -> str:
+        """Convert a DDMMM token (e.g. '12MAY') to an ISO date string.
+
+        Uses the statement year; rolls back one year when the transaction month
+        is later than the statement month — this handles December transactions
+        appearing on a January statement (common for CC billing cycles that
+        cross year boundaries).
+        """
+        try:
+            dt = datetime.datetime.strptime(raw + str(statement_year), "%d%b%Y").date()
+        except ValueError:
+            return raw  # not a valid DDMMM; validate_row will surface the error
+        # Transaction month > statement month means it crossed a year boundary
+        if dt.month > statement_month:
+            dt = dt.replace(year=statement_year - 1)
+        return dt.isoformat()
+
     def parse(
         self, content: bytes, currency: str = "EGP", currency_exponent: int = 2
     ) -> list[ParsedRow]:
-        """Extract transactions from HSBC CC PDF using X-range column bucketing."""
+        """Extract transactions from HSBC CC PDF using X-range column bucketing.
+
+        Column layout (calibrated):
+          x0≈60   Posting date (DDMMM)
+          x0≈110  Transaction date (DDMMM) — used as the row date
+          x0≈150+ Description (multiple words)
+          x0≈496+ Amount (single column; "CR" suffix → credit, else debit)
+
+        The table uses a uniform ~8.2pt row height. Every row at a distinct Y
+        position is a real transaction — no deduplication is applied.
+        """
         config = self.get_pdf_config()
         rows: list[ParsedRow] = []
         row_index = 0
 
         with pdfplumber.open(io.BytesIO(content)) as pdf:
+            # Extract statement year + month once; used to resolve year-less DDMMM dates.
+            # Falls back to heuristic year inference in row_validator if not found.
+            stmt_date = self._extract_statement_date(pdf)
+            statement_year = stmt_date[0] if stmt_date else None
+            statement_month = stmt_date[1] if stmt_date else None
+
             for page in pdf.pages:
                 words = (
                     page.extract_words(
@@ -101,45 +159,61 @@ class HsbcCcPreset(BankPreset):
                     or []
                 )
 
-                # Group words into columns by X position, rows by Y proximity
-                date_cols: dict[float, list[str]] = {}
+                # Bucket words by X range into per-Y-position lists
+                posting_cols: dict[float, list[str]] = {}  # x0≈60  (posting date)
+                txn_cols: dict[float, list[str]] = {}  # x0≈110 (transaction date)
                 desc_cols: dict[float, list[str]] = {}
-                debit_cols: dict[float, list[str]] = {}
-                credit_cols: dict[float, list[str]] = {}
+                amount_cols: dict[float, list[str]] = {}
 
                 for word in words:
                     x0: float = word["x0"]
-                    # Snap Y to nearest tolerance bucket
                     y = round(word["top"] / config.y_tolerance) * config.y_tolerance
                     text: str = word["text"]
 
                     if config.date_x_range[0] <= x0 <= config.date_x_range[1]:
-                        date_cols.setdefault(y, []).append(text)
+                        posting_cols.setdefault(y, []).append(text)
+                    elif self._TXN_DATE_X[0] <= x0 <= self._TXN_DATE_X[1]:
+                        txn_cols.setdefault(y, []).append(text)
                     elif config.description_x_range[0] <= x0 <= config.description_x_range[1]:
                         desc_cols.setdefault(y, []).append(text)
                     elif config.debit_x_range[0] <= x0 <= config.debit_x_range[1]:
-                        debit_cols.setdefault(y, []).append(text)
-                    elif config.credit_x_range[0] <= x0 <= config.credit_x_range[1]:
-                        credit_cols.setdefault(y, []).append(text)
+                        amount_cols.setdefault(y, []).append(text)
 
-                # Build rows from Y positions that have a date
-                for y in sorted(date_cols):
-                    date_text = " ".join(date_cols[y])
+                for y in sorted(posting_cols):
+                    posting_text = " ".join(posting_cols[y])
+                    txn_text = " ".join(txn_cols.get(y, []))
                     desc_text = " ".join(desc_cols.get(y, []))
-                    debit_text = " ".join(debit_cols.get(y, []))
-                    credit_text = " ".join(credit_cols.get(y, []))
+                    amount_text = " ".join(amount_cols.get(y, []))
 
-                    # Skip rows with no amount (headers, section labels, etc.)
-                    if not (debit_text or credit_text):
+                    # Skip rows without a valid DDMMM posting date (headers, footers)
+                    if not self._DATE_RE.match(posting_text):
                         continue
+                    # Skip rows with no amount
+                    if not amount_text:
+                        continue
+
+                    # Determine debit vs credit from "CR" suffix in amount text
+                    if "CR" in amount_text.upper():
+                        debit_raw, credit_raw = "", amount_text
+                    else:
+                        debit_raw, credit_raw = amount_text, ""
+
+                    # Use the transaction date (when purchase happened) as the primary date
+                    date_raw = txn_text or posting_text
+                    # Resolve DDMMM to ISO using the statement year+month when available
+                    if statement_year and statement_month and self._DATE_RE.match(date_raw):
+                        date_raw = self._resolve_ddmmm(date_raw, statement_year, statement_month)
+                        date_format = "YYYY-MM-DD"
+                    else:
+                        date_format = "DDMMM"
 
                     row = validate_row(
                         row_index=row_index,
-                        date_raw=date_text,
+                        date_raw=date_raw,
                         description=desc_text,
-                        debit_raw=debit_text,
-                        credit_raw=credit_text,
-                        date_format="DD/MM/YYYY",
+                        debit_raw=debit_raw,
+                        credit_raw=credit_raw,
+                        date_format=date_format,
                         currency=currency,
                         currency_exponent=currency_exponent,
                     )

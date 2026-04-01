@@ -66,3 +66,8 @@ playwright-report/
 docs/superpowers/reports/screenshots/
 
 .claude/scheduled_tasks.lock
+
+# =========================
+# PDF comparison outputs (may contain PII)
+# =========================
+data/HSBC/comparison/output/

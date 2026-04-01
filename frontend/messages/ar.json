@@ -10,6 +10,7 @@
     "transferDeleted": "تم حذف التحويل",
     "bulkDeleted": "تم حذف المعاملات",
     "bulkCategorized": "تم إعادة تصنيف المعاملات",
+    "importComplete": "اكتمل الاستيراد",
     "error": "حدث خطأ ما",
     "tryAgain": "يرجى المحاولة مرة أخرى"
   },
@@ -80,6 +81,7 @@
     "accounts": "الحسابات",
     "transactions": "المعاملات",
     "transfers": "التحويلات",
+    "import": "استيراد",
     "debts": "الديون",
     "budgets": "الميزانيات",
     "gam3eya": "الجمعية",
@@ -332,6 +334,79 @@
     "searchResults": {
       "title": "لا توجد نتائج",
       "description": "حاول تعديل الفلاتر أو مصطلحات البحث."
+    }
+  },
+  "import": {
+    "title": "استيراد",
+    "subtitle": "استيراد كشف حساب",
+    "step": {
+      "upload": "رفع الملف",
+      "mapping": "تعيين الأعمدة",
+      "preview": "مراجعة وتأكيد"
+    },
+    "upload": {
+      "dragDrop": "اسحب وأفلت كشف حسابك هنا",
+      "or": "أو",
+      "browse": "تصفح الملفات",
+      "supported": "الصيغ المدعومة: CSV، Excel، PDF",
+      "account": "الاستيراد إلى الحساب",
+      "selectAccount": "اختر حساباً",
+      "next": "التالي",
+      "analysing": "جارٍ التحليل…",
+      "errorFileTooLarge": "حجم الملف كبير جداً. الحد الأقصى ١٠ ميجابايت.",
+      "errorFileType": "نوع الملف غير صالح. يرجى استخدام CSV أو Excel أو PDF."
+    },
+    "mapping": {
+      "title": "تعيين الأعمدة",
+      "subtitle": "طابق أعمدة ملفك مع الحقول أدناه",
+      "fieldDate": "التاريخ",
+      "fieldDescription": "الوصف",
+      "fieldDebit": "سحب (خروج)",
+      "fieldCredit": "إيداع (دخول)",
+      "fieldBalance": "الرصيد (اختياري)",
+      "selectColumn": "اختر عموداً",
+      "suggested": "مقترح",
+      "dateFormat": "صيغة التاريخ",
+      "skipRows": "تخطي صفوف الرأس",
+      "singleAmount": "عمود مبلغ واحد",
+      "fieldAmount": "المبلغ",
+      "sheet": "الورقة",
+      "selectSheet": "اختر الورقة",
+      "loadingParse": "جارٍ التحليل…",
+      "back": "رجوع",
+      "parse": "تحليل"
+    },
+    "preview": {
+      "title": "مراجعة المعاملات",
+      "commit": "استيراد {count} معاملات",
+      "back": "رجوع",
+      "valid": "{count} صالح",
+      "duplicate": "{count} مكرر",
+      "error": "{count} خطأ",
+      "date": "التاريخ",
+      "description": "الوصف",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "importing": "جارٍ الاستيراد…",
+      "statusDuplicate": "مكرر",
+      "statusError": "خطأ"
+    },
+    "scanned": {
+      "title": "تم اكتشاف ملف ممسوح ضوئياً",
+      "description": "يبدو أن هذا المستند ممسوح ضوئياً. قم بالترقية إلى Premium لاستيراد كشوف الحسابات الممسوحة.",
+      "upgrade": "الترقية إلى Premium",
+      "back": "جرب ملفاً آخر",
+      "comingSoon": "استيراد OCR قادم قريباً"
+    },
+    "done": {
+      "success": "تم استيراد {count} معاملات بنجاح"
+    },
+    "errors": {
+      "noFile": "يرجى اختيار ملف",
+      "noAccount": "يرجى اختيار حساب",
+      "parseFailed": "فشل تحليل الملف",
+      "unsupportedFormat": "صيغة PDF هذه غير مدعومة. المدعوم: كشف بطاقة HSBC الائتمانية",
+      "commitFailed": "فشل استيراد المعاملات"
     }
   },
   "landing": {
