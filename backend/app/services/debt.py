@@ -151,16 +151,25 @@ async def record_payment(
     notes: str | None = None,
 ) -> DebtPayment:
     """Record a payment, auto-computing principal/interest split for bank loans."""
-    total_paid = await _total_paid(session, debt.id)
-    remaining = debt.principal_minor - total_paid
+    # Use principal-paid sum (not total-paid) so that interest portions in prior
+    # payments don't cause remaining to go negative on interest-bearing loans.
+    principal_paid = await _principal_paid(session, debt.id)
+    remaining_principal = debt.principal_minor - principal_paid
 
-    if amount_minor > remaining:
+    if remaining_principal <= 0:
+        raise ValueError("PAYMENT_EXCEEDS_REMAINING")
+    # For 0% loans every payment is pure principal; guard against overpayment.
+    if debt.annual_rate_bps == 0 and amount_minor > remaining_principal:
         raise ValueError("PAYMENT_EXCEEDS_REMAINING")
 
     principal_portion: int | None = None
     interest_portion: int | None = None
 
     if debt.type == DebtType.BANK_LOAN and debt.annual_rate_bps > 0:
+        # Generate theoretical schedule without recorded payments to obtain the
+        # canonical principal/interest split per installment.  Passing payments=[]
+        # is intentional — all rows will have status != "paid", which is what we
+        # need to find the matching month's ratio without previous-payment state.
         schedule = generate_schedule(
             principal_minor=debt.principal_minor,
             annual_rate_bps=debt.annual_rate_bps,
@@ -168,18 +177,18 @@ async def record_payment(
             start_date=debt.start_date,
             payments=[],
         )
-        # Find the matching schedule row by month
+        # Find the matching schedule row by calendar month
         matching_row = None
         for row in schedule:
-            if row["status"] != "paid" and row["date"].month == payment_date.month and row["date"].year == payment_date.year:
+            if (
+                row["date"].month == payment_date.month
+                and row["date"].year == payment_date.year
+            ):
                 matching_row = row
                 break
         if not matching_row:
-            # Fallback: use first unpaid row
-            for row in schedule:
-                if row["status"] != "paid":
-                    matching_row = row
-                    break
+            # Fallback: use first row (handles off-schedule payments)
+            matching_row = schedule[0] if schedule else None
 
         if matching_row and matching_row["payment_minor"] > 0:
             interest_ratio = matching_row["interest_minor"] / matching_row["payment_minor"]
@@ -189,7 +198,7 @@ async def record_payment(
             principal_portion = amount_minor
             interest_portion = 0
     elif debt.type == DebtType.BANK_LOAN:
-        # 0% interest
+        # 0% interest — entire payment reduces principal
         principal_portion = amount_minor
         interest_portion = 0
 
@@ -205,9 +214,9 @@ async def record_payment(
     session.add(payment)
     await session.flush()
 
-    # Check if debt is fully paid
-    new_total = total_paid + amount_minor
-    if new_total >= debt.principal_minor:
+    # Check if debt is fully paid off using principal balance, not total cash paid.
+    new_principal_paid = principal_paid + (principal_portion if principal_portion is not None else amount_minor)
+    if new_principal_paid >= debt.principal_minor:
         debt.status = DebtStatus.PAID_OFF
         await session.flush()
 
@@ -274,17 +283,30 @@ async def get_match_suggestions(
                     }
                 )
 
-    suggestions.sort(key=lambda s: s["score"], reverse=True)
-    return suggestions
+    # Deduplicate by transaction_id, keeping the highest-score suggestion.
+    best: dict[int, dict] = {}
+    for s in suggestions:
+        tid = s["transaction_id"]
+        if tid not in best or s["score"] > best[tid]["score"]:
+            best[tid] = s
+
+    result = list(best.values())
+    result.sort(key=lambda s: s["score"], reverse=True)
+    return result
 
 
 async def compute_debt_totals(
     session: AsyncSession, debt_id: int
 ) -> tuple[int, int]:
-    """Return (total_paid, remaining) for a debt."""
+    """Return (total_paid, remaining_principal) for a debt.
+
+    total_paid     — sum of all payment amounts (principal + interest cash out)
+    remaining      — outstanding principal balance (not total future cash owed)
+    """
     total_paid = await _total_paid(session, debt_id)
+    principal_paid = await _principal_paid(session, debt_id)
     debt = (await session.execute(select(Debt).where(Debt.id == debt_id, Debt.is_active.is_(True)))).scalar_one()
-    return total_paid, debt.principal_minor - total_paid
+    return total_paid, debt.principal_minor - principal_paid
 
 
 # --- Private helpers ---
@@ -306,7 +328,15 @@ async def _total_paid(session: AsyncSession, debt_id: int) -> int:
     return (await session.execute(q)).scalar_one()
 
 
-async def _validate_linked_account(
+async def _principal_paid(session: AsyncSession, debt_id: int) -> int:
+    """Sum of principal_minor already recorded — used for remaining-balance checks."""
+    q = select(func.coalesce(func.sum(DebtPayment.principal_minor), 0)).where(
+        DebtPayment.debt_id == debt_id
+    )
+    return (await session.execute(q)).scalar_one()
+
+
+
     session: AsyncSession,
     household_id: uuid.UUID,
     account_id: int,
