@@ -19,8 +19,9 @@ interface PreviewStepProps {
 }
 
 function StatusBadge({ status }: { status: ParsedRow["status"] }) {
-  if (status === "duplicate") return <Badge variant="secondary">Duplicate</Badge>;
-  if (status === "error") return <Badge variant="destructive">Error</Badge>;
+  const t = useTranslations("import.preview");
+  if (status === "duplicate") return <Badge variant="secondary">{t("statusDuplicate")}</Badge>;
+  if (status === "error") return <Badge variant="destructive">{t("statusError")}</Badge>;
   return null;
 }
 

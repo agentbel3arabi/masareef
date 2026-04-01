@@ -370,6 +370,8 @@
       "skipRows": "Skip header rows",
       "singleAmount": "Single amount column",
       "fieldAmount": "Amount",
+      "sheet": "Sheet",
+      "selectSheet": "Select sheet",
       "loadingParse": "Parsing…",
       "back": "Back",
       "parse": "Parse"
@@ -385,7 +387,9 @@
       "description": "Description",
       "amount": "Amount",
       "status": "Status",
-      "importing": "Importing…"
+      "importing": "Importing…",
+      "statusDuplicate": "Duplicate",
+      "statusError": "Error"
     },
     "scanned": {
       "title": "Scanned PDF detected",

@@ -9,9 +9,12 @@ commit_import() atomically inserts transactions. Balance is NOT updated on the
 account model (balance is computed dynamically: seed + sum of transactions).
 """
 
+import logging
 import uuid
 
 from fastapi import HTTPException, status
+
+logger = logging.getLogger(__name__)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -181,6 +184,7 @@ async def parse_upload(
         try:
             scanned = is_scanned(raw_bytes)
         except Exception:
+            logger.warning("is_scanned() raised an unexpected error; treating PDF as parseable", exc_info=True)
             scanned = False
         if scanned:
             return ScannedResponse()

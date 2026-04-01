@@ -58,7 +58,12 @@ export function MappingStep({
     : TARGET_FIELDS;
 
   function handleSubmit() {
-    onParse(mapping, dateFormat, skipRows, sheet || undefined);
+    // When singleAmount is on, the "debit" slot holds the signed amount column.
+    // The backend expects the key "amount" for this case, not "debit".
+    const resolvedMapping = singleAmount
+      ? { ...mapping, amount: mapping.debit ?? "", debit: "", credit: "" }
+      : mapping;
+    onParse(resolvedMapping, dateFormat, skipRows, sheet || undefined);
   }
 
   const isSuggested = (field: string) => autoSuggest[field] === mapping[field] && !!mapping[field];
@@ -68,10 +73,10 @@ export function MappingStep({
       {/* Sheet selector (Excel only) */}
       {sheetNames.length > 1 && (
         <div className="space-y-2">
-          <Label>Sheet</Label>
+          <Label>{t("sheet")}</Label>
           <Select value={sheet} onValueChange={(v) => setSheet(v ?? "")}>
             <SelectTrigger className="w-full">
-              <SelectValue />
+              <SelectValue placeholder={t("selectSheet")} />
             </SelectTrigger>
             <SelectContent>
               {sheetNames.map((s) => (
@@ -146,7 +151,7 @@ export function MappingStep({
           type="number"
           min={0}
           value={skipRows}
-          onChange={(e) => setSkipRows(Number(e.target.value))}
+          onChange={(e) => setSkipRows(Math.max(0, Number(e.target.value) || 0))}
           className="w-24"
         />
       </div>

@@ -163,6 +163,7 @@ export default function ImportPage() {
         columnMapping: mapping,
         dateFormat,
         sheetName,
+        skipRows,
       });
 
       if (result.result_type !== "complete") {

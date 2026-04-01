@@ -77,6 +77,7 @@ export interface ParseParams {
   columnMapping?: Record<string, string>;
   dateFormat?: string;
   sheetName?: string;
+  skipRows?: number;
 }
 
 export function useParseImport() {
@@ -94,6 +95,9 @@ export function useParseImport() {
       }
       if (params.sheetName) {
         formData.append("sheet_name", params.sheetName);
+      }
+      if (params.skipRows != null && params.skipRows > 0) {
+        formData.append("skip_rows", String(params.skipRows));
       }
       const resp = await apiUploadForm<ParseResponse>("/api/v1/import/parse", formData);
       return resp.data;

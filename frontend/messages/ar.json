@@ -370,6 +370,8 @@
       "skipRows": "تخطي صفوف الرأس",
       "singleAmount": "عمود مبلغ واحد",
       "fieldAmount": "المبلغ",
+      "sheet": "الورقة",
+      "selectSheet": "اختر الورقة",
       "loadingParse": "جارٍ التحليل…",
       "back": "رجوع",
       "parse": "تحليل"
@@ -385,7 +387,9 @@
       "description": "الوصف",
       "amount": "المبلغ",
       "status": "الحالة",
-      "importing": "جارٍ الاستيراد…"
+      "importing": "جارٍ الاستيراد…",
+      "statusDuplicate": "مكرر",
+      "statusError": "خطأ"
     },
     "scanned": {
       "title": "تم اكتشاف ملف ممسوح ضوئياً",
