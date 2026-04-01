@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
+from app.models.debt import Debt
 from app.models.installment_plan import InstallmentPlan
 from app.schemas.installment import InstallmentCreate, InstallmentUpdate
 
@@ -266,3 +267,63 @@ async def get_financing_apps_summary(
             "total_remaining_minor": total_remaining,
         },
     }
+
+
+async def get_account_obligations(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    account_id: int,
+) -> dict[str, list[dict[str, Any]]]:
+    """Return debts and installments linked to a specific account."""
+    # Debts linked via linked_account_id
+    debt_query = select(Debt).where(
+        Debt.household_id == household_id,
+        Debt.is_active.is_(True),
+        Debt.linked_account_id == account_id,
+    )
+    debt_result = await session.execute(debt_query)
+    debts = list(debt_result.scalars().all())
+
+    # Installments linked via source_account_id
+    plan_query = select(InstallmentPlan).where(
+        InstallmentPlan.household_id == household_id,
+        InstallmentPlan.is_active.is_(True),
+        InstallmentPlan.source_account_id == account_id,
+    )
+    plan_result = await session.execute(plan_query)
+    plans = list(plan_result.scalars().all())
+
+    debt_items = []
+    for d in debts:
+        debt_type = d.type.value if hasattr(d.type, "value") else d.type
+        debt_status = d.status.value if hasattr(d.status, "value") else d.status
+        debt_items.append(
+            {
+                "id": d.id,
+                "type": debt_type,
+                "name": d.name,
+                "monthly_payment_minor": d.monthly_payment_minor,
+                # simplified; exact remaining needs payment sum calculation
+                "remaining_minor": d.principal_minor,
+                "status": debt_status,
+            }
+        )
+
+    installment_items = []
+    for p in plans:
+        computed = compute_installment_status(p)
+        plan_type = p.type.value if hasattr(p.type, "value") else p.type
+        installment_items.append(
+            {
+                "id": p.id,
+                "type": plan_type,
+                "name": p.name,
+                "merchant_name": p.merchant_name,
+                "monthly_amount_minor": p.monthly_amount_minor,
+                "remaining_minor": computed["remaining_minor"],
+                "remaining_months": computed["remaining_months"],
+                "status": computed["status"],
+            }
+        )
+
+    return {"debts": debt_items, "installments": installment_items}
