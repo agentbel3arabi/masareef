@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role, require_role
+from app.models.enums import HouseholdRole
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.installment import InstallmentCreate, InstallmentResponse, InstallmentUpdate
 from app.services import installment as installment_service
@@ -45,6 +47,7 @@ async def list_installments(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     plans, total = await installment_service.list_installments(
         session,
@@ -67,6 +70,7 @@ async def get_installment(
     plan_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     plan = await installment_service.get_installment(session, household_id, plan_id)
     if not plan:
@@ -84,6 +88,7 @@ async def create_installment(
     data: InstallmentCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     try:
         plan = await installment_service.create_installment(session, household_id, data)
@@ -105,6 +110,7 @@ async def update_installment(
     data: InstallmentUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     plan = await installment_service.get_installment(session, household_id, plan_id)
     if not plan:
@@ -129,6 +135,7 @@ async def delete_installment(
     plan_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> None:
     plan = await installment_service.get_installment(session, household_id, plan_id)
     if not plan:
@@ -146,6 +153,7 @@ async def complete_installment(
     plan_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     plan = await installment_service.get_installment(session, household_id, plan_id)
     if not plan:

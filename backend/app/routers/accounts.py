@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role, require_role
 from app.models.account import Account
+from app.models.enums import HouseholdRole
 from app.schemas.account import AccountCreate, AccountResponse, AccountUpdate, ReconcileRequest
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.services import account as account_service
@@ -39,6 +41,7 @@ async def list_accounts(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     accounts, total = await account_service.list_accounts(session, household_id, page, page_size)
     # TODO: batch balance computation to avoid N+1 queries
@@ -56,6 +59,7 @@ async def list_accounts(
 async def get_net_worth(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     data = await account_service.compute_net_worth(session, household_id)
     return SuccessResponse(data=data)
@@ -66,6 +70,7 @@ async def get_account(
     account_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     account = await account_service.get_account(session, household_id, account_id)
     if not account:
@@ -85,6 +90,7 @@ async def create_account(
     data: AccountCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     account = await account_service.create_account(session, household_id, data)
     displayed = await account_service.compute_displayed_balance(session, account)
@@ -98,6 +104,7 @@ async def update_account(
     data: AccountUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     account = await account_service.get_account(session, household_id, account_id)
     if not account:
@@ -118,6 +125,7 @@ async def delete_account(
     account_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> None:
     account = await account_service.get_account(session, household_id, account_id)
     if not account:
@@ -136,6 +144,7 @@ async def reconcile_account(
     data: ReconcileRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     account = await account_service.get_account(session, household_id, account_id)
     if not account:
@@ -156,6 +165,7 @@ async def get_account_obligations(
     account_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     account = await account_service.get_account(session, household_id, account_id)
     if not account:
