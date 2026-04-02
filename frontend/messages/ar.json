@@ -12,7 +12,19 @@
     "bulkCategorized": "تم إعادة تصنيف المعاملات",
     "importComplete": "اكتمل الاستيراد",
     "error": "حدث خطأ ما",
-    "tryAgain": "يرجى المحاولة مرة أخرى"
+    "tryAgain": "يرجى المحاولة مرة أخرى",
+    "debtCreated": "تم إنشاء الدين بنجاح",
+    "debtUpdated": "تم تحديث الدين بنجاح",
+    "debtDeleted": "تم حذف الدين بنجاح",
+    "debtMarkedPaid": "تم تحديد الدين كمسدد",
+    "paymentRecorded": "تم تسجيل الدفعة بنجاح",
+    "installmentCreated": "تم إنشاء خطة الأقساط",
+    "installmentUpdated": "تم تحديث خطة الأقساط",
+    "installmentDeleted": "تم حذف خطة الأقساط",
+    "installmentCompleted": "تم إكمال خطة الأقساط",
+    "personCreated": "تم إنشاء الشخص بنجاح",
+    "personUpdated": "تم تحديث الشخص بنجاح",
+    "personDeleted": "تم حذف الشخص بنجاح"
   },
   "common": {
     "appName": "مصاريف",
@@ -212,7 +224,7 @@
     "amount": "المبلغ",
     "uncategorized": "بدون تصنيف",
     "search": "بحث في المعاملات...",
-    "allTypes": "جميع الأنواع",
+    "allTypes": "كل الأنواع",
     "expenses": "المصروفات",
     "income": "الدخل",
     "noResults": "لا توجد معاملات",
@@ -232,7 +244,6 @@
     "actions": "الإجراءات",
     "allAccounts": "كل الحسابات",
     "allCategories": "كل الفئات",
-    "allTypes": "كل الأنواع",
     "amountMin": "الحد الأدنى",
     "amountMax": "الحد الأقصى",
     "resetFilters": "إعادة تعيين",
@@ -334,6 +345,26 @@
     "searchResults": {
       "title": "لا توجد نتائج",
       "description": "حاول تعديل الفلاتر أو مصطلحات البحث."
+    },
+    "debts": {
+      "title": "لا توجد ديون بعد",
+      "description": "أضف أول قرض أو دين لبدء التتبع.",
+      "action": "إضافة دين"
+    },
+    "installments": {
+      "title": "لا توجد خطط أقساط بعد",
+      "description": "تتبع أقساط بطاقات الائتمان والمتاجر وتطبيقات التمويل.",
+      "action": "إضافة قسط"
+    },
+    "p2p": {
+      "title": "لا توجد ديون شخصية بعد",
+      "description": "تتبع الأموال المُقرضة أو المُقترضة من الأصدقاء والعائلة.",
+      "action": "إضافة دين"
+    },
+    "persons": {
+      "title": "لا يوجد أشخاص بعد",
+      "description": "أضف شخصاً قبل إنشاء الديون الشخصية.",
+      "action": "إضافة شخص"
     }
   },
   "import": {
@@ -547,5 +578,97 @@
       "newsletterToast": "النشرة البريدية قريبًا!",
       "copyright": "© ٢٠٢٦ مصاريف. صُنع بـ ❤️ في مصر"
     }
+  },
+  "debts": {
+    "title": "إدارة الديون",
+    "subtitle": "تتبع وإدارة القروض والأقساط",
+    "tabs": {
+      "loans": "القروض",
+      "cardInstallments": "أقساط البطاقات",
+      "financingApps": "تطبيقات التمويل",
+      "storeInstallments": "أقساط المتاجر",
+      "p2p": "ديون شخصية"
+    },
+    "summary": {
+      "monthlyPayments": "الأقساط الشهرية",
+      "totalRemaining": "إجمالي المتبقي",
+      "activeLoans": "{count} قروض",
+      "activePlans": "{count} خطط"
+    },
+    "status": {
+      "active": "نشط",
+      "paidOff": "مسدد",
+      "completed": "مكتمل",
+      "paid": "مدفوع",
+      "overdue": "متأخر",
+      "upcoming": "قادم"
+    },
+    "loan": {
+      "monthlyPayment": "القسط الشهري",
+      "remaining": "المتبقي",
+      "tenure": "{months} شهر",
+      "rate": "{rate}% سنوياً",
+      "paid": "{paid} من {total} مدفوع",
+      "institution": "المؤسسة",
+      "startDate": "تاريخ البداية",
+      "linkedAccount": "الحساب المرتبط"
+    },
+    "p2p": {
+      "lent": "أقرضت",
+      "borrowed": "اقترضت",
+      "netOwed": "صافي المستحق",
+      "noDebts": "لا توجد ديون نشطة",
+      "lumpSum": "دفعة واحدة",
+      "equalSplits": "أقساط متساوية",
+      "customSplits": "أقساط مخصصة"
+    },
+    "installment": {
+      "monthlyAmount": "شهرياً",
+      "totalAmount": "الإجمالي",
+      "months": "{paid}/{total} شهر",
+      "merchant": "التاجر",
+      "sourceAccount": "الحساب المصدر"
+    },
+    "financingApps": {
+      "creditLimit": "حد الائتمان",
+      "used": "المستخدم",
+      "available": "المتاح",
+      "utilization": "نسبة الاستخدام",
+      "activePlans": "خطط نشطة",
+      "monthlyCommitment": "الالتزام الشهري",
+      "totalMonthly": "إجمالي الشهري (كل التطبيقات)",
+      "totalRemaining": "إجمالي المتبقي (كل التطبيقات)"
+    },
+    "actions": {
+      "addLoan": "إضافة قرض",
+      "addDebt": "إضافة دين",
+      "addInstallment": "إضافة قسط",
+      "recordPayment": "تسجيل دفعة",
+      "viewSchedule": "عرض الجدول",
+      "markPaid": "تحديد كمسدد",
+      "complete": "تحديد كمكتمل"
+    }
+  },
+  "persons": {
+    "title": "الأشخاص",
+    "name": "الاسم",
+    "nameAr": "الاسم بالعربية",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "relationship": "العلاقة",
+    "notes": "ملاحظات",
+    "relationships": {
+      "family": "عائلة",
+      "friend": "صديق",
+      "colleague": "زميل",
+      "business": "عمل",
+      "other": "أخرى"
+    }
+  },
+  "installments": {
+    "title": "خطط الأقساط",
+    "creditCard": "بطاقة ائتمان",
+    "store": "متجر",
+    "financingApp": "تطبيق تمويل"
   }
 }
