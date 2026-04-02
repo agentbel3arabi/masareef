@@ -242,7 +242,7 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
               disabled={deleteAccount.isPending}
               onClick={handleDelete}
             >
-              {deleteAccount.isPending ? tCommon("loading") : tCommon("delete")}
+              {deleteAccount.isPending ? tCommon("loading") : tCommon("delete.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>

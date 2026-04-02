@@ -5,6 +5,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.dependencies import get_current_user, get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role
 from app.main import app
 
 # Import all models so Base.metadata knows about every table
@@ -25,6 +26,7 @@ from app.models import (  # noqa: F401
     Transaction,
     TransactionSplit,
 )
+from app.models.enums import HouseholdRole
 
 TEST_USER_ID = uuid.uuid4()
 TEST_HOUSEHOLD_ID = uuid.uuid4()
@@ -62,12 +64,17 @@ async def override_get_household_id() -> uuid.UUID:
     return TEST_HOUSEHOLD_ID
 
 
+async def override_get_member_role() -> HouseholdRole:
+    return HouseholdRole.ADMIN
+
+
 @pytest.fixture(autouse=True)
 def override_deps():
     """Override auth and DB dependencies for all tests."""
     app.dependency_overrides[get_db_session] = override_get_db_session
     app.dependency_overrides[get_current_user] = override_get_current_user
     app.dependency_overrides[get_household_id] = override_get_household_id
+    app.dependency_overrides[get_member_role] = override_get_member_role
     yield
     app.dependency_overrides.clear()
 

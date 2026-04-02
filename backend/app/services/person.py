@@ -8,8 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
 from app.models.enums import DebtStatus, DebtType
+from app.models.household import Household
 from app.models.person import Person
 from app.schemas.person import PersonBalances, PersonCreate, PersonUpdate
+from app.services.fx import convert_to_base
 
 
 async def list_persons(
@@ -193,7 +195,25 @@ async def compute_person_balances(
         if net != 0:
             by_currency[row.currency] = net
 
-    return PersonBalances(by_currency=by_currency)
+    # Look up household base currency
+    hh_row = await session.execute(
+        select(Household.base_currency).where(Household.id == household_id)
+    )
+    base_currency = hh_row.scalar_one_or_none() or "EGP"
+
+    # Convert per-currency balances to base currency
+    fx_result = await convert_to_base(
+        session=session,
+        balances=by_currency,
+        base_currency=base_currency,
+    )
+
+    return PersonBalances(
+        by_currency=by_currency,
+        total_base_minor=fx_result.total_base_minor,
+        base_currency=fx_result.base_currency,
+        fx_warnings=fx_result.fx_warnings,
+    )
 
 
 async def compute_persons_balances_bulk(
