@@ -15,17 +15,12 @@ import {
 } from "@/components/ui/select";
 import { useCreateDebt } from "@/hooks/use-debts";
 import { usePersons } from "@/hooks/use-persons";
-import { CURRENCIES } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import type { DebtType, RepaymentMode } from "@/lib/types/debts";
 
 interface P2PDebtFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function toMinor(displayValue: string, currency: string): number {
-  const exp = CURRENCIES[currency]?.exponent ?? 2;
-  return Math.round(parseFloat(displayValue || "0") * Math.pow(10, exp));
 }
 
 const CURRENCY_CODES = Object.keys(CURRENCIES);
@@ -72,7 +67,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
           debtType === "personal_lent"
             ? t("autoNameLent", { name: selectedPersonName })
             : t("autoNameBorrowed", { name: selectedPersonName }),
-        principal_minor: toMinor(amount, currency),
+        principal_minor: parseMajorToMinor(amount, CURRENCIES[currency]?.exponent ?? 2),
         currency,
         tenure_months: 0,
         start_date: new Date().toISOString().split("T")[0],
@@ -159,7 +154,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
           <Input
             id="p2p-amount"
             type="number"
-            step="0.01"
+            step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required

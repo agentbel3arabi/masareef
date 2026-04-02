@@ -15,16 +15,11 @@ import {
 } from "@/components/ui/select";
 import { useCreateDebt } from "@/hooks/use-debts";
 import { useAccounts } from "@/hooks/use-accounts";
-import { CURRENCIES } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 
 interface BankLoanFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function toMinor(displayValue: string, currency: string): number {
-  const exp = CURRENCIES[currency]?.exponent ?? 2;
-  return Math.round(parseFloat(displayValue || "0") * Math.pow(10, exp));
 }
 
 const CURRENCY_CODES = Object.keys(CURRENCIES);
@@ -66,7 +61,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         type: "bank_loan" as const,
         name,
         institution: institution || null,
-        principal_minor: toMinor(principal, currency),
+        principal_minor: parseMajorToMinor(principal, CURRENCIES[currency]?.exponent ?? 2),
         currency,
         annual_rate_percent: annualRate ? parseFloat(annualRate) : undefined,
         tenure_months: parseInt(tenureMonths, 10),
@@ -134,7 +129,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
           <Input
             id="loan-principal"
             type="number"
-            step="0.01"
+            step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
             value={principal}
             onChange={(e) => setPrincipal(e.target.value)}
             required
@@ -178,10 +173,10 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
           <Label>{t("linkedAccount")}</Label>
           <Select value={linkedAccountId} onValueChange={(v) => setLinkedAccountId(v ?? "")}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="--" />
+              <SelectValue placeholder={t("selectAccount")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__none__">--</SelectItem>
+              <SelectItem value="__none__">{t("none")}</SelectItem>
               {accounts.map((acc) => (
                 <SelectItem key={acc.id} value={String(acc.id)}>
                   {acc.name}

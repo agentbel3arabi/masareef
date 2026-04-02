@@ -7,18 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRecordPayment } from "@/hooks/use-debts";
-import { CURRENCIES } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 
 interface RecordPaymentFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   debtId: number;
   currency: string;
-}
-
-function toMinor(displayValue: string, currency: string): number {
-  const exp = CURRENCIES[currency]?.exponent ?? 2;
-  return Math.round(parseFloat(displayValue || "0") * Math.pow(10, exp));
 }
 
 export function RecordPaymentForm({
@@ -46,7 +41,7 @@ export function RecordPaymentForm({
     mutation.mutate(
       {
         date,
-        amount_minor: toMinor(amount, currency),
+        amount_minor: parseMajorToMinor(amount, CURRENCIES[currency]?.exponent ?? 2),
         notes: notes || null,
       },
       {
@@ -82,7 +77,7 @@ export function RecordPaymentForm({
           <Input
             id="payment-amount"
             type="number"
-            step="0.01"
+            step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required

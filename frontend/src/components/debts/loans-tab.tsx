@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import Link from "next/link";
 import { Landmark, Building2, CheckCircle2, ChevronDown, Plus } from "lucide-react";
 import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { useDebts, useAmortizationSchedule } from "@/hooks/use-debts";
@@ -220,6 +221,7 @@ function LoanCard({
       onClick={onToggle}
       role="button"
       tabIndex={0}
+      aria-expanded={expanded}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -349,6 +351,7 @@ function LoanCard({
             {/* Amortization preview */}
             <AmortizationPreview
               loanId={loan.id}
+              debtId={loan.id}
               locale={locale}
               currency={loan.currency}
             />
@@ -362,10 +365,12 @@ function LoanCard({
 /* ── Amortization Preview (inline sub-component) ── */
 function AmortizationPreview({
   loanId,
+  debtId,
   locale,
   currency,
 }: {
   loanId: number;
+  debtId: number;
   locale: string;
   currency: string;
 }) {
@@ -436,9 +441,9 @@ function AmortizationPreview({
             </table>
           </div>
           {(data?.data?.schedule?.length ?? 0) > 3 && (
-            <p className="text-xs text-primary font-semibold mt-3 cursor-pointer hover:underline">
+            <Link href={`/debts/loans/${debtId}`} className="text-xs text-primary font-semibold mt-3 hover:underline block">
               {tDetail("viewFullSchedule")}
-            </p>
+            </Link>
           )}
         </>
       )}

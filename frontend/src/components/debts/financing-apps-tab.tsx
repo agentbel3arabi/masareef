@@ -64,6 +64,8 @@ export function FinancingAppsTab() {
     grouped.get(key)!.push(plan);
   }
 
+  // Summary endpoint returns totals without explicit currency; default to EGP
+  // TODO: Add currency to FinancingAppsSummary.totals when backend supports it
   const baseCurrency = summary?.totals
     ? "EGP"
     : plans[0]?.currency ?? "EGP";

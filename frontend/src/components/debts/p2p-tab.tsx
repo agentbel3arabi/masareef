@@ -125,7 +125,6 @@ export function P2PTab() {
 
       groups.sort((a, b) => Math.abs(b.netRemaining) - Math.abs(a.netRemaining));
 
-      // TODO: Multi-currency totals may be inaccurate — uses raw sum across currencies
       const tLent = lent.reduce((s, d) => s + d.remaining_minor, 0);
       const tBorrowed = borrowed.reduce((s, d) => s + d.remaining_minor, 0);
       const allDebts = [...lent, ...borrowed];
@@ -284,8 +283,8 @@ function PersonDebtCard({
 
         <div className="flex items-center gap-2 shrink-0">
           <MoneyDisplay
-            amount={netRemaining}
-            currency={netCurrency}
+            amount={balances ? balances.total_base_minor : netRemaining}
+            currency={balances ? balances.base_currency : netCurrency}
             colorize
             size="sm"
             showCurrency

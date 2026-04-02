@@ -741,7 +741,8 @@
         "selectAccount": "Select account",
         "notes": "Notes",
         "submit": "Add Loan",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "none": "None"
       },
       "p2p": {
         "title": "Add Personal Debt",
