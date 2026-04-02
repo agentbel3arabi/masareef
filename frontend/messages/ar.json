@@ -601,7 +601,10 @@
       "completed": "مكتمل",
       "paid": "مدفوع",
       "overdue": "متأخر",
-      "upcoming": "قادم"
+      "upcoming": "قادم",
+      "defaulted": "متعثر",
+      "pending": "قيد الانتظار",
+      "settled": "تمت التسوية"
     },
     "loan": {
       "monthlyPayment": "القسط الشهري",
@@ -611,7 +614,13 @@
       "paid": "{paid} من {total} مدفوع",
       "institution": "المؤسسة",
       "startDate": "تاريخ البداية",
-      "linkedAccount": "الحساب المرتبط"
+      "linkedAccount": "الحساب المرتبط",
+      "activeLoans": "القروض النشطة",
+      "completedLoans": "القروض المكتملة",
+      "principal": "المبلغ الأصلي",
+      "amortization": "جدول الإطفاء",
+      "viewDetails": "عرض التفاصيل",
+      "tenureLabel": "المدة"
     },
     "p2p": {
       "lent": "أقرضت",
@@ -620,14 +629,33 @@
       "noDebts": "لا توجد ديون نشطة",
       "lumpSum": "دفعة واحدة",
       "equalSplits": "أقساط متساوية",
-      "customSplits": "أقساط مخصصة"
+      "customSplits": "أقساط مخصصة",
+      "totalLent": "إجمالي المُقرض",
+      "totalBorrowed": "إجمالي المُقترض",
+      "activePeople": "أشخاص نشطون",
+      "relationship": "العلاقة",
+      "debtsWithPerson": "ديون مع {name}",
+      "splitSchedule": "جدول الأقساط",
+      "paymentHistory": "سجل الدفعات"
     },
     "installment": {
       "monthlyAmount": "شهرياً",
-      "totalAmount": "الإجمالي",
+      "totalAmount": "المبلغ الإجمالي",
       "months": "{paid}/{total} شهر",
       "merchant": "التاجر",
-      "sourceAccount": "الحساب المصدر"
+      "sourceAccount": "الحساب المصدر",
+      "viewDetails": "عرض التفاصيل",
+      "activeInstallments": "الأقساط النشطة",
+      "completedPlans": "الخطط المكتملة",
+      "progress": "التقدم",
+      "remaining": "المتبقي",
+      "duration": "المدة",
+      "totalPaid": "إجمالي المدفوع",
+      "monthsLabel": "{count} أشهر",
+      "monthlyPayment": "القسط الشهري",
+      "activePlansCount": "{count} خطط",
+      "unlinkedPlans": "خطط غير مرتبطة",
+      "activePlansLabel": "{count} خطط نشطة"
     },
     "financingApps": {
       "creditLimit": "حد الائتمان",
@@ -637,7 +665,18 @@
       "activePlans": "خطط نشطة",
       "monthlyCommitment": "الالتزام الشهري",
       "totalMonthly": "إجمالي الشهري (كل التطبيقات)",
-      "totalRemaining": "إجمالي المتبقي (كل التطبيقات)"
+      "totalRemaining": "إجمالي المتبقي (كل التطبيقات)",
+      "healthy": "صحي",
+      "moderate": "متوسط",
+      "high": "مرتفع",
+      "committed": "الملتزم",
+      "providersOverview": "نظرة عامة على المزودين",
+      "installmentBreakdown": "تفصيل الأقساط",
+      "bnplSummary": "ملخص التزامات التمويل",
+      "bnplDescription": "عرض موحد لالتزاماتك الشهرية الحالية في التمويل.",
+      "noActivePlans": "لا توجد خطط نشطة",
+      "noPlansYet": "لا توجد خطط أقساط نشطة مع {name} حتى الآن.",
+      "activePlansLabel": "{count} خطط نشطة"
     },
     "actions": {
       "addLoan": "إضافة قرض",
@@ -647,6 +686,97 @@
       "viewSchedule": "عرض الجدول",
       "markPaid": "تحديد كمسدد",
       "complete": "تحديد كمكتمل"
+    },
+    "detail": {
+      "backToDebts": "العودة للديون",
+      "backToLoans": "العودة للقروض",
+      "backToP2P": "العودة للديون الشخصية",
+      "totalAmount": "المبلغ الإجمالي",
+      "paidAmount": "المدفوع",
+      "totalPaid": "إجمالي المدفوع",
+      "remainingAmount": "المتبقي",
+      "amortizationSchedule": "جدول الإطفاء",
+      "paymentHistory": "سجل الدفعات",
+      "splitSchedule": "جدول الأقساط",
+      "lumpSumPayment": "دفعة واحدة",
+      "dueDate": "تاريخ الاستحقاق",
+      "month": "الشهر",
+      "payment": "الدفعة",
+      "principal": "الأصل",
+      "interest": "الفائدة",
+      "balance": "الرصيد",
+      "date": "التاريخ",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "notes": "ملاحظات",
+      "noPayments": "لم يتم تسجيل أي دفعات بعد.",
+      "noSchedule": "لا يوجد جدول إطفاء متاح.",
+      "noSplits": "لا توجد أقساط متاحة.",
+      "repaymentProgress": "تقدم السداد",
+      "lent": "مُقرض",
+      "borrowed": "مُقترض",
+      "notFound": "القرض غير موجود.",
+      "debtNotFound": "الدين غير موجود.",
+      "loadError": "فشل تحميل تفاصيل القرض. يرجى المحاولة مرة أخرى.",
+      "debtLoadError": "فشل تحميل تفاصيل الدين. يرجى المحاولة مرة أخرى.",
+      "viewFullSchedule": "عرض الجدول الكامل ←",
+      "paidPercent": "{percent}% مدفوع",
+      "marking": "جاري التحديد…"
+    },
+    "form": {
+      "loan": {
+        "title": "إضافة قرض بنكي",
+        "description": "إنشاء سجل قرض بنكي جديد.",
+        "name": "اسم القرض",
+        "namePlaceholder": "مثال: قرض سيارة",
+        "institution": "المؤسسة",
+        "institutionPlaceholder": "مثال: البنك الأهلي",
+        "principal": "المبلغ الأصلي",
+        "rate": "النسبة السنوية (%)",
+        "tenure": "المدة (أشهر)",
+        "startDate": "تاريخ البداية",
+        "currency": "العملة",
+        "selectCurrency": "اختر العملة",
+        "linkedAccount": "الحساب المرتبط",
+        "selectAccount": "اختر الحساب",
+        "notes": "ملاحظات",
+        "submit": "إضافة القرض",
+        "saving": "جاري الحفظ...",
+        "none": "بدون"
+      },
+      "p2p": {
+        "title": "إضافة دين شخصي",
+        "description": "تسجيل قرض شخصي أو اقتراض.",
+        "person": "الشخص",
+        "selectPerson": "اختر شخص",
+        "type": "النوع",
+        "lent": "أقرضت",
+        "borrowed": "اقترضت",
+        "amount": "المبلغ",
+        "currency": "العملة",
+        "selectCurrency": "اختر العملة",
+        "repaymentMode": "طريقة السداد",
+        "dueDate": "تاريخ الاستحقاق",
+        "splitCount": "عدد الأقساط",
+        "notes": "ملاحظات",
+        "submit": "إضافة الدين",
+        "saving": "جاري الحفظ...",
+        "autoNameLent": "قرض لـ {name}",
+        "autoNameBorrowed": "اقتراض من {name}"
+      },
+      "payment": {
+        "title": "تسجيل دفعة",
+        "description": "تسجيل دفعة لهذا الدين.",
+        "date": "تاريخ الدفعة",
+        "amount": "المبلغ",
+        "notes": "ملاحظات",
+        "submit": "تسجيل الدفعة",
+        "saving": "جاري الحفظ..."
+      },
+      "installment": {
+        "description": "إضافة خطة أقساط جديدة",
+        "comingSoon": "قريباً"
+      }
     }
   },
   "persons": {
@@ -663,6 +793,13 @@
       "colleague": "زميل",
       "business": "عمل",
       "other": "أخرى"
+    },
+    "form": {
+      "title": "إضافة شخص",
+      "description": "إضافة شخص لتتبع الديون الشخصية.",
+      "selectRelationship": "اختر العلاقة",
+      "submit": "إضافة شخص",
+      "saving": "جاري الحفظ..."
     }
   },
   "installments": {
