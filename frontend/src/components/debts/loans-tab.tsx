@@ -25,7 +25,6 @@ const SCHEDULE_STATUS_MAP: Record<
 export function LoansTab() {
   const t = useTranslations();
   const tLoan = useTranslations("debts.loan");
-  const tDetail = useTranslations("debts.detail");
   const tInstallment = useTranslations("debts.installment");
   const locale = useLocale();
   const { data, isLoading, error } = useDebts({ type: "bank_loan" });
@@ -89,7 +88,8 @@ export function LoansTab() {
         <StatCard
           icon={Building2}
           label={tLoan("activeLoans")}
-          value={t("debts.summary.activeLoans", { count: active.length })}          trend={{
+          value={t("debts.summary.activeLoans", { count: active.length })}
+          trend={{
             direction: "flat",
             text: `${t("debts.summary.totalRemaining")}: ${fmt(active.reduce((s, l) => s + l.remaining_minor, 0))}`,
           }}

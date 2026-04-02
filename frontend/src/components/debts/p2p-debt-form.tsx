@@ -62,6 +62,8 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!personId) return;
+    if (repaymentMode === "equal_splits" && !splitCount) return;
     const selectedPersonName = selectedPerson?.name ?? "";
     mutation.mutate(
       {

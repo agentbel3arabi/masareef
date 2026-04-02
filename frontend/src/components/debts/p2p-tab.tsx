@@ -9,7 +9,6 @@ import {
   Users,
   ChevronDown,
   Calendar,
-  CreditCard,
   Plus,
   UserPlus,
 } from "lucide-react";
@@ -23,50 +22,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
 import { PersonForm } from "@/components/debts/person-form";
-
-interface DebtResponse {
-  id: number;
-  type: "bank_loan" | "personal_lent" | "personal_borrowed";
-  person_id: number | null;
-  name: string;
-  institution: string | null;
-  principal_minor: number;
-  currency: string;
-  annual_rate_bps: number;
-  tenure_months: number;
-  start_date: string;
-  monthly_payment_minor: number;
-  repayment_mode: "lump_sum" | "equal_splits" | "custom_splits" | null;
-  due_date: string | null;
-  status: "active" | "paid_off";
-  notes: string | null;
-  is_active: boolean;
-  total_paid_minor: number;
-  remaining_minor: number;
-}
-
-interface PersonResponse {
-  id: number;
-  name: string;
-  name_ar: string | null;
-  phone: string | null;
-  email: string | null;
-  relationship:
-    | "family"
-    | "friend"
-    | "colleague"
-    | "business"
-    | "other"
-    | null;
-  notes: string | null;
-  is_active: boolean;
-  balances: {
-    by_currency: Record<string, number>;
-    total_base_minor: number;
-    base_currency: string;
-    fx_warnings: string[];
-  } | null;
-}
+import type { DebtResponse, PersonResponse } from "@/lib/types/debts";
 
 interface PersonGroup {
   person: PersonResponse | undefined;
@@ -169,6 +125,7 @@ export function P2PTab() {
 
       groups.sort((a, b) => Math.abs(b.netRemaining) - Math.abs(a.netRemaining));
 
+      // TODO: Multi-currency totals may be inaccurate — uses raw sum across currencies
       const tLent = lent.reduce((s, d) => s + d.remaining_minor, 0);
       const tBorrowed = borrowed.reduce((s, d) => s + d.remaining_minor, 0);
       const allDebts = [...lent, ...borrowed];
@@ -394,14 +351,6 @@ function PersonDebtCard({
             />
           )}
 
-          {/* Record Payment button */}
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            <CreditCard className="h-4 w-4" />
-            {t("debts.actions.recordPayment")}
-          </button>
         </div>
       )}
     </div>

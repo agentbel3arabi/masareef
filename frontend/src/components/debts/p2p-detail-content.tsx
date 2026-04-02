@@ -77,6 +77,7 @@ interface P2PDetailContentProps {
 export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
   const t = useTranslations("debts.detail");
   const tActions = useTranslations("debts.actions");
+  const tPersons = useTranslations("persons");
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   const {
@@ -155,7 +156,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
                 <span>{person.name}</span>
                 {person.relationship && (
                   <Badge variant="outline" className="text-xs capitalize">
-                    {person.relationship}
+                    {tPersons(`relationships.${person.relationship}`)}
                   </Badge>
                 )}
               </div>

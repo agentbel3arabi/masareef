@@ -16,7 +16,6 @@ import type { InstallmentResponse } from "@/lib/types/debts";
 export function StoreInstallmentsTab() {
   const t = useTranslations();
   const tInstallment = useTranslations("debts.installment");
-  const tDetail = useTranslations("debts.detail");
   const locale = useLocale();
   const { data, isLoading, error } = useInstallments({ type: "store" });
   const [showCompleted, setShowCompleted] = useState(false);
@@ -78,7 +77,7 @@ export function StoreInstallmentsTab() {
         <StatCard
           icon={Store}
           label={tInstallment("activeInstallments")}
-          value={`${active.length} ${tInstallment("completedPlans").split(" ").pop()}`}
+          value={tInstallment("activePlansCount", { count: active.length })}
           trend={{
             direction: "flat",
             text: `${tInstallment("remaining")}: ${fmt(active.reduce((s, p) => s + p.remaining_minor, 0))}`,

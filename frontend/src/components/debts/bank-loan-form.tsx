@@ -71,9 +71,10 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         annual_rate_percent: annualRate ? parseFloat(annualRate) : undefined,
         tenure_months: parseInt(tenureMonths, 10),
         start_date: startDate,
-        linked_account_id: linkedAccountId
-          ? parseInt(linkedAccountId, 10)
-          : null,
+        linked_account_id:
+          linkedAccountId && linkedAccountId !== "__none__"
+            ? parseInt(linkedAccountId, 10)
+            : null,
         notes: notes || null,
       },
       {

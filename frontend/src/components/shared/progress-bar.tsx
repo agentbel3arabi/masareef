@@ -14,7 +14,7 @@ export function ProgressBar({
   size = "md",
   showLabel = false,
   className = "",
-}: ProgressBarProps): React.ReactElement {
+}: ProgressBarProps) {
   // Clamp value to 0-100
   const clampedValue = Math.max(0, Math.min(100, value));
 

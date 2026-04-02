@@ -652,7 +652,8 @@
       "duration": "المدة",
       "totalPaid": "إجمالي المدفوع",
       "monthsLabel": "{count} أشهر",
-      "monthlyPayment": "القسط الشهري"
+      "monthlyPayment": "القسط الشهري",
+      "activePlansCount": "{count} خطط"
     },
     "financingApps": {
       "creditLimit": "حد الائتمان",

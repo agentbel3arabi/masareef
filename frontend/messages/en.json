@@ -652,7 +652,8 @@
       "duration": "Duration",
       "totalPaid": "total paid",
       "monthsLabel": "{count} Months",
-      "monthlyPayment": "Monthly Payment"
+      "monthlyPayment": "Monthly Payment",
+      "activePlansCount": "{count} plans"
     },
     "financingApps": {
       "creditLimit": "Credit Limit",

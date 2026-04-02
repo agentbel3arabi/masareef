@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Smartphone, Receipt } from "lucide-react";
 import { useInstallments, useFinancingAppsSummary } from "@/hooks/use-installments";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -9,12 +9,10 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { FinancingAppProviderCard } from "@/components/debts/financing-app-provider-card";
 import { InstallmentPlanRow } from "@/components/debts/installment-plan-row";
 import { InstallmentForm } from "@/components/debts/installment-form";
-import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import type { InstallmentResponse } from "@/lib/types/debts";
 
 export function FinancingAppsTab() {
   const t = useTranslations();
-  const locale = useLocale();
   const { data: plansData, isLoading: plansLoading, error: plansError } =
     useInstallments({ type: "financing_app" });
   const { data: summaryData, isLoading: summaryLoading } =

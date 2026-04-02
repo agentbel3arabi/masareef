@@ -15,7 +15,7 @@ export function FinancingAppProviderCard({
 }: FinancingAppProviderCardProps) {
   const t = useTranslations("debts.financingApps");
 
-  const utilPct = Math.round(app.utilization_percent);
+  const utilPct = Math.max(0, Math.min(100, Math.round(app.utilization_percent)));
   const ringColor =
     utilPct < 50
       ? "text-green-500"
