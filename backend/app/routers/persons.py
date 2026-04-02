@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
-from app.models.enums import PersonRelationship
+from app.dependencies_rbac import get_member_role
+from app.models.enums import HouseholdRole, PersonRelationship
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.person import PersonBalances, PersonCreate, PersonResponse, PersonUpdate
 from app.services import person as person_service
@@ -39,7 +40,10 @@ async def list_persons(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if role == HouseholdRole.CHILD:
+        raise HTTPException(status_code=403, detail="Children cannot access person data")
     persons, total = await person_service.list_persons(session, household_id, page, page_size)
     person_ids = [p.id for p in persons]
     balances_map = await person_service.compute_persons_balances_bulk(
@@ -71,7 +75,10 @@ async def get_person(
     person_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if role == HouseholdRole.CHILD:
+        raise HTTPException(status_code=403, detail="Children cannot access person data")
     person = await person_service.get_person(session, household_id, person_id)
     if not person:
         raise HTTPException(
@@ -88,7 +95,10 @@ async def create_person(
     data: PersonCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
     person = await person_service.create_person(session, household_id, data)
     return SuccessResponse(data=await _person_to_response(session, household_id, person))
 
@@ -99,7 +109,10 @@ async def update_person(
     data: PersonUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
     person = await person_service.get_person(session, household_id, person_id)
     if not person:
         raise HTTPException(
@@ -117,7 +130,10 @@ async def delete_person(
     person_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> None:
+    if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
     person = await person_service.get_person(session, household_id, person_id)
     if not person:
         raise HTTPException(

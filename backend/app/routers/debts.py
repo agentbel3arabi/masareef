@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role
+from app.models.enums import DebtType, HouseholdRole
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.debt import (
     DebtCreate,
@@ -75,7 +77,10 @@ async def list_debts(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if role == HouseholdRole.CHILD and type in ("personal_lent", "personal_borrowed"):
+        raise HTTPException(status_code=403, detail="Children cannot access P2P debts")
     debts, total = await debt_service.list_debts(
         session, household_id, type, status, page, page_size
     )
@@ -94,6 +99,7 @@ async def get_debt(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -112,7 +118,13 @@ async def create_debt(
     data: DebtCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if data.type in ("personal_lent", "personal_borrowed"):
+        if role == HouseholdRole.CHILD:
+            raise HTTPException(status_code=403, detail="Children cannot create P2P debts")
+        if role == HouseholdRole.VIEWER:
+            raise HTTPException(status_code=403, detail="Viewers cannot create debts")
     try:
         if data.type == "bank_loan":
             debt = await debt_service.create_bank_loan(session, household_id, data)
@@ -146,6 +158,7 @@ async def update_debt(
     data: DebtUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -155,6 +168,11 @@ async def update_debt(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
+        if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+            raise HTTPException(status_code=403, detail="Insufficient permissions for P2P debts")
+    elif role == HouseholdRole.VIEWER:
+        raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
     try:
         debt = await debt_service.update_debt(session, household_id, debt, data)
     except ValueError as e:
@@ -171,6 +189,7 @@ async def delete_debt(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> None:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -180,6 +199,11 @@ async def delete_debt(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
+        if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+            raise HTTPException(status_code=403, detail="Insufficient permissions for P2P debts")
+    elif role == HouseholdRole.VIEWER:
+        raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
     await debt_service.soft_delete_debt(session, debt)
 
 
@@ -188,6 +212,7 @@ async def get_amortization(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -207,6 +232,7 @@ async def list_payments(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -227,6 +253,7 @@ async def record_payment(
     data: PaymentCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -253,6 +280,7 @@ async def get_match_suggestions(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -272,6 +300,7 @@ async def mark_debt_paid(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
@@ -291,6 +320,7 @@ async def get_splits(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:

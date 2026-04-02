@@ -11,6 +11,7 @@ from sqlalchemy import select as sa_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_current_user, get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role
 from app.main import app
 from app.models import Household, HouseholdMember, Person
 from app.models.enums import HouseholdRole
@@ -60,6 +61,7 @@ async def test_child_cannot_list_persons(
 
     app.dependency_overrides[get_current_user] = lambda: user_id
     app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
 
     try:
         resp = await client.get("/api/v1/persons")
@@ -79,6 +81,7 @@ async def test_child_cannot_create_person(
 
     app.dependency_overrides[get_current_user] = lambda: user_id
     app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
 
     try:
         resp = await client.post(
@@ -100,6 +103,7 @@ async def test_viewer_can_list_persons(
 
     app.dependency_overrides[get_current_user] = lambda: user_id
     app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
 
     try:
         resp = await client.get("/api/v1/persons")
@@ -119,6 +123,7 @@ async def test_viewer_cannot_create_person(
 
     app.dependency_overrides[get_current_user] = lambda: user_id
     app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
 
     try:
         resp = await client.post(
@@ -143,6 +148,7 @@ async def test_viewer_cannot_delete_person(
 
     app.dependency_overrides[get_current_user] = lambda: user_id
     app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
 
     try:
         resp = await client.delete(f"/api/v1/persons/{person.id}")
@@ -162,6 +168,7 @@ async def test_member_can_create_person(
 
     app.dependency_overrides[get_current_user] = lambda: user_id
     app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
 
     try:
         resp = await client.post(
