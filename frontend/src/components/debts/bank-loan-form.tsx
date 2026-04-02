@@ -13,30 +13,43 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { useCreateDebt } from "@/hooks/use-debts";
+import { useCreateDebt, useUpdateDebt } from "@/hooks/use-debts";
 import { useAccounts } from "@/hooks/use-accounts";
-import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor, formatAmount } from "@/lib/money";
+import type { DebtResponse } from "@/lib/types/debts";
 
 interface BankLoanFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialData?: DebtResponse;
 }
 
 const CURRENCY_CODES = Object.keys(CURRENCIES);
 
-export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
+export function BankLoanForm({ open, onOpenChange, initialData }: BankLoanFormProps) {
   const t = useTranslations("debts.form.loan");
-  const [name, setName] = useState("");
-  const [institution, setInstitution] = useState("");
-  const [currency, setCurrency] = useState("EGP");
-  const [principal, setPrincipal] = useState("");
-  const [annualRate, setAnnualRate] = useState("");
-  const [tenureMonths, setTenureMonths] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [linkedAccountId, setLinkedAccountId] = useState("");
-  const [notes, setNotes] = useState("");
+  const isEdit = !!initialData;
 
-  const mutation = useCreateDebt();
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [institution, setInstitution] = useState(initialData?.institution ?? "");
+  const [currency, setCurrency] = useState(initialData?.currency ?? "EGP");
+  const [principal, setPrincipal] = useState(
+    initialData ? formatAmount(initialData.principal_minor, initialData.currency) : ""
+  );
+  const [annualRate, setAnnualRate] = useState(
+    initialData?.annual_rate_bps ? String(initialData.annual_rate_bps / 100) : ""
+  );
+  const [tenureMonths, setTenureMonths] = useState(
+    initialData ? String(initialData.tenure_months) : ""
+  );
+  const [startDate, setStartDate] = useState(initialData?.start_date ?? "");
+  const [linkedAccountId, setLinkedAccountId] = useState(
+    initialData?.linked_account_id ? String(initialData.linked_account_id) : ""
+  );
+  const [notes, setNotes] = useState(initialData?.notes ?? "");
+
+  const createMutation = useCreateDebt();
+  const updateMutation = useUpdateDebt();
   const { data: accountsData } = useAccounts();
   const accounts = (accountsData?.data ?? []).filter(
     (a) => a.type === "savings" || a.type === "checking"
@@ -56,36 +69,56 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(
-      {
-        type: "bank_loan" as const,
-        name,
-        institution: institution || null,
-        principal_minor: parseMajorToMinor(principal, CURRENCIES[currency]?.exponent ?? 2),
-        currency,
-        annual_rate_percent: annualRate ? parseFloat(annualRate) : undefined,
-        tenure_months: parseInt(tenureMonths, 10),
-        start_date: startDate,
-        linked_account_id:
-          linkedAccountId && linkedAccountId !== "__none__"
-            ? parseInt(linkedAccountId, 10)
-            : null,
-        notes: notes || null,
-      },
-      {
-        onSuccess: () => {
-          onOpenChange(false);
-          resetFields();
+    if (isEdit && initialData) {
+      updateMutation.mutate(
+        {
+          id: initialData.id,
+          name,
+          institution: institution || null,
+          linked_account_id:
+            linkedAccountId && linkedAccountId !== "__none__"
+              ? parseInt(linkedAccountId, 10)
+              : null,
+          notes: notes || null,
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+          },
+        }
+      );
+    } else {
+      createMutation.mutate(
+        {
+          type: "bank_loan" as const,
+          name,
+          institution: institution || null,
+          principal_minor: parseMajorToMinor(principal, CURRENCIES[currency]?.exponent ?? 2),
+          currency,
+          annual_rate_percent: annualRate ? parseFloat(annualRate) : undefined,
+          tenure_months: parseInt(tenureMonths, 10),
+          start_date: startDate,
+          linked_account_id:
+            linkedAccountId && linkedAccountId !== "__none__"
+              ? parseInt(linkedAccountId, 10)
+              : null,
+          notes: notes || null,
+        },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            resetFields();
+          },
+        }
+      );
+    }
   };
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={t("title")}
+      title={isEdit ? t("editTitle") : t("title")}
       description={t("description")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,66 +141,76 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>{t("currency")}</Label>
-          <Select value={currency} onValueChange={(v) => setCurrency(v ?? "EGP")}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t("selectCurrency")} />
-            </SelectTrigger>
-            <SelectContent>
-              {CURRENCY_CODES.map((code) => (
-                <SelectItem key={code} value={code}>
-                  {code} — {CURRENCIES[code].name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {!isEdit && (
+          <div className="space-y-2">
+            <Label>{t("currency")}</Label>
+            <Select value={currency} onValueChange={(v) => setCurrency(v ?? "EGP")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("selectCurrency")} />
+              </SelectTrigger>
+              <SelectContent>
+                {CURRENCY_CODES.map((code) => (
+                  <SelectItem key={code} value={code}>
+                    {code} — {CURRENCIES[code].name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <Label htmlFor="loan-principal">{t("principal")}</Label>
-          <Input
-            id="loan-principal"
-            type="number"
-            step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
-            value={principal}
-            onChange={(e) => setPrincipal(e.target.value)}
-            required
-          />
-        </div>
+        {!isEdit && (
+          <div className="space-y-2">
+            <Label htmlFor="loan-principal">{t("principal")}</Label>
+            <Input
+              id="loan-principal"
+              type="number"
+              step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
+              value={principal}
+              onChange={(e) => setPrincipal(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <Label htmlFor="loan-rate">{t("rate")}</Label>
-          <Input
-            id="loan-rate"
-            type="number"
-            step="0.01"
-            value={annualRate}
-            onChange={(e) => setAnnualRate(e.target.value)}
-          />
-        </div>
+        {!isEdit && (
+          <div className="space-y-2">
+            <Label htmlFor="loan-rate">{t("rate")}</Label>
+            <Input
+              id="loan-rate"
+              type="number"
+              step="0.01"
+              value={annualRate}
+              onChange={(e) => setAnnualRate(e.target.value)}
+            />
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <Label htmlFor="loan-tenure">{t("tenure")}</Label>
-          <Input
-            id="loan-tenure"
-            type="number"
-            value={tenureMonths}
-            onChange={(e) => setTenureMonths(e.target.value)}
-            required
-          />
-        </div>
+        {!isEdit && (
+          <div className="space-y-2">
+            <Label htmlFor="loan-tenure">{t("tenure")}</Label>
+            <Input
+              id="loan-tenure"
+              type="number"
+              value={tenureMonths}
+              onChange={(e) => setTenureMonths(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <Label htmlFor="loan-start">{t("startDate")}</Label>
-          <Input
-            id="loan-start"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-          />
-        </div>
+        {!isEdit && (
+          <div className="space-y-2">
+            <Label htmlFor="loan-start">{t("startDate")}</Label>
+            <Input
+              id="loan-start"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label>{t("linkedAccount")}</Label>
@@ -196,8 +239,8 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? t("saving") : t("submit")}
+        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
+          {createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
     </FormSheet>

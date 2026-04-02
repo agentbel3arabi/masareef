@@ -13,12 +13,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { useCreatePerson } from "@/hooks/use-persons";
-import type { PersonRelationship } from "@/lib/types/debts";
+import { useCreatePerson, useUpdatePerson } from "@/hooks/use-persons";
+import type { PersonResponse, PersonRelationship } from "@/lib/types/debts";
 
 interface PersonFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialData?: PersonResponse;
 }
 
 const RELATIONSHIPS: PersonRelationship[] = [
@@ -29,17 +30,22 @@ const RELATIONSHIPS: PersonRelationship[] = [
   "other",
 ];
 
-export function PersonForm({ open, onOpenChange }: PersonFormProps) {
+export function PersonForm({ open, onOpenChange, initialData }: PersonFormProps) {
   const t = useTranslations("persons");
   const tForm = useTranslations("persons.form");
-  const [name, setName] = useState("");
-  const [nameAr, setNameAr] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [relationship, setRelationship] = useState("");
-  const [notes, setNotes] = useState("");
+  const isEdit = !!initialData;
 
-  const mutation = useCreatePerson();
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [nameAr, setNameAr] = useState(initialData?.name_ar ?? "");
+  const [phone, setPhone] = useState(initialData?.phone ?? "");
+  const [email, setEmail] = useState(initialData?.email ?? "");
+  const [relationship, setRelationship] = useState(
+    initialData?.relationship ?? ""
+  );
+  const [notes, setNotes] = useState(initialData?.notes ?? "");
+
+  const createMutation = useCreatePerson();
+  const updateMutation = useUpdatePerson();
 
   const resetFields = () => {
     setName("");
@@ -52,29 +58,46 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(
-      {
-        name,
-        name_ar: nameAr || null,
-        phone: phone || null,
-        email: email || null,
-        relationship: (relationship as PersonRelationship) || null,
-        notes: notes || null,
-      },
-      {
-        onSuccess: () => {
-          onOpenChange(false);
-          resetFields();
+    if (isEdit && initialData) {
+      updateMutation.mutate(
+        {
+          id: initialData.id,
+          name,
+          name_ar: nameAr || null,
+          phone: phone || null,
+          email: email || null,
+          relationship: (relationship as PersonRelationship) || null,
+          notes: notes || null,
         },
-      }
-    );
+        {
+          onSuccess: () => onOpenChange(false),
+        }
+      );
+    } else {
+      createMutation.mutate(
+        {
+          name,
+          name_ar: nameAr || null,
+          phone: phone || null,
+          email: email || null,
+          relationship: (relationship as PersonRelationship) || null,
+          notes: notes || null,
+        },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            resetFields();
+          },
+        }
+      );
+    }
   };
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={tForm("title")}
+      title={isEdit ? tForm("editTitle") : tForm("title")}
       description={tForm("description")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -144,8 +167,8 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? tForm("saving") : tForm("submit")}
+        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
+          {createMutation.isPending || updateMutation.isPending ? tForm("saving") : isEdit ? tForm("update") : tForm("submit")}
         </Button>
       </form>
     </FormSheet>
