@@ -245,6 +245,11 @@ async def has_payments(session: AsyncSession, debt_id: int) -> bool:
     return count > 0
 
 
+async def count_payments(session: AsyncSession, debt_id: int) -> int:
+    q = select(func.count(DebtPayment.id)).where(DebtPayment.debt_id == debt_id)
+    return (await session.execute(q)).scalar_one()
+
+
 async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
     debt.is_active = False
     await session.flush()

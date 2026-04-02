@@ -210,13 +210,13 @@ async def update_debt(
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
 
 
-@router.delete("/{debt_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{debt_id}")
 async def delete_debt(
     debt_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
-) -> None:
+) -> SuccessResponse:
     debt = await debt_service.get_debt(session, household_id, debt_id)
     if not debt:
         raise HTTPException(
@@ -226,7 +226,9 @@ async def delete_debt(
             ).model_dump(),
         )
     _check_p2p_write(debt, role)
+    payment_count = await debt_service.count_payments(session, debt.id)
     await debt_service.soft_delete_debt(session, debt)
+    return SuccessResponse(data={"deleted": True, "payment_count": payment_count})
 
 
 @router.get("/{debt_id}/amortization")

@@ -61,6 +61,7 @@ async def create_account(
     account = Account(
         household_id=household_id,
         name=data.name,
+        name_ar=data.name_ar,
         type=data.type,
         currency=data.currency,
         balance_minor=data.initial_balance,
