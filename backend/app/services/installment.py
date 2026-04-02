@@ -89,6 +89,7 @@ async def create_installment(
         total_months=data.total_months,
         start_month=start_month,
         currency=data.currency,
+        annual_rate_bps=data.annual_rate_bps,
     )
     session.add(plan)
     await session.flush()

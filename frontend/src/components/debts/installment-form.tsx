@@ -92,6 +92,9 @@ function InstallmentFormContent({
     initialData ? String(initialData.total_months) : ""
   );
   const [startMonth, setStartMonth] = useState(initialData?.start_month ?? "");
+  const [annualRate, setAnnualRate] = useState(
+    initialData ? String(initialData.annual_rate_bps / 100) : "0"
+  );
   const [sourceAccountId, setSourceAccountId] = useState(
     initialData?.source_account_id ? String(initialData.source_account_id) : ""
   );
@@ -126,6 +129,7 @@ function InstallmentFormContent({
     setMonthlyAmount("");
     setTotalMonths("");
     setStartMonth("");
+    setAnnualRate("0");
     setSourceAccountId("");
   };
 
@@ -163,6 +167,7 @@ function InstallmentFormContent({
           total_months: parseInt(totalMonths, 10),
           start_month: `${startMonth}-01`,
           currency,
+          annual_rate_bps: Math.round(parseFloat(annualRate || "0") * 100),
         },
         {
           onSuccess: () => {
@@ -322,6 +327,20 @@ function InstallmentFormContent({
                 onChange={(e) => setStartMonth(e.target.value)}
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="inst-rate">{t("annualRate")}</Label>
+              <Input
+                id="inst-rate"
+                type="number"
+                step="0.01"
+                min="0"
+                value={annualRate}
+                onChange={(e) => setAnnualRate(e.target.value)}
+                disabled={isEdit}
+              />
+              <p className="text-xs text-muted-foreground">{t("annualRateHint")}</p>
             </div>
 
             <div className="space-y-2">

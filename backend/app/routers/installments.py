@@ -27,6 +27,7 @@ def _plan_to_response(plan) -> InstallmentResponse:
         total_months=plan.total_months,
         start_month=plan.start_month,
         currency=plan.currency,
+        annual_rate_bps=plan.annual_rate_bps,
         status=computed["status"],
         months_paid=computed["months_paid"],
         remaining_months=computed["remaining_months"],
