@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
@@ -7,7 +8,7 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-export function StatusBadge({ status, className }: StatusBadgeProps): JSX.Element {
+export function StatusBadge({ status, className }: StatusBadgeProps): React.ReactElement {
   const statusDisplayNames: Record<StatusBadgeProps["status"], string> = {
     active: "Active",
     completed: "Completed",
