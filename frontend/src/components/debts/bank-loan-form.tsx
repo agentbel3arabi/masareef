@@ -89,6 +89,17 @@ function BankLoanFormContent({
     ? new Date(startDate) < new Date(new Date().toISOString().split("T")[0])
     : false;
 
+  // Auto-calculate paid installments from start date
+  const autoCalcPaid = (() => {
+    if (!startDate || !tenureMonths) return 0;
+    const start = new Date(startDate);
+    const now = new Date();
+    const monthsDiff =
+      (now.getFullYear() - start.getFullYear()) * 12 +
+      (now.getMonth() - start.getMonth());
+    return Math.max(0, Math.min(monthsDiff, parseInt(tenureMonths, 10)));
+  })();
+
   const resetFields = () => {
     setName("");
     setInstitution("");
@@ -105,10 +116,10 @@ function BankLoanFormContent({
   const recordPastPayments = async (debtId: number, count: number) => {
     setIsRecordingPayments(true);
     try {
-      const scheduleRes = await apiGet<{ schedule: ScheduleRow[] }>(
+      const scheduleRes = await apiGet<ScheduleRow[]>(
         `/api/v1/debts/${debtId}/amortization`
       );
-      const schedule = scheduleRes.data.schedule;
+      const schedule = scheduleRes.data;
       const toRecord = schedule.slice(0, count);
       for (const row of toRecord) {
         await apiPost(`/api/v1/debts/${debtId}/payments`, {
@@ -161,10 +172,9 @@ function BankLoanFormContent({
         },
         {
           onSuccess: async (response) => {
-            const paidCount = parseInt(installmentsPaid, 10);
-            if (paidCount > 0 && response.data) {
+            if (autoCalcPaid > 0 && response.data) {
               const debtId = (response.data as DebtResponse).id;
-              await recordPastPayments(debtId, paidCount);
+              await recordPastPayments(debtId, autoCalcPaid);
             }
             onOpenChange(false);
             resetFields();
@@ -213,71 +223,61 @@ function BankLoanFormContent({
           </div>
         )}
 
-        {!isEdit && (
-          <div className="space-y-2">
-            <Label htmlFor="loan-principal">{t("principal")}</Label>
-            <Input
-              id="loan-principal"
-              type="number"
-              step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
-              value={principal}
-              onChange={(e) => setPrincipal(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="loan-principal">{t("principal")}</Label>
+          <Input
+            id="loan-principal"
+            type="number"
+            step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
+            value={principal}
+            onChange={(e) => setPrincipal(e.target.value)}
+            required
+            disabled={isEdit}
+          />
+        </div>
 
-        {!isEdit && (
-          <div className="space-y-2">
-            <Label htmlFor="loan-rate">{t("rate")}</Label>
-            <Input
-              id="loan-rate"
-              type="number"
-              step="0.01"
-              value={annualRate}
-              onChange={(e) => setAnnualRate(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="loan-rate">{t("rate")}</Label>
+          <Input
+            id="loan-rate"
+            type="number"
+            step="0.01"
+            value={annualRate}
+            onChange={(e) => setAnnualRate(e.target.value)}
+            disabled={isEdit}
+          />
+        </div>
 
-        {!isEdit && (
-          <div className="space-y-2">
-            <Label htmlFor="loan-tenure">{t("tenure")}</Label>
-            <Input
-              id="loan-tenure"
-              type="number"
-              value={tenureMonths}
-              onChange={(e) => setTenureMonths(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="loan-tenure">{t("tenure")}</Label>
+          <Input
+            id="loan-tenure"
+            type="number"
+            value={tenureMonths}
+            onChange={(e) => setTenureMonths(e.target.value)}
+            required
+            disabled={isEdit}
+          />
+        </div>
 
-        {!isEdit && (
-          <div className="space-y-2">
-            <Label htmlFor="loan-start">{t("startDate")}</Label>
-            <Input
-              id="loan-start"
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="loan-start">{t("startDate")}</Label>
+          <Input
+            id="loan-start"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+            disabled={isEdit}
+          />
+        </div>
 
-        {!isEdit && isStartDateInPast && (
-          <div className="space-y-2">
-            <Label htmlFor="loan-paid">{t("installmentsPaid")}</Label>
+        {!isEdit && isStartDateInPast && autoCalcPaid > 0 && (
+          <div className="rounded-lg bg-muted/60 border border-border p-3 space-y-1">
+            <p className="text-sm font-medium text-foreground">
+              {t("installmentsPaid")}: <span className="font-bold text-primary">{autoCalcPaid}</span> / {tenureMonths}
+            </p>
             <p className="text-xs text-muted-foreground">{t("installmentsPaidHint")}</p>
-            <Input
-              id="loan-paid"
-              type="number"
-              min="0"
-              max={tenureMonths ? parseInt(tenureMonths, 10) : undefined}
-              value={installmentsPaid}
-              onChange={(e) => setInstallmentsPaid(e.target.value)}
-            />
           </div>
         )}
 

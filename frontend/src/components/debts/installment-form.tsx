@@ -251,35 +251,66 @@ function InstallmentFormContent({
                   Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2))
                 )}
                 value={totalAmount}
-                onChange={(e) => setTotalAmount(e.target.value)}
+                onChange={(e) => {
+                  setTotalAmount(e.target.value);
+                  if (e.target.value && totalMonths) {
+                    const total = parseFloat(e.target.value);
+                    const months = parseInt(totalMonths, 10);
+                    if (total > 0 && months > 0) {
+                      setMonthlyAmount((total / months).toFixed(CURRENCIES[currency]?.exponent ?? 2));
+                    }
+                  }
+                }}
                 required
+                min="0.01"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="inst-monthly">{t("monthlyAmount")}</Label>
-              <Input
-                id="inst-monthly"
-                type="number"
-                step={String(
-                  Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2))
-                )}
-                value={monthlyAmount}
-                onChange={(e) => setMonthlyAmount(e.target.value)}
-                required
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="inst-monthly">{t("monthlyAmount")}</Label>
+                <Input
+                  id="inst-monthly"
+                  type="number"
+                  step={String(
+                    Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2))
+                  )}
+                  value={monthlyAmount}
+                  onChange={(e) => {
+                    setMonthlyAmount(e.target.value);
+                    if (e.target.value && totalMonths) {
+                      const monthly = parseFloat(e.target.value);
+                      const months = parseInt(totalMonths, 10);
+                      if (monthly > 0 && months > 0) {
+                        setTotalAmount((monthly * months).toFixed(CURRENCIES[currency]?.exponent ?? 2));
+                      }
+                    }
+                  }}
+                  required
+                  min="0.01"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="inst-months">{t("totalMonths")}</Label>
-              <Input
-                id="inst-months"
-                type="number"
-                min="1"
-                value={totalMonths}
-                onChange={(e) => setTotalMonths(e.target.value)}
-                required
-              />
+              <div className="space-y-2">
+                <Label htmlFor="inst-months">{t("totalMonths")}</Label>
+                <Input
+                  id="inst-months"
+                  type="number"
+                  min="1"
+                  value={totalMonths}
+                  onChange={(e) => {
+                    setTotalMonths(e.target.value);
+                    if (totalAmount && e.target.value) {
+                      const total = parseFloat(totalAmount);
+                      const months = parseInt(e.target.value, 10);
+                      if (total > 0 && months > 0) {
+                        setMonthlyAmount((total / months).toFixed(CURRENCIES[currency]?.exponent ?? 2));
+                      }
+                    }
+                  }}
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

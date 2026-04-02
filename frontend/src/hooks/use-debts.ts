@@ -80,7 +80,7 @@ export function useAmortizationSchedule(debtId: number) {
   return useQuery({
     queryKey: ["debts", debtId, "amortization"],
     queryFn: () =>
-      apiGet<{ schedule: ScheduleRow[] }>(
+      apiGet<ScheduleRow[]>(
         `/api/v1/debts/${debtId}/amortization`
       ),
     enabled: Number.isFinite(debtId) && debtId > 0,

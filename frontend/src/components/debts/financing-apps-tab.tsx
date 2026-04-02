@@ -146,7 +146,7 @@ export function FinancingAppsTab() {
                   </h3>
                   <span className="h-px flex-1 bg-border" />
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <div className="space-y-3">
                   {appPlans.map((plan) => (
                     <div key={plan.id} className="relative group">
                       <InstallmentPlanRow

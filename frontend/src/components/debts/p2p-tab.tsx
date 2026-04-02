@@ -313,8 +313,8 @@ function PersonDebtCard({
 
         <div className="flex items-center gap-2 shrink-0">
           <MoneyDisplay
-            amount={balances ? balances.total_base_minor : netRemaining}
-            currency={balances ? balances.base_currency : netCurrency}
+            amount={netRemaining}
+            currency={defaultCurrency}
             colorize
             size="sm"
             showCurrency

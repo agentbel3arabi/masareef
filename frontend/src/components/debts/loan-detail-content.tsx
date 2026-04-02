@@ -87,7 +87,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
     );
   }
 
-  const schedule = scheduleRes?.data?.schedule ?? [];
+  const schedule = scheduleRes?.data ?? [];
   const payments = paymentsRes?.data ?? [];
 
   const progressPercent =

@@ -460,7 +460,7 @@ function AmortizationPreview({
                 </tr>
               </thead>
               <tbody>
-                {(data?.data?.schedule ?? []).slice(0, 3).map((row) => (
+                {(data?.data ?? []).slice(0, 3).map((row) => (
                   <tr
                     key={row.payment_number}
                     className="border-b border-border/50"
@@ -488,7 +488,7 @@ function AmortizationPreview({
               </tbody>
             </table>
           </div>
-          {(data?.data?.schedule?.length ?? 0) > 3 && (
+          {(data?.data?.length ?? 0) > 3 && (
             <Link href={`/debts/loans/${debtId}`} className="text-xs text-primary font-semibold mt-3 hover:underline block">
               {tDetail("viewFullSchedule")}
             </Link>
