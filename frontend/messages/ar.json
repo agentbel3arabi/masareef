@@ -221,7 +221,17 @@
     "deselectAccount": "إلغاء تحديد الحساب",
     "cardholder": "حامل البطاقة",
     "accountStatusActive": "نشط",
-    "accountStatusInactive": "غير نشط"
+    "accountStatusInactive": "غير نشط",
+    "obligations": {
+      "title": "الالتزامات",
+      "linkedLoans": "القروض المرتبطة",
+      "installmentPlans": "خطط التقسيط",
+      "monthlyPayment": "القسط الشهري",
+      "remaining": "المتبقي",
+      "remainingMonths": "{count} شهر متبقي",
+      "noObligations": "لا توجد التزامات مرتبطة بهذا الحساب.",
+      "merchant": "التاجر"
+    }
   },
   "transactions": {
     "title": "المعاملات",

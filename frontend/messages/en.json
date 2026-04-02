@@ -221,7 +221,17 @@
     "deselectAccount": "Deselect account",
     "cardholder": "Cardholder",
     "accountStatusActive": "Active",
-    "accountStatusInactive": "Inactive"
+    "accountStatusInactive": "Inactive",
+    "obligations": {
+      "title": "Obligations",
+      "linkedLoans": "Linked Loans",
+      "installmentPlans": "Installment Plans",
+      "monthlyPayment": "Monthly Payment",
+      "remaining": "Remaining",
+      "remainingMonths": "{count} months left",
+      "noObligations": "No obligations linked to this account.",
+      "merchant": "Merchant"
+    }
   },
   "transactions": {
     "title": "Transactions",
