@@ -28,6 +28,8 @@ class DebtCreate(BaseModel):
     due_date: date | None = None
     split_count: int | None = Field(default=None, gt=0)
     splits: list[SplitInput] | None = None
+    # Account for auto-transaction (required for P2P, optional for bank_loan)
+    account_id: int | None = None
 
 
 class DebtUpdate(BaseModel):
@@ -64,7 +66,8 @@ class DebtResponse(BaseModel):
 class PaymentCreate(BaseModel):
     date: date
     amount_minor: int = Field(gt=0)
-    transaction_id: int | None = None
+    account_id: int
+    link_existing_transaction_id: int | None = None
     notes: str | None = None
 
 

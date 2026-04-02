@@ -1,6 +1,9 @@
 from datetime import date
 
-from app.schemas.debt import DebtCreate, P2PDebtSplitResponse, SplitInput
+import pytest
+from pydantic import ValidationError
+
+from app.schemas.debt import DebtCreate, P2PDebtSplitResponse, PaymentCreate, SplitInput
 
 
 class TestDebtCreateP2P:
@@ -79,3 +82,53 @@ class TestDebtCreateP2P:
             status="upcoming",
         )
         assert resp.status == "upcoming"
+
+
+class TestPaymentCreateSchema:
+    def test_payment_create_requires_account_id(self):
+        """PaymentCreate must require account_id."""
+        with pytest.raises(ValidationError, match="account_id"):
+            PaymentCreate(date="2026-04-01", amount_minor=100000)
+
+    def test_payment_create_with_account_id(self):
+        p = PaymentCreate(date="2026-04-01", amount_minor=100000, account_id=1)
+        assert p.account_id == 1
+        assert p.link_existing_transaction_id is None
+
+    def test_payment_create_with_link_existing(self):
+        p = PaymentCreate(
+            date="2026-04-01",
+            amount_minor=100000,
+            account_id=1,
+            link_existing_transaction_id=42,
+        )
+        assert p.link_existing_transaction_id == 42
+
+
+class TestDebtCreateAccountId:
+    def test_debt_create_p2p_has_account_id(self):
+        d = DebtCreate(
+            type="personal_lent",
+            name="Lent to Ahmed",
+            principal_minor=500000,
+            currency="EGP",
+            tenure_months=1,
+            start_date="2026-04-01",
+            person_id=1,
+            repayment_mode="lump_sum",
+            due_date="2026-05-01",
+            account_id=5,
+        )
+        assert d.account_id == 5
+
+    def test_debt_create_account_id_optional(self):
+        d = DebtCreate(
+            type="bank_loan",
+            name="Car Loan",
+            principal_minor=5000000,
+            currency="EGP",
+            annual_rate_percent=14.5,
+            tenure_months=60,
+            start_date="2026-01-01",
+        )
+        assert d.account_id is None
