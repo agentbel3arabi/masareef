@@ -653,7 +653,9 @@
       "totalPaid": "إجمالي المدفوع",
       "monthsLabel": "{count} أشهر",
       "monthlyPayment": "القسط الشهري",
-      "activePlansCount": "{count} خطط"
+      "activePlansCount": "{count} خطط",
+      "unlinkedPlans": "خطط غير مرتبطة",
+      "activePlansLabel": "{count} خطط نشطة"
     },
     "financingApps": {
       "creditLimit": "حد الائتمان",
@@ -671,7 +673,10 @@
       "providersOverview": "نظرة عامة على المزودين",
       "installmentBreakdown": "تفصيل الأقساط",
       "bnplSummary": "ملخص التزامات التمويل",
-      "bnplDescription": "عرض موحد لالتزاماتك الشهرية الحالية في التمويل."
+      "bnplDescription": "عرض موحد لالتزاماتك الشهرية الحالية في التمويل.",
+      "noActivePlans": "لا توجد خطط نشطة",
+      "noPlansYet": "لا توجد خطط أقساط نشطة مع {name} حتى الآن.",
+      "activePlansLabel": "{count} خطط نشطة"
     },
     "actions": {
       "addLoan": "إضافة قرض",

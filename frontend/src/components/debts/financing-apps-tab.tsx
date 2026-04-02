@@ -102,12 +102,12 @@ export function FinancingAppsTab() {
               return (
                 <div key={app.account_id} className="space-y-3">
                   <h3 className="text-sm font-bold text-muted-foreground">
-                    {app.name} — No active plans
+                    {app.name} — {t("debts.financingApps.noActivePlans")}
                   </h3>
                   <div className="py-8 text-center border-2 border-dashed border-border rounded-xl bg-muted/20">
                     <Receipt className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      No active installment plans with {app.name} yet.
+                      {t("debts.financingApps.noPlansYet", { name: app.name })}
                     </p>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ export function FinancingAppsTab() {
                   <h3 className="text-sm font-bold text-foreground">
                     {app.name}
                     {app.name_ar ? ` (${app.name_ar})` : ""} —{" "}
-                    {app.active_plans_count} active plans
+                    {t("debts.financingApps.activePlansLabel", { count: app.active_plans_count })}
                   </h3>
                   <span className="h-px flex-1 bg-border" />
                 </div>

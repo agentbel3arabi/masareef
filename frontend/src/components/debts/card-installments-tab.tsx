@@ -89,8 +89,7 @@ export function CardInstallmentsTab() {
                     {card.name}
                   </h4>
                   <span className="text-sm text-muted-foreground">
-                    — {cardPlans.filter((p) => p.status === "active").length}{" "}
-                    active plans
+                    — {t("debts.installment.activePlansLabel", { count: cardPlans.filter((p) => p.status === "active").length })}
                   </span>
                 </div>
                 <div className="space-y-3">
@@ -106,7 +105,7 @@ export function CardInstallmentsTab() {
         {grouped.has(0) && (
           <section>
             <h4 className="text-base font-bold text-foreground mb-4">
-              Unlinked Plans
+              {t("debts.installment.unlinkedPlans")}
             </h4>
             <div className="space-y-3">
               {grouped.get(0)!.map((plan) => (

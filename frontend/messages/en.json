@@ -653,7 +653,9 @@
       "totalPaid": "total paid",
       "monthsLabel": "{count} Months",
       "monthlyPayment": "Monthly Payment",
-      "activePlansCount": "{count} plans"
+      "activePlansCount": "{count} plans",
+      "unlinkedPlans": "Unlinked Plans",
+      "activePlansLabel": "{count} active plans"
     },
     "financingApps": {
       "creditLimit": "Credit Limit",
@@ -671,7 +673,10 @@
       "providersOverview": "Providers Overview",
       "installmentBreakdown": "Installment Breakdown",
       "bnplSummary": "BNPL Summary Commitment",
-      "bnplDescription": "Consolidated view of your current monthly financing obligations."
+      "bnplDescription": "Consolidated view of your current monthly financing obligations.",
+      "noActivePlans": "No active plans",
+      "noPlansYet": "No active installment plans with {name} yet.",
+      "activePlansLabel": "{count} active plans"
     },
     "actions": {
       "addLoan": "Add Loan",
