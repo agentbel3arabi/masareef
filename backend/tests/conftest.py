@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.dependencies import get_current_user, get_db_session, get_household_id
 from app.dependencies_rbac import get_member_role
 from app.main import app
-from app.models.enums import HouseholdRole
 
 # Import all models so Base.metadata knows about every table
 from app.models import (  # noqa: F401
@@ -27,6 +26,7 @@ from app.models import (  # noqa: F401
     Transaction,
     TransactionSplit,
 )
+from app.models.enums import HouseholdRole
 
 TEST_USER_ID = uuid.uuid4()
 TEST_HOUSEHOLD_ID = uuid.uuid4()

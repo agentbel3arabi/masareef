@@ -1,6 +1,6 @@
 """Integration tests: person balances with FX conversion to base currency."""
+
 import datetime as dt
-import uuid
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,13 +14,10 @@ from app.models import (
 )
 from app.models.enums import DebtType, HouseholdRole
 from app.services.person import compute_person_balances
-
 from tests.conftest import TEST_HOUSEHOLD_ID, TEST_USER_ID
 
 
-async def _seed_household(
-    session: AsyncSession, base_currency: str = "EGP"
-) -> None:
+async def _seed_household(session: AsyncSession, base_currency: str = "EGP") -> None:
     session.add(
         Household(
             id=TEST_HOUSEHOLD_ID,
@@ -93,9 +90,7 @@ async def test_single_currency_same_as_base(db_session: AsyncSession) -> None:
     )
     await db_session.flush()
 
-    result = await compute_person_balances(
-        db_session, TEST_HOUSEHOLD_ID, person_id
-    )
+    result = await compute_person_balances(db_session, TEST_HOUSEHOLD_ID, person_id)
     assert result.total_base_minor == 50_000
     assert result.base_currency == "EGP"
     assert result.fx_warnings == []
@@ -140,9 +135,7 @@ async def test_multi_currency_converts_to_base(db_session: AsyncSession) -> None
     )
     await db_session.flush()
 
-    result = await compute_person_balances(
-        db_session, TEST_HOUSEHOLD_ID, person_id
-    )
+    result = await compute_person_balances(db_session, TEST_HOUSEHOLD_ID, person_id)
 
     # GBP→USD: 10_000 * 10_000 / 7_900 = 12_658
     # USD→EGP: 12_658 * 485_000 / 10_000 = 613_913
@@ -175,8 +168,6 @@ async def test_missing_rate_adds_warning(db_session: AsyncSession) -> None:
     )
     await db_session.flush()
 
-    result = await compute_person_balances(
-        db_session, TEST_HOUSEHOLD_ID, person_id
-    )
+    result = await compute_person_balances(db_session, TEST_HOUSEHOLD_ID, person_id)
     assert result.total_base_minor == 0
     assert "JPY" in result.fx_warnings

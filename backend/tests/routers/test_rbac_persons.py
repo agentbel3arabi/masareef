@@ -4,13 +4,14 @@ child → 403 on all person endpoints
 viewer → 403 on POST/PUT/DELETE, 200 on GET
 member/admin → full access
 """
+
 import uuid
 
 import pytest
 from sqlalchemy import select as sa_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_current_user, get_db_session, get_household_id
+from app.dependencies import get_current_user, get_household_id
 from app.dependencies_rbac import get_member_role
 from app.main import app
 from app.models import Household, HouseholdMember, Person
@@ -32,9 +33,7 @@ async def _seed_member(
     role: HouseholdRole,
 ) -> None:
     """Seed household + member with the given role."""
-    existing = await session.execute(
-        sa_select(Household.id).where(Household.id == household_id)
-    )
+    existing = await session.execute(sa_select(Household.id).where(Household.id == household_id))
     if existing.scalar_one_or_none() is None:
         session.add(Household(id=household_id, name="Test HH", base_currency="EGP"))
         await session.flush()
@@ -51,9 +50,7 @@ async def _seed_member(
 
 
 @pytest.mark.asyncio
-async def test_child_cannot_list_persons(
-    db_session: AsyncSession, client
-) -> None:
+async def test_child_cannot_list_persons(db_session: AsyncSession, client) -> None:
     household_id = _make_household_id()
     user_id = _make_user_id()
     await _seed_member(db_session, household_id, user_id, HouseholdRole.CHILD)
@@ -71,9 +68,7 @@ async def test_child_cannot_list_persons(
 
 
 @pytest.mark.asyncio
-async def test_child_cannot_create_person(
-    db_session: AsyncSession, client
-) -> None:
+async def test_child_cannot_create_person(db_session: AsyncSession, client) -> None:
     household_id = _make_household_id()
     user_id = _make_user_id()
     await _seed_member(db_session, household_id, user_id, HouseholdRole.CHILD)
@@ -84,18 +79,14 @@ async def test_child_cannot_create_person(
     app.dependency_overrides.pop(get_member_role, None)
 
     try:
-        resp = await client.post(
-            "/api/v1/persons", json={"name": "Blocked"}
-        )
+        resp = await client.post("/api/v1/persons", json={"name": "Blocked"})
         assert resp.status_code == 403
     finally:
         app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
-async def test_viewer_can_list_persons(
-    db_session: AsyncSession, client
-) -> None:
+async def test_viewer_can_list_persons(db_session: AsyncSession, client) -> None:
     household_id = _make_household_id()
     user_id = _make_user_id()
     await _seed_member(db_session, household_id, user_id, HouseholdRole.VIEWER)
@@ -113,9 +104,7 @@ async def test_viewer_can_list_persons(
 
 
 @pytest.mark.asyncio
-async def test_viewer_cannot_create_person(
-    db_session: AsyncSession, client
-) -> None:
+async def test_viewer_cannot_create_person(db_session: AsyncSession, client) -> None:
     household_id = _make_household_id()
     user_id = _make_user_id()
     await _seed_member(db_session, household_id, user_id, HouseholdRole.VIEWER)
@@ -126,18 +115,14 @@ async def test_viewer_cannot_create_person(
     app.dependency_overrides.pop(get_member_role, None)
 
     try:
-        resp = await client.post(
-            "/api/v1/persons", json={"name": "Blocked"}
-        )
+        resp = await client.post("/api/v1/persons", json={"name": "Blocked"})
         assert resp.status_code == 403
     finally:
         app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
-async def test_viewer_cannot_delete_person(
-    db_session: AsyncSession, client
-) -> None:
+async def test_viewer_cannot_delete_person(db_session: AsyncSession, client) -> None:
     household_id = _make_household_id()
     user_id = _make_user_id()
     await _seed_member(db_session, household_id, user_id, HouseholdRole.VIEWER)
@@ -158,9 +143,7 @@ async def test_viewer_cannot_delete_person(
 
 
 @pytest.mark.asyncio
-async def test_member_can_create_person(
-    db_session: AsyncSession, client
-) -> None:
+async def test_member_can_create_person(db_session: AsyncSession, client) -> None:
     household_id = _make_household_id()
     user_id = _make_user_id()
     await _seed_member(db_session, household_id, user_id, HouseholdRole.MEMBER)
@@ -171,9 +154,7 @@ async def test_member_can_create_person(
     app.dependency_overrides.pop(get_member_role, None)
 
     try:
-        resp = await client.post(
-            "/api/v1/persons", json={"name": "Allowed"}
-        )
+        resp = await client.post("/api/v1/persons", json={"name": "Allowed"})
         assert resp.status_code in (200, 201)
     finally:
         app.dependency_overrides.clear()

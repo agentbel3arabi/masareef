@@ -4,13 +4,14 @@ child → 403 on all P2P endpoints
 viewer → 403 on POST/PUT/DELETE, 200 on GET
 member/admin → full access
 """
+
 import uuid
 
 import pytest
 from sqlalchemy import select as sa_select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_current_user, get_db_session, get_household_id
+from app.dependencies import get_current_user, get_household_id
 from app.dependencies_rbac import get_member_role
 from app.main import app
 from app.models import Debt, Household, HouseholdMember, Person
@@ -32,13 +33,9 @@ async def _seed_member(
     role: HouseholdRole,
 ) -> None:
     """Seed household + member with the given role."""
-    existing = await session.execute(
-        sa_select(Household.id).where(Household.id == household_id)
-    )
+    existing = await session.execute(sa_select(Household.id).where(Household.id == household_id))
     if existing.scalar_one_or_none() is None:
-        session.add(
-            Household(id=household_id, name="Test HH", base_currency="EGP")
-        )
+        session.add(Household(id=household_id, name="Test HH", base_currency="EGP"))
         await session.flush()
 
     session.add(
@@ -52,9 +49,7 @@ async def _seed_member(
     await session.flush()
 
 
-async def _seed_p2p_debt(
-    session: AsyncSession, household_id: uuid.UUID
-) -> int:
+async def _seed_p2p_debt(session: AsyncSession, household_id: uuid.UUID) -> int:
     """Seed a person + P2P debt, return debt id."""
     import datetime as dt
 
@@ -80,9 +75,7 @@ async def _seed_p2p_debt(
 
 
 @pytest.mark.asyncio
-async def test_child_cannot_list_p2p_debts(
-    db_session: AsyncSession, client
-) -> None:
+async def test_child_cannot_list_p2p_debts(db_session: AsyncSession, client) -> None:
     """Child role gets 403 when listing debts filtered to P2P type."""
     household_id = _make_household_id()
     user_id = _make_user_id()
@@ -94,18 +87,14 @@ async def test_child_cannot_list_p2p_debts(
     app.dependency_overrides.pop(get_member_role, None)
 
     try:
-        resp = await client.get(
-            "/api/v1/debts", params={"type": "personal_lent"}
-        )
+        resp = await client.get("/api/v1/debts", params={"type": "personal_lent"})
         assert resp.status_code == 403
     finally:
         app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
-async def test_child_cannot_create_p2p_debt(
-    db_session: AsyncSession, client
-) -> None:
+async def test_child_cannot_create_p2p_debt(db_session: AsyncSession, client) -> None:
     """Child role gets 403 when creating a P2P debt."""
     household_id = _make_household_id()
     user_id = _make_user_id()
@@ -135,9 +124,7 @@ async def test_child_cannot_create_p2p_debt(
 
 
 @pytest.mark.asyncio
-async def test_viewer_can_list_p2p_debts(
-    db_session: AsyncSession, client
-) -> None:
+async def test_viewer_can_list_p2p_debts(db_session: AsyncSession, client) -> None:
     """Viewer role can GET P2P debts (200)."""
     household_id = _make_household_id()
     user_id = _make_user_id()
@@ -149,18 +136,14 @@ async def test_viewer_can_list_p2p_debts(
     app.dependency_overrides.pop(get_member_role, None)
 
     try:
-        resp = await client.get(
-            "/api/v1/debts", params={"type": "personal_lent"}
-        )
+        resp = await client.get("/api/v1/debts", params={"type": "personal_lent"})
         assert resp.status_code == 200
     finally:
         app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
-async def test_viewer_cannot_create_p2p_debt(
-    db_session: AsyncSession, client
-) -> None:
+async def test_viewer_cannot_create_p2p_debt(db_session: AsyncSession, client) -> None:
     """Viewer role gets 403 when creating a P2P debt."""
     household_id = _make_household_id()
     user_id = _make_user_id()
@@ -190,9 +173,7 @@ async def test_viewer_cannot_create_p2p_debt(
 
 
 @pytest.mark.asyncio
-async def test_viewer_cannot_delete_debt(
-    db_session: AsyncSession, client
-) -> None:
+async def test_viewer_cannot_delete_debt(db_session: AsyncSession, client) -> None:
     """Viewer role gets 403 when deleting a debt."""
     household_id = _make_household_id()
     user_id = _make_user_id()
@@ -212,9 +193,7 @@ async def test_viewer_cannot_delete_debt(
 
 
 @pytest.mark.asyncio
-async def test_member_can_create_p2p_debt(
-    db_session: AsyncSession, client
-) -> None:
+async def test_member_can_create_p2p_debt(db_session: AsyncSession, client) -> None:
     """Member role can create P2P debts (not 403)."""
     household_id = _make_household_id()
     user_id = _make_user_id()

@@ -1,7 +1,7 @@
 """Role-based access control dependencies for FastAPI routers."""
+
 import uuid
 from collections.abc import Callable
-from functools import wraps
 from typing import Any
 
 from fastapi import Depends, HTTPException, status

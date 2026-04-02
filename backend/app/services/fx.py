@@ -3,9 +3,10 @@
 Exchange rates are stored as USD → target with rate × 10,000 scaling.
 All conversions route through USD: Source → USD → Target.
 """
+
 from dataclasses import dataclass
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.exchange_rate import ExchangeRate

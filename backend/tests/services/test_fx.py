@@ -1,4 +1,5 @@
 """Tests for FX conversion helper."""
+
 import datetime as dt
 import uuid
 

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { useCreateDebt, useUpdateDebt } from "@/hooks/use-debts";
 import { usePersons } from "@/hooks/use-persons";
-import { CURRENCIES, parseMajorToMinor, formatAmount } from "@/lib/money";
+import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import type { DebtResponse, DebtType, RepaymentMode } from "@/lib/types/debts";
 
 interface P2PDebtFormProps {
