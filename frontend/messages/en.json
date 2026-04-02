@@ -794,7 +794,10 @@
         "update": "Update Debt",
         "saving": "Saving...",
         "autoNameLent": "Loan to {name}",
-        "autoNameBorrowed": "Borrowed from {name}"
+        "autoNameBorrowed": "Borrowed from {name}",
+        "sourceAccount": "Source account",
+        "destinationAccount": "Destination account",
+        "selectAccount": "Select account"
       },
       "payment": {
         "title": "Record Payment",
@@ -803,7 +806,9 @@
         "amount": "Amount",
         "notes": "Notes",
         "submit": "Record Payment",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "selectAccount": "Select account",
+        "accountRequired": "Account is required"
       },
       "installment": {
         "title": "Add Installment Plan",
@@ -830,7 +835,9 @@
         "submit": "Add Installment",
         "update": "Update Installment",
         "saving": "Saving...",
-        "comingSoon": "Coming soon"
+        "comingSoon": "Coming soon",
+        "annualRate": "Annual Interest Rate (%)",
+        "annualRateHint": "0% for interest-free plans"
       }
     }
   },

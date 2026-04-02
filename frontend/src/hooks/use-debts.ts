@@ -46,6 +46,7 @@ export function useCreateDebt() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -72,6 +73,7 @@ export function useDeleteDebt() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -106,6 +108,7 @@ export function useRecordPayment(debtId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -131,6 +134,7 @@ export function useMarkDebtPaid() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }

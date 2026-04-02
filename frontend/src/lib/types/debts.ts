@@ -47,6 +47,7 @@ export interface DebtCreateInput {
   due_date?: string | null;
   split_count?: number | null;
   splits?: SplitInput[] | null;
+  account_id?: number | null;
 }
 
 export interface DebtUpdateInput {
@@ -64,7 +65,8 @@ export interface SplitInput {
 export interface PaymentCreate {
   date: string;
   amount_minor: number;
-  transaction_id?: number | null;
+  account_id: number;
+  link_existing_transaction_id?: number | null;
   notes?: string | null;
 }
 
@@ -126,6 +128,7 @@ export interface InstallmentResponse {
   total_months: number;
   start_month: string;
   currency: string;
+  annual_rate_bps: number;
   status: LifecycleStatus;
   is_active: boolean;
   months_paid: number;
@@ -144,12 +147,14 @@ export interface InstallmentCreateInput {
   total_months: number;
   start_month: string;
   currency: string;
+  annual_rate_bps?: number;
 }
 
 export interface InstallmentUpdateInput {
   name?: string;
   merchant_name?: string | null;
   linked_account_id?: number | null;
+  annual_rate_bps?: number | null;
 }
 
 export interface FinancingAppDetail {

@@ -794,7 +794,10 @@
         "update": "تحديث الدين",
         "saving": "جاري الحفظ...",
         "autoNameLent": "قرض لـ {name}",
-        "autoNameBorrowed": "اقتراض من {name}"
+        "autoNameBorrowed": "اقتراض من {name}",
+        "sourceAccount": "حساب المصدر",
+        "destinationAccount": "حساب الوجهة",
+        "selectAccount": "اختر الحساب"
       },
       "payment": {
         "title": "تسجيل دفعة",
@@ -803,7 +806,9 @@
         "amount": "المبلغ",
         "notes": "ملاحظات",
         "submit": "تسجيل الدفعة",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "selectAccount": "اختر الحساب",
+        "accountRequired": "الحساب مطلوب"
       },
       "installment": {
         "title": "إضافة خطة أقساط",
@@ -830,7 +835,9 @@
         "submit": "إضافة القسط",
         "update": "تحديث القسط",
         "saving": "جارِ الحفظ...",
-        "comingSoon": "قريباً"
+        "comingSoon": "قريباً",
+        "annualRate": "معدل الفائدة السنوي (%)",
+        "annualRateHint": "٠٪ للخطط بدون فوائد"
       }
     }
   },

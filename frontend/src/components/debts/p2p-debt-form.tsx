@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { useCreateDebt, useUpdateDebt } from "@/hooks/use-debts";
 import { usePersons } from "@/hooks/use-persons";
+import { useAccounts } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import type { DebtResponse, DebtType, RepaymentMode } from "@/lib/types/debts";
 
@@ -68,10 +69,16 @@ function P2PDebtFormContent({
   const [splitCount, setSplitCount] = useState("");
   const [notes, setNotes] = useState(initialData?.notes ?? "");
 
+  const [accountId, setAccountId] = useState("");
+
   const createMutation = useCreateDebt();
   const updateMutation = useUpdateDebt();
   const { data: personsData } = usePersons();
   const persons = personsData?.data ?? [];
+  const { data: accountsData } = useAccounts();
+  const accounts = (accountsData?.data ?? []).filter(
+    (a) => a.currency === currency && a.is_active
+  );
 
   const selectedPerson = persons.find((p) => String(p.id) === personId);
 
@@ -84,6 +91,7 @@ function P2PDebtFormContent({
     setDueDate("");
     setSplitCount("");
     setNotes("");
+    setAccountId("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -123,6 +131,7 @@ function P2PDebtFormContent({
           split_count:
             repaymentMode === "equal_splits" ? parseInt(splitCount, 10) : null,
           notes: notes || null,
+          account_id: accountId ? parseInt(accountId, 10) : null,
         },
         {
           onSuccess: () => {
@@ -191,6 +200,26 @@ function P2PDebtFormContent({
                 {CURRENCY_CODES.map((code) => (
                   <SelectItem key={code} value={code}>
                     {code} — {CURRENCIES[code].name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {!isEdit && (
+          <div className="space-y-2">
+            <Label>
+              {debtType === "personal_lent" ? t("sourceAccount") : t("destinationAccount")} *
+            </Label>
+            <Select value={accountId} onValueChange={(v) => setAccountId(v ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("selectAccount")} />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map((acc) => (
+                  <SelectItem key={acc.id} value={String(acc.id)}>
+                    {acc.name}
                   </SelectItem>
                 ))}
               </SelectContent>

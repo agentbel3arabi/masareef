@@ -209,6 +209,8 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         onOpenChange={setPaymentOpen}
         debtId={debtId}
         currency={debt.currency}
+        debtType={debt.type}
+        linkedAccountId={debt.linked_account_id}
       />
 
       {/* ── Amortization schedule ─────────────────────── */}

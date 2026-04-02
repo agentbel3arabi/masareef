@@ -251,6 +251,8 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
         onOpenChange={setPaymentOpen}
         debtId={debtId}
         currency={debt.currency}
+        debtType={debt.type}
+        linkedAccountId={debt.linked_account_id}
       />
 
       {/* ── Split Schedule (timeline) ─────────────────── */}

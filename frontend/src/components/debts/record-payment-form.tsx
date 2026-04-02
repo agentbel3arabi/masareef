@@ -6,7 +6,15 @@ import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { useRecordPayment } from "@/hooks/use-debts";
+import { useAccounts } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 
 interface RecordPaymentFormProps {
@@ -14,6 +22,8 @@ interface RecordPaymentFormProps {
   onOpenChange: (open: boolean) => void;
   debtId: number;
   currency: string;
+  debtType?: string;
+  linkedAccountId?: number | null;
 }
 
 export function RecordPaymentForm({
@@ -21,12 +31,21 @@ export function RecordPaymentForm({
   onOpenChange,
   debtId,
   currency,
+  linkedAccountId,
 }: RecordPaymentFormProps) {
   const t = useTranslations("debts.form.payment");
   const today = new Date().toISOString().split("T")[0];
   const [date, setDate] = useState(today);
   const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
+  const [accountId, setAccountId] = useState(
+    linkedAccountId ? String(linkedAccountId) : ""
+  );
+
+  const { data: accountsData } = useAccounts();
+  const accounts = (accountsData?.data ?? []).filter(
+    (a) => a.currency === currency && a.is_active
+  );
 
   const mutation = useRecordPayment(debtId);
 
@@ -34,6 +53,7 @@ export function RecordPaymentForm({
     setDate(new Date().toISOString().split("T")[0]);
     setAmount("");
     setNotes("");
+    setAccountId(linkedAccountId ? String(linkedAccountId) : "");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,6 +62,7 @@ export function RecordPaymentForm({
       {
         date,
         amount_minor: parseMajorToMinor(amount, CURRENCIES[currency]?.exponent ?? 2),
+        account_id: parseInt(accountId, 10),
         notes: notes || null,
       },
       {
@@ -94,7 +115,23 @@ export function RecordPaymentForm({
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+        <div className="space-y-2">
+          <Label>{t("selectAccount")} *</Label>
+          <Select value={accountId} onValueChange={(v) => setAccountId(v ?? "")}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("selectAccount")} />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.map((acc) => (
+                <SelectItem key={acc.id} value={String(acc.id)}>
+                  {acc.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button type="submit" className="w-full" disabled={mutation.isPending || !accountId}>
           {mutation.isPending ? t("saving") : t("submit")}
         </Button>
       </form>
