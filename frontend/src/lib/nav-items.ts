@@ -25,6 +25,7 @@ export const navItems: NavItem[] = [
   { href: "/import", icon: Upload, label: "nav.import" },
   { href: "/budgets", icon: PiggyBank, label: "nav.budgets", disabled: true },
   { href: "/debts", icon: HandCoins, label: "nav.debts" },
+  { href: "/people", icon: Users, label: "nav.people" },
   { href: "/gam3eya", icon: Users, label: "nav.gam3eya", disabled: true },
   { href: "/settings", icon: Settings, label: "nav.settings" },
 ];
