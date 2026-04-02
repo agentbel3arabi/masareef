@@ -23,6 +23,22 @@ from app.services import debt as debt_service
 router = APIRouter(prefix="/api/v1/debts", tags=["debts"])
 
 
+def _check_p2p_read(debt, role: HouseholdRole) -> None:
+    """Block CHILD from reading P2P debts."""
+    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
+        if role == HouseholdRole.CHILD:
+            raise HTTPException(status_code=403, detail="Children cannot access P2P debts")
+
+
+def _check_p2p_write(debt, role: HouseholdRole) -> None:
+    """Block CHILD+VIEWER from mutating P2P debts, VIEWER from all mutations."""
+    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
+        if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+            raise HTTPException(status_code=403, detail="Insufficient permissions for P2P debts")
+    elif role == HouseholdRole.VIEWER:
+        raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
+
+
 def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -> DebtResponse:
     """Map Debt ORM object to DebtResponse schema.
 
@@ -109,6 +125,7 @@ async def get_debt(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_read(debt, role)
     paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
 
@@ -168,11 +185,7 @@ async def update_debt(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
-    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
-        if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
-            raise HTTPException(status_code=403, detail="Insufficient permissions for P2P debts")
-    elif role == HouseholdRole.VIEWER:
-        raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
+    _check_p2p_write(debt, role)
     try:
         debt = await debt_service.update_debt(session, household_id, debt, data)
     except ValueError as e:
@@ -199,11 +212,7 @@ async def delete_debt(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
-    if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
-        if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
-            raise HTTPException(status_code=403, detail="Insufficient permissions for P2P debts")
-    elif role == HouseholdRole.VIEWER:
-        raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
+    _check_p2p_write(debt, role)
     await debt_service.soft_delete_debt(session, debt)
 
 
@@ -222,6 +231,7 @@ async def get_amortization(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_read(debt, role)
     schedule = await debt_service.get_amortization_schedule(session, debt)
     rows = [ScheduleRow(**row).model_dump() for row in schedule]
     return SuccessResponse(data=rows)
@@ -242,6 +252,7 @@ async def list_payments(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_read(debt, role)
     payments = await debt_service.get_payments(session, debt.id)
     items = [_payment_to_response(p).model_dump() for p in payments]
     return SuccessResponse(data=items)
@@ -263,6 +274,7 @@ async def record_payment(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_write(debt, role)
     try:
         payment = await debt_service.record_payment(
             session, debt, data.date, data.amount_minor, data.transaction_id, data.notes
@@ -290,6 +302,7 @@ async def get_match_suggestions(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_read(debt, role)
     suggestions = await debt_service.get_match_suggestions(session, household_id, debt)
     items = [MatchSuggestion(**s).model_dump() for s in suggestions]
     return SuccessResponse(data=items)
@@ -310,6 +323,7 @@ async def mark_debt_paid(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_write(debt, role)
     debt = await debt_service.mark_paid(session, debt)
     paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
@@ -330,6 +344,7 @@ async def get_splits(
                 error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
             ).model_dump(),
         )
+    _check_p2p_read(debt, role)
     splits = await debt_service.get_splits(session, debt.id)
     today = date.today()
     items = []

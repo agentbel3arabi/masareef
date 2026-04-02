@@ -225,3 +225,126 @@ async def test_member_can_create_p2p_debt(db_session: AsyncSession, client) -> N
         assert resp.status_code in (201, 200)
     finally:
         app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_child_cannot_get_p2p_debt(db_session: AsyncSession, client) -> None:
+    """Child role gets 403 when reading a specific P2P debt."""
+    household_id = _make_household_id()
+    user_id = _make_user_id()
+    await _seed_member(db_session, household_id, user_id, HouseholdRole.CHILD)
+    debt_id = await _seed_p2p_debt(db_session, household_id)
+    await db_session.commit()
+
+    app.dependency_overrides[get_current_user] = lambda: user_id
+    app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
+
+    try:
+        resp = await client.get(f"/api/v1/debts/{debt_id}")
+        assert resp.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_child_cannot_get_p2p_amortization(db_session: AsyncSession, client) -> None:
+    """Child role gets 403 on amortization for P2P debt."""
+    household_id = _make_household_id()
+    user_id = _make_user_id()
+    await _seed_member(db_session, household_id, user_id, HouseholdRole.CHILD)
+    debt_id = await _seed_p2p_debt(db_session, household_id)
+    await db_session.commit()
+
+    app.dependency_overrides[get_current_user] = lambda: user_id
+    app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
+
+    try:
+        resp = await client.get(f"/api/v1/debts/{debt_id}/amortization")
+        assert resp.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_child_cannot_list_p2p_payments(db_session: AsyncSession, client) -> None:
+    """Child role gets 403 on payments list for P2P debt."""
+    household_id = _make_household_id()
+    user_id = _make_user_id()
+    await _seed_member(db_session, household_id, user_id, HouseholdRole.CHILD)
+    debt_id = await _seed_p2p_debt(db_session, household_id)
+    await db_session.commit()
+
+    app.dependency_overrides[get_current_user] = lambda: user_id
+    app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
+
+    try:
+        resp = await client.get(f"/api/v1/debts/{debt_id}/payments")
+        assert resp.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_viewer_cannot_record_payment(db_session: AsyncSession, client) -> None:
+    """Viewer role gets 403 when recording a payment on a P2P debt."""
+    household_id = _make_household_id()
+    user_id = _make_user_id()
+    await _seed_member(db_session, household_id, user_id, HouseholdRole.VIEWER)
+    debt_id = await _seed_p2p_debt(db_session, household_id)
+    await db_session.commit()
+
+    app.dependency_overrides[get_current_user] = lambda: user_id
+    app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
+
+    try:
+        resp = await client.post(
+            f"/api/v1/debts/{debt_id}/payments",
+            json={"date": "2025-01-15", "amount_minor": 500},
+        )
+        assert resp.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_viewer_cannot_mark_paid(db_session: AsyncSession, client) -> None:
+    """Viewer role gets 403 when marking a P2P debt as paid."""
+    household_id = _make_household_id()
+    user_id = _make_user_id()
+    await _seed_member(db_session, household_id, user_id, HouseholdRole.VIEWER)
+    debt_id = await _seed_p2p_debt(db_session, household_id)
+    await db_session.commit()
+
+    app.dependency_overrides[get_current_user] = lambda: user_id
+    app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
+
+    try:
+        resp = await client.post(f"/api/v1/debts/{debt_id}/mark-paid")
+        assert resp.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_child_cannot_get_p2p_splits(db_session: AsyncSession, client) -> None:
+    """Child role gets 403 on splits for P2P debt."""
+    household_id = _make_household_id()
+    user_id = _make_user_id()
+    await _seed_member(db_session, household_id, user_id, HouseholdRole.CHILD)
+    debt_id = await _seed_p2p_debt(db_session, household_id)
+    await db_session.commit()
+
+    app.dependency_overrides[get_current_user] = lambda: user_id
+    app.dependency_overrides[get_household_id] = lambda: household_id
+    app.dependency_overrides.pop(get_member_role, None)
+
+    try:
+        resp = await client.get(f"/api/v1/debts/{debt_id}/splits")
+        assert resp.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
