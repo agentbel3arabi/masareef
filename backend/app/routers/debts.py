@@ -39,7 +39,7 @@ def _check_p2p_write(debt, role: HouseholdRole) -> None:
         raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
 
 
-def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -> DebtResponse:
+def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None, credit_utilization_percent: float | None = None) -> DebtResponse:
     """Map Debt ORM object to DebtResponse schema.
 
     remaining: outstanding principal balance from compute_debt_totals.
@@ -69,6 +69,7 @@ def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -
         is_active=debt.is_active,
         total_paid_minor=total_paid,
         remaining_minor=remaining_minor,
+        credit_utilization_percent=credit_utilization_percent,
     )
 
 
@@ -83,6 +84,24 @@ def _payment_to_response(payment) -> PaymentResponse:
         transaction_id=payment.transaction_id,
         notes=payment.notes,
     )
+
+
+async def _compute_utilization(
+    session: AsyncSession, household_id: uuid.UUID, linked_account_id: int | None
+) -> float | None:
+    if not linked_account_id:
+        return None
+    from app.models.account import Account
+    from app.models.enums import AccountType
+
+    acct = await session.get(Account, linked_account_id)
+    if not acct or acct.type != AccountType.CREDIT_CARD or not acct.credit_limit or acct.credit_limit <= 0:
+        return None
+    from app.services.account import compute_displayed_balance
+
+    displayed = await compute_displayed_balance(session, acct)
+    used = abs(min(displayed, 0))
+    return round(used / acct.credit_limit * 100, 1)
 
 
 @router.get("")
@@ -133,7 +152,8 @@ async def get_debt(
         )
     _check_p2p_read(debt, role)
     paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
-    return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
+    utilization = await _compute_utilization(session, household_id, debt.linked_account_id)
+    return SuccessResponse(data=_debt_to_response(debt, paid, remaining, utilization).model_dump())
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)

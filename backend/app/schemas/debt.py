@@ -59,6 +59,7 @@ class DebtResponse(BaseModel):
     is_active: bool
     total_paid_minor: int = 0
     remaining_minor: int = 0
+    credit_utilization_percent: float | None = None
 
     model_config = {"from_attributes": True}
 
