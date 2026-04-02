@@ -49,26 +49,38 @@ export default function DebtsPage() {
 
       {/* Tabs */}
       <nav className="flex border-b border-border overflow-x-auto" role="tablist">
-        {TAB_KEYS.map((key) => (
-          <button
-            key={key}
-            role="tab"
-            aria-selected={activeTab === key}
-            onClick={() => setActiveTab(key)}
-            className={cn(
-              "shrink-0 px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
-              activeTab === key
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {t(`tabs.${key}`)}
-          </button>
-        ))}
+        {TAB_KEYS.map((key) => {
+          const tabId = `debts-tab-${key}`;
+          const panelId = `debts-tabpanel-${key}`;
+
+          return (
+            <button
+              key={key}
+              id={tabId}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === key}
+              aria-controls={panelId}
+              onClick={() => setActiveTab(key)}
+              className={cn(
+                "shrink-0 px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                activeTab === key
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {t(`tabs.${key}`)}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Active tab content */}
-      <div role="tabpanel">
+      <div
+        role="tabpanel"
+        id={`debts-tabpanel-${activeTab}`}
+        aria-labelledby={`debts-tab-${activeTab}`}
+      >
         <ActiveComponent />
       </div>
     </div>

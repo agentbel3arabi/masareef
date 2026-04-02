@@ -6,6 +6,8 @@ import type {
   DebtResponse,
   DebtCreateInput,
   DebtUpdateInput,
+  DebtType,
+  DebtStatus,
   PaymentCreate,
   PaymentResponse,
   ScheduleRow,
@@ -13,7 +15,7 @@ import type {
   P2PDebtSplitResponse,
 } from "@/lib/types/debts";
 
-export function useDebts(params?: { type?: string; status?: string }) {
+export function useDebts(params?: { type?: DebtType; status?: DebtStatus }) {
   const searchParams = new URLSearchParams();
   if (params?.type) searchParams.set("type", params.type);
   if (params?.status) searchParams.set("status", params.status);

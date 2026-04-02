@@ -6,12 +6,14 @@ import type {
   InstallmentResponse,
   InstallmentCreateInput,
   InstallmentUpdateInput,
+  InstallmentType,
+  LifecycleStatus,
   FinancingAppsSummary,
 } from "@/lib/types/debts";
 
 export function useInstallments(params?: {
-  type?: string;
-  status?: string;
+  type?: InstallmentType;
+  status?: LifecycleStatus;
 }) {
   const searchParams = new URLSearchParams();
   if (params?.type) searchParams.set("type", params.type);

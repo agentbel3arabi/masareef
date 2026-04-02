@@ -26,7 +26,7 @@
 | Create | `frontend/src/hooks/use-installments.ts` | TanStack Query hooks for `/api/v1/installments` endpoints |
 | Create | `frontend/src/hooks/use-persons.ts` | TanStack Query hooks for `/api/v1/persons` endpoints |
 | Create | `frontend/src/app/(app)/debts/page.tsx` | 5-tab debts page shell with tab switching |
-| Create | `frontend/src/components/debts/debts-tab-content.tsx` | Wrapper that renders the active tab content |
+| Create | `frontend/src/components/debts/debts-tab-content.tsx` | ~~Wrapper that renders the active tab content~~ **DEVIATION:** Tab rendering inlined in `page.tsx` instead — separate wrapper unnecessary for simple `Record<TabKey, Component>` lookup |
 | Create | `frontend/src/components/debts/loans-tab.tsx` | Loans tab placeholder (data-fetching + empty state) |
 | Create | `frontend/src/components/debts/card-installments-tab.tsx` | CC installments tab placeholder |
 | Create | `frontend/src/components/debts/financing-apps-tab.tsx` | Financing apps tab placeholder |
