@@ -36,6 +36,7 @@ interface PersonGroup {
 function getInitials(name: string): string {
   return name
     .split(/\s+/)
+    .filter((w) => w.length > 0)
     .map((w) => w[0])
     .join("")
     .toUpperCase()

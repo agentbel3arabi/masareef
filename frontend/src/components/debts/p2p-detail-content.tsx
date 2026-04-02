@@ -62,7 +62,8 @@ function formatDate(iso: string): string {
 
 function personInitials(name: string): string {
   return name
-    .split(" ")
+    .split(/\s+/)
+    .filter((w) => w.length > 0)
     .map((w) => w[0])
     .join("")
     .toUpperCase()
