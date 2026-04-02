@@ -85,7 +85,7 @@ def upgrade() -> None:
         sa.Column("email", sa.Text, nullable=True),
         sa.Column(
             "relationship",
-            sa.Enum(
+            postgresql.ENUM(
                 "family",
                 "friend",
                 "colleague",
@@ -114,7 +114,7 @@ def upgrade() -> None:
         sa.Column("household_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column(
             "type",
-            sa.Enum(
+            postgresql.ENUM(
                 "bank_loan",
                 "personal_lent",
                 "personal_borrowed",
@@ -135,7 +135,7 @@ def upgrade() -> None:
         sa.Column("monthly_payment_minor", sa.BigInteger, nullable=False),
         sa.Column(
             "repayment_mode",
-            sa.Enum(
+            postgresql.ENUM(
                 "lump_sum", "equal_splits", "custom_splits", name="repaymentmode", create_type=False
             ),
             nullable=True,
@@ -143,7 +143,7 @@ def upgrade() -> None:
         sa.Column("due_date", sa.Date, nullable=True),
         sa.Column(
             "status",
-            sa.Enum("active", "paid_off", name="debtstatus", create_type=False),
+            postgresql.ENUM("active", "paid_off", name="debtstatus", create_type=False),
             nullable=False,
             server_default="active",
         ),
@@ -199,7 +199,7 @@ def upgrade() -> None:
         sa.Column("household_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column(
             "type",
-            sa.Enum(
+            postgresql.ENUM(
                 "credit_card", "store", "financing_app", name="installmenttype", create_type=False
             ),
             nullable=False,
@@ -215,7 +215,7 @@ def upgrade() -> None:
         sa.Column("currency", sa.Text, nullable=False),
         sa.Column(
             "status",
-            sa.Enum("active", "completed", name="lifecyclestatus", create_type=False),
+            postgresql.ENUM("active", "completed", name="lifecyclestatus", create_type=False),
             nullable=False,
             server_default="active",
         ),
