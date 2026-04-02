@@ -13,8 +13,9 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { useRecordPayment } from "@/hooks/use-debts";
+import { useRecordPayment, useMatchSuggestions } from "@/hooks/use-debts";
 import { useAccounts } from "@/hooks/use-accounts";
+import { MoneyDisplay } from "@/components/shared/money-display";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 
 interface RecordPaymentFormProps {
@@ -24,6 +25,7 @@ interface RecordPaymentFormProps {
   currency: string;
   debtType?: string;
   linkedAccountId?: number | null;
+  showMatchSuggestions?: boolean;
 }
 
 export function RecordPaymentForm({
@@ -32,6 +34,7 @@ export function RecordPaymentForm({
   debtId,
   currency,
   linkedAccountId,
+  showMatchSuggestions,
 }: RecordPaymentFormProps) {
   const t = useTranslations("debts.form.payment");
   const today = new Date().toISOString().split("T")[0];
@@ -41,11 +44,15 @@ export function RecordPaymentForm({
   const [accountId, setAccountId] = useState(
     linkedAccountId ? String(linkedAccountId) : ""
   );
+  const [linkExistingTxId, setLinkExistingTxId] = useState<number | null>(null);
 
   const { data: accountsData } = useAccounts();
   const accounts = (accountsData?.data ?? []).filter(
     (a) => a.currency === currency && a.is_active
   );
+
+  const { data: matchData } = useMatchSuggestions(showMatchSuggestions ? debtId : 0);
+  const suggestions = matchData?.data?.suggestions ?? [];
 
   const mutation = useRecordPayment(debtId);
 
@@ -54,6 +61,7 @@ export function RecordPaymentForm({
     setAmount("");
     setNotes("");
     setAccountId(linkedAccountId ? String(linkedAccountId) : "");
+    setLinkExistingTxId(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -64,6 +72,7 @@ export function RecordPaymentForm({
         amount_minor: parseMajorToMinor(amount, CURRENCIES[currency]?.exponent ?? 2),
         account_id: parseInt(accountId, 10),
         notes: notes || null,
+        link_existing_transaction_id: linkExistingTxId,
       },
       {
         onSuccess: () => {
@@ -130,6 +139,33 @@ export function RecordPaymentForm({
             </SelectContent>
           </Select>
         </div>
+
+        {showMatchSuggestions && suggestions.length > 0 && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">{t("suggestedMatches")}</Label>
+            <div className="space-y-1">
+              {suggestions.map((s) => (
+                <div key={s.transaction_id} className="flex items-center justify-between rounded-md border p-2 text-sm">
+                  <div>
+                    <span className="font-medium">{s.date}</span>
+                    <span className="ms-2 text-muted-foreground">{s.description}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MoneyDisplay amount={s.amount_minor} currency={currency} size="sm" />
+                    <Button type="button" variant="outline" size="sm" onClick={() => {
+                      setAmount(String(s.amount_minor / Math.pow(10, CURRENCIES[currency]?.exponent ?? 2)));
+                      setDate(s.date);
+                      setLinkExistingTxId(s.transaction_id);
+                      setAccountId(String(linkedAccountId ?? ""));
+                    }}>
+                      {t("useThis")}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Button type="submit" className="w-full" disabled={mutation.isPending || !accountId}>
           {mutation.isPending ? t("saving") : t("submit")}

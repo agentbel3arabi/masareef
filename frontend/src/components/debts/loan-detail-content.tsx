@@ -236,6 +236,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         currency={debt.currency}
         debtType={debt.type}
         linkedAccountId={debt.linked_account_id}
+        showMatchSuggestions={!!debt.linked_account_id}
       />
 
       <BankLoanForm open={editOpen} onOpenChange={setEditOpen} initialData={debt} />

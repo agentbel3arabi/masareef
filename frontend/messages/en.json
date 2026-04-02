@@ -54,7 +54,8 @@
     "next": "Next",
     "back": "Back",
     "total": "{count} total",
-    "select": "Select..."
+    "select": "Select...",
+    "permissionDenied": "You don't have permission to perform this action"
   },
   "onboarding": {
     "step1": {
@@ -815,7 +816,10 @@
         "submit": "Record Payment",
         "saving": "Saving...",
         "selectAccount": "Select account",
-        "accountRequired": "Account is required"
+        "accountRequired": "Account is required",
+        "suggestedMatches": "Suggested Matches",
+        "useThis": "Use this",
+        "noMatches": "No matching transactions found"
       },
       "installment": {
         "title": "Add Installment Plan",

@@ -54,7 +54,8 @@
     "next": "التالي",
     "back": "رجوع",
     "total": "{count} إجمالي",
-    "select": "اختر..."
+    "select": "اختر...",
+    "permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء"
   },
   "onboarding": {
     "step1": {
@@ -815,7 +816,10 @@
         "submit": "تسجيل الدفعة",
         "saving": "جاري الحفظ...",
         "selectAccount": "اختر الحساب",
-        "accountRequired": "الحساب مطلوب"
+        "accountRequired": "الحساب مطلوب",
+        "suggestedMatches": "مطابقات مقترحة",
+        "useThis": "استخدم هذا",
+        "noMatches": "لم يتم العثور على معاملات مطابقة"
       },
       "installment": {
         "title": "إضافة خطة أقساط",
