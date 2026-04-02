@@ -12,7 +12,19 @@
     "bulkCategorized": "Transactions re-categorized",
     "importComplete": "Import complete",
     "error": "Something went wrong",
-    "tryAgain": "Please try again"
+    "tryAgain": "Please try again",
+    "debtCreated": "Debt created successfully",
+    "debtUpdated": "Debt updated successfully",
+    "debtDeleted": "Debt deleted successfully",
+    "debtMarkedPaid": "Debt marked as paid",
+    "paymentRecorded": "Payment recorded successfully",
+    "installmentCreated": "Installment plan created",
+    "installmentUpdated": "Installment plan updated",
+    "installmentDeleted": "Installment plan deleted",
+    "installmentCompleted": "Installment plan completed",
+    "personCreated": "Person created successfully",
+    "personUpdated": "Person updated successfully",
+    "personDeleted": "Person deleted successfully"
   },
   "common": {
     "appName": "Masareef",
@@ -212,7 +224,7 @@
     "amount": "Amount",
     "uncategorized": "Uncategorized",
     "search": "Search transactions...",
-    "allTypes": "All types",
+    "allTypes": "All Types",
     "expenses": "Expenses",
     "income": "Income",
     "noResults": "No transactions",
@@ -232,7 +244,6 @@
     "actions": "Actions",
     "allAccounts": "All Accounts",
     "allCategories": "All Categories",
-    "allTypes": "All Types",
     "amountMin": "Min amount",
     "amountMax": "Max amount",
     "resetFilters": "Reset",
@@ -334,6 +345,26 @@
     "searchResults": {
       "title": "No results found",
       "description": "Try adjusting your filters or search terms."
+    },
+    "debts": {
+      "title": "No debts yet",
+      "description": "Add your first loan or debt to start tracking.",
+      "action": "Add Debt"
+    },
+    "installments": {
+      "title": "No installment plans yet",
+      "description": "Track your credit card, store, or financing app installments.",
+      "action": "Add Installment"
+    },
+    "p2p": {
+      "title": "No P2P debts yet",
+      "description": "Track money lent to or borrowed from friends and family.",
+      "action": "Add Debt"
+    },
+    "persons": {
+      "title": "No people yet",
+      "description": "Add a person before creating P2P debts.",
+      "action": "Add Person"
     }
   },
   "import": {
@@ -547,5 +578,97 @@
       "newsletterToast": "Newsletter coming soon!",
       "copyright": "© 2026 Masareef. Made with ❤️ in Egypt"
     }
+  },
+  "debts": {
+    "title": "Debts Management",
+    "subtitle": "Track and manage your loans and installments",
+    "tabs": {
+      "loans": "Loans",
+      "cardInstallments": "Card Installments",
+      "financingApps": "Financing Apps",
+      "storeInstallments": "Store Installments",
+      "p2p": "P2P"
+    },
+    "summary": {
+      "monthlyPayments": "Monthly Debt Payments",
+      "totalRemaining": "Total Active Remaining",
+      "activeLoans": "{count} loans",
+      "activePlans": "{count} plans"
+    },
+    "status": {
+      "active": "Active",
+      "paidOff": "Paid Off",
+      "completed": "Completed",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "upcoming": "Upcoming"
+    },
+    "loan": {
+      "monthlyPayment": "Monthly Payment",
+      "remaining": "Remaining",
+      "tenure": "{months} months",
+      "rate": "{rate}% APR",
+      "paid": "{paid} of {total} paid",
+      "institution": "Institution",
+      "startDate": "Start Date",
+      "linkedAccount": "Linked Account"
+    },
+    "p2p": {
+      "lent": "You lent",
+      "borrowed": "You borrowed",
+      "netOwed": "Net owed",
+      "noDebts": "No active debts",
+      "lumpSum": "Lump Sum",
+      "equalSplits": "Equal Splits",
+      "customSplits": "Custom Splits"
+    },
+    "installment": {
+      "monthlyAmount": "Monthly",
+      "totalAmount": "Total",
+      "months": "{paid}/{total} months",
+      "merchant": "Merchant",
+      "sourceAccount": "Source Account"
+    },
+    "financingApps": {
+      "creditLimit": "Credit Limit",
+      "used": "Used",
+      "available": "Available",
+      "utilization": "Utilization",
+      "activePlans": "Active Plans",
+      "monthlyCommitment": "Monthly Commitment",
+      "totalMonthly": "Total Monthly (All Apps)",
+      "totalRemaining": "Total Remaining (All Apps)"
+    },
+    "actions": {
+      "addLoan": "Add Loan",
+      "addDebt": "Add Debt",
+      "addInstallment": "Add Installment",
+      "recordPayment": "Record Payment",
+      "viewSchedule": "View Schedule",
+      "markPaid": "Mark as Paid",
+      "complete": "Mark Complete"
+    }
+  },
+  "persons": {
+    "title": "People",
+    "name": "Name",
+    "nameAr": "Arabic Name",
+    "phone": "Phone",
+    "email": "Email",
+    "relationship": "Relationship",
+    "notes": "Notes",
+    "relationships": {
+      "family": "Family",
+      "friend": "Friend",
+      "colleague": "Colleague",
+      "business": "Business",
+      "other": "Other"
+    }
+  },
+  "installments": {
+    "title": "Installment Plans",
+    "creditCard": "Credit Card",
+    "store": "Store",
+    "financingApp": "Financing App"
   }
 }
