@@ -105,7 +105,6 @@ export function useRecordPayment(debtId: number) {
     successMessage: t("paymentRecorded"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
-      queryClient.invalidateQueries({ queryKey: ["debts", debtId] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
     },
   });

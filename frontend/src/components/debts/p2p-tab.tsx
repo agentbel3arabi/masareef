@@ -21,14 +21,6 @@ export function P2PTab() {
   const isLoading = lentLoading || borrowedLoading;
   const error = lentError || borrowedError;
 
-  if (error) {
-    return (
-      <p className="text-destructive text-sm">
-        {t("error.title")}: {error.message}
-      </p>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -36,6 +28,14 @@ export function P2PTab() {
           <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />
         ))}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-destructive text-sm">
+        {t("error.title")}: {error.message}
+      </p>
     );
   }
 
