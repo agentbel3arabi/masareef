@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Landmark, Building2, CheckCircle2, ChevronDown } from "lucide-react";
+import { Landmark, Building2, CheckCircle2, ChevronDown, Plus } from "lucide-react";
+import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { useDebts, useAmortizationSchedule } from "@/hooks/use-debts";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
@@ -27,6 +28,7 @@ export function LoansTab() {
   const { data, isLoading, error } = useDebts({ type: "bank_loan" });
   const [showCompleted, setShowCompleted] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   if (isLoading) {
     return (
@@ -54,6 +56,7 @@ export function LoansTab() {
         icon={Landmark}
         title={t("emptyStates.debts.title")}
         description={t("emptyStates.debts.description")}
+        action={{ label: "Add Loan", onClick: () => setShowCreateForm(true) }}
       />
     );
   }
@@ -90,6 +93,16 @@ export function LoansTab() {
           }}
         />
       </div>
+
+      {/* Add Loan Button */}
+      <button
+        type="button"
+        onClick={() => setShowCreateForm(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+        Add Loan
+      </button>
 
       {/* Active Loans */}
       {active.length > 0 && (
@@ -163,6 +176,7 @@ export function LoansTab() {
           )}
         </section>
       )}
+      <BankLoanForm open={showCreateForm} onOpenChange={setShowCreateForm} />
     </div>
   );
 }

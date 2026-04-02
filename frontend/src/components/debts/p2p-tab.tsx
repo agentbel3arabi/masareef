@@ -10,6 +10,8 @@ import {
   ChevronDown,
   Calendar,
   CreditCard,
+  Plus,
+  UserPlus,
 } from "lucide-react";
 import { useDebts } from "@/hooks/use-debts";
 import { usePersons } from "@/hooks/use-persons";
@@ -19,6 +21,8 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { StatusBadge } from "@/components/debts/status-badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
+import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
+import { PersonForm } from "@/components/debts/person-form";
 
 interface DebtResponse {
   id: number;
@@ -91,6 +95,8 @@ export function P2PTab() {
   const t = useTranslations();
   const locale = useLocale();
   const [expandedPersonId, setExpandedPersonId] = useState<number | null>(null);
+  const [showDebtForm, setShowDebtForm] = useState(false);
+  const [showPersonForm, setShowPersonForm] = useState(false);
 
   const {
     data: lentData,
@@ -203,6 +209,7 @@ export function P2PTab() {
         icon={Users}
         title={t("emptyStates.p2p.title")}
         description={t("emptyStates.p2p.description")}
+        action={{ label: "Add Debt", onClick: () => setShowDebtForm(true) }}
       />
     );
   }
@@ -223,6 +230,26 @@ export function P2PTab() {
         />
       </div>
 
+      {/* Add Buttons */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setShowDebtForm(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Add Debt
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowPersonForm(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+        >
+          <UserPlus className="h-4 w-4" />
+          Add Person
+        </button>
+      </div>
+
       {/* Person Cards */}
       <div className="space-y-3">
         {personGroups.map((group) => (
@@ -240,6 +267,8 @@ export function P2PTab() {
           />
         ))}
       </div>
+      <P2PDebtForm open={showDebtForm} onOpenChange={setShowDebtForm} />
+      <PersonForm open={showPersonForm} onOpenChange={setShowPersonForm} />
     </div>
   );
 }
