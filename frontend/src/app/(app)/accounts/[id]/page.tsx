@@ -10,6 +10,7 @@ import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useCategories } from "@/hooks/use-categories";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { AccountBalanceHeader } from "@/components/accounts/account-balance-header";
+import { AccountObligationsSection } from "@/components/accounts/account-obligations-section";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
 import { TransactionForm } from "@/components/transactions/transaction-form";
@@ -143,6 +144,13 @@ export default function AccountDetailPage() {
     <div className="space-y-6">
       {/* Account header — breadcrumb, name, balance, stats */}
       <AccountBalanceHeader account={account} />
+
+      {/* Obligations section — only renders for accounts with linked debts/installments */}
+      <AccountObligationsSection
+        accountId={account.id}
+        accountType={account.type}
+        currency={account.currency}
+      />
 
       {/* Transactions section */}
       <div>
