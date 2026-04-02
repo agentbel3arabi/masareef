@@ -40,15 +40,22 @@ export function CardInstallmentsTab() {
 
   if (plans.length === 0) {
     return (
-      <EmptyState
-        icon={CreditCard}
-        title={t("emptyStates.installments.title")}
-        description={t("emptyStates.installments.description")}
-        action={{
-          label: t("debts.actions.addInstallment"),
-          onClick: () => setShowCreateForm(true),
-        }}
-      />
+      <>
+        <EmptyState
+          icon={CreditCard}
+          title={t("emptyStates.installments.title")}
+          description={t("emptyStates.installments.description")}
+          action={{
+            label: t("debts.actions.addInstallment"),
+            onClick: () => setShowCreateForm(true),
+          }}
+        />
+        <InstallmentForm
+          open={showCreateForm}
+          onOpenChange={setShowCreateForm}
+          defaultType="credit_card"
+        />
+      </>
     );
   }
 

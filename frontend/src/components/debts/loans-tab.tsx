@@ -55,12 +55,15 @@ export function LoansTab() {
 
   if (loans.length === 0) {
     return (
-      <EmptyState
-        icon={Landmark}
-        title={t("emptyStates.debts.title")}
-        description={t("emptyStates.debts.description")}
-        action={{ label: t("debts.actions.addLoan"), onClick: () => setShowCreateForm(true) }}
-      />
+      <>
+        <EmptyState
+          icon={Landmark}
+          title={t("emptyStates.debts.title")}
+          description={t("emptyStates.debts.description")}
+          action={{ label: t("debts.actions.addLoan"), onClick: () => setShowCreateForm(true) }}
+        />
+        <BankLoanForm open={showCreateForm} onOpenChange={setShowCreateForm} />
+      </>
     );
   }
 

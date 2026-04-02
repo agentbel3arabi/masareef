@@ -164,12 +164,16 @@ export function P2PTab() {
 
   if (personGroups.length === 0) {
     return (
-      <EmptyState
-        icon={Users}
-        title={t("emptyStates.p2p.title")}
-        description={t("emptyStates.p2p.description")}
-        action={{ label: tActions("addDebt"), onClick: () => setShowDebtForm(true) }}
-      />
+      <>
+        <EmptyState
+          icon={Users}
+          title={t("emptyStates.p2p.title")}
+          description={t("emptyStates.p2p.description")}
+          action={{ label: tActions("addDebt"), onClick: () => setShowDebtForm(true) }}
+        />
+        <P2PDebtForm open={showDebtForm} onOpenChange={setShowDebtForm} />
+        <PersonForm open={showPersonForm} onOpenChange={setShowPersonForm} />
+      </>
     );
   }
 

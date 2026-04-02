@@ -43,15 +43,22 @@ export function StoreInstallmentsTab() {
 
   if (plans.length === 0) {
     return (
-      <EmptyState
-        icon={Store}
-        title={t("emptyStates.installments.title")}
-        description={t("emptyStates.installments.description")}
-        action={{
-          label: t("debts.actions.addInstallment"),
-          onClick: () => setShowCreateForm(true),
-        }}
-      />
+      <>
+        <EmptyState
+          icon={Store}
+          title={t("emptyStates.installments.title")}
+          description={t("emptyStates.installments.description")}
+          action={{
+            label: t("debts.actions.addInstallment"),
+            onClick: () => setShowCreateForm(true),
+          }}
+        />
+        <InstallmentForm
+          open={showCreateForm}
+          onOpenChange={setShowCreateForm}
+          defaultType="store"
+        />
+      </>
     );
   }
 
