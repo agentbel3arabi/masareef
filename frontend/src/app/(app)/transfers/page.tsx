@@ -75,7 +75,7 @@ export default function TransfersPage() {
             }}
           >
             <Trash2 className="h-3.5 w-3.5 me-1" />
-            {t("common.delete")} ({selectedTransferIds.size})
+            {t("common.delete.button")} ({selectedTransferIds.size})
           </Button>
           <Button variant="ghost" size="sm" onClick={() => { setBulkMode(false); setSelectedTransferIds(new Set()); }}>
             {t("common.cancel")}
@@ -163,7 +163,7 @@ export default function TransfersPage() {
             e.stopPropagation();
             setDeleteId(row.transfer_id);
           }}
-          aria-label={t("common.delete")}
+          aria-label={t("common.delete.button")}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -261,7 +261,7 @@ export default function TransfersPage() {
                 }
               }}
             >
-              {deleteTransfer.isPending ? t("common.loading") : t("common.delete")}
+              {deleteTransfer.isPending ? t("common.loading") : t("common.delete.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>

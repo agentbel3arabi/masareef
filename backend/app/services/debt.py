@@ -25,6 +25,7 @@ async def list_debts(
     status: str | None = None,
     page: int = 1,
     page_size: int = 50,
+    exclude_types: list[str] | None = None,
 ) -> tuple[list[Debt], int]:
     base = select(Debt).where(
         Debt.household_id == household_id,
@@ -37,6 +38,9 @@ async def list_debts(
     if debt_type:
         base = base.where(Debt.type == debt_type)
         count_base = count_base.where(Debt.type == debt_type)
+    if exclude_types:
+        base = base.where(Debt.type.notin_(exclude_types))
+        count_base = count_base.where(Debt.type.notin_(exclude_types))
     if status:
         base = base.where(Debt.status == status)
         count_base = count_base.where(Debt.status == status)
