@@ -34,6 +34,8 @@ const INSTALLMENT_TYPES: InstallmentType[] = [
   "financing_app",
 ];
 
+const FINANCING_PROVIDERS = ["ValU", "Souhoola", "Sympl", "Forsa", "Tru", "Contact", "Shahry"];
+
 const CURRENCY_CODES = Object.keys(CURRENCIES);
 
 export function InstallmentForm({
@@ -209,12 +211,30 @@ function InstallmentFormContent({
 
         <div className="space-y-2">
           <Label htmlFor="inst-name">{t("name")}</Label>
-          <Input
-            id="inst-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          {type === "financing_app" && !isEdit ? (
+            <>
+              <Input
+                id="inst-name"
+                list="provider-suggestions"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("selectProvider")}
+                required
+              />
+              <datalist id="provider-suggestions">
+                {FINANCING_PROVIDERS.map((p) => (
+                  <option key={p} value={p} />
+                ))}
+              </datalist>
+            </>
+          ) : (
+            <Input
+              id="inst-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          )}
         </div>
 
         <div className="space-y-2">

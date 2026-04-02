@@ -68,6 +68,7 @@ function P2PDebtFormContent({
   const [dueDate, setDueDate] = useState("");
   const [splitCount, setSplitCount] = useState("");
   const [notes, setNotes] = useState(initialData?.notes ?? "");
+  const [customSplits, setCustomSplits] = useState<{ amount: string; due_date: string }[]>([{ amount: "", due_date: "" }]);
 
   const [accountId, setAccountId] = useState("");
 
@@ -91,6 +92,7 @@ function P2PDebtFormContent({
     setDueDate("");
     setSplitCount("");
     setNotes("");
+    setCustomSplits([{ amount: "", due_date: "" }]);
     setAccountId("");
   };
 
@@ -111,6 +113,10 @@ function P2PDebtFormContent({
       if (!personId) return;
       if (repaymentMode === "equal_splits" && !splitCount) return;
       const selectedPersonName = selectedPerson?.name ?? "";
+      const exponent = CURRENCIES[currency]?.exponent ?? 2;
+      const splitsPayload = repaymentMode === "custom_splits"
+        ? customSplits.map((s) => ({ amount_minor: parseMajorToMinor(s.amount, exponent), due_date: s.due_date }))
+        : null;
       createMutation.mutate(
         {
           type: debtType,
@@ -118,18 +124,21 @@ function P2PDebtFormContent({
             debtType === "personal_lent"
               ? t("autoNameLent", { name: selectedPersonName })
               : t("autoNameBorrowed", { name: selectedPersonName }),
-          principal_minor: parseMajorToMinor(amount, CURRENCIES[currency]?.exponent ?? 2),
+          principal_minor: parseMajorToMinor(amount, exponent),
           currency,
           tenure_months:
             repaymentMode === "equal_splits" && splitCount
               ? parseInt(splitCount, 10)
-              : 1,
+              : repaymentMode === "custom_splits"
+                ? customSplits.length
+                : 1,
           start_date: new Date().toISOString().split("T")[0],
           person_id: parseInt(personId, 10),
           repayment_mode: repaymentMode,
           due_date: repaymentMode === "lump_sum" ? dueDate || null : null,
           split_count:
             repaymentMode === "equal_splits" ? parseInt(splitCount, 10) : null,
+          splits: splitsPayload,
           notes: notes || null,
           account_id: accountId ? parseInt(accountId, 10) : null,
         },
@@ -254,6 +263,7 @@ function P2PDebtFormContent({
               <SelectContent>
                 <SelectItem value="lump_sum">{tRepayment("lumpSum")}</SelectItem>
                 <SelectItem value="equal_splits">{tRepayment("equalSplits")}</SelectItem>
+                <SelectItem value="custom_splits">{tRepayment("customSplits")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -280,6 +290,60 @@ function P2PDebtFormContent({
               value={splitCount}
               onChange={(e) => setSplitCount(e.target.value)}
             />
+          </div>
+        )}
+
+        {!isEdit && repaymentMode === "custom_splits" && (
+          <div className="space-y-3">
+            {customSplits.map((split, idx) => (
+              <div key={idx} className="flex items-end gap-2">
+                <div className="flex-1 space-y-1">
+                  <Label>{t("splitAmount")}</Label>
+                  <Input
+                    type="number"
+                    step={String(Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2)))}
+                    value={split.amount}
+                    onChange={(e) => {
+                      const next = [...customSplits];
+                      next[idx] = { ...next[idx], amount: e.target.value };
+                      setCustomSplits(next);
+                    }}
+                    required
+                  />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <Label>{t("splitDate")}</Label>
+                  <Input
+                    type="date"
+                    value={split.due_date}
+                    onChange={(e) => {
+                      const next = [...customSplits];
+                      next[idx] = { ...next[idx], due_date: e.target.value };
+                      setCustomSplits(next);
+                    }}
+                    required
+                  />
+                </div>
+                {customSplits.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCustomSplits(customSplits.filter((_, i) => i !== idx))}
+                  >
+                    {t("removeSplit")}
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCustomSplits([...customSplits, { amount: "", due_date: "" }])}
+            >
+              {t("addSplit")}
+            </Button>
           </div>
         )}
 

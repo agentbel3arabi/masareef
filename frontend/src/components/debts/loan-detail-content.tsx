@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,11 +12,14 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { StatusBadge } from "@/components/debts/status-badge";
 import { RecordPaymentForm } from "@/components/debts/record-payment-form";
+import { BankLoanForm } from "@/components/debts/bank-loan-form";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import {
   useDebt,
   useAmortizationSchedule,
   useDebtPayments,
   useMarkDebtPaid,
+  useDeleteDebt,
 } from "@/hooks/use-debts";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
@@ -58,11 +63,14 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const tActions = useTranslations("debts.actions");
   const tLoan = useTranslations("debts.loan");
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const router = useRouter();
 
   const { data: debtRes, isLoading: debtLoading, error: debtError } = useDebt(debtId);
   const { data: scheduleRes, isLoading: scheduleLoading } = useAmortizationSchedule(debtId);
   const { data: paymentsRes, isLoading: paymentsLoading } = useDebtPayments(debtId);
   const markPaid = useMarkDebtPaid();
+  const deleteMutation = useDeleteDebt();
 
   // Loading
   if (debtLoading) return <LoanDetailSkeleton />;
@@ -120,6 +128,23 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             status={debt.status === "active" ? "active" : "completed"}
           />
           <Badge variant="outline">{aprPercent}% APR</Badge>
+          <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <DeleteConfirmation
+            itemName={debt.name}
+            onConfirm={() => {
+              deleteMutation.mutate(debtId, {
+                onSuccess: () => router.push("/debts"),
+              });
+            }}
+            isPending={deleteMutation.isPending}
+            trigger={
+              <Button variant="ghost" size="icon">
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            }
+          />
         </div>
       </div>
 
@@ -212,6 +237,8 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         debtType={debt.type}
         linkedAccountId={debt.linked_account_id}
       />
+
+      <BankLoanForm open={editOpen} onOpenChange={setEditOpen} initialData={debt} />
 
       {/* ── Amortization schedule ─────────────────────── */}
       <section className="space-y-3">

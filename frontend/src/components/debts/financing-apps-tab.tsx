@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Pencil, Smartphone, Receipt, Plus, Trash2 } from "lucide-react";
 import { useInstallments, useFinancingAppsSummary, useDeleteInstallment } from "@/hooks/use-installments";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -14,6 +14,7 @@ import type { InstallmentResponse } from "@/lib/types/debts";
 
 export function FinancingAppsTab() {
   const t = useTranslations();
+  const locale = useLocale();
   const { data: plansData, isLoading: plansLoading, error: plansError } =
     useInstallments({ type: "financing_app" });
   const { data: summaryData, isLoading: summaryLoading } =
@@ -125,12 +126,12 @@ export function FinancingAppsTab() {
               return (
                 <div key={app.account_id} className="space-y-3">
                   <h3 className="text-sm font-bold text-muted-foreground">
-                    {app.name} — {t("debts.financingApps.noActivePlans")}
+                    {locale === "ar" && app.name_ar ? app.name_ar : app.name} — {t("debts.financingApps.noActivePlans")}
                   </h3>
                   <div className="py-8 text-center border-2 border-dashed border-border rounded-xl bg-muted/20">
                     <Receipt className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      {t("debts.financingApps.noPlansYet", { name: app.name })}
+                      {t("debts.financingApps.noPlansYet", { name: locale === "ar" && app.name_ar ? app.name_ar : app.name })}
                     </p>
                   </div>
                 </div>
@@ -140,8 +141,7 @@ export function FinancingAppsTab() {
               <div key={app.account_id} className="space-y-3">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-bold text-foreground">
-                    {app.name}
-                    {app.name_ar ? ` (${app.name_ar})` : ""} —{" "}
+                    {locale === "ar" && app.name_ar ? app.name_ar : app.name} —{" "}
                     {t("debts.financingApps.activePlansLabel", { count: app.active_plans_count })}
                   </h3>
                   <span className="h-px flex-1 bg-border" />

@@ -6,6 +6,7 @@ import { useApiMutation } from "@/hooks/use-api-mutation";
 export interface Account {
   id: number;
   name: string;
+  name_ar: string | null;
   type: string;
   currency: string;
   balance_minor: number;

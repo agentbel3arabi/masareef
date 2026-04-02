@@ -745,7 +745,9 @@
       "paidPercent": "{percent}% مدفوع",
       "marking": "جاري التحديد…",
       "edit": "تعديل",
-      "delete": "حذف"
+      "delete": "حذف",
+      "deleteTitle": "حذف الدين",
+      "deleteDescription": "هل أنت متأكد من حذف هذا الدين؟ لا يمكن التراجع عن هذا الإجراء."
     },
     "form": {
       "loan": {
@@ -797,7 +799,12 @@
         "autoNameBorrowed": "اقتراض من {name}",
         "sourceAccount": "حساب المصدر",
         "destinationAccount": "حساب الوجهة",
-        "selectAccount": "اختر الحساب"
+        "selectAccount": "اختر الحساب",
+        "splitAmount": "المبلغ",
+        "splitDate": "التاريخ",
+        "addSplit": "إضافة قسط",
+        "removeSplit": "حذف",
+        "splitsSumError": "مجموع الأقساط يجب أن يساوي المبلغ الإجمالي"
       },
       "payment": {
         "title": "تسجيل دفعة",
@@ -837,7 +844,8 @@
         "saving": "جارِ الحفظ...",
         "comingSoon": "قريباً",
         "annualRate": "معدل الفائدة السنوي (%)",
-        "annualRateHint": "٠٪ للخطط بدون فوائد"
+        "annualRateHint": "٠٪ للخطط بدون فوائد",
+        "selectProvider": "اختر أو اكتب اسم مزود التمويل"
       }
     }
   },
