@@ -743,7 +743,9 @@
       "debtLoadError": "فشل تحميل تفاصيل الدين. يرجى المحاولة مرة أخرى.",
       "viewFullSchedule": "عرض الجدول الكامل ←",
       "paidPercent": "{percent}% مدفوع",
-      "marking": "جاري التحديد…"
+      "marking": "جاري التحديد…",
+      "edit": "تعديل",
+      "delete": "حذف"
     },
     "form": {
       "loan": {

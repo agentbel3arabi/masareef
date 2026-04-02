@@ -743,7 +743,9 @@
       "debtLoadError": "Failed to load debt details. Please try again.",
       "viewFullSchedule": "View Full Schedule →",
       "paidPercent": "{percent}% paid",
-      "marking": "Marking…"
+      "marking": "Marking…",
+      "edit": "Edit",
+      "delete": "Delete"
     },
     "form": {
       "loan": {

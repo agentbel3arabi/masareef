@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Store, ShoppingBag, CheckCircle2, ChevronDown, Plus } from "lucide-react";
-import { useInstallments } from "@/hooks/use-installments";
+import { Store, ShoppingBag, CheckCircle2, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
+import { useInstallments, useDeleteInstallment } from "@/hooks/use-installments";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { StatusBadge } from "@/components/debts/status-badge";
 import { InstallmentForm } from "@/components/debts/installment-form";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import type { InstallmentResponse } from "@/lib/types/debts";
 
@@ -20,6 +21,9 @@ export function StoreInstallmentsTab() {
   const { data, isLoading, error } = useInstallments({ type: "store" });
   const [showCompleted, setShowCompleted] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<InstallmentResponse | null>(null);
+  const deleteMutation = useDeleteInstallment();
+  const tDetail = useTranslations("debts.detail");
 
   if (isLoading) {
     return (
@@ -111,7 +115,33 @@ export function StoreInstallmentsTab() {
           </h3>
           <div className="space-y-4">
             {active.map((plan) => (
-              <StorePlanCard key={plan.id} plan={plan} />
+              <div key={plan.id} className="relative group">
+                <StorePlanCard plan={plan} />
+                <div className="absolute top-2 end-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={() => setEditingPlan(plan)}
+                    className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    aria-label={tDetail("edit")}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <DeleteConfirmation
+                    itemName={plan.name}
+                    onConfirm={() => deleteMutation.mutate(plan.id)}
+                    isPending={deleteMutation.isPending}
+                    trigger={
+                      <button
+                        type="button"
+                        className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        aria-label={tDetail("delete")}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    }
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </section>
@@ -171,6 +201,15 @@ export function StoreInstallmentsTab() {
         onOpenChange={setShowCreateForm}
         defaultType="store"
       />
+
+      {editingPlan && (
+        <InstallmentForm
+          open={!!editingPlan}
+          onOpenChange={(open) => { if (!open) setEditingPlan(null); }}
+          initialData={editingPlan}
+          defaultType="store"
+        />
+      )}
     </div>
   );
 }

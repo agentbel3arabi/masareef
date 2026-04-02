@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Smartphone, Receipt, Plus } from "lucide-react";
-import { useInstallments, useFinancingAppsSummary } from "@/hooks/use-installments";
+import { Pencil, Smartphone, Receipt, Plus, Trash2 } from "lucide-react";
+import { useInstallments, useFinancingAppsSummary, useDeleteInstallment } from "@/hooks/use-installments";
 import { EmptyState } from "@/components/shared/empty-state";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { FinancingAppProviderCard } from "@/components/debts/financing-app-provider-card";
 import { InstallmentPlanRow } from "@/components/debts/installment-plan-row";
 import { InstallmentForm } from "@/components/debts/installment-form";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import type { InstallmentResponse } from "@/lib/types/debts";
 
 export function FinancingAppsTab() {
@@ -18,6 +19,9 @@ export function FinancingAppsTab() {
   const { data: summaryData, isLoading: summaryLoading } =
     useFinancingAppsSummary();
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<InstallmentResponse | null>(null);
+  const deleteMutation = useDeleteInstallment();
+  const tDetail = useTranslations("debts.detail");
 
   const isLoading = plansLoading || summaryLoading;
 
@@ -144,11 +148,36 @@ export function FinancingAppsTab() {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                   {appPlans.map((plan) => (
-                    <InstallmentPlanRow
-                      key={plan.id}
-                      plan={plan}
-                      showAccentBorder={false}
-                    />
+                    <div key={plan.id} className="relative group">
+                      <InstallmentPlanRow
+                        plan={plan}
+                        showAccentBorder={false}
+                      />
+                      <div className="absolute top-2 end-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => setEditingPlan(plan)}
+                          className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          aria-label={tDetail("edit")}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <DeleteConfirmation
+                          itemName={plan.name}
+                          onConfirm={() => deleteMutation.mutate(plan.id)}
+                          isPending={deleteMutation.isPending}
+                          trigger={
+                            <button
+                              type="button"
+                              className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              aria-label={tDetail("delete")}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          }
+                        />
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -199,6 +228,15 @@ export function FinancingAppsTab() {
         onOpenChange={setShowCreateForm}
         defaultType="financing_app"
       />
+
+      {editingPlan && (
+        <InstallmentForm
+          open={!!editingPlan}
+          onOpenChange={(open) => { if (!open) setEditingPlan(null); }}
+          initialData={editingPlan}
+          defaultType="financing_app"
+        />
+      )}
     </div>
   );
 }

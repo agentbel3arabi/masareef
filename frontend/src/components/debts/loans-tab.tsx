@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { Landmark, Building2, CheckCircle2, ChevronDown, Plus } from "lucide-react";
+import { Landmark, Building2, CheckCircle2, ChevronDown, Plus, Pencil, Trash2 } from "lucide-react";
 import { BankLoanForm } from "@/components/debts/bank-loan-form";
-import { useDebts, useAmortizationSchedule } from "@/hooks/use-debts";
+import { useDebts, useAmortizationSchedule, useDeleteDebt } from "@/hooks/use-debts";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { StatusBadge } from "@/components/debts/status-badge";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import type { DebtResponse, ScheduleRowStatus } from "@/lib/types/debts";
 
@@ -32,6 +33,8 @@ export function LoansTab() {
   const [showCompleted, setShowCompleted] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingLoan, setEditingLoan] = useState<DebtResponse | null>(null);
+  const deleteMutation = useDeleteDebt();
 
   if (isLoading) {
     return (
@@ -126,6 +129,9 @@ export function LoansTab() {
                 onToggle={() =>
                   setExpandedId(expandedId === loan.id ? null : loan.id)
                 }
+                onEdit={() => setEditingLoan(loan)}
+                onDelete={() => deleteMutation.mutate(loan.id)}
+                isDeleting={deleteMutation.isPending}
                 locale={locale}
               />
             ))}
@@ -183,6 +189,13 @@ export function LoansTab() {
         </section>
       )}
       <BankLoanForm open={showCreateForm} onOpenChange={setShowCreateForm} />
+      {editingLoan && (
+        <BankLoanForm
+          open={!!editingLoan}
+          onOpenChange={(open) => { if (!open) setEditingLoan(null); }}
+          initialData={editingLoan}
+        />
+      )}
     </div>
   );
 }
@@ -192,11 +205,17 @@ function LoanCard({
   loan,
   expanded,
   onToggle,
+  onEdit,
+  onDelete,
+  isDeleting,
   locale,
 }: {
   loan: DebtResponse;
   expanded: boolean;
   onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  isDeleting: boolean;
   locale: string;
 }) {
   const tLoan = useTranslations("debts.loan");
@@ -358,6 +377,32 @@ function LoanCard({
               locale={locale}
               currency={loan.currency}
             />
+
+            {/* Action buttons */}
+            <div className="flex gap-2 pt-2 border-t border-border" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={onEdit}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted text-foreground hover:bg-muted/80 transition-colors"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                {tDetail("edit")}
+              </button>
+              <DeleteConfirmation
+                itemName={loan.name}
+                onConfirm={onDelete}
+                isPending={isDeleting}
+                trigger={
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {tDetail("delete")}
+                  </button>
+                }
+              />
+            </div>
           </div>
         )}
       </div>

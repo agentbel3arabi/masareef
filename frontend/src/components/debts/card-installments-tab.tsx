@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CreditCard, Plus } from "lucide-react";
-import { useInstallments } from "@/hooks/use-installments";
+import { CreditCard, Pencil, Plus, Trash2 } from "lucide-react";
+import { useInstallments, useDeleteInstallment } from "@/hooks/use-installments";
 import { useAccounts } from "@/hooks/use-accounts";
 import { EmptyState } from "@/components/shared/empty-state";
 import { CardUtilizationSummary } from "@/components/debts/card-utilization-summary";
 import { InstallmentPlanRow } from "@/components/debts/installment-plan-row";
 import { InstallmentForm } from "@/components/debts/installment-form";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import type { InstallmentResponse } from "@/lib/types/debts";
 
 export function CardInstallmentsTab() {
@@ -17,6 +18,9 @@ export function CardInstallmentsTab() {
   const { data: accountsResponse } = useAccounts();
   const accounts = accountsResponse?.data ?? [];
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<InstallmentResponse | null>(null);
+  const deleteMutation = useDeleteInstallment();
+  const tDetail = useTranslations("debts.detail");
 
   if (isLoading) {
     return (
@@ -111,7 +115,33 @@ export function CardInstallmentsTab() {
                 </div>
                 <div className="space-y-3">
                   {cardPlans.map((plan) => (
-                    <InstallmentPlanRow key={plan.id} plan={plan} />
+                    <div key={plan.id} className="relative group">
+                      <InstallmentPlanRow plan={plan} />
+                      <div className="absolute top-2 end-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => setEditingPlan(plan)}
+                          className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          aria-label={tDetail("edit")}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <DeleteConfirmation
+                          itemName={plan.name}
+                          onConfirm={() => deleteMutation.mutate(plan.id)}
+                          isPending={deleteMutation.isPending}
+                          trigger={
+                            <button
+                              type="button"
+                              className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              aria-label={tDetail("delete")}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          }
+                        />
+                      </div>
+                    </div>
                   ))}
                 </div>
               </section>
@@ -126,7 +156,33 @@ export function CardInstallmentsTab() {
             </h4>
             <div className="space-y-3">
               {grouped.get(0)!.map((plan) => (
-                <InstallmentPlanRow key={plan.id} plan={plan} />
+                <div key={plan.id} className="relative group">
+                  <InstallmentPlanRow plan={plan} />
+                  <div className="absolute top-2 end-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      type="button"
+                      onClick={() => setEditingPlan(plan)}
+                      className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      aria-label={tDetail("edit")}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                    <DeleteConfirmation
+                      itemName={plan.name}
+                      onConfirm={() => deleteMutation.mutate(plan.id)}
+                      isPending={deleteMutation.isPending}
+                      trigger={
+                        <button
+                          type="button"
+                          className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          aria-label={tDetail("delete")}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      }
+                    />
+                  </div>
+                </div>
               ))}
             </div>
           </section>
@@ -138,6 +194,15 @@ export function CardInstallmentsTab() {
         onOpenChange={setShowCreateForm}
         defaultType="credit_card"
       />
+
+      {editingPlan && (
+        <InstallmentForm
+          open={!!editingPlan}
+          onOpenChange={(open) => { if (!open) setEditingPlan(null); }}
+          initialData={editingPlan}
+          defaultType="credit_card"
+        />
+      )}
     </div>
   );
 }

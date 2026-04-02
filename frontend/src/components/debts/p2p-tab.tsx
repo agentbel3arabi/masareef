@@ -11,8 +11,11 @@ import {
   Calendar,
   Plus,
   UserPlus,
+  Pencil,
+  Trash2,
 } from "lucide-react";
-import { useDebts } from "@/hooks/use-debts";
+import { useDebts, useDeleteDebt } from "@/hooks/use-debts";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import { usePersons } from "@/hooks/use-persons";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
@@ -51,11 +54,14 @@ const STATUS_MAP: Record<string, "active" | "completed"> = {
 export function P2PTab() {
   const t = useTranslations();
   const tActions = useTranslations("debts.actions");
+  const tDetail = useTranslations("debts.detail");
   const tPersons = useTranslations("persons");
   const locale = useLocale();
   const [expandedPersonId, setExpandedPersonId] = useState<number | null>(null);
   const [showDebtForm, setShowDebtForm] = useState(false);
   const [showPersonForm, setShowPersonForm] = useState(false);
+  const [editingDebt, setEditingDebt] = useState<DebtResponse | null>(null);
+  const deleteMutation = useDeleteDebt();
 
   const {
     data: lentData,
@@ -225,13 +231,24 @@ export function P2PTab() {
                 expandedPersonId === group.personId ? null : group.personId,
               )
             }
+            onEdit={(debt) => setEditingDebt(debt)}
+            onDelete={(id) => deleteMutation.mutate(id)}
+            isDeleting={deleteMutation.isPending}
             t={t}
+            tDetail={tDetail}
             locale={locale}
           />
         ))}
       </div>
       <P2PDebtForm open={showDebtForm} onOpenChange={setShowDebtForm} />
       <PersonForm open={showPersonForm} onOpenChange={setShowPersonForm} />
+      {editingDebt && (
+        <P2PDebtForm
+          open={!!editingDebt}
+          onOpenChange={(open) => { if (!open) setEditingDebt(null); }}
+          initialData={editingDebt}
+        />
+      )}
     </div>
   );
 }
@@ -244,7 +261,11 @@ interface PersonDebtCardProps {
   group: PersonGroup;
   expanded: boolean;
   onToggle: () => void;
+  onEdit: (debt: DebtResponse) => void;
+  onDelete: (id: number) => void;
+  isDeleting: boolean;
   t: ReturnType<typeof useTranslations>;
+  tDetail: ReturnType<typeof useTranslations>;
   locale: string;
 }
 
@@ -252,7 +273,11 @@ function PersonDebtCard({
   group,
   expanded,
   onToggle,
+  onEdit,
+  onDelete,
+  isDeleting,
   t,
+  tDetail,
   locale,
 }: PersonDebtCardProps) {
   const { person, lent, borrowed, netRemaining, defaultCurrency } = group;
@@ -340,6 +365,10 @@ function PersonDebtCard({
               debts={lent}
               icon={ArrowUpRight}
               iconClass="text-emerald-500"
+              onEdit={onEdit}
+              onDelete={onDelete}
+              isDeleting={isDeleting}
+              tDetail={tDetail}
               locale={locale}
             />
           )}
@@ -351,6 +380,10 @@ function PersonDebtCard({
               debts={borrowed}
               icon={ArrowDownLeft}
               iconClass="text-rose-500"
+              onEdit={onEdit}
+              onDelete={onDelete}
+              isDeleting={isDeleting}
+              tDetail={tDetail}
               locale={locale}
             />
           )}
@@ -370,6 +403,10 @@ interface DebtSectionProps {
   debts: DebtResponse[];
   icon: typeof ArrowUpRight;
   iconClass: string;
+  onEdit: (debt: DebtResponse) => void;
+  onDelete: (id: number) => void;
+  isDeleting: boolean;
+  tDetail: ReturnType<typeof useTranslations>;
   locale: string;
 }
 
@@ -378,6 +415,10 @@ function DebtSection({
   debts,
   icon: Icon,
   iconClass,
+  onEdit,
+  onDelete,
+  isDeleting,
+  tDetail,
   locale,
 }: DebtSectionProps) {
   return (
@@ -411,6 +452,28 @@ function DebtSection({
                 )}
               </span>
             )}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onEdit(debt); }}
+              className="inline-flex items-center p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              aria-label={tDetail("edit")}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+            <DeleteConfirmation
+              itemName={debt.name}
+              onConfirm={() => onDelete(debt.id)}
+              isPending={isDeleting}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex items-center p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  aria-label={tDetail("delete")}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              }
+            />
           </div>
         ))}
       </div>
