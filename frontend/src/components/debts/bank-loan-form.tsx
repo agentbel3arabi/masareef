@@ -75,7 +75,11 @@ function BankLoanFormContent({
   const updateMutation = useUpdateDebt();
   const { data: accountsData } = useAccounts();
   const accounts = (accountsData?.data ?? []).filter(
-    (a) => a.type === "savings" || a.type === "checking"
+    (a) => a.type === "bank_account"
+  );
+
+  const selectedAccount = accounts.find(
+    (a) => String(a.id) === linkedAccountId
   );
 
   const resetFields = () => {
@@ -233,7 +237,11 @@ function BankLoanFormContent({
           <Label>{t("linkedAccount")}</Label>
           <Select value={linkedAccountId} onValueChange={(v) => setLinkedAccountId(v ?? "")}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={t("selectAccount")} />
+              <SelectValue placeholder={t("selectAccount")}>
+                {linkedAccountId === "__none__"
+                  ? t("none")
+                  : selectedAccount?.name}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none__">{t("none")}</SelectItem>

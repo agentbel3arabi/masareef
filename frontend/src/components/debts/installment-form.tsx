@@ -111,6 +111,10 @@ function InstallmentFormContent({
     return [];
   }, [accountsData, type]);
 
+  const selectedAccount = filteredAccounts.find(
+    (a) => String(a.id) === sourceAccountId
+  );
+
   const sourceRequired = type === "credit_card" || type === "financing_app";
 
   const resetFields = () => {
@@ -157,7 +161,7 @@ function InstallmentFormContent({
           total_amount_minor: parseMajorToMinor(totalAmount, exponent),
           monthly_amount_minor: parseMajorToMinor(monthlyAmount, exponent),
           total_months: parseInt(totalMonths, 10),
-          start_month: startMonth,
+          start_month: `${startMonth}-01`,
           currency,
         },
         {
@@ -299,7 +303,9 @@ function InstallmentFormContent({
                 onValueChange={(v) => setSourceAccountId(v ?? "")}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("selectAccount")} />
+                  <SelectValue placeholder={t("selectAccount")}>
+                    {selectedAccount?.name}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {!sourceRequired && (

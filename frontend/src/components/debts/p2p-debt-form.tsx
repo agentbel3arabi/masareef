@@ -141,7 +141,9 @@ function P2PDebtFormContent({
             <Label>{t("person")}</Label>
             <Select value={personId} onValueChange={(v) => setPersonId(v ?? "")}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("selectPerson")} />
+                <SelectValue placeholder={t("selectPerson")}>
+                  {selectedPerson?.name}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {persons.map((p) => (
