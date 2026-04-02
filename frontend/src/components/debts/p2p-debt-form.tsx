@@ -28,6 +28,29 @@ const CURRENCY_CODES = Object.keys(CURRENCIES);
 
 export function P2PDebtForm({ open, onOpenChange, initialData }: P2PDebtFormProps) {
   const t = useTranslations("debts.form.p2p");
+  const isEdit = !!initialData;
+
+  return (
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? t("editTitle") : t("title")}
+      description={t("description")}
+    >
+      <P2PDebtFormContent
+        key={initialData?.id ?? "new"}
+        initialData={initialData}
+        onOpenChange={onOpenChange}
+      />
+    </FormSheet>
+  );
+}
+
+function P2PDebtFormContent({
+  initialData,
+  onOpenChange,
+}: Omit<P2PDebtFormProps, "open">) {
+  const t = useTranslations("debts.form.p2p");
   const tRepayment = useTranslations("debts.p2p");
   const isEdit = !!initialData;
 
@@ -109,13 +132,7 @@ export function P2PDebtForm({ open, onOpenChange, initialData }: P2PDebtFormProp
   };
 
   return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={isEdit ? t("editTitle") : t("title")}
-      description={t("description")}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
         {!isEdit && (
           <div className="space-y-2">
             <Label>{t("person")}</Label>
@@ -246,6 +263,5 @@ export function P2PDebtForm({ open, onOpenChange, initialData }: P2PDebtFormProp
           {createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
-    </FormSheet>
   );
 }

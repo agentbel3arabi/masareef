@@ -30,6 +30,29 @@ export function BankLoanForm({ open, onOpenChange, initialData }: BankLoanFormPr
   const t = useTranslations("debts.form.loan");
   const isEdit = !!initialData;
 
+  return (
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? t("editTitle") : t("title")}
+      description={t("description")}
+    >
+      <BankLoanFormContent
+        key={initialData?.id ?? "new"}
+        initialData={initialData}
+        onOpenChange={onOpenChange}
+      />
+    </FormSheet>
+  );
+}
+
+function BankLoanFormContent({
+  initialData,
+  onOpenChange,
+}: Omit<BankLoanFormProps, "open">) {
+  const t = useTranslations("debts.form.loan");
+  const isEdit = !!initialData;
+
   const [name, setName] = useState(initialData?.name ?? "");
   const [institution, setInstitution] = useState(initialData?.institution ?? "");
   const [currency, setCurrency] = useState(initialData?.currency ?? "EGP");
@@ -115,13 +138,7 @@ export function BankLoanForm({ open, onOpenChange, initialData }: BankLoanFormPr
   };
 
   return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={isEdit ? t("editTitle") : t("title")}
-      description={t("description")}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="loan-name">{t("name")}</Label>
           <Input
@@ -243,6 +260,5 @@ export function BankLoanForm({ open, onOpenChange, initialData }: BankLoanFormPr
           {createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
-    </FormSheet>
   );
 }

@@ -45,6 +45,31 @@ export function InstallmentForm({
   const t = useTranslations("debts.form.installment");
   const isEdit = !!initialData;
 
+  return (
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? t("editTitle") : t("title")}
+      description={isEdit ? t("editDescription") : t("description")}
+    >
+      <InstallmentFormContent
+        key={initialData?.id ?? "new"}
+        initialData={initialData}
+        defaultType={defaultType}
+        onOpenChange={onOpenChange}
+      />
+    </FormSheet>
+  );
+}
+
+function InstallmentFormContent({
+  initialData,
+  defaultType,
+  onOpenChange,
+}: Omit<InstallmentFormProps, "open">) {
+  const t = useTranslations("debts.form.installment");
+  const isEdit = !!initialData;
+
   const [type, setType] = useState<InstallmentType>(
     initialData?.type ?? defaultType ?? "credit_card"
   );
@@ -148,13 +173,7 @@ export function InstallmentForm({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={isEdit ? t("editTitle") : t("title")}
-      description={isEdit ? t("editDescription") : t("description")}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
         {!isEdit && (
           <div className="space-y-2">
             <Label>{t("type")}</Label>
@@ -301,6 +320,5 @@ export function InstallmentForm({
           {isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
-    </FormSheet>
   );
 }

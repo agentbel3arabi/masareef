@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactElement } from "react";
 import { useTranslations } from "next-intl";
 import {
   AlertDialog,
@@ -22,7 +23,7 @@ interface DeleteConfirmationProps {
   /** Whether the delete operation is in progress. */
   isPending?: boolean;
   /** Custom trigger element. Defaults to a red "Delete" button. */
-  trigger?: React.ReactElement;
+  trigger?: ReactElement;
 }
 
 export function DeleteConfirmation({

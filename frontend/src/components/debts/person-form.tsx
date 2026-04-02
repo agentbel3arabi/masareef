@@ -31,6 +31,30 @@ const RELATIONSHIPS: PersonRelationship[] = [
 ];
 
 export function PersonForm({ open, onOpenChange, initialData }: PersonFormProps) {
+  const tForm = useTranslations("persons.form");
+  const isEdit = !!initialData;
+
+  return (
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? tForm("editTitle") : tForm("title")}
+      description={isEdit ? tForm("editDescription") : tForm("description")}
+    >
+      {/* key forces remount when switching between create/edit or different items */}
+      <PersonFormContent
+        key={initialData?.id ?? "new"}
+        initialData={initialData}
+        onOpenChange={onOpenChange}
+      />
+    </FormSheet>
+  );
+}
+
+function PersonFormContent({
+  initialData,
+  onOpenChange,
+}: Omit<PersonFormProps, "open">) {
   const t = useTranslations("persons");
   const tForm = useTranslations("persons.form");
   const isEdit = !!initialData;
@@ -94,13 +118,7 @@ export function PersonForm({ open, onOpenChange, initialData }: PersonFormProps)
   };
 
   return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={isEdit ? tForm("editTitle") : tForm("title")}
-      description={tForm("description")}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="person-name">{t("name")}</Label>
           <Input
@@ -171,6 +189,5 @@ export function PersonForm({ open, onOpenChange, initialData }: PersonFormProps)
           {createMutation.isPending || updateMutation.isPending ? tForm("saving") : isEdit ? tForm("update") : tForm("submit")}
         </Button>
       </form>
-    </FormSheet>
   );
 }

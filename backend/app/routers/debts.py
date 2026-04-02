@@ -97,8 +97,14 @@ async def list_debts(
 ) -> SuccessResponse:
     if role == HouseholdRole.CHILD and type in ("personal_lent", "personal_borrowed"):
         raise HTTPException(status_code=403, detail="Children cannot access P2P debts")
+    # CHILD users must never see P2P debts even in unfiltered lists
+    exclude = (
+        ["personal_lent", "personal_borrowed"]
+        if role == HouseholdRole.CHILD and type is None
+        else None
+    )
     debts, total = await debt_service.list_debts(
-        session, household_id, type, status, page, page_size
+        session, household_id, type, status, page, page_size, exclude_types=exclude
     )
     totals = await debt_service.batch_compute_debt_totals(
         session, [(d.id, d.principal_minor) for d in debts]
