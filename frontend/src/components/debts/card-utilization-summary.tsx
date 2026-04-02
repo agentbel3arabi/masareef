@@ -41,10 +41,10 @@ export function CardUtilizationSummary({
 
   const utilLabel =
     utilPct < 50
-      ? "Healthy"
+      ? t("healthy")
       : utilPct < 80
-        ? "Moderate"
-        : "High";
+        ? t("moderate")
+        : t("high");
 
   const circumference = 2 * Math.PI * 40;
   const offset = circumference - (utilPct / 100) * circumference;
@@ -86,7 +86,7 @@ export function CardUtilizationSummary({
           </div>
           <div>
             <p className="text-[10px] text-muted-foreground font-bold uppercase">
-              Committed
+              {t("committed")}
             </p>
             <MoneyDisplay
               amount={totalCommitted}

@@ -93,6 +93,8 @@ const STATUS_MAP: Record<string, "active" | "completed"> = {
 
 export function P2PTab() {
   const t = useTranslations();
+  const tActions = useTranslations("debts.actions");
+  const tPersons = useTranslations("persons");
   const locale = useLocale();
   const [expandedPersonId, setExpandedPersonId] = useState<number | null>(null);
   const [showDebtForm, setShowDebtForm] = useState(false);
@@ -209,7 +211,7 @@ export function P2PTab() {
         icon={Users}
         title={t("emptyStates.p2p.title")}
         description={t("emptyStates.p2p.description")}
-        action={{ label: "Add Debt", onClick: () => setShowDebtForm(true) }}
+        action={{ label: tActions("addDebt"), onClick: () => setShowDebtForm(true) }}
       />
     );
   }
@@ -238,7 +240,7 @@ export function P2PTab() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Add Debt
+          {tActions("addDebt")}
         </button>
         <button
           type="button"
@@ -246,7 +248,7 @@ export function P2PTab() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
         >
           <UserPlus className="h-4 w-4" />
-          Add Person
+          {tPersons("form.title")}
         </button>
       </div>
 

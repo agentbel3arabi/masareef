@@ -601,7 +601,10 @@
       "completed": "Completed",
       "paid": "Paid",
       "overdue": "Overdue",
-      "upcoming": "Upcoming"
+      "upcoming": "Upcoming",
+      "defaulted": "Defaulted",
+      "pending": "Pending",
+      "settled": "Settled"
     },
     "loan": {
       "monthlyPayment": "Monthly Payment",
@@ -611,7 +614,13 @@
       "paid": "{paid} of {total} paid",
       "institution": "Institution",
       "startDate": "Start Date",
-      "linkedAccount": "Linked Account"
+      "linkedAccount": "Linked Account",
+      "activeLoans": "Active Loans",
+      "completedLoans": "Completed Loans",
+      "principal": "Principal",
+      "amortization": "Amortization Schedule",
+      "viewDetails": "View Details",
+      "tenureLabel": "Tenure"
     },
     "p2p": {
       "lent": "You lent",
@@ -620,14 +629,30 @@
       "noDebts": "No active debts",
       "lumpSum": "Lump Sum",
       "equalSplits": "Equal Splits",
-      "customSplits": "Custom Splits"
+      "customSplits": "Custom Splits",
+      "totalLent": "Total Lent",
+      "totalBorrowed": "Total Borrowed",
+      "activePeople": "Active People",
+      "relationship": "Relationship",
+      "debtsWithPerson": "Debts with {name}",
+      "splitSchedule": "Split Schedule",
+      "paymentHistory": "Payment History"
     },
     "installment": {
       "monthlyAmount": "Monthly",
-      "totalAmount": "Total",
+      "totalAmount": "Total Amount",
       "months": "{paid}/{total} months",
       "merchant": "Merchant",
-      "sourceAccount": "Source Account"
+      "sourceAccount": "Source Account",
+      "viewDetails": "View Details",
+      "activeInstallments": "Active Installments",
+      "completedPlans": "Completed Plans",
+      "progress": "Progress",
+      "remaining": "Remaining",
+      "duration": "Duration",
+      "totalPaid": "total paid",
+      "monthsLabel": "{count} Months",
+      "monthlyPayment": "Monthly Payment"
     },
     "financingApps": {
       "creditLimit": "Credit Limit",
@@ -637,7 +662,11 @@
       "activePlans": "Active Plans",
       "monthlyCommitment": "Monthly Commitment",
       "totalMonthly": "Total Monthly (All Apps)",
-      "totalRemaining": "Total Remaining (All Apps)"
+      "totalRemaining": "Total Remaining (All Apps)",
+      "healthy": "Healthy",
+      "moderate": "Moderate",
+      "high": "High",
+      "committed": "Committed"
     },
     "actions": {
       "addLoan": "Add Loan",
@@ -647,6 +676,90 @@
       "viewSchedule": "View Schedule",
       "markPaid": "Mark as Paid",
       "complete": "Mark Complete"
+    },
+    "detail": {
+      "backToDebts": "Back to Debts",
+      "backToLoans": "Back to Loans",
+      "backToP2P": "Back to P2P Debts",
+      "totalAmount": "Total Amount",
+      "paidAmount": "Paid",
+      "totalPaid": "Total Paid",
+      "remainingAmount": "Remaining",
+      "amortizationSchedule": "Amortization Schedule",
+      "paymentHistory": "Payment History",
+      "splitSchedule": "Split Schedule",
+      "lumpSumPayment": "Lump Sum Payment",
+      "dueDate": "Due Date",
+      "month": "Month",
+      "payment": "Payment",
+      "principal": "Principal",
+      "interest": "Interest",
+      "balance": "Balance",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status",
+      "notes": "Notes",
+      "noPayments": "No payments recorded yet.",
+      "noSchedule": "No amortization schedule available.",
+      "noSplits": "No splits available.",
+      "repaymentProgress": "Repayment Progress",
+      "lent": "Lent",
+      "borrowed": "Borrowed",
+      "notFound": "Loan not found.",
+      "debtNotFound": "Debt not found.",
+      "loadError": "Failed to load loan details. Please try again.",
+      "debtLoadError": "Failed to load debt details. Please try again.",
+      "viewFullSchedule": "View Full Schedule →",
+      "paidPercent": "{percent}% paid",
+      "marking": "Marking…"
+    },
+    "form": {
+      "loan": {
+        "title": "Add Bank Loan",
+        "description": "Create a new bank loan record.",
+        "name": "Loan Name",
+        "namePlaceholder": "e.g. Car Loan",
+        "institution": "Institution",
+        "institutionPlaceholder": "e.g. National Bank",
+        "principal": "Principal Amount",
+        "rate": "Annual Rate (%)",
+        "tenure": "Tenure (months)",
+        "startDate": "Start Date",
+        "currency": "Currency",
+        "selectCurrency": "Select currency",
+        "linkedAccount": "Linked Account",
+        "selectAccount": "Select account",
+        "notes": "Notes",
+        "submit": "Add Loan",
+        "saving": "Saving..."
+      },
+      "p2p": {
+        "title": "Add Personal Debt",
+        "description": "Record a personal loan or borrowing.",
+        "person": "Person",
+        "selectPerson": "Select person",
+        "type": "Type",
+        "lent": "I Lent",
+        "borrowed": "I Borrowed",
+        "amount": "Amount",
+        "currency": "Currency",
+        "selectCurrency": "Select currency",
+        "repaymentMode": "Repayment Mode",
+        "dueDate": "Due Date",
+        "splitCount": "Number of Splits",
+        "notes": "Notes",
+        "submit": "Add Debt",
+        "saving": "Saving..."
+      },
+      "payment": {
+        "title": "Record Payment",
+        "description": "Record a payment for this debt.",
+        "date": "Payment Date",
+        "amount": "Amount",
+        "notes": "Notes",
+        "submit": "Record Payment",
+        "saving": "Saving..."
+      }
     }
   },
   "persons": {
@@ -663,6 +776,13 @@
       "colleague": "Colleague",
       "business": "Business",
       "other": "Other"
+    },
+    "form": {
+      "title": "Add Person",
+      "description": "Add a person for tracking personal debts.",
+      "selectRelationship": "Select relationship",
+      "submit": "Add Person",
+      "saving": "Saving..."
     }
   },
   "installments": {

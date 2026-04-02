@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
@@ -8,15 +9,17 @@ interface StatusBadgeProps {
   className?: string;
 }
 
+const STATUS_KEY_MAP: Record<StatusBadgeProps["status"], string> = {
+  active: "active",
+  completed: "completed",
+  overdue: "overdue",
+  settled: "settled",
+  defaulted: "defaulted",
+  pending: "pending",
+};
+
 export function StatusBadge({ status, className }: StatusBadgeProps): React.ReactElement {
-  const statusDisplayNames: Record<StatusBadgeProps["status"], string> = {
-    active: "Active",
-    completed: "Completed",
-    overdue: "Overdue",
-    settled: "Settled",
-    defaulted: "Defaulted",
-    pending: "Pending",
-  };
+  const t = useTranslations("debts.status");
 
   const statusColorClasses: Record<StatusBadgeProps["status"], string> = {
     active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
@@ -35,7 +38,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
         className
       )}
     >
-      {statusDisplayNames[status]}
+      {t(STATUS_KEY_MAP[status])}
     </span>
   );
 }

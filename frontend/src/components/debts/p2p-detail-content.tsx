@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Check, AlertCircle, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,8 @@ interface P2PDetailContentProps {
 }
 
 export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
+  const t = useTranslations("debts.detail");
+  const tActions = useTranslations("debts.actions");
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   const {
@@ -98,7 +101,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
   if (debtError) {
     return (
       <div className="py-12 text-center text-destructive">
-        Failed to load debt details. Please try again.
+        {t("debtLoadError")}
       </div>
     );
   }
@@ -107,7 +110,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
   if (!debt) {
     return (
       <div className="py-12 text-center text-muted-foreground">
-        Debt not found.
+        {t("debtNotFound")}
       </div>
     );
   }
@@ -121,7 +124,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
       : 0;
 
   const isLent = debt.type === "personal_lent";
-  const typeLabel = isLent ? "Lent" : "Borrowed";
+  const typeLabel = isLent ? t("lent") : t("borrowed");
 
   const hasSplits =
     debt.repayment_mode === "equal_splits" ||
@@ -134,7 +137,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
         href="/debts"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
-        <span>←</span> Back to Debts
+        <span>←</span> {t("backToDebts")}
       </Link>
 
       {/* ── Header ────────────────────────────────────── */}
@@ -179,7 +182,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">Total Amount</span>
+            <span className="text-xs text-muted-foreground">{t("totalAmount")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
@@ -192,7 +195,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
 
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">Paid</span>
+            <span className="text-xs text-muted-foreground">{t("paidAmount")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
@@ -206,7 +209,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
 
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">Remaining</span>
+            <span className="text-xs text-muted-foreground">{t("remainingAmount")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
@@ -221,7 +224,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
       {/* ── Progress ──────────────────────────────────── */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Repayment Progress</span>
+          <span className="text-muted-foreground">{t("repaymentProgress")}</span>
           <span className="font-medium">{progressPercent}%</span>
         </div>
         <ProgressBar value={progressPercent} size="md" showLabel={false} />
@@ -229,14 +232,14 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
 
       {/* ── Actions ───────────────────────────────────── */}
       <div className="flex flex-wrap gap-3">
-        <Button onClick={() => setPaymentOpen(true)}>Record Payment</Button>
+        <Button onClick={() => setPaymentOpen(true)}>{tActions("recordPayment")}</Button>
         {debt.status === "active" && (
           <Button
             variant="outline"
             onClick={() => markPaid.mutate(debtId)}
             disabled={markPaid.isPending}
           >
-            {markPaid.isPending ? "Marking…" : "Mark as Paid"}
+            {markPaid.isPending ? t("marking") : tActions("markPaid")}
           </Button>
         )}
       </div>
@@ -251,7 +254,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
       {/* ── Split Schedule (timeline) ─────────────────── */}
       {hasSplits && (
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">Split Schedule</h2>
+          <h2 className="text-lg font-semibold">{t("splitSchedule")}</h2>
 
           {splitsLoading ? (
             <div className="animate-pulse space-y-2">
@@ -261,7 +264,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
             </div>
           ) : splits.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No splits available.
+              {t("noSplits")}
             </p>
           ) : (
             <div className="relative">
@@ -316,11 +319,11 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
       {/* ── Lump Sum info ─────────────────────────────── */}
       {debt.repayment_mode === "lump_sum" && (
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">Lump Sum Payment</h2>
+          <h2 className="text-lg font-semibold">{t("lumpSumPayment")}</h2>
           <Card>
             <CardContent className="flex items-center justify-between py-4">
               <div>
-                <p className="text-sm font-medium">Due Date</p>
+                <p className="text-sm font-medium">{t("dueDate")}</p>
                 <p className="text-sm text-muted-foreground">
                   {debt.due_date ? formatDate(debt.due_date) : "—"}
                 </p>
@@ -337,7 +340,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
 
       {/* ── Payment History ───────────────────────────── */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Payment History</h2>
+        <h2 className="text-lg font-semibold">{t("paymentHistory")}</h2>
 
         {paymentsLoading ? (
           <div className="animate-pulse space-y-2">
@@ -347,7 +350,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
           </div>
         ) : payments.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No payments recorded yet.
+            {t("noPayments")}
           </p>
         ) : (
           <div className="space-y-2">

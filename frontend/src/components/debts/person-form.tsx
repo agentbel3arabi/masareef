@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,15 +21,17 @@ interface PersonFormProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const RELATIONSHIPS: { value: PersonRelationship; label: string }[] = [
-  { value: "family", label: "Family" },
-  { value: "friend", label: "Friend" },
-  { value: "colleague", label: "Colleague" },
-  { value: "business", label: "Business" },
-  { value: "other", label: "Other" },
+const RELATIONSHIPS: PersonRelationship[] = [
+  "family",
+  "friend",
+  "colleague",
+  "business",
+  "other",
 ];
 
 export function PersonForm({ open, onOpenChange }: PersonFormProps) {
+  const t = useTranslations("persons");
+  const tForm = useTranslations("persons.form");
   const [name, setName] = useState("");
   const [nameAr, setNameAr] = useState("");
   const [phone, setPhone] = useState("");
@@ -71,12 +74,12 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Person"
-      description="Add a person for tracking personal debts."
+      title={tForm("title")}
+      description={tForm("description")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="person-name">Name</Label>
+          <Label htmlFor="person-name">{t("name")}</Label>
           <Input
             id="person-name"
             value={name}
@@ -86,7 +89,7 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="person-name-ar">Arabic Name</Label>
+          <Label htmlFor="person-name-ar">{t("nameAr")}</Label>
           <Input
             id="person-name-ar"
             dir="rtl"
@@ -96,7 +99,7 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="person-phone">Phone</Label>
+          <Label htmlFor="person-phone">{t("phone")}</Label>
           <Input
             id="person-phone"
             type="tel"
@@ -106,7 +109,7 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="person-email">Email</Label>
+          <Label htmlFor="person-email">{t("email")}</Label>
           <Input
             id="person-email"
             type="email"
@@ -116,15 +119,15 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>Relationship</Label>
+          <Label>{t("relationship")}</Label>
           <Select value={relationship} onValueChange={(v) => setRelationship(v ?? "")}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select relationship" />
+              <SelectValue placeholder={tForm("selectRelationship")} />
             </SelectTrigger>
             <SelectContent>
               {RELATIONSHIPS.map((rel) => (
-                <SelectItem key={rel.value} value={rel.value}>
-                  {rel.label}
+                <SelectItem key={rel} value={rel}>
+                  {t(`relationships.${rel}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -132,7 +135,7 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="person-notes">Notes</Label>
+          <Label htmlFor="person-notes">{t("notes")}</Label>
           <textarea
             id="person-notes"
             value={notes}
@@ -142,7 +145,7 @@ export function PersonForm({ open, onOpenChange }: PersonFormProps) {
         </div>
 
         <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? "Saving..." : "Add Person"}
+          {mutation.isPending ? tForm("saving") : tForm("submit")}
         </Button>
       </form>
     </FormSheet>

@@ -24,6 +24,9 @@ const SCHEDULE_STATUS_MAP: Record<
 
 export function LoansTab() {
   const t = useTranslations();
+  const tLoan = useTranslations("debts.loan");
+  const tDetail = useTranslations("debts.detail");
+  const tInstallment = useTranslations("debts.installment");
   const locale = useLocale();
   const { data, isLoading, error } = useDebts({ type: "bank_loan" });
   const [showCompleted, setShowCompleted] = useState(false);
@@ -56,7 +59,7 @@ export function LoansTab() {
         icon={Landmark}
         title={t("emptyStates.debts.title")}
         description={t("emptyStates.debts.description")}
-        action={{ label: "Add Loan", onClick: () => setShowCreateForm(true) }}
+        action={{ label: t("debts.actions.addLoan"), onClick: () => setShowCreateForm(true) }}
       />
     );
   }
@@ -85,9 +88,8 @@ export function LoansTab() {
         />
         <StatCard
           icon={Building2}
-          label="Active Loans"
-          value={t("debts.summary.activeLoans", { count: active.length })}
-          trend={{
+          label={tLoan("activeLoans")}
+          value={t("debts.summary.activeLoans", { count: active.length })}          trend={{
             direction: "flat",
             text: `${t("debts.summary.totalRemaining")}: ${fmt(active.reduce((s, l) => s + l.remaining_minor, 0))}`,
           }}
@@ -101,7 +103,7 @@ export function LoansTab() {
         className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
       >
         <Plus className="h-4 w-4" />
-        Add Loan
+        {t("debts.actions.addLoan")}
       </button>
 
       {/* Active Loans */}
@@ -109,7 +111,7 @@ export function LoansTab() {
         <section className="space-y-4">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary" />
-            {t("debts.status.active")} Loans
+            {t("debts.status.active")} {t("debts.tabs.loans")}
           </h3>
           <div className="space-y-4">
             {active.map((loan) => (
@@ -137,7 +139,7 @@ export function LoansTab() {
           >
             <span className="font-bold flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-              Completed Loans ({completed.length})
+              {tLoan("completedLoans")} ({completed.length})
             </span>
             <ChevronDown
               className={`h-4 w-4 text-muted-foreground transition-transform ${
@@ -166,7 +168,7 @@ export function LoansTab() {
                         size="sm"
                         showCurrency
                       />{" "}
-                      total paid
+                      {tInstallment("totalPaid")}
                     </p>
                   </div>
                   <StatusBadge status="completed" />
@@ -193,6 +195,8 @@ function LoanCard({
   onToggle: () => void;
   locale: string;
 }) {
+  const tLoan = useTranslations("debts.loan");
+  const tDetail = useTranslations("debts.detail");
   const progressPct =
     loan.principal_minor > 0
       ? Math.round(
@@ -242,7 +246,7 @@ function LoanCard({
           </div>
           <div className="text-end">
             <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-              Monthly Payment
+              {tLoan("monthlyPayment")}
             </p>
             <MoneyDisplay
               amount={loan.monthly_payment_minor}
@@ -258,7 +262,7 @@ function LoanCard({
           <>
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs text-muted-foreground">
-                Remaining
+                {tLoan("remaining")}
               </span>
               <MoneyDisplay
                 amount={loan.remaining_minor}
@@ -283,7 +287,7 @@ function LoanCard({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-                  Principal
+                  {tLoan("principal")}
                 </p>
                 <MoneyDisplay
                   amount={loan.principal_minor}
@@ -294,7 +298,7 @@ function LoanCard({
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-                  Monthly Payment
+                  {tLoan("monthlyPayment")}
                 </p>
                 <MoneyDisplay
                   amount={loan.monthly_payment_minor}
@@ -305,7 +309,7 @@ function LoanCard({
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-                  Start Date
+                  {tLoan("startDate")}
                 </p>
                 <span className="text-sm font-semibold text-foreground">
                   {formatDate(loan.start_date)}
@@ -313,10 +317,10 @@ function LoanCard({
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-                  Tenure
+                  {tLoan("tenureLabel")}
                 </p>
                 <span className="text-sm font-semibold text-foreground">
-                  {loan.tenure_months} Months
+                  {tLoan("tenure", { months: loan.tenure_months })}
                 </span>
               </div>
             </div>
@@ -325,7 +329,7 @@ function LoanCard({
             <div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs text-muted-foreground">
-                  {progressPct}% paid
+                  {tDetail("paidPercent", { percent: progressPct })}
                 </span>
                 <MoneyDisplay
                   amount={loan.remaining_minor}
@@ -365,6 +369,8 @@ function AmortizationPreview({
   locale: string;
   currency: string;
 }) {
+  const tLoan = useTranslations("debts.loan");
+  const tDetail = useTranslations("debts.detail");
   const { data, isLoading } = useAmortizationSchedule(loanId);
 
   const formatDate = (dateStr: string) =>
@@ -376,7 +382,7 @@ function AmortizationPreview({
   return (
     <div className="border-t border-border pt-4">
       <h5 className="text-xs font-bold text-muted-foreground uppercase mb-3">
-        Amortization Schedule
+        {tLoan("amortization")}
       </h5>
 
       {isLoading ? (
@@ -395,9 +401,9 @@ function AmortizationPreview({
               <thead>
                 <tr className="text-muted-foreground border-b border-border">
                   <th className="text-start pb-2 font-bold">#</th>
-                  <th className="text-start pb-2 font-bold">Date</th>
-                  <th className="text-end pb-2 font-bold">Amount</th>
-                  <th className="text-end pb-2 font-bold">Status</th>
+                  <th className="text-start pb-2 font-bold">{tDetail("date")}</th>
+                  <th className="text-end pb-2 font-bold">{tDetail("amount")}</th>
+                  <th className="text-end pb-2 font-bold">{tDetail("status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -431,7 +437,7 @@ function AmortizationPreview({
           </div>
           {(data?.data?.schedule?.length ?? 0) > 3 && (
             <p className="text-xs text-primary font-semibold mt-3 cursor-pointer hover:underline">
-              View Full Schedule →
+              {tDetail("viewFullSchedule")}
             </p>
           )}
         </>

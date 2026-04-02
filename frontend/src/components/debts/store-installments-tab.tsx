@@ -15,6 +15,8 @@ import type { InstallmentResponse } from "@/lib/types/debts";
 
 export function StoreInstallmentsTab() {
   const t = useTranslations();
+  const tInstallment = useTranslations("debts.installment");
+  const tDetail = useTranslations("debts.detail");
   const locale = useLocale();
   const { data, isLoading, error } = useInstallments({ type: "store" });
   const [showCompleted, setShowCompleted] = useState(false);
@@ -70,16 +72,16 @@ export function StoreInstallmentsTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StatCard
           icon={ShoppingBag}
-          label="Monthly Store Payments"
+          label={t("debts.summary.monthlyPayments")}
           value={fmt(totalMonthly)}
         />
         <StatCard
           icon={Store}
-          label="Active Plans"
-          value={`${active.length} Plans`}
+          label={tInstallment("activeInstallments")}
+          value={`${active.length} ${tInstallment("completedPlans").split(" ").pop()}`}
           trend={{
             direction: "flat",
-            text: `Remaining: ${fmt(active.reduce((s, p) => s + p.remaining_minor, 0))}`,
+            text: `${tInstallment("remaining")}: ${fmt(active.reduce((s, p) => s + p.remaining_minor, 0))}`,
           }}
         />
       </div>
@@ -89,7 +91,7 @@ export function StoreInstallmentsTab() {
         <section className="space-y-4">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary" />
-            Active Installment Plans
+            {tInstallment("activeInstallments")}
           </h3>
           <div className="space-y-4">
             {active.map((plan) => (
@@ -109,7 +111,7 @@ export function StoreInstallmentsTab() {
           >
             <span className="font-bold flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-              Completed Plans ({completed.length})
+              {tInstallment("completedPlans")} ({completed.length})
             </span>
             <ChevronDown
               className={`h-4 w-4 text-muted-foreground transition-transform ${
@@ -137,7 +139,7 @@ export function StoreInstallmentsTab() {
                         size="sm"
                         showCurrency
                       />{" "}
-                      total paid
+                      {tInstallment("totalPaid")}
                     </p>
                   </div>
                   <StatusBadge status="completed" />
@@ -159,6 +161,7 @@ export function StoreInstallmentsTab() {
 
 /* ── Store Plan Card (inline sub-component) ── */
 function StorePlanCard({ plan }: { plan: InstallmentResponse }) {
+  const tInstallment = useTranslations("debts.installment");
   const progressPct =
     plan.total_months > 0
       ? Math.round((plan.months_paid / plan.total_months) * 100)
@@ -179,7 +182,7 @@ function StorePlanCard({ plan }: { plan: InstallmentResponse }) {
         </div>
         <div className="text-end">
           <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-            Monthly Payment
+            {tInstallment("monthlyPayment")}
           </p>
           <MoneyDisplay
             amount={plan.monthly_amount_minor}
@@ -193,7 +196,7 @@ function StorePlanCard({ plan }: { plan: InstallmentResponse }) {
       <div className="grid grid-cols-3 gap-6 mb-4">
         <div>
           <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-            Total Amount
+            {tInstallment("totalAmount")}
           </p>
           <MoneyDisplay
             amount={plan.total_amount_minor}
@@ -204,15 +207,15 @@ function StorePlanCard({ plan }: { plan: InstallmentResponse }) {
         </div>
         <div>
           <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-            Duration
+            {tInstallment("duration")}
           </p>
           <span className="text-sm font-semibold text-foreground">
-            {plan.total_months} Months
+            {tInstallment("monthsLabel", { count: plan.total_months })}
           </span>
         </div>
         <div className="text-end">
           <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-            Remaining
+            {tInstallment("remaining")}
           </p>
           <MoneyDisplay
             amount={plan.remaining_minor}

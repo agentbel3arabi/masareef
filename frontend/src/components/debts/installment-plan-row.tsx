@@ -74,7 +74,7 @@ export function InstallmentPlanRow({
       <div className="md:col-span-2">
         <div className="flex justify-between items-end mb-1">
           <p className="text-[10px] text-muted-foreground font-medium uppercase">
-            Progress
+            {t("progress")}
           </p>
           <p className="text-[10px] font-bold text-primary">
             {t("months", { paid: plan.months_paid, total: plan.total_months })}
@@ -86,7 +86,7 @@ export function InstallmentPlanRow({
       {/* Remaining */}
       <div className="text-end">
         <p className="text-[10px] text-muted-foreground font-medium uppercase mb-0.5">
-          Remaining
+          {t("remaining")}
         </p>
         <MoneyDisplay
           amount={plan.remaining_minor}

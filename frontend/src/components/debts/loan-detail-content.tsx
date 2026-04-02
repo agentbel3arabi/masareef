@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -53,6 +54,9 @@ interface LoanDetailContentProps {
 }
 
 export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
+  const t = useTranslations("debts.detail");
+  const tActions = useTranslations("debts.actions");
+  const tLoan = useTranslations("debts.loan");
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   const { data: debtRes, isLoading: debtLoading, error: debtError } = useDebt(debtId);
@@ -67,7 +71,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   if (debtError) {
     return (
       <div className="py-12 text-center text-destructive">
-        Failed to load loan details. Please try again.
+        {t("loadError")}
       </div>
     );
   }
@@ -78,7 +82,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   if (!debt) {
     return (
       <div className="py-12 text-center text-muted-foreground">
-        Loan not found.
+        {t("notFound")}
       </div>
     );
   }
@@ -100,7 +104,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         href="/debts"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
       >
-        <span>←</span> Back to Debts
+        <span>←</span> {t("backToDebts")}
       </Link>
 
       {/* ── Header ────────────────────────────────────── */}
@@ -123,7 +127,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">Principal</span>
+            <span className="text-xs text-muted-foreground">{tLoan("principal")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
@@ -137,7 +141,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         <Card>
           <CardHeader className="pb-1">
             <span className="text-xs text-muted-foreground">
-              Monthly Payment
+              {tLoan("monthlyPayment")}
             </span>
           </CardHeader>
           <CardContent>
@@ -151,7 +155,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">Total Paid</span>
+            <span className="text-xs text-muted-foreground">{t("totalPaid")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
@@ -165,7 +169,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">Remaining</span>
+            <span className="text-xs text-muted-foreground">{t("remainingAmount")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
@@ -180,7 +184,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       {/* ── Progress ──────────────────────────────────── */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Repayment Progress</span>
+          <span className="text-muted-foreground">{t("repaymentProgress")}</span>
           <span className="font-medium">{progressPercent}%</span>
         </div>
         <ProgressBar value={progressPercent} size="md" showLabel={false} />
@@ -188,14 +192,14 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
       {/* ── Actions ───────────────────────────────────── */}
       <div className="flex flex-wrap gap-3">
-        <Button onClick={() => setPaymentOpen(true)}>Record Payment</Button>
+        <Button onClick={() => setPaymentOpen(true)}>{tActions("recordPayment")}</Button>
         {debt.status === "active" && (
           <Button
             variant="outline"
             onClick={() => markPaid.mutate(debtId)}
             disabled={markPaid.isPending}
           >
-            {markPaid.isPending ? "Marking…" : "Mark as Paid"}
+            {markPaid.isPending ? t("marking") : tActions("markPaid")}
           </Button>
         )}
       </div>
@@ -209,7 +213,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
       {/* ── Amortization schedule ─────────────────────── */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Amortization Schedule</h2>
+        <h2 className="text-lg font-semibold">{t("amortizationSchedule")}</h2>
 
         {scheduleLoading ? (
           <div className="animate-pulse space-y-2">
@@ -219,7 +223,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
           </div>
         ) : schedule.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No amortization schedule available.
+            {t("noSchedule")}
           </p>
         ) : (
           <div className="overflow-x-auto rounded-lg border">
@@ -227,12 +231,12 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
               <thead>
                 <tr className="border-b bg-muted/50">
                   <th className="px-3 py-2 text-start font-medium">#</th>
-                  <th className="px-3 py-2 text-start font-medium">Date</th>
-                  <th className="px-3 py-2 text-end font-medium">Payment</th>
-                  <th className="px-3 py-2 text-end font-medium">Principal</th>
-                  <th className="px-3 py-2 text-end font-medium">Interest</th>
-                  <th className="px-3 py-2 text-end font-medium">Remaining</th>
-                  <th className="px-3 py-2 text-start font-medium">Status</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("date")}</th>
+                  <th className="px-3 py-2 text-end font-medium">{t("payment")}</th>
+                  <th className="px-3 py-2 text-end font-medium">{t("principal")}</th>
+                  <th className="px-3 py-2 text-end font-medium">{t("interest")}</th>
+                  <th className="px-3 py-2 text-end font-medium">{t("remainingAmount")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -290,7 +294,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
       {/* ── Payment history ───────────────────────────── */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Payment History</h2>
+        <h2 className="text-lg font-semibold">{t("paymentHistory")}</h2>
 
         {paymentsLoading ? (
           <div className="animate-pulse space-y-2">
@@ -300,7 +304,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
           </div>
         ) : payments.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No payments recorded yet.
+            {t("noPayments")}
           </p>
         ) : (
           <div className="space-y-2">

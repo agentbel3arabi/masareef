@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ export function RecordPaymentForm({
   debtId,
   currency,
 }: RecordPaymentFormProps) {
+  const t = useTranslations("debts.form.payment");
   const today = new Date().toISOString().split("T")[0];
   const [date, setDate] = useState(today);
   const [amount, setAmount] = useState("");
@@ -60,12 +62,12 @@ export function RecordPaymentForm({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Record Payment"
-      description="Record a payment for this debt."
+      title={t("title")}
+      description={t("description")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="payment-date">Payment Date</Label>
+          <Label htmlFor="payment-date">{t("date")}</Label>
           <Input
             id="payment-date"
             type="date"
@@ -76,7 +78,7 @@ export function RecordPaymentForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="payment-amount">Amount</Label>
+          <Label htmlFor="payment-amount">{t("amount")}</Label>
           <Input
             id="payment-amount"
             type="number"
@@ -88,7 +90,7 @@ export function RecordPaymentForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="payment-notes">Notes</Label>
+          <Label htmlFor="payment-notes">{t("notes")}</Label>
           <textarea
             id="payment-notes"
             value={notes}
@@ -98,7 +100,7 @@ export function RecordPaymentForm({
         </div>
 
         <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? "Saving..." : "Record Payment"}
+          {mutation.isPending ? t("saving") : t("submit")}
         </Button>
       </form>
     </FormSheet>

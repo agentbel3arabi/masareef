@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ function toMinor(displayValue: string, currency: string): number {
 const CURRENCY_CODES = Object.keys(CURRENCIES);
 
 export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
+  const t = useTranslations("debts.form.loan");
   const [name, setName] = useState("");
   const [institution, setInstitution] = useState("");
   const [currency, setCurrency] = useState("EGP");
@@ -87,12 +89,12 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Bank Loan"
-      description="Create a new bank loan record."
+      title={t("title")}
+      description={t("description")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="loan-name">Loan Name</Label>
+          <Label htmlFor="loan-name">{t("name")}</Label>
           <Input
             id="loan-name"
             value={name}
@@ -102,7 +104,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-institution">Institution</Label>
+          <Label htmlFor="loan-institution">{t("institution")}</Label>
           <Input
             id="loan-institution"
             value={institution}
@@ -111,10 +113,10 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>Currency</Label>
+          <Label>{t("currency")}</Label>
           <Select value={currency} onValueChange={(v) => setCurrency(v ?? "EGP")}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select currency" />
+              <SelectValue placeholder={t("selectCurrency")} />
             </SelectTrigger>
             <SelectContent>
               {CURRENCY_CODES.map((code) => (
@@ -127,7 +129,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-principal">Principal Amount</Label>
+          <Label htmlFor="loan-principal">{t("principal")}</Label>
           <Input
             id="loan-principal"
             type="number"
@@ -139,7 +141,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-rate">Annual Rate (%)</Label>
+          <Label htmlFor="loan-rate">{t("rate")}</Label>
           <Input
             id="loan-rate"
             type="number"
@@ -150,7 +152,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-tenure">Tenure (months)</Label>
+          <Label htmlFor="loan-tenure">{t("tenure")}</Label>
           <Input
             id="loan-tenure"
             type="number"
@@ -161,7 +163,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-start">Start Date</Label>
+          <Label htmlFor="loan-start">{t("startDate")}</Label>
           <Input
             id="loan-start"
             type="date"
@@ -172,7 +174,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>Linked Account</Label>
+          <Label>{t("linkedAccount")}</Label>
           <Select value={linkedAccountId} onValueChange={(v) => setLinkedAccountId(v ?? "")}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="--" />
@@ -189,7 +191,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-notes">Notes</Label>
+          <Label htmlFor="loan-notes">{t("notes")}</Label>
           <textarea
             id="loan-notes"
             value={notes}
@@ -199,7 +201,7 @@ export function BankLoanForm({ open, onOpenChange }: BankLoanFormProps) {
         </div>
 
         <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? "Saving..." : "Add Loan"}
+          {mutation.isPending ? t("saving") : t("submit")}
         </Button>
       </form>
     </FormSheet>

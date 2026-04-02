@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,8 @@ function toMinor(displayValue: string, currency: string): number {
 const CURRENCY_CODES = Object.keys(CURRENCIES);
 
 export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
+  const t = useTranslations("debts.form.p2p");
+  const tRepayment = useTranslations("debts.p2p");
   const [personId, setPersonId] = useState("");
   const [debtType, setDebtType] = useState<DebtType>("personal_lent");
   const [currency, setCurrency] = useState("EGP");
@@ -91,15 +94,15 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Personal Debt"
-      description="Record a personal loan or borrowing."
+      title={t("title")}
+      description={t("description")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label>Person</Label>
+          <Label>{t("person")}</Label>
           <Select value={personId} onValueChange={(v) => setPersonId(v ?? "")}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select person" />
+              <SelectValue placeholder={t("selectPerson")} />
             </SelectTrigger>
             <SelectContent>
               {persons.map((p) => (
@@ -112,7 +115,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>Type</Label>
+          <Label>{t("type")}</Label>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -120,7 +123,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
               className="flex-1"
               onClick={() => setDebtType("personal_lent")}
             >
-              I Lent
+              {t("lent")}
             </Button>
             <Button
               type="button"
@@ -128,16 +131,16 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
               className="flex-1"
               onClick={() => setDebtType("personal_borrowed")}
             >
-              I Borrowed
+              {t("borrowed")}
             </Button>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label>Currency</Label>
+          <Label>{t("currency")}</Label>
           <Select value={currency} onValueChange={(v) => setCurrency(v ?? "EGP")}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select currency" />
+              <SelectValue placeholder={t("selectCurrency")} />
             </SelectTrigger>
             <SelectContent>
               {CURRENCY_CODES.map((code) => (
@@ -150,7 +153,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="p2p-amount">Amount</Label>
+          <Label htmlFor="p2p-amount">{t("amount")}</Label>
           <Input
             id="p2p-amount"
             type="number"
@@ -162,7 +165,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>Repayment Mode</Label>
+          <Label>{t("repaymentMode")}</Label>
           <Select
             value={repaymentMode}
             onValueChange={(v) => setRepaymentMode((v ?? "lump_sum") as RepaymentMode)}
@@ -171,15 +174,15 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="lump_sum">Lump Sum</SelectItem>
-              <SelectItem value="equal_splits">Equal Splits</SelectItem>
+              <SelectItem value="lump_sum">{tRepayment("lumpSum")}</SelectItem>
+              <SelectItem value="equal_splits">{tRepayment("equalSplits")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {repaymentMode === "lump_sum" && (
           <div className="space-y-2">
-            <Label htmlFor="p2p-due">Due Date</Label>
+            <Label htmlFor="p2p-due">{t("dueDate")}</Label>
             <Input
               id="p2p-due"
               type="date"
@@ -191,7 +194,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
 
         {repaymentMode === "equal_splits" && (
           <div className="space-y-2">
-            <Label htmlFor="p2p-splits">Number of Splits</Label>
+            <Label htmlFor="p2p-splits">{t("splitCount")}</Label>
             <Input
               id="p2p-splits"
               type="number"
@@ -202,7 +205,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="p2p-notes">Notes</Label>
+          <Label htmlFor="p2p-notes">{t("notes")}</Label>
           <textarea
             id="p2p-notes"
             value={notes}
@@ -212,7 +215,7 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
         </div>
 
         <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? "Saving..." : "Add Debt"}
+          {mutation.isPending ? t("saving") : t("submit")}
         </Button>
       </form>
     </FormSheet>
