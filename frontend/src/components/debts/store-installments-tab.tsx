@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Store, ShoppingBag, CheckCircle2, ChevronDown } from "lucide-react";
+import { Store, ShoppingBag, CheckCircle2, ChevronDown, Plus } from "lucide-react";
 import { useInstallments } from "@/hooks/use-installments";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
@@ -74,6 +74,16 @@ export function StoreInstallmentsTab() {
 
   return (
     <div className="space-y-6">
+      {/* Add Installment Button */}
+      <button
+        type="button"
+        onClick={() => setShowCreateForm(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+        {t("debts.actions.addInstallment")}
+      </button>
+
       {/* Summary Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StatCard

@@ -52,6 +52,7 @@ export function PersonCard({ person, onEdit, onDelete }: PersonCardProps) {
             size="icon"
             className="h-8 w-8"
             onClick={() => onEdit(person)}
+            aria-label={t("editPerson")}
           >
             <Pencil className="h-3.5 w-3.5" />
           </Button>
@@ -60,6 +61,7 @@ export function PersonCard({ person, onEdit, onDelete }: PersonCardProps) {
             size="icon"
             className="h-8 w-8 text-destructive hover:text-destructive"
             onClick={() => onDelete(person)}
+            aria-label={t("deletePerson")}
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>

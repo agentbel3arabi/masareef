@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Plus } from "lucide-react";
 import { useInstallments } from "@/hooks/use-installments";
 import { useAccounts } from "@/hooks/use-accounts";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -70,6 +70,16 @@ export function CardInstallmentsTab() {
 
   return (
     <div className="space-y-8">
+      {/* Add Installment Button */}
+      <button
+        type="button"
+        onClick={() => setShowCreateForm(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+        {t("debts.actions.addInstallment")}
+      </button>
+
       {/* Utilization Summary Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {creditCards

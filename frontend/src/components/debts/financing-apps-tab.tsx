@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Smartphone, Receipt } from "lucide-react";
+import { Smartphone, Receipt, Plus } from "lucide-react";
 import { useInstallments, useFinancingAppsSummary } from "@/hooks/use-installments";
 import { EmptyState } from "@/components/shared/empty-state";
 import { MoneyDisplay } from "@/components/shared/money-display";
@@ -79,6 +79,16 @@ export function FinancingAppsTab() {
 
   return (
     <div className="space-y-8">
+      {/* Add Installment Button */}
+      <button
+        type="button"
+        onClick={() => setShowCreateForm(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+        {t("debts.actions.addInstallment")}
+      </button>
+
       {/* Provider Overview Cards */}
       {summary && summary.apps.length > 0 && (
         <section>

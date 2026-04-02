@@ -8,7 +8,7 @@ import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
-import { navItems } from "@/components/layout/nav-items";
+import { navItems } from "@/lib/nav-items";
 import { cn } from "@/lib/utils";
 
 export function MobileNavDrawer() {

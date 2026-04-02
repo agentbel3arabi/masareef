@@ -112,7 +112,10 @@ function P2PDebtFormContent({
               : t("autoNameBorrowed", { name: selectedPersonName }),
           principal_minor: parseMajorToMinor(amount, CURRENCIES[currency]?.exponent ?? 2),
           currency,
-          tenure_months: 0,
+          tenure_months:
+            repaymentMode === "equal_splits" && splitCount
+              ? parseInt(splitCount, 10)
+              : 1,
           start_date: new Date().toISOString().split("T")[0],
           person_id: parseInt(personId, 10),
           repayment_mode: repaymentMode,
