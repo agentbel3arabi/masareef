@@ -666,7 +666,11 @@
       "healthy": "Healthy",
       "moderate": "Moderate",
       "high": "High",
-      "committed": "Committed"
+      "committed": "Committed",
+      "providersOverview": "Providers Overview",
+      "installmentBreakdown": "Installment Breakdown",
+      "bnplSummary": "BNPL Summary Commitment",
+      "bnplDescription": "Consolidated view of your current monthly financing obligations."
     },
     "actions": {
       "addLoan": "Add Loan",
@@ -749,7 +753,9 @@
         "splitCount": "Number of Splits",
         "notes": "Notes",
         "submit": "Add Debt",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "autoNameLent": "Loan to {name}",
+        "autoNameBorrowed": "Borrowed from {name}"
       },
       "payment": {
         "title": "Record Payment",
@@ -759,6 +765,10 @@
         "notes": "Notes",
         "submit": "Record Payment",
         "saving": "Saving..."
+      },
+      "installment": {
+        "description": "Add a new installment plan",
+        "comingSoon": "Coming soon"
       }
     }
   },

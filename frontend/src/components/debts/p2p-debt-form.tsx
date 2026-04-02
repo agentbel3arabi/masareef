@@ -68,17 +68,17 @@ export function P2PDebtForm({ open, onOpenChange }: P2PDebtFormProps) {
         type: debtType,
         name:
           debtType === "personal_lent"
-            ? `Loan to ${selectedPersonName}`
-            : `Borrowed from ${selectedPersonName}`,
+            ? t("autoNameLent", { name: selectedPersonName })
+            : t("autoNameBorrowed", { name: selectedPersonName }),
         principal_minor: toMinor(amount, currency),
         currency,
         tenure_months: 0,
         start_date: new Date().toISOString().split("T")[0],
-        person_id: parseInt(personId),
+        person_id: parseInt(personId, 10),
         repayment_mode: repaymentMode,
         due_date: repaymentMode === "lump_sum" ? dueDate || null : null,
         split_count:
-          repaymentMode === "equal_splits" ? parseInt(splitCount) : null,
+          repaymentMode === "equal_splits" ? parseInt(splitCount, 10) : null,
         notes: notes || null,
       },
       {

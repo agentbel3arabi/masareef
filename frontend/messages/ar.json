@@ -666,7 +666,11 @@
       "healthy": "صحي",
       "moderate": "متوسط",
       "high": "مرتفع",
-      "committed": "الملتزم"
+      "committed": "الملتزم",
+      "providersOverview": "نظرة عامة على المزودين",
+      "installmentBreakdown": "تفصيل الأقساط",
+      "bnplSummary": "ملخص التزامات التمويل",
+      "bnplDescription": "عرض موحد لالتزاماتك الشهرية الحالية في التمويل."
     },
     "actions": {
       "addLoan": "إضافة قرض",
@@ -749,7 +753,9 @@
         "splitCount": "عدد الأقساط",
         "notes": "ملاحظات",
         "submit": "إضافة الدين",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "autoNameLent": "قرض لـ {name}",
+        "autoNameBorrowed": "اقتراض من {name}"
       },
       "payment": {
         "title": "تسجيل دفعة",
@@ -759,6 +765,10 @@
         "notes": "ملاحظات",
         "submit": "تسجيل الدفعة",
         "saving": "جاري الحفظ..."
+      },
+      "installment": {
+        "description": "إضافة خطة أقساط جديدة",
+        "comingSoon": "قريباً"
       }
     }
   },

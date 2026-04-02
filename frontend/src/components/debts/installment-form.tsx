@@ -20,10 +20,10 @@ export function InstallmentForm({
       open={open}
       onOpenChange={onOpenChange}
       title={t("actions.addInstallment")}
-      description="Add a new installment plan"
+      description={t("form.installment.description")}
     >
       <div className="py-12 text-center text-muted-foreground">
-        <p className="text-sm">Coming soon</p>
+        <p className="text-sm">{t("form.installment.comingSoon")}</p>
       </div>
     </FormSheet>
   );

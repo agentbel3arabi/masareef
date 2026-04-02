@@ -77,7 +77,7 @@ export function FinancingAppsTab() {
         <section>
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary" />
-            Providers Overview
+            {t("debts.financingApps.providersOverview")}
           </h2>
           <div className="flex gap-6 overflow-x-auto pb-4 -mx-2 px-2">
             {summary.apps.map((app) => (
@@ -96,7 +96,7 @@ export function FinancingAppsTab() {
         <section className="space-y-6">
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-destructive" />
-            Installment Breakdown
+            {t("debts.financingApps.installmentBreakdown")}
           </h2>
           {summary.apps.map((app) => {
             const appPlans = grouped.get(app.account_id) ?? [];
@@ -145,10 +145,10 @@ export function FinancingAppsTab() {
         <section className="bg-muted/50 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6 border border-border">
           <div>
             <h2 className="text-lg font-bold text-foreground">
-              BNPL Summary Commitment
+              {t("debts.financingApps.bnplSummary")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Consolidated view of your current monthly financing obligations.
+              {t("debts.financingApps.bnplDescription")}
             </p>
           </div>
           <div className="flex gap-8 text-end">
