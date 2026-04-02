@@ -766,6 +766,10 @@
         "submit": "Add Loan",
         "update": "Update Loan",
         "saving": "Saving...",
+        "recordingPayments": "Recording past payments...",
+        "installmentsPaid": "Installments Already Paid",
+        "installmentsPaidHint": "If you started this loan in the past, enter how many installments you have already paid.",
+        "pastPaymentNote": "Auto-recorded past payment",
         "none": "None"
       },
       "p2p": {

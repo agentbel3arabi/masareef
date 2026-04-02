@@ -14,9 +14,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useCreateDebt, useUpdateDebt } from "@/hooks/use-debts";
+import { apiGet, apiPost } from "@/lib/api-client";
 import { useAccounts } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor, formatAmount } from "@/lib/money";
-import type { DebtResponse } from "@/lib/types/debts";
+import type { DebtResponse, ScheduleRow } from "@/lib/types/debts";
 
 interface BankLoanFormProps {
   open: boolean;
@@ -70,6 +71,8 @@ function BankLoanFormContent({
     initialData?.linked_account_id ? String(initialData.linked_account_id) : ""
   );
   const [notes, setNotes] = useState(initialData?.notes ?? "");
+  const [installmentsPaid, setInstallmentsPaid] = useState("");
+  const [isRecordingPayments, setIsRecordingPayments] = useState(false);
 
   const createMutation = useCreateDebt();
   const updateMutation = useUpdateDebt();
@@ -82,6 +85,10 @@ function BankLoanFormContent({
     (a) => String(a.id) === linkedAccountId
   );
 
+  const isStartDateInPast = startDate
+    ? new Date(startDate) < new Date(new Date().toISOString().split("T")[0])
+    : false;
+
   const resetFields = () => {
     setName("");
     setInstitution("");
@@ -92,6 +99,27 @@ function BankLoanFormContent({
     setStartDate("");
     setLinkedAccountId("");
     setNotes("");
+    setInstallmentsPaid("");
+  };
+
+  const recordPastPayments = async (debtId: number, count: number) => {
+    setIsRecordingPayments(true);
+    try {
+      const scheduleRes = await apiGet<{ schedule: ScheduleRow[] }>(
+        `/api/v1/debts/${debtId}/amortization`
+      );
+      const schedule = scheduleRes.data.schedule;
+      const toRecord = schedule.slice(0, count);
+      for (const row of toRecord) {
+        await apiPost(`/api/v1/debts/${debtId}/payments`, {
+          date: row.date,
+          amount_minor: row.payment_minor,
+          notes: t("pastPaymentNote"),
+        });
+      }
+    } finally {
+      setIsRecordingPayments(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -132,7 +160,12 @@ function BankLoanFormContent({
           notes: notes || null,
         },
         {
-          onSuccess: () => {
+          onSuccess: async (response) => {
+            const paidCount = parseInt(installmentsPaid, 10);
+            if (paidCount > 0 && response.data) {
+              const debtId = (response.data as DebtResponse).id;
+              await recordPastPayments(debtId, paidCount);
+            }
             onOpenChange(false);
             resetFields();
           },
@@ -233,6 +266,21 @@ function BankLoanFormContent({
           </div>
         )}
 
+        {!isEdit && isStartDateInPast && (
+          <div className="space-y-2">
+            <Label htmlFor="loan-paid">{t("installmentsPaid")}</Label>
+            <p className="text-xs text-muted-foreground">{t("installmentsPaidHint")}</p>
+            <Input
+              id="loan-paid"
+              type="number"
+              min="0"
+              max={tenureMonths ? parseInt(tenureMonths, 10) : undefined}
+              value={installmentsPaid}
+              onChange={(e) => setInstallmentsPaid(e.target.value)}
+            />
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label>{t("linkedAccount")}</Label>
           <Select value={linkedAccountId} onValueChange={(v) => setLinkedAccountId(v ?? "")}>
@@ -264,8 +312,8 @@ function BankLoanFormContent({
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
-          {createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
+        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending || isRecordingPayments}>
+          {isRecordingPayments ? t("recordingPayments") : createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
   );
