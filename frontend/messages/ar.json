@@ -318,7 +318,11 @@
     "comingSoonPhase2": "قادم في المرحلة 2",
     "comingSoonPhase3": "قادم في المرحلة 3",
     "comingSoonPhase4": "قادم في المرحلة 4",
-    "chartsComingSoon": "الرسوم البيانية قادمة في المرحلة 4"
+    "chartsComingSoon": "الرسوم البيانية قادمة في المرحلة 4",
+    "activeDebtsCount": "{count} نشط",
+    "upcomingPayments": "الدفعات القادمة",
+    "upcomingCount": "{count} مستحقة خلال 30 يوم",
+    "noDebts": "لا توجد ديون"
   },
   "brand": {
     "name": "مصاريف",

@@ -318,7 +318,11 @@
     "comingSoonPhase2": "Coming in Phase 2",
     "comingSoonPhase3": "Coming in Phase 3",
     "comingSoonPhase4": "Coming in Phase 4",
-    "chartsComingSoon": "Charts coming in Phase 4"
+    "chartsComingSoon": "Charts coming in Phase 4",
+    "activeDebtsCount": "{count} active",
+    "upcomingPayments": "Upcoming Payments",
+    "upcomingCount": "{count} due in 30d",
+    "noDebts": "No debts"
   },
   "brand": {
     "name": "Masareef",
