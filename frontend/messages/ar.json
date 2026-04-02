@@ -853,6 +853,23 @@
       "saving": "جاري الحفظ..."
     }
   },
+  "people": {
+    "title": "الأشخاص",
+    "subtitle": "إدارة الأشخاص لتتبع الديون الشخصية",
+    "addPerson": "إضافة شخص",
+    "noPeople": "لم يتم إضافة أشخاص بعد",
+    "noPeopleDescription": "أضف شخصاً لبدء تتبع الديون الشخصية.",
+    "theyOweYou": "مدين لك",
+    "youOweThem": "أنت مدين له",
+    "settled": "مسوّى",
+    "editPerson": "تعديل",
+    "deletePerson": "حذف",
+    "deleteConfirmTitle": "حذف شخص",
+    "deleteConfirmDescription": "هل أنت متأكد من حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "hasActiveDebts": "لا يمكن الحذف — هذا الشخص لديه ديون نشطة.",
+    "cancel": "إلغاء",
+    "confirm": "حذف"
+  },
   "installments": {
     "title": "خطط الأقساط",
     "creditCard": "بطاقة ائتمان",

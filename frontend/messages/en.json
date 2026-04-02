@@ -853,6 +853,23 @@
       "saving": "Saving..."
     }
   },
+  "people": {
+    "title": "People",
+    "subtitle": "Manage people for personal debt tracking",
+    "addPerson": "Add Person",
+    "noPeople": "No people added yet",
+    "noPeopleDescription": "Add a person to start tracking personal debts.",
+    "theyOweYou": "They owe you",
+    "youOweThem": "You owe them",
+    "settled": "Settled",
+    "editPerson": "Edit",
+    "deletePerson": "Delete",
+    "deleteConfirmTitle": "Delete Person",
+    "deleteConfirmDescription": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "hasActiveDebts": "Cannot delete — this person has active debts.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
+  },
   "installments": {
     "title": "Installment Plans",
     "creditCard": "Credit Card",
