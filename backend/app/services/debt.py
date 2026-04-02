@@ -10,12 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.account import Account
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
-from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode
+from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode, TransactionType
 from app.models.p2p_debt_split import P2PDebtSplit
 from app.models.person import Person
 from app.models.transaction import Transaction
 from app.schemas.debt import DebtCreate, DebtUpdate
+from app.schemas.transaction import TransactionCreate
 from app.services.amortization import compute_monthly_payment, generate_schedule
+from app.services.transaction import create_transaction
 
 
 async def list_debts(
@@ -108,6 +110,8 @@ async def create_p2p_debt(
     data: DebtCreate,
 ) -> Debt:
     """Create a P2P debt with splits based on repayment mode."""
+    if not data.account_id:
+        raise ValueError("ACCOUNT_ID_REQUIRED")
     if not data.person_id:
         raise ValueError("PERSON_REQUIRED")
 
@@ -180,6 +184,25 @@ async def create_p2p_debt(
         session.add(split)
     await session.flush()
 
+    # Auto-create initial transaction
+    if data.type == "personal_lent":
+        tx_type = TransactionType.DEBIT
+        tx_desc = f"Lent to: {debt.name}"
+    else:
+        tx_type = TransactionType.CREDIT
+        tx_desc = f"Borrowed from: {debt.name}"
+
+    debt_category_id = await _get_debt_category_id(session, tx_type)
+    tx_data = TransactionCreate(
+        account_id=data.account_id,
+        date=data.start_date,
+        description=tx_desc,
+        amount_minor=data.principal_minor,
+        type=tx_type,
+        category_id=debt_category_id,
+    )
+    await create_transaction(session, household_id, tx_data)
+
     return debt
 
 
@@ -238,12 +261,35 @@ async def get_amortization_schedule(session: AsyncSession, debt: Debt) -> list[d
     )
 
 
+def _payment_transaction_details(debt: Debt, notes: str | None) -> tuple[str, str]:
+    """Return (transaction_type, description) for auto-created payment transaction."""
+    if debt.type == DebtType.PERSONAL_LENT:
+        return TransactionType.CREDIT, f"Debt collection: {debt.name}"
+    else:
+        return TransactionType.DEBIT, f"Debt payment: {debt.name}"
+
+
+async def _get_debt_category_id(session: AsyncSession, tx_type: str) -> int | None:
+    """Find the predefined Debt Payment or Debt Collection category."""
+    from app.models.category import Category
+
+    target_name = "Debt Collection" if tx_type == TransactionType.CREDIT else "Debt Payment"
+    q = select(Category).where(
+        Category.is_predefined.is_(True),
+        Category.name_en == target_name,
+    )
+    cat = (await session.execute(q)).scalar_one_or_none()
+    return cat.id if cat else None
+
+
 async def record_payment(
     session: AsyncSession,
+    household_id: uuid.UUID,
     debt: Debt,
     payment_date: date,
     amount_minor: int,
-    transaction_id: int | None = None,
+    account_id: int,
+    link_existing_transaction_id: int | None = None,
     notes: str | None = None,
 ) -> DebtPayment:
     """Record a payment, auto-computing principal/interest split for bank loans."""
@@ -307,11 +353,38 @@ async def record_payment(
         amount_minor=amount_minor,
         principal_minor=principal_portion,
         interest_minor=interest_portion,
-        transaction_id=transaction_id,
         notes=notes,
     )
     session.add(payment)
     await session.flush()
+
+    # --- Auto-create or link transaction ---
+    if link_existing_transaction_id is not None:
+        existing_tx = await session.get(Transaction, link_existing_transaction_id)
+        if (
+            existing_tx is None
+            or not existing_tx.is_active
+            or existing_tx.household_id != household_id
+            or existing_tx.account_id != account_id
+        ):
+            raise ValueError("TRANSACTION_NOT_FOUND")
+        payment.transaction_id = existing_tx.id
+        await session.flush()
+    else:
+        tx_type, tx_description = _payment_transaction_details(debt, notes)
+        debt_category_id = await _get_debt_category_id(session, tx_type)
+        tx_data = TransactionCreate(
+            account_id=account_id,
+            date=payment_date,
+            description=tx_description,
+            amount_minor=amount_minor,
+            type=tx_type,
+            category_id=debt_category_id,
+            notes=notes,
+        )
+        new_tx = await create_transaction(session, household_id, tx_data)
+        payment.transaction_id = new_tx.id
+        await session.flush()
 
     # For P2P debts, find the earliest unpaid split and mark it paid
     if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):

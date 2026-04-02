@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_current_user, get_household_id
 from app.dependencies_rbac import get_member_role
 from app.main import app
-from app.models import Debt, Household, HouseholdMember, Person
+from app.models import Account, Debt, Household, HouseholdMember, Person
 from app.models.enums import DebtType, HouseholdRole
 
 
@@ -201,6 +201,9 @@ async def test_member_can_create_p2p_debt(db_session: AsyncSession, client) -> N
     person = Person(household_id=household_id, name="Target")
     db_session.add(person)
     await db_session.flush()
+    acct = Account(household_id=household_id, name="Test Acct", type="bank_account", currency="EGP", balance_minor=0)
+    db_session.add(acct)
+    await db_session.flush()
     await db_session.commit()
 
     app.dependency_overrides[get_current_user] = lambda: user_id
@@ -220,6 +223,7 @@ async def test_member_can_create_p2p_debt(db_session: AsyncSession, client) -> N
                 "person_id": person.id,
                 "repayment_mode": "lump_sum",
                 "due_date": "2025-02-01",
+                "account_id": acct.id,
             },
         )
         assert resp.status_code in (201, 200)
@@ -303,7 +307,7 @@ async def test_viewer_cannot_record_payment(db_session: AsyncSession, client) ->
     try:
         resp = await client.post(
             f"/api/v1/debts/{debt_id}/payments",
-            json={"date": "2025-01-15", "amount_minor": 500},
+            json={"date": "2025-01-15", "amount_minor": 500, "account_id": 1},
         )
         assert resp.status_code == 403
     finally:

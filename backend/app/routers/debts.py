@@ -152,6 +152,13 @@ async def create_debt(
         if data.type == "bank_loan":
             debt = await debt_service.create_bank_loan(session, household_id, data)
         elif data.type in ("personal_lent", "personal_borrowed"):
+            if not data.account_id:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=ErrorResponse(
+                        error=ErrorDetail(code="ACCOUNT_ID_REQUIRED", message="P2P debts require account_id")
+                    ).model_dump(),
+                )
             debt = await debt_service.create_p2p_debt(session, household_id, data)
         else:
             raise HTTPException(
@@ -283,7 +290,7 @@ async def record_payment(
     _check_p2p_write(debt, role)
     try:
         payment = await debt_service.record_payment(
-            session, debt, data.date, data.amount_minor, data.transaction_id, data.notes
+            session, household_id, debt, data.date, data.amount_minor, data.account_id, data.link_existing_transaction_id, data.notes
         )
     except ValueError as e:
         raise HTTPException(

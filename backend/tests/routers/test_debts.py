@@ -1,6 +1,14 @@
 import pytest
 
 
+async def _create_test_account(client, name="Test Account", currency="EGP"):
+    resp = await client.post(
+        "/api/v1/accounts",
+        json={"name": name, "type": "bank_account", "currency": currency},
+    )
+    return resp.json()["data"]["id"]
+
+
 def _create_loan_payload(**overrides):
     payload = {
         "type": "bank_loan",
@@ -146,6 +154,7 @@ async def test_get_amortization_schedule(client):
 
 @pytest.mark.asyncio
 async def test_record_payment(client):
+    acct_id = await _create_test_account(client)
     create_resp = await client.post(
         "/api/v1/debts",
         json=_create_loan_payload(
@@ -157,7 +166,7 @@ async def test_record_payment(client):
     debt_id = create_resp.json()["data"]["id"]
     pay_resp = await client.post(
         f"/api/v1/debts/{debt_id}/payments",
-        json={"date": "2024-02-01", "amount_minor": 100000},
+        json={"date": "2024-02-01", "amount_minor": 100000, "account_id": acct_id},
     )
     assert pay_resp.status_code == 201
     payment = pay_resp.json()["data"]
@@ -168,6 +177,7 @@ async def test_record_payment(client):
 
 @pytest.mark.asyncio
 async def test_payment_updates_totals(client):
+    acct_id = await _create_test_account(client)
     create_resp = await client.post(
         "/api/v1/debts",
         json=_create_loan_payload(
@@ -181,7 +191,7 @@ async def test_payment_updates_totals(client):
     for month in range(2, 5):
         await client.post(
             f"/api/v1/debts/{debt_id}/payments",
-            json={"date": f"2024-0{month}-01", "amount_minor": 100000},
+            json={"date": f"2024-0{month}-01", "amount_minor": 100000, "account_id": acct_id},
         )
     # Debt should be paid off
     debt_resp = await client.get(f"/api/v1/debts/{debt_id}")
@@ -190,6 +200,7 @@ async def test_payment_updates_totals(client):
 
 @pytest.mark.asyncio
 async def test_payment_exceeding_remaining_fails(client):
+    acct_id = await _create_test_account(client)
     create_resp = await client.post(
         "/api/v1/debts",
         json=_create_loan_payload(
@@ -201,7 +212,7 @@ async def test_payment_exceeding_remaining_fails(client):
     debt_id = create_resp.json()["data"]["id"]
     response = await client.post(
         f"/api/v1/debts/{debt_id}/payments",
-        json={"date": "2024-02-01", "amount_minor": 200000},
+        json={"date": "2024-02-01", "amount_minor": 200000, "account_id": acct_id},
     )
     assert response.status_code == 422
     assert "PAYMENT_EXCEEDS_REMAINING" in response.json()["detail"]["error"]["code"]
@@ -209,6 +220,7 @@ async def test_payment_exceeding_remaining_fails(client):
 
 @pytest.mark.asyncio
 async def test_list_payments(client):
+    acct_id = await _create_test_account(client)
     create_resp = await client.post(
         "/api/v1/debts",
         json=_create_loan_payload(
@@ -220,7 +232,7 @@ async def test_list_payments(client):
     debt_id = create_resp.json()["data"]["id"]
     await client.post(
         f"/api/v1/debts/{debt_id}/payments",
-        json={"date": "2024-02-01", "amount_minor": 100000},
+        json={"date": "2024-02-01", "amount_minor": 100000, "account_id": acct_id},
     )
     response = await client.get(f"/api/v1/debts/{debt_id}/payments")
     assert response.status_code == 200
@@ -234,3 +246,67 @@ async def test_mark_paid(client):
     response = await client.post(f"/api/v1/debts/{debt_id}/mark-paid")
     assert response.status_code == 200
     assert response.json()["data"]["status"] == "paid_off"
+
+
+@pytest.mark.asyncio
+async def test_record_payment_creates_transaction(client):
+    """Recording a payment should auto-create a debit transaction on the account."""
+    acct = await client.post(
+        "/api/v1/accounts",
+        json={"name": "CIB", "type": "bank_account", "currency": "EGP"},
+    )
+    acct_id = acct.json()["data"]["id"]
+    loan = await client.post(
+        "/api/v1/debts",
+        json=_create_loan_payload(principal_minor=1200000, annual_rate_percent=0, tenure_months=12),
+    )
+    debt_id = loan.json()["data"]["id"]
+    resp = await client.post(
+        f"/api/v1/debts/{debt_id}/payments",
+        json={"date": "2026-04-01", "amount_minor": 100000, "account_id": acct_id},
+    )
+    assert resp.status_code == 201
+    payment = resp.json()["data"]
+    assert payment["transaction_id"] is not None
+    tx_resp = await client.get(f"/api/v1/transactions/{payment['transaction_id']}")
+    assert tx_resp.status_code == 200
+    tx = tx_resp.json()["data"]
+    assert tx["account_id"] == acct_id
+    assert tx["amount_minor"] == -100000  # debit = negative
+
+
+@pytest.mark.asyncio
+async def test_create_p2p_lent_creates_debit_transaction(client):
+    acct_id = await _create_test_account(client)
+    person = await client.post("/api/v1/persons", json={"name": "Ahmed"})
+    person_id = person.json()["data"]["id"]
+    resp = await client.post(
+        "/api/v1/debts",
+        json={
+            "type": "personal_lent", "name": "Lent to Ahmed",
+            "principal_minor": 500000, "currency": "EGP",
+            "tenure_months": 1, "start_date": "2026-04-01",
+            "person_id": person_id, "repayment_mode": "lump_sum",
+            "due_date": "2026-05-01", "account_id": acct_id,
+        },
+    )
+    assert resp.status_code == 201
+    txs = await client.get(f"/api/v1/transactions?account_id={acct_id}")
+    tx_list = txs.json()["data"]
+    assert len(tx_list) == 1
+    assert tx_list[0]["amount_minor"] == -500000
+
+
+@pytest.mark.asyncio
+async def test_create_p2p_without_account_id_fails(client):
+    person = await client.post("/api/v1/persons", json={"name": "Test"})
+    person_id = person.json()["data"]["id"]
+    resp = await client.post(
+        "/api/v1/debts",
+        json={
+            "type": "personal_lent", "name": "Test", "principal_minor": 100000,
+            "currency": "EGP", "tenure_months": 1, "start_date": "2026-04-01",
+            "person_id": person_id, "repayment_mode": "lump_sum", "due_date": "2026-05-01",
+        },
+    )
+    assert resp.status_code == 422
