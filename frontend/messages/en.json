@@ -31,7 +31,14 @@
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
-    "delete": "Delete",
+    "delete": {
+      "button": "Delete",
+      "title": "Are you sure?",
+      "description": "This will permanently delete \"{name}\". This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting..."
+    },
     "edit": "Edit",
     "create": "Create",
     "search": "Search...",
@@ -726,6 +733,7 @@
     "form": {
       "loan": {
         "title": "Add Bank Loan",
+        "editTitle": "Edit Bank Loan",
         "description": "Create a new bank loan record.",
         "name": "Loan Name",
         "namePlaceholder": "e.g. Car Loan",
@@ -741,11 +749,13 @@
         "selectAccount": "Select account",
         "notes": "Notes",
         "submit": "Add Loan",
+        "update": "Update Loan",
         "saving": "Saving...",
         "none": "None"
       },
       "p2p": {
         "title": "Add Personal Debt",
+        "editTitle": "Edit Personal Debt",
         "description": "Record a personal loan or borrowing.",
         "person": "Person",
         "selectPerson": "Select person",
@@ -760,6 +770,7 @@
         "splitCount": "Number of Splits",
         "notes": "Notes",
         "submit": "Add Debt",
+        "update": "Update Debt",
         "saving": "Saving...",
         "autoNameLent": "Loan to {name}",
         "autoNameBorrowed": "Borrowed from {name}"
@@ -774,7 +785,30 @@
         "saving": "Saving..."
       },
       "installment": {
+        "title": "Add Installment Plan",
+        "editTitle": "Edit Installment Plan",
         "description": "Add a new installment plan",
+        "editDescription": "Update installment plan details",
+        "type": "Installment Type",
+        "types": {
+          "credit_card": "Credit Card",
+          "store": "Store / Retail",
+          "financing_app": "Financing App (BNPL)"
+        },
+        "name": "Plan Name",
+        "merchant": "Merchant Name",
+        "currency": "Currency",
+        "selectCurrency": "Select currency",
+        "totalAmount": "Total Amount",
+        "monthlyAmount": "Monthly Payment",
+        "totalMonths": "Number of Months",
+        "startMonth": "Start Month",
+        "sourceAccount": "Source Account",
+        "selectAccount": "Select account",
+        "none": "None",
+        "submit": "Add Installment",
+        "update": "Update Installment",
+        "saving": "Saving...",
         "comingSoon": "Coming soon"
       }
     }
@@ -796,9 +830,12 @@
     },
     "form": {
       "title": "Add Person",
+      "editTitle": "Edit Person",
       "description": "Add a person for tracking personal debts.",
+      "editDescription": "Update person details.",
       "selectRelationship": "Select relationship",
       "submit": "Add Person",
+      "update": "Update Person",
       "saving": "Saving..."
     }
   },

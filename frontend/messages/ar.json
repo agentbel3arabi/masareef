@@ -31,7 +31,14 @@
     "loading": "جاري التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
-    "delete": "حذف",
+    "delete": {
+      "button": "حذف",
+      "title": "هل أنت متأكد؟",
+      "description": "سيتم حذف \"{name}\" نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "confirm": "حذف",
+      "deleting": "جارِ الحذف..."
+    },
     "edit": "تعديل",
     "create": "إنشاء",
     "search": "بحث...",
@@ -726,6 +733,7 @@
     "form": {
       "loan": {
         "title": "إضافة قرض بنكي",
+        "editTitle": "تعديل القرض البنكي",
         "description": "إنشاء سجل قرض بنكي جديد.",
         "name": "اسم القرض",
         "namePlaceholder": "مثال: قرض سيارة",
@@ -741,11 +749,13 @@
         "selectAccount": "اختر الحساب",
         "notes": "ملاحظات",
         "submit": "إضافة القرض",
+        "update": "تحديث القرض",
         "saving": "جاري الحفظ...",
         "none": "بدون"
       },
       "p2p": {
         "title": "إضافة دين شخصي",
+        "editTitle": "تعديل الدين الشخصي",
         "description": "تسجيل قرض شخصي أو اقتراض.",
         "person": "الشخص",
         "selectPerson": "اختر شخص",
@@ -760,6 +770,7 @@
         "splitCount": "عدد الأقساط",
         "notes": "ملاحظات",
         "submit": "إضافة الدين",
+        "update": "تحديث الدين",
         "saving": "جاري الحفظ...",
         "autoNameLent": "قرض لـ {name}",
         "autoNameBorrowed": "اقتراض من {name}"
@@ -774,7 +785,30 @@
         "saving": "جاري الحفظ..."
       },
       "installment": {
+        "title": "إضافة خطة أقساط",
+        "editTitle": "تعديل خطة الأقساط",
         "description": "إضافة خطة أقساط جديدة",
+        "editDescription": "تحديث تفاصيل خطة الأقساط",
+        "type": "نوع القسط",
+        "types": {
+          "credit_card": "بطاقة ائتمان",
+          "store": "متجر / تجزئة",
+          "financing_app": "تطبيق تمويل (اشترِ الآن وادفع لاحقاً)"
+        },
+        "name": "اسم الخطة",
+        "merchant": "اسم التاجر",
+        "currency": "العملة",
+        "selectCurrency": "اختر العملة",
+        "totalAmount": "المبلغ الإجمالي",
+        "monthlyAmount": "القسط الشهري",
+        "totalMonths": "عدد الأشهر",
+        "startMonth": "شهر البداية",
+        "sourceAccount": "الحساب المصدر",
+        "selectAccount": "اختر الحساب",
+        "none": "بدون",
+        "submit": "إضافة القسط",
+        "update": "تحديث القسط",
+        "saving": "جارِ الحفظ...",
         "comingSoon": "قريباً"
       }
     }
@@ -796,9 +830,12 @@
     },
     "form": {
       "title": "إضافة شخص",
+      "editTitle": "تعديل الشخص",
       "description": "إضافة شخص لتتبع الديون الشخصية.",
+      "editDescription": "تحديث بيانات الشخص.",
       "selectRelationship": "اختر العلاقة",
       "submit": "إضافة شخص",
+      "update": "تحديث الشخص",
       "saving": "جاري الحفظ..."
     }
   },

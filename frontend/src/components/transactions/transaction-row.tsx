@@ -188,7 +188,7 @@ export function TransactionRow({
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-destructive"
                 onClick={() => setDeleteOpen(true)}
-                aria-label={t("common.delete")}
+                aria-label={t("common.delete.button")}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -215,7 +215,7 @@ export function TransactionRow({
               onClick={handleDelete}
               disabled={deleteTx.isPending}
             >
-              {deleteTx.isPending ? t("common.loading") : t("common.delete")}
+              {deleteTx.isPending ? t("common.loading") : t("common.delete.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>
