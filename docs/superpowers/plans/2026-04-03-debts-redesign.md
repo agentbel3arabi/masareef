@@ -1,5 +1,7 @@
 # Debts Section Redesign — Implementation Plan
 
+> ⚠️ **STATUS: SUPERSEDED** — Phase 3 is now complete. This plan was generated during the Phase 3D-4 session. Any remaining items from this plan that were NOT executed are either covered by the Phase 3.5 UX polish sprint (`docs/superpowers/specs/phase-3.5-ux-polish-sprint.md`) or deferred to Phase 4+. Do NOT execute this plan — check the Phase 3.5 spec instead.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Redesign the Debts section with 3-tab structure, payment frequency support, balance-impact awareness, match-first payments, combined Installments tab, BNPL bulk wizard, accounts cross-linking, and consistent button patterns.

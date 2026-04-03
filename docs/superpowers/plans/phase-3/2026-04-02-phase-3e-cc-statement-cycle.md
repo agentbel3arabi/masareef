@@ -1,5 +1,7 @@
 # Phase 3E: Credit Card Statement Cycle & Pending/Posted Transactions
 
+> ⚠️ **STATUS: DEFERRED → Phase 4** — This plan was not executed during Phase 3. Per the post-Phase 3 review (April 2026), CC statement cycle features are deferred to Phase 4 (Dashboard & Charts) where they will be planned alongside dashboard data aggregation. This plan file is preserved for reference but should NOT be executed as-is — it will need re-planning with the Phase 4 context.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add credit card statement cycle tracking (statement balance, minimum payment, billing dates) and pending/posted transaction states so users can manage CC accounts with full lifecycle visibility.
