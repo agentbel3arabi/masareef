@@ -941,6 +941,27 @@
     "cancel": "Cancel",
     "confirm": "Delete"
   },
+  "bulkPayment": {
+    "title": "BNPL Bulk Payment",
+    "step": "Step {current} of {total}",
+    "selectPlans": "Select installments to pay this month:",
+    "selected": "Selected: {count} plans",
+    "subtotal": "Subtotal",
+    "next": "Next",
+    "back": "Back",
+    "feesTotal": "Fees & Total",
+    "installmentsTotal": "Installments total",
+    "paymentFees": "Payment fees",
+    "totalToPay": "Total to pay",
+    "payFrom": "Pay from",
+    "date": "Date",
+    "linkOrCreate": "Review & Confirm",
+    "createNew": "Create new transaction",
+    "confirm": "Confirm Payment",
+    "summary": "Summary",
+    "processing": "Processing...",
+    "fees": "Fees"
+  },
   "installments": {
     "title": "Installment Plans",
     "creditCard": "Credit Card Installments",

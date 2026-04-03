@@ -941,6 +941,27 @@
     "cancel": "إلغاء",
     "confirm": "حذف"
   },
+  "bulkPayment": {
+    "title": "دفع أقساط BNPL جماعي",
+    "step": "الخطوة {current} من {total}",
+    "selectPlans": "اختر الأقساط للدفع هذا الشهر:",
+    "selected": "المحدد: {count} خطط",
+    "subtotal": "المجموع الفرعي",
+    "next": "التالي",
+    "back": "رجوع",
+    "feesTotal": "الرسوم والإجمالي",
+    "installmentsTotal": "إجمالي الأقساط",
+    "paymentFees": "رسوم الدفع",
+    "totalToPay": "إجمالي المطلوب",
+    "payFrom": "الدفع من",
+    "date": "التاريخ",
+    "linkOrCreate": "مراجعة وتأكيد",
+    "createNew": "إنشاء معاملة جديدة",
+    "confirm": "تأكيد الدفع",
+    "summary": "الملخص",
+    "processing": "جارٍ المعالجة...",
+    "fees": "الرسوم"
+  },
   "installments": {
     "title": "خطط الأقساط",
     "creditCard": "أقساط بطاقات الائتمان",

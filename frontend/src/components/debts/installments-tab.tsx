@@ -19,6 +19,7 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { InstallmentPlanRow } from "@/components/debts/installment-plan-row";
 import { InstallmentForm } from "@/components/debts/installment-form";
+import { BNPLBulkPayment } from "@/components/debts/bnpl-bulk-payment";
 import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import type { InstallmentResponse, InstallmentType } from "@/lib/types/debts";
@@ -69,6 +70,7 @@ export function InstallmentsTab({ onAddClick }: InstallmentsTabProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [createDefaultType, setCreateDefaultType] = useState<InstallmentType>("credit_card");
   const [editingPlan, setEditingPlan] = useState<InstallmentResponse | null>(null);
+  const [bulkPayOpen, setBulkPayOpen] = useState(false);
 
   const allPlans = data?.data ?? [];
 
@@ -185,7 +187,7 @@ export function InstallmentsTab({ onAddClick }: InstallmentsTabProps) {
                     tabIndex={0}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // TODO: Open bulk pay wizard (Task 12)
+                      setBulkPayOpen(true);
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -356,6 +358,8 @@ export function InstallmentsTab({ onAddClick }: InstallmentsTabProps) {
           defaultType={editingPlan.type}
         />
       )}
+
+      <BNPLBulkPayment open={bulkPayOpen} onOpenChange={setBulkPayOpen} />
     </div>
   );
 }
