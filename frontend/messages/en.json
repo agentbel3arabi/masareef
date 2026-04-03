@@ -943,8 +943,15 @@
   },
   "installments": {
     "title": "Installment Plans",
-    "creditCard": "Credit Card",
-    "store": "Store",
+    "creditCard": "Credit Card Installments",
+    "bnpl": "BNPL",
+    "store": "Store Installments",
+    "bulkPay": "Bulk Pay",
+    "activePlans": "{count, plural, one {# active plan} other {# active plans}}",
+    "monthlyCommitment": "{amount}/mo",
+    "utilized": "{percent}% utilized",
+    "creditLimit": "Credit limit: {amount}",
+    "noPlans": "No installment plans yet",
     "financingApp": "Financing App"
   }
 }

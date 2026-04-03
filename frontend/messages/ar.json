@@ -943,8 +943,15 @@
   },
   "installments": {
     "title": "خطط الأقساط",
-    "creditCard": "بطاقة ائتمان",
-    "store": "متجر",
+    "creditCard": "أقساط بطاقات الائتمان",
+    "bnpl": "اشترِ الآن وادفع لاحقاً",
+    "store": "أقساط المتاجر",
+    "bulkPay": "دفع جماعي",
+    "activePlans": "{count, plural, one {خطة نشطة واحدة} other {# خطط نشطة}}",
+    "monthlyCommitment": "{amount}/شهر",
+    "utilized": "{percent}% مستخدم",
+    "creditLimit": "حد الائتمان: {amount}",
+    "noPlans": "لا توجد خطط أقساط بعد",
     "financingApp": "تطبيق تمويل"
   }
 }
