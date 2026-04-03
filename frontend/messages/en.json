@@ -793,7 +793,12 @@
       "edit": "Edit",
       "delete": "Delete",
       "deleteTitle": "Delete Debt",
-      "deleteDescription": "Are you sure you want to delete this debt? This action cannot be undone."
+      "deleteDescription": "Are you sure you want to delete this debt? This action cannot be undone.",
+      "breadcrumb": {
+        "debts": "Debts",
+        "loans": "Loans",
+        "p2p": "P2P"
+      }
     },
     "form": {
       "loan": {

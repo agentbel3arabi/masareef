@@ -58,16 +58,19 @@ export default function DashboardPage() {
           label={t("monthlySpending")}
           value="—"
         />
-        <StatCard
-          icon={Clock}
-          label={t("activeDebts")}
-          value={activeDebtsValue}
-          trend={
-            activeDebtsCount > 0
-              ? { direction: "flat", text: t("activeDebtsCount", { count: activeDebtsCount }) }
-              : undefined
-          }
-        />
+        <Link href="/debts" className="block">
+          <StatCard
+            icon={Clock}
+            label={t("activeDebts")}
+            value={activeDebtsValue}
+            trend={
+              activeDebtsCount > 0
+                ? { direction: "flat", text: t("activeDebtsCount", { count: activeDebtsCount }) }
+                : undefined
+            }
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          />
+        </Link>
       </div>
 
       {/* Charts + Recent Transactions */}

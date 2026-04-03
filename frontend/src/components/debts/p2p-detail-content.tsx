@@ -8,6 +8,14 @@ import { Check, AlertCircle, Circle, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
@@ -134,13 +142,22 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* ── Back link ─────────────────────────────────── */}
-      <Link
-        href="/debts"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <span>←</span> {t("backToDebts")}
-      </Link>
+      {/* ── Breadcrumb ────────────────────────────────── */}
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/debts" />}>{t("breadcrumb.debts")}</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/debts" />}>{t("breadcrumb.p2p")}</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{debt?.name ?? "..."}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* ── Header ────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
