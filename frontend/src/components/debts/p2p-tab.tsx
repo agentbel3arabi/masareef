@@ -51,7 +51,11 @@ const STATUS_MAP: Record<string, "active" | "completed"> = {
   paid_off: "completed",
 };
 
-export function P2PTab() {
+interface P2PTabProps {
+  onAddClick?: () => void;
+}
+
+export function P2PTab({ onAddClick }: P2PTabProps) {
   const t = useTranslations();
   const tActions = useTranslations("debts.actions");
   const tDetail = useTranslations("debts.detail");

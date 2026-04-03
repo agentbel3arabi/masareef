@@ -607,9 +607,7 @@
     "subtitle": "Track and manage your loans and installments",
     "tabs": {
       "loans": "Loans",
-      "cardInstallments": "Card Installments",
-      "financingApps": "Financing Apps",
-      "storeInstallments": "Store Installments",
+      "installments": "Installments",
       "p2p": "P2P"
     },
     "summary": {
@@ -643,7 +641,8 @@
       "principal": "Principal",
       "amortization": "Amortization Schedule",
       "viewDetails": "View Details",
-      "tenureLabel": "Tenure"
+      "tenureLabel": "Tenure",
+      "totalCost": "Total Cost (w/ Interest)"
     },
     "p2p": {
       "lent": "You lent",
@@ -850,6 +849,18 @@
         "annualRate": "Annual Interest Rate (%)",
         "annualRateHint": "0% for interest-free plans",
         "selectProvider": "Select or type provider name"
+      }
+    },
+    "frequency": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semi_annual": "Semi-Annual",
+      "annual": "Annual",
+      "paymentLabel": {
+        "monthly": "Monthly Payment",
+        "quarterly": "Quarterly Payment",
+        "semi_annual": "Semi-Annual Payment",
+        "annual": "Annual Payment"
       }
     }
   },

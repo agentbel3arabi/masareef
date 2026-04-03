@@ -24,7 +24,11 @@ const SCHEDULE_STATUS_MAP: Record<
   upcoming: "pending",
 };
 
-export function LoansTab() {
+interface LoansTabProps {
+  onAddClick?: () => void;
+}
+
+export function LoansTab({ onAddClick }: LoansTabProps) {
   const t = useTranslations();
   const tLoan = useTranslations("debts.loan");
   const tInstallment = useTranslations("debts.installment");
@@ -220,14 +224,12 @@ function LoanCard({
 }) {
   const tLoan = useTranslations("debts.loan");
   const tDetail = useTranslations("debts.detail");
+  const totalWithInterest = loan.tenure_months * loan.monthly_payment_minor;
   const progressPct =
-    loan.principal_minor > 0
-      ? Math.round(
-          ((loan.principal_minor - loan.remaining_minor) /
-            loan.principal_minor) *
-            100,
-        )
+    totalWithInterest > 0
+      ? Math.min(100, Math.round((loan.total_paid_minor / totalWithInterest) * 100))
       : 0;
+  const remainingPayments = Math.max(0, totalWithInterest - loan.total_paid_minor);
 
   const aprFormatted = (loan.annual_rate_bps / 100).toFixed(2);
 
@@ -289,7 +291,7 @@ function LoanCard({
                 {tLoan("remaining")}
               </span>
               <MoneyDisplay
-                amount={loan.remaining_minor}
+                amount={remainingPayments}
                 currency={loan.currency}
                 size="sm"
                 className="font-semibold"
@@ -356,7 +358,7 @@ function LoanCard({
                   {tDetail("paidPercent", { percent: progressPct })}
                 </span>
                 <MoneyDisplay
-                  amount={loan.remaining_minor}
+                  amount={remainingPayments}
                   currency={loan.currency}
                   size="sm"
                   className="text-xs text-muted-foreground"

@@ -607,10 +607,8 @@
     "subtitle": "تتبع وإدارة القروض والأقساط",
     "tabs": {
       "loans": "القروض",
-      "cardInstallments": "أقساط البطاقات",
-      "financingApps": "تطبيقات التمويل",
-      "storeInstallments": "أقساط المتاجر",
-      "p2p": "ديون شخصية"
+      "installments": "الأقساط",
+      "p2p": "شخصي"
     },
     "summary": {
       "monthlyPayments": "الأقساط الشهرية",
@@ -643,7 +641,8 @@
       "principal": "المبلغ الأصلي",
       "amortization": "جدول الإطفاء",
       "viewDetails": "عرض التفاصيل",
-      "tenureLabel": "المدة"
+      "tenureLabel": "المدة",
+      "totalCost": "الإجمالي مع الفائدة"
     },
     "p2p": {
       "lent": "أقرضت",
@@ -850,6 +849,18 @@
         "annualRate": "معدل الفائدة السنوي (%)",
         "annualRateHint": "٠٪ للخطط بدون فوائد",
         "selectProvider": "اختر أو اكتب اسم مزود التمويل"
+      }
+    },
+    "frequency": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "semi_annual": "نصف سنوي",
+      "annual": "سنوي",
+      "paymentLabel": {
+        "monthly": "القسط الشهري",
+        "quarterly": "القسط ربع السنوي",
+        "semi_annual": "القسط نصف السنوي",
+        "annual": "القسط السنوي"
       }
     }
   },
