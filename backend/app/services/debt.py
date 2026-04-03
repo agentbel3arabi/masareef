@@ -16,7 +16,12 @@ from app.models.person import Person
 from app.models.transaction import Transaction
 from app.schemas.debt import DebtCreate, DebtUpdate
 from app.schemas.transaction import TransactionCreate
-from app.services.amortization import compute_monthly_payment, generate_schedule
+from app.services.amortization import (
+    FREQUENCY_MONTHS,
+    compute_monthly_payment,
+    compute_periodic_payment,
+    generate_schedule,
+)
 from app.services.transaction import create_transaction
 
 
@@ -72,11 +77,17 @@ async def create_bank_loan(
     household_id: uuid.UUID,
     data: DebtCreate,
 ) -> Debt:
-    """Create a bank loan debt with computed monthly payment."""
+    """Create a bank loan debt with computed periodic payment."""
     annual_rate_bps = int(round(data.annual_rate_percent * 100))
-    monthly_payment = compute_monthly_payment(
-        data.principal_minor, annual_rate_bps, data.tenure_months
+    frequency_months = FREQUENCY_MONTHS.get(data.payment_frequency, 1)
+    periodic_payment = compute_periodic_payment(
+        data.principal_minor, annual_rate_bps, data.tenure_months, frequency_months
     )
+
+    # Default payment_day_of_month from start_date if not provided
+    payment_day = data.payment_day_of_month
+    if payment_day is None:
+        payment_day = min(data.start_date.day, 28)
 
     # Validate linked_account_id if provided
     if data.linked_account_id:
@@ -94,7 +105,9 @@ async def create_bank_loan(
         annual_rate_bps=annual_rate_bps,
         tenure_months=data.tenure_months,
         start_date=data.start_date,
-        monthly_payment_minor=monthly_payment,
+        payment_day_of_month=payment_day,
+        payment_frequency=data.payment_frequency,
+        monthly_payment_minor=periodic_payment,
         linked_account_id=data.linked_account_id,
         notes=data.notes,
         status=DebtStatus.ACTIVE,
@@ -257,12 +270,18 @@ async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
 
 async def get_amortization_schedule(session: AsyncSession, debt: Debt) -> list[dict]:
     payments = await _get_payments(session, debt.id)
+    freq = debt.payment_frequency
+    frequency_months = FREQUENCY_MONTHS.get(
+        freq.value if hasattr(freq, "value") else (freq or "monthly"), 1
+    )
     return generate_schedule(
         principal_minor=debt.principal_minor,
         annual_rate_bps=debt.annual_rate_bps,
         tenure_months=debt.tenure_months,
         start_date=debt.start_date,
         payments=payments,
+        frequency_months=frequency_months,
+        payment_day_of_month=debt.payment_day_of_month,
     )
 
 
@@ -317,12 +336,18 @@ async def record_payment(
         # canonical principal/interest split per installment.  Passing payments=[]
         # is intentional — all rows will have status != "paid", which is what we
         # need to find the matching month's ratio without previous-payment state.
+        freq = debt.payment_frequency
+        fm = FREQUENCY_MONTHS.get(
+            freq.value if hasattr(freq, "value") else (freq or "monthly"), 1
+        )
         schedule = generate_schedule(
             principal_minor=debt.principal_minor,
             annual_rate_bps=debt.annual_rate_bps,
             tenure_months=debt.tenure_months,
             start_date=debt.start_date,
             payments=[],
+            frequency_months=fm,
+            payment_day_of_month=debt.payment_day_of_month,
         )
         # Find the matching schedule row by calendar month
         matching_row = None

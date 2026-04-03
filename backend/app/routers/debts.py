@@ -49,6 +49,7 @@ def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None, c
     d_status = debt.status
     d_mode = debt.repayment_mode
     remaining_minor = remaining if remaining is not None else debt.principal_minor
+    d_freq = debt.payment_frequency
     return DebtResponse(
         id=debt.id,
         type=d_type.value if hasattr(d_type, "value") else d_type,
@@ -61,6 +62,8 @@ def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None, c
         annual_rate_bps=debt.annual_rate_bps,
         tenure_months=debt.tenure_months,
         start_date=debt.start_date,
+        payment_day_of_month=debt.payment_day_of_month,
+        payment_frequency=d_freq.value if hasattr(d_freq, "value") else (d_freq or "monthly"),
         monthly_payment_minor=debt.monthly_payment_minor,
         repayment_mode=d_mode.value if hasattr(d_mode, "value") else d_mode,
         due_date=debt.due_date,
