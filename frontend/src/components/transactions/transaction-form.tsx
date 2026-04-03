@@ -46,12 +46,14 @@ export function TransactionForm({
   const { data: accountsData } = useAccounts();
   const accounts = accountsData?.data ?? [];
 
-  // Reset account selection when form opens/closes
+  // Reset account selection when form opens
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional reset on open */
   useEffect(() => {
     if (open) {
       setSelectedAccountId(accountId ?? "");
     }
   }, [open, accountId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const activeAccountId = accountId ?? (selectedAccountId || undefined);
   const selectedAccount = accounts.find((a) => a.id === activeAccountId);
