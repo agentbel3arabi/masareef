@@ -319,6 +319,42 @@ async def test_create_p2p_lent_creates_debit_transaction(client):
 
 
 @pytest.mark.asyncio
+async def test_bulk_past_payments_returns_201(client):
+    acct_id = await _create_test_account(client)
+    resp = await client.post("/api/v1/debts", json=_create_loan_payload(
+        linked_account_id=acct_id,
+        start_date="2024-01-01",
+        tenure_months=24,
+        principal_minor=2400000,
+        annual_rate_percent=0,
+    ))
+    assert resp.status_code == 201
+    debt_id = resp.json()["data"]["id"]
+
+    bulk_resp = await client.post(
+        f"/api/v1/debts/{debt_id}/bulk-past-payments",
+        json={"installment_numbers": [1, 2, 3], "account_id": acct_id},
+    )
+    assert bulk_resp.status_code == 201
+    data = bulk_resp.json()["data"]
+    assert data["recorded_count"] == 3
+    assert "balance_affecting_count" in data
+    assert "history_only_count" in data
+    assert data["balance_affecting_count"] + data["history_only_count"] == 3
+    assert data["total_balance_impact_minor"] > 0
+
+
+@pytest.mark.asyncio
+async def test_bulk_past_payments_invalid_debt_returns_404(client):
+    acct_id = await _create_test_account(client)
+    resp = await client.post(
+        "/api/v1/debts/99999/bulk-past-payments",
+        json={"installment_numbers": [1], "account_id": acct_id},
+    )
+    assert resp.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_create_p2p_without_account_id_fails(client):
     person = await client.post("/api/v1/persons", json={"name": "Test"})
     person_id = person.json()["data"]["id"]

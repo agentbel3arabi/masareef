@@ -9,6 +9,8 @@ from app.dependencies_rbac import get_member_role
 from app.models.enums import DebtType, HouseholdRole
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.debt import (
+    BulkPastPaymentRequest,
+    BulkPastPaymentResponse,
     DebtCreate,
     DebtResponse,
     DebtUpdate,
@@ -323,6 +325,37 @@ async def record_payment(
             detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
         )
     return SuccessResponse(data=_payment_to_response(payment).model_dump())
+
+
+@router.post("/{debt_id}/bulk-past-payments", status_code=status.HTTP_201_CREATED)
+async def bulk_past_payments(
+    debt_id: int,
+    data: BulkPastPaymentRequest,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    if role == HouseholdRole.VIEWER:
+        raise HTTPException(status_code=403, detail="Viewers cannot record payments")
+    debt = await debt_service.get_debt(session, household_id, debt_id)
+    if not debt:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
+            ).model_dump(),
+        )
+    _check_p2p_write(debt, role)
+    try:
+        result = await debt_service.bulk_record_past_payments(
+            session, household_id, debt, data.installment_numbers, data.account_id
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
+        )
+    return SuccessResponse(data=BulkPastPaymentResponse(**result).model_dump())
 
 
 @router.get("/{debt_id}/match-suggestions")

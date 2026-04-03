@@ -16,6 +16,7 @@ class TransactionCreate(BaseModel):
     notes: str | None = None
     gam3eya_id: int | None = None
     asset_id: int | None = None
+    applies_to_balance: bool = True
 
 
 class TransactionUpdate(BaseModel):

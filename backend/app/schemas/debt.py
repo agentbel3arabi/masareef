@@ -107,6 +107,18 @@ class MatchSuggestion(BaseModel):
     score: float = Field(ge=0.0, le=1.0)
 
 
+class BulkPastPaymentRequest(BaseModel):
+    installment_numbers: list[int] = Field(min_length=1)
+    account_id: int
+
+
+class BulkPastPaymentResponse(BaseModel):
+    recorded_count: int
+    balance_affecting_count: int
+    history_only_count: int
+    total_balance_impact_minor: int
+
+
 class P2PDebtSplitResponse(BaseModel):
     id: int
     debt_id: int

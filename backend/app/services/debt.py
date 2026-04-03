@@ -22,6 +22,7 @@ from app.services.amortization import (
     compute_periodic_payment,
     generate_schedule,
 )
+from app.services.account import get_balance_cutoff_date
 from app.services.transaction import create_transaction
 
 
@@ -315,6 +316,7 @@ async def record_payment(
     account_id: int,
     link_existing_transaction_id: int | None = None,
     notes: str | None = None,
+    applies_to_balance_override: bool | None = None,
 ) -> DebtPayment:
     """Record a payment, auto-computing principal/interest split for bank loans."""
     # Use principal-paid sum (not total-paid) so that interest portions in prior
@@ -401,6 +403,16 @@ async def record_payment(
         payment.transaction_id = existing_tx.id
         await session.flush()
     else:
+        # Determine whether this payment affects the account balance
+        if applies_to_balance_override is not None:
+            affects_balance = applies_to_balance_override
+        else:
+            account = await session.get(Account, account_id)
+            if account is None or not account.is_active or account.household_id != household_id:
+                raise ValueError("ACCOUNT_NOT_FOUND")
+            cutoff = get_balance_cutoff_date(account)
+            affects_balance = payment_date >= cutoff if cutoff else True
+
         tx_type, tx_description = _payment_transaction_details(debt, notes)
         debt_category_id = await _get_debt_category_id(session, tx_type)
         tx_data = TransactionCreate(
@@ -411,6 +423,7 @@ async def record_payment(
             type=tx_type,
             category_id=debt_category_id,
             notes=notes,
+            applies_to_balance=affects_balance,
         )
         new_tx = await create_transaction(session, household_id, tx_data)
         payment.transaction_id = new_tx.id
@@ -441,6 +454,75 @@ async def record_payment(
         await session.flush()
 
     return payment
+
+
+async def bulk_record_past_payments(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    debt: Debt,
+    installment_numbers: list[int],
+    account_id: int,
+) -> dict:
+    """Record multiple past payments in bulk, respecting balance cutoff dates."""
+    # Validate account
+    account = await session.get(Account, account_id)
+    if account is None or not account.is_active or account.household_id != household_id:
+        raise ValueError("ACCOUNT_NOT_FOUND")
+
+    cutoff = get_balance_cutoff_date(account)
+
+    # Generate the amortization schedule
+    freq = debt.payment_frequency
+    frequency_months = FREQUENCY_MONTHS.get(
+        freq.value if hasattr(freq, "value") else (freq or "monthly"), 1
+    )
+    payments_list = await _get_payments(session, debt.id)
+    schedule = generate_schedule(
+        principal_minor=debt.principal_minor,
+        annual_rate_bps=debt.annual_rate_bps,
+        tenure_months=debt.tenure_months,
+        start_date=debt.start_date,
+        payments=payments_list,
+        frequency_months=frequency_months,
+        payment_day_of_month=debt.payment_day_of_month,
+    )
+    schedule_by_num = {row["payment_number"]: row for row in schedule}
+
+    recorded_count = 0
+    balance_affecting_count = 0
+    history_only_count = 0
+    total_balance_impact_minor = 0
+
+    for num in sorted(installment_numbers):
+        row = schedule_by_num.get(num)
+        if row is None:
+            continue
+        payment_date = row["date"]
+        amount = row["payment_minor"]
+        affects_balance = payment_date >= cutoff if cutoff else True
+
+        await record_payment(
+            session=session,
+            household_id=household_id,
+            debt=debt,
+            payment_date=payment_date,
+            amount_minor=amount,
+            account_id=account_id,
+            applies_to_balance_override=affects_balance,
+        )
+        recorded_count += 1
+        if affects_balance:
+            balance_affecting_count += 1
+            total_balance_impact_minor += amount
+        else:
+            history_only_count += 1
+
+    return {
+        "recorded_count": recorded_count,
+        "balance_affecting_count": balance_affecting_count,
+        "history_only_count": history_only_count,
+        "total_balance_impact_minor": total_balance_impact_minor,
+    }
 
 
 async def get_payments(session: AsyncSession, debt_id: int) -> list[DebtPayment]:

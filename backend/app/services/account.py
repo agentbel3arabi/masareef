@@ -1,6 +1,7 @@
 """Account business logic. No HTTP awareness."""
 
 import uuid
+from datetime import date as date_type
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,14 @@ from app.models.account import Account
 from app.models.household import Household
 from app.models.transaction import Transaction
 from app.schemas.account import AccountCreate, AccountUpdate
+
+
+def get_balance_cutoff_date(account: Account) -> date_type | None:
+    """Return date before which transactions don't affect balance.
+
+    Returns account.opened_at (last_reconciliation_date support deferred).
+    """
+    return account.opened_at
 
 
 async def list_accounts(
