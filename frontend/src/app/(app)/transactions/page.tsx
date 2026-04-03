@@ -247,6 +247,7 @@ export default function TransactionsPage() {
       <FAB
         onClick={() => setCreateOpen(true)}
         ariaLabel={t("transactions.addTransaction")}
+        tooltip={t("transactions.newTransaction")}
       />
       <TransactionForm
         open={createOpen}

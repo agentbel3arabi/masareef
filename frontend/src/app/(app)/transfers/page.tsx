@@ -224,6 +224,7 @@ export default function TransfersPage() {
       <FAB
         onClick={() => setCreateOpen(true)}
         ariaLabel={t("transfers.newTransfer")}
+        tooltip={t("transfers.newTransfer")}
       />
 
       <TransferForm open={createOpen} onOpenChange={setCreateOpen} />

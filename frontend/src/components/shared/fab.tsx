@@ -1,14 +1,16 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface FABProps {
   onClick: () => void;
   ariaLabel: string;
+  tooltip?: string;
 }
 
-export function FAB({ onClick, ariaLabel }: FABProps) {
-  return (
+export function FAB({ onClick, ariaLabel, tooltip }: FABProps) {
+  const button = (
     <button
       type="button"
       onClick={onClick}
@@ -17,5 +19,18 @@ export function FAB({ onClick, ariaLabel }: FABProps) {
     >
       <Plus className="h-6 w-6" />
     </button>
+  );
+
+  if (!tooltip) return button;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>{button}</TooltipTrigger>
+        <TooltipContent side="inline-start">
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
