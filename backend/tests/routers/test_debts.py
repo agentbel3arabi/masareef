@@ -355,6 +355,68 @@ async def test_bulk_past_payments_invalid_debt_returns_404(client):
 
 
 @pytest.mark.asyncio
+async def test_bulk_bnpl_payment_returns_201(client):
+    acct_id = await _create_test_account(client, name="Credit Card", currency="EGP")
+    debt1 = await client.post("/api/v1/debts", json=_create_loan_payload(
+        name="BNPL 1", principal_minor=1200000, tenure_months=12, annual_rate_percent=0,
+    ))
+    debt2 = await client.post("/api/v1/debts", json=_create_loan_payload(
+        name="BNPL 2", principal_minor=600000, tenure_months=6, annual_rate_percent=0,
+    ))
+    d1_id = debt1.json()["data"]["id"]
+    d2_id = debt2.json()["data"]["id"]
+
+    resp = await client.post("/api/v1/debts/bulk-payment", json={
+        "items": [
+            {"debt_id": d1_id, "amount_minor": 100000},
+            {"debt_id": d2_id, "amount_minor": 100000},
+        ],
+        "fee_minor": 3500,
+        "account_id": acct_id,
+        "date": "2026-04-03",
+    })
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["payments_created"] == 2
+    assert data["total_minor"] == 203500
+    assert data["fee_transaction_id"] is not None
+
+
+@pytest.mark.asyncio
+async def test_bulk_bnpl_payment_no_fee(client):
+    acct_id = await _create_test_account(client, name="Card", currency="EGP")
+    debt = await client.post("/api/v1/debts", json=_create_loan_payload(
+        name="BNPL", principal_minor=600000, tenure_months=6, annual_rate_percent=0,
+    ))
+    d_id = debt.json()["data"]["id"]
+
+    resp = await client.post("/api/v1/debts/bulk-payment", json={
+        "items": [{"debt_id": d_id, "amount_minor": 100000}],
+        "fee_minor": 0,
+        "account_id": acct_id,
+        "date": "2026-04-03",
+    })
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["payments_created"] == 1
+    assert data["total_minor"] == 100000
+    assert data["fee_transaction_id"] is None
+
+
+@pytest.mark.asyncio
+async def test_bulk_bnpl_payment_invalid_debt_returns_422(client):
+    acct_id = await _create_test_account(client, name="Card", currency="EGP")
+    resp = await client.post("/api/v1/debts/bulk-payment", json={
+        "items": [{"debt_id": 99999, "amount_minor": 100000}],
+        "fee_minor": 0,
+        "account_id": acct_id,
+        "date": "2026-04-03",
+    })
+    assert resp.status_code == 422
+    assert "DEBT_NOT_FOUND" in resp.json()["detail"]["error"]["code"]
+
+
+@pytest.mark.asyncio
 async def test_create_p2p_without_account_id_fails(client):
     person = await client.post("/api/v1/persons", json={"name": "Test"})
     person_id = person.json()["data"]["id"]

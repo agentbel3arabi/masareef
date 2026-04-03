@@ -525,6 +525,66 @@ async def bulk_record_past_payments(
     }
 
 
+async def bulk_payment(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    items: list[dict],
+    fee_minor: int,
+    account_id: int,
+    payment_date: date,
+    link_existing_transaction_id: int | None = None,
+) -> dict:
+    """Process a bulk BNPL payment across multiple debts, with optional fee transaction."""
+    payments_created = 0
+    total_minor = 0
+
+    for item in items:
+        debt = await get_debt(session, household_id, item["debt_id"])
+        if not debt:
+            raise ValueError(f"DEBT_NOT_FOUND:{item['debt_id']}")
+
+        await record_payment(
+            session=session,
+            household_id=household_id,
+            debt=debt,
+            payment_date=payment_date,
+            amount_minor=item["amount_minor"],
+            account_id=account_id,
+            link_existing_transaction_id=link_existing_transaction_id,
+        )
+        payments_created += 1
+        total_minor += item["amount_minor"]
+
+    fee_transaction_id: int | None = None
+    if fee_minor > 0:
+        from app.models.category import Category
+
+        q = select(Category).where(
+            Category.is_predefined.is_(True),
+            Category.name_en == "Fees & Charges",
+        )
+        fee_cat = (await session.execute(q)).scalar_one_or_none()
+        fee_category_id = fee_cat.id if fee_cat else None
+
+        tx_data = TransactionCreate(
+            account_id=account_id,
+            date=payment_date,
+            description="BNPL Payment Fees",
+            amount_minor=fee_minor,
+            type=TransactionType.DEBIT,
+            category_id=fee_category_id,
+        )
+        fee_tx = await create_transaction(session, household_id, tx_data)
+        fee_transaction_id = fee_tx.id
+        total_minor += fee_minor
+
+    return {
+        "payments_created": payments_created,
+        "total_minor": total_minor,
+        "fee_transaction_id": fee_transaction_id,
+    }
+
+
 async def get_payments(session: AsyncSession, debt_id: int) -> list[DebtPayment]:
     return await _get_payments(session, debt_id)
 

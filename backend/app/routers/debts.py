@@ -11,6 +11,8 @@ from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, Succe
 from app.schemas.debt import (
     BulkPastPaymentRequest,
     BulkPastPaymentResponse,
+    BulkPaymentRequest,
+    BulkPaymentResponse,
     DebtCreate,
     DebtResponse,
     DebtUpdate,
@@ -138,6 +140,33 @@ async def list_debts(
         data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),
     )
+
+
+@router.post("/bulk-payment", status_code=status.HTTP_201_CREATED)
+async def bulk_payment_endpoint(
+    data: BulkPaymentRequest,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    if role in (HouseholdRole.VIEWER, HouseholdRole.CHILD):
+        raise HTTPException(status_code=403, detail="Insufficient permissions for bulk payment")
+    try:
+        result = await debt_service.bulk_payment(
+            session=session,
+            household_id=household_id,
+            items=[item.model_dump() for item in data.items],
+            fee_minor=data.fee_minor,
+            account_id=data.account_id,
+            payment_date=data.date,
+            link_existing_transaction_id=data.link_existing_transaction_id,
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
+        )
+    return SuccessResponse(data=BulkPaymentResponse(**result).model_dump())
 
 
 @router.get("/{debt_id}")

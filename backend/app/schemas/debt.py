@@ -119,6 +119,25 @@ class BulkPastPaymentResponse(BaseModel):
     total_balance_impact_minor: int
 
 
+class BulkPaymentItem(BaseModel):
+    debt_id: int
+    amount_minor: int = Field(gt=0)
+
+
+class BulkPaymentRequest(BaseModel):
+    items: list[BulkPaymentItem] = Field(min_length=1)
+    fee_minor: int = Field(ge=0, default=0)
+    account_id: int
+    date: date
+    link_existing_transaction_id: int | None = None
+
+
+class BulkPaymentResponse(BaseModel):
+    payments_created: int
+    total_minor: int
+    fee_transaction_id: int | None = None
+
+
 class P2PDebtSplitResponse(BaseModel):
     id: int
     debt_id: int
