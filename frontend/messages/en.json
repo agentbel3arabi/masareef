@@ -774,7 +774,15 @@
         "installmentsPaid": "Installments Already Paid",
         "installmentsPaidHint": "If you started this loan in the past, enter how many installments you have already paid.",
         "pastPaymentNote": "Auto-recorded past payment",
-        "none": "None"
+        "none": "None",
+        "paymentFrequency": "Payment Frequency",
+        "paymentDayOfMonth": "Payment Day of Month",
+        "dayOfMonth": "Day {day} of each month",
+        "livePreview": {
+          "totalCost": "Total Cost",
+          "totalInterest": "Total Interest",
+          "paymentDay": "Payment day: {day}th"
+        }
       },
       "p2p": {
         "title": "Add Personal Debt",

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { FormSheet } from "@/components/shared/form-sheet";
+import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,10 +16,9 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useCreateDebt, useUpdateDebt } from "@/hooks/use-debts";
-import { apiGet, apiPost } from "@/lib/api-client";
 import { useAccounts } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor, formatAmount } from "@/lib/money";
-import type { DebtResponse, ScheduleRow } from "@/lib/types/debts";
+import type { DebtResponse, PaymentFrequency } from "@/lib/types/debts";
 
 interface BankLoanFormProps {
   open: boolean;
@@ -26,6 +27,13 @@ interface BankLoanFormProps {
 }
 
 const CURRENCY_CODES = Object.keys(CURRENCIES);
+
+const FREQUENCY_MONTHS: Record<string, number> = {
+  monthly: 1,
+  quarterly: 3,
+  semi_annual: 6,
+  annual: 12,
+};
 
 export function BankLoanForm({ open, onOpenChange, initialData }: BankLoanFormProps) {
   const t = useTranslations("debts.form.loan");
@@ -52,6 +60,8 @@ function BankLoanFormContent({
   onOpenChange,
 }: Omit<BankLoanFormProps, "open">) {
   const t = useTranslations("debts.form.loan");
+  const tFreq = useTranslations("debts.frequency");
+  const router = useRouter();
   const isEdit = !!initialData;
 
   const [name, setName] = useState(initialData?.name ?? "");
@@ -67,12 +77,16 @@ function BankLoanFormContent({
     initialData ? String(initialData.tenure_months) : ""
   );
   const [startDate, setStartDate] = useState(initialData?.start_date ?? "");
+  const [paymentFrequency, setPaymentFrequency] = useState<PaymentFrequency>(
+    initialData?.payment_frequency ?? "monthly"
+  );
+  const [paymentDayOfMonth, setPaymentDayOfMonth] = useState(
+    initialData?.payment_day_of_month ? String(initialData.payment_day_of_month) : ""
+  );
   const [linkedAccountId, setLinkedAccountId] = useState(
     initialData?.linked_account_id ? String(initialData.linked_account_id) : ""
   );
   const [notes, setNotes] = useState(initialData?.notes ?? "");
-  const [installmentsPaid, setInstallmentsPaid] = useState("");
-  const [isRecordingPayments, setIsRecordingPayments] = useState(false);
 
   const createMutation = useCreateDebt();
   const updateMutation = useUpdateDebt();
@@ -85,20 +99,36 @@ function BankLoanFormContent({
     (a) => String(a.id) === linkedAccountId
   );
 
-  const isStartDateInPast = startDate
-    ? new Date(startDate) < new Date(new Date().toISOString().split("T")[0])
-    : false;
+  // Auto-set payment day from start date when not yet set
+  useEffect(() => {
+    if (startDate && !paymentDayOfMonth) {
+      const day = new Date(startDate).getDate();
+      setPaymentDayOfMonth(String(Math.min(day, 28)));
+    }
+  }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-calculate paid installments from start date
-  const autoCalcPaid = (() => {
-    if (!startDate || !tenureMonths) return 0;
-    const start = new Date(startDate);
-    const now = new Date();
-    const monthsDiff =
-      (now.getFullYear() - start.getFullYear()) * 12 +
-      (now.getMonth() - start.getMonth());
-    return Math.max(0, Math.min(monthsDiff, parseInt(tenureMonths, 10)));
-  })();
+  const livePreview = useMemo(() => {
+    if (!principal || !tenureMonths) return null;
+    const principalMinor = parseMajorToMinor(principal, CURRENCIES[currency]?.exponent ?? 2);
+    const rateBps = annualRate ? Math.round(parseFloat(annualRate) * 100) : 0;
+    const tenure = parseInt(tenureMonths, 10);
+    const freqMonths = FREQUENCY_MONTHS[paymentFrequency] ?? 1;
+    const numPeriods = Math.floor(tenure / freqMonths);
+    if (numPeriods <= 0 || principalMinor <= 0) return null;
+
+    let periodicPayment: number;
+    if (rateBps === 0) {
+      periodicPayment = Math.ceil(principalMinor / numPeriods);
+    } else {
+      const periodRate = (rateBps * freqMonths) / (10000 * 12);
+      const factor = Math.pow(1 + periodRate, numPeriods);
+      periodicPayment = Math.ceil(principalMinor * (periodRate * factor) / (factor - 1));
+    }
+    const totalCost = periodicPayment * numPeriods;
+    const totalInterest = totalCost - principalMinor;
+
+    return { periodicPayment, totalCost, totalInterest };
+  }, [principal, tenureMonths, annualRate, currency, paymentFrequency]);
 
   const resetFields = () => {
     setName("");
@@ -108,29 +138,10 @@ function BankLoanFormContent({
     setAnnualRate("");
     setTenureMonths("");
     setStartDate("");
+    setPaymentFrequency("monthly");
+    setPaymentDayOfMonth("");
     setLinkedAccountId("");
     setNotes("");
-    setInstallmentsPaid("");
-  };
-
-  const recordPastPayments = async (debtId: number, count: number) => {
-    setIsRecordingPayments(true);
-    try {
-      const scheduleRes = await apiGet<ScheduleRow[]>(
-        `/api/v1/debts/${debtId}/amortization`
-      );
-      const schedule = scheduleRes.data;
-      const toRecord = schedule.slice(0, count);
-      for (const row of toRecord) {
-        await apiPost(`/api/v1/debts/${debtId}/payments`, {
-          date: row.date,
-          amount_minor: row.payment_minor,
-          notes: t("pastPaymentNote"),
-        });
-      }
-    } finally {
-      setIsRecordingPayments(false);
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -164,6 +175,8 @@ function BankLoanFormContent({
           annual_rate_percent: annualRate ? parseFloat(annualRate) : undefined,
           tenure_months: parseInt(tenureMonths, 10),
           start_date: startDate,
+          payment_frequency: paymentFrequency,
+          payment_day_of_month: paymentDayOfMonth ? parseInt(paymentDayOfMonth, 10) : null,
           linked_account_id:
             linkedAccountId && linkedAccountId !== "__none__"
               ? parseInt(linkedAccountId, 10)
@@ -171,13 +184,15 @@ function BankLoanFormContent({
           notes: notes || null,
         },
         {
-          onSuccess: async (response) => {
-            if (autoCalcPaid > 0 && response.data) {
+          onSuccess: (response) => {
+            const isStartInPast = startDate && new Date(startDate) < new Date(new Date().toISOString().split("T")[0]);
+            if (isStartInPast && response.data) {
               const debtId = (response.data as DebtResponse).id;
-              await recordPastPayments(debtId, autoCalcPaid);
+              router.push(`/debts/loans/${debtId}?setup=true`);
+            } else {
+              onOpenChange(false);
+              resetFields();
             }
-            onOpenChange(false);
-            resetFields();
           },
         }
       );
@@ -261,6 +276,26 @@ function BankLoanFormContent({
         </div>
 
         <div className="space-y-2">
+          <Label>{t("paymentFrequency")}</Label>
+          <Select
+            value={paymentFrequency}
+            onValueChange={(v) => setPaymentFrequency(v as PaymentFrequency)}
+            disabled={isEdit}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(["monthly", "quarterly", "semi_annual", "annual"] as const).map((freq) => (
+                <SelectItem key={freq} value={freq}>
+                  {tFreq(freq)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="loan-start">{t("startDate")}</Label>
           <Input
             id="loan-start"
@@ -272,14 +307,25 @@ function BankLoanFormContent({
           />
         </div>
 
-        {!isEdit && isStartDateInPast && autoCalcPaid > 0 && (
-          <div className="rounded-lg bg-muted/60 border border-border p-3 space-y-1">
-            <p className="text-sm font-medium text-foreground">
-              {t("installmentsPaid")}: <span className="font-bold text-primary">{autoCalcPaid}</span> / {tenureMonths}
-            </p>
-            <p className="text-xs text-muted-foreground">{t("installmentsPaidHint")}</p>
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label>{t("paymentDayOfMonth")}</Label>
+          <Select
+            value={paymentDayOfMonth}
+            onValueChange={(v) => setPaymentDayOfMonth(v ?? "")}
+            disabled={isEdit}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="1-28" />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                <SelectItem key={day} value={String(day)}>
+                  {String(day)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="space-y-2">
           <Label>{t("linkedAccount")}</Label>
@@ -312,8 +358,28 @@ function BankLoanFormContent({
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending || isRecordingPayments}>
-          {isRecordingPayments ? t("recordingPayments") : createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
+        {livePreview && !isEdit && (
+          <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">{tFreq(`paymentLabel.${paymentFrequency}`)}</span>
+              <MoneyDisplay amount={livePreview.periodicPayment} currency={currency} size="md" className="font-bold text-primary" />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">{t("livePreview.totalCost")}</span>
+              <MoneyDisplay amount={livePreview.totalCost} currency={currency} size="sm" />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">{t("livePreview.totalInterest")}</span>
+              <MoneyDisplay amount={livePreview.totalInterest} currency={currency} size="sm" />
+            </div>
+            {paymentDayOfMonth && (
+              <p className="text-xs text-muted-foreground">{t("livePreview.paymentDay", { day: paymentDayOfMonth })}</p>
+            )}
+          </div>
+        )}
+
+        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
+          {createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
   );

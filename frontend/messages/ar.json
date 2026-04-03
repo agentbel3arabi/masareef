@@ -774,7 +774,15 @@
         "installmentsPaid": "الأقساط المدفوعة مسبقاً",
         "installmentsPaidHint": "إذا بدأت هذا القرض في الماضي، أدخل عدد الأقساط التي دفعتها بالفعل.",
         "pastPaymentNote": "دفعة سابقة مسجلة تلقائياً",
-        "none": "بدون"
+        "none": "بدون",
+        "paymentFrequency": "تكرار الدفع",
+        "paymentDayOfMonth": "يوم الدفع من الشهر",
+        "dayOfMonth": "اليوم {day} من كل شهر",
+        "livePreview": {
+          "totalCost": "التكلفة الإجمالية",
+          "totalInterest": "إجمالي الفوائد",
+          "paymentDay": "يوم الدفع: {day}"
+        }
       },
       "p2p": {
         "title": "إضافة دين شخصي",
