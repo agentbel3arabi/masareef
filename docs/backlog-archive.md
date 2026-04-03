@@ -9,14 +9,14 @@ Organized by the phase in which items were resolved.
 
 | ID | Item | Category | Resolved In | Status |
 |----|------|----------|-------------|--------|
-| BL-049 | Financing app used/available from balance | backend-dep | Phase 3C | ✅ Done |
-| BL-050 | Card installment row to account detail link | backend-dep | Phase 3D | ✅ Done |
-| BL-051 | Interest rate field on installment form | backend-dep | Phase 3D | ✅ Done |
-| BL-052 | N+1 query in list_persons | tech-debt | Phase 3B | ✅ Done |
-| BL-053 | repayment_mode None validation | bug | Phase 3B | ✅ Done |
-| BL-054 | Rate limiting and file size limits | deferred | Phase 1.5 | ✅ Done |
-| BL-055 | P2P debt types (personal_lent, personal_borrowed) | deferred | Phase 3B | ✅ Done |
-| BL-056 | Error handling architecture | deferred | Phase 2 | ✅ Done |
+| BL-049 | Financing app used/available from balance | Backend API | Phase 3C | ✅ Done |
+| BL-050 | Card installment row to account detail link | Frontend Navigation | Phase 3D | ✅ Done |
+| BL-051 | Interest rate field on installment form | Schema | Phase 3D | ✅ Done |
+| BL-052 | N+1 query in list_persons | Performance | Phase 3B | ✅ Done |
+| BL-053 | repayment_mode None validation | Data Validation | Phase 3B | ✅ Done |
+| BL-054 | Rate limiting and file size limits | Backend Infrastructure | Phase 1.5 | ✅ Done |
+| BL-055 | P2P debt types (personal_lent, personal_borrowed) | Schema | Phase 3B | ✅ Done |
+| BL-056 | Error handling architecture | Backend Infrastructure | Phase 2 | ✅ Done |
 
 ---
 
@@ -26,7 +26,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-049: Financing app used/available from balance
 
-**Category:** backend-dep  
+**Category:** Backend API  
 **Origin:** backend-dependencies.md #16 (placeholder tracking)  
 **Resolved in:** Phase 3C (financing-apps summary endpoint)  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -38,7 +38,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-050: Card installment row to account detail link
 
-**Category:** backend-dep  
+**Category:** Frontend Navigation  
 **Origin:** backend-dependencies.md #18 (placeholder tracking)  
 **Resolved in:** Phase 3D (debts section redesign)  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -50,7 +50,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-051: Interest rate field on installment form
 
-**Category:** backend-dep  
+**Category:** Schema  
 **Origin:** backend-dependencies.md #14 (placeholder tracking)  
 **Resolved in:** Phase 3D  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -62,7 +62,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-052: N+1 query in list_persons
 
-**Category:** tech-debt  
+**Category:** Performance  
 **Origin:** Phase 3B handoff notes  
 **Resolved in:** Phase 3B  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -74,7 +74,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-053: repayment_mode None validation
 
-**Category:** bug  
+**Category:** Data Validation  
 **Origin:** Phase 3B handoff notes  
 **Resolved in:** Phase 3B  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -86,7 +86,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-054: Rate limiting and file size limits
 
-**Category:** deferred  
+**Category:** Backend Infrastructure  
 **Origin:** Phase 1.5 gap remediation spec  
 **Resolved in:** Phase 1.5  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -98,7 +98,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-055: P2P debt types (personal_lent, personal_borrowed)
 
-**Category:** deferred  
+**Category:** Schema  
 **Origin:** Phase 3A handoff notes  
 **Resolved in:** Phase 3B  
 **Resolution date:** 2026-04-03 (backfill)  
@@ -110,7 +110,7 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 
 ### BL-056: Error handling architecture
 
-**Category:** deferred  
+**Category:** Backend Infrastructure  
 **Origin:** Phase 1.5 gap remediation spec  
 **Resolved in:** Phase 2  
 **Resolution date:** 2026-04-03 (backfill)  
