@@ -7,6 +7,7 @@ import pytest
 
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
+from app.models.enums import PaymentFrequency
 from app.models.installment_plan import InstallmentPlan
 from app.models.p2p_debt_split import P2PDebtSplit
 from app.models.person import Person
@@ -22,6 +23,14 @@ def test_person_model_instantiation():
     assert p.name == "Ahmed Ali"
     assert p.name_ar == "أحمد علي"
     # is_active default only applies after flush/commit, not at instantiation
+
+
+def test_payment_frequency_enum_values():
+    assert PaymentFrequency.MONTHLY == "monthly"
+    assert PaymentFrequency.QUARTERLY == "quarterly"
+    assert PaymentFrequency.SEMI_ANNUAL == "semi_annual"
+    assert PaymentFrequency.ANNUAL == "annual"
+    assert len(PaymentFrequency) == 4
 
 
 def test_debt_model_instantiation():
@@ -41,6 +50,25 @@ def test_debt_model_instantiation():
     assert d.principal_minor == 50000000
     assert d.status == "active"
     # is_active default only applies after flush/commit, not at instantiation
+
+
+def test_debt_model_with_payment_frequency():
+    d = Debt(
+        household_id=uuid.uuid4(),
+        type="bank_loan",
+        name="Quarterly Loan",
+        principal_minor=10000000,
+        currency="EGP",
+        annual_rate_bps=1200,
+        tenure_months=24,
+        start_date=date(2024, 1, 1),
+        monthly_payment_minor=500000,
+        payment_frequency="quarterly",
+        payment_day_of_month=15,
+        status="active",
+    )
+    assert d.payment_frequency == "quarterly"
+    assert d.payment_day_of_month == 15
 
 
 def test_debt_payment_model_instantiation():
