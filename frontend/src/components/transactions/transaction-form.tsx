@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredLabel } from "@/components/shared/required-label";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { useCreateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
@@ -119,7 +120,7 @@ export function TransactionForm({
 
         {!accountId && (
           <div className="space-y-2">
-            <Label>{t("transactions.account")}</Label>
+            <RequiredLabel required>{t("transactions.account")}</RequiredLabel>
             <Select
               value={selectedAccountId ? String(selectedAccountId) : ""}
               onValueChange={(val) => setSelectedAccountId(Number(val))}
@@ -141,12 +142,12 @@ export function TransactionForm({
         )}
 
         <div className="space-y-2">
-          <Label>{t("common.date")}</Label>
+          <RequiredLabel required>{t("common.date")}</RequiredLabel>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
         </div>
 
         <div className="space-y-2">
-          <Label>{t("common.description")}</Label>
+          <RequiredLabel required>{t("common.description")}</RequiredLabel>
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -190,7 +191,7 @@ export function TransactionForm({
         </div>
 
         <div className="space-y-2">
-          <Label>{t("common.amount")} ({effectiveCurrency})</Label>
+          <RequiredLabel required>{t("common.amount")} ({effectiveCurrency})</RequiredLabel>
           <Input
             type="number"
             step={amountStep}

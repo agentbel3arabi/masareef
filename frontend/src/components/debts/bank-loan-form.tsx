@@ -8,6 +8,7 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredLabel } from "@/components/shared/required-label";
 import {
   Select,
   SelectTrigger,
@@ -204,7 +205,7 @@ function BankLoanFormContent({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="loan-name">{t("name")}</Label>
+          <RequiredLabel required htmlFor="loan-name">{t("name")}</RequiredLabel>
           <Input
             id="loan-name"
             value={name}
@@ -241,7 +242,7 @@ function BankLoanFormContent({
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="loan-principal">{t("principal")}</Label>
+          <RequiredLabel required htmlFor="loan-principal">{t("principal")}</RequiredLabel>
           <Input
             id="loan-principal"
             type="number"
@@ -266,7 +267,7 @@ function BankLoanFormContent({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-tenure">{t("tenure")}</Label>
+          <RequiredLabel required htmlFor="loan-tenure">{t("tenure")}</RequiredLabel>
           <Input
             id="loan-tenure"
             type="number"
@@ -298,7 +299,7 @@ function BankLoanFormContent({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="loan-start">{t("startDate")}</Label>
+          <RequiredLabel required htmlFor="loan-start">{t("startDate")}</RequiredLabel>
           <Input
             id="loan-start"
             type="date"

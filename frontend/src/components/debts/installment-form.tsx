@@ -6,6 +6,7 @@ import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredLabel } from "@/components/shared/required-label";
 import {
   Select,
   SelectTrigger,
@@ -210,7 +211,7 @@ function InstallmentFormContent({
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="inst-name">{t("name")}</Label>
+          <RequiredLabel required htmlFor="inst-name">{t("name")}</RequiredLabel>
           {type === "financing_app" && !isEdit ? (
             <>
               <Input
@@ -268,7 +269,7 @@ function InstallmentFormContent({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="inst-total">{t("totalAmount")}</Label>
+              <RequiredLabel required htmlFor="inst-total">{t("totalAmount")}</RequiredLabel>
               <Input
                 id="inst-total"
                 type="number"
@@ -293,7 +294,7 @@ function InstallmentFormContent({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="inst-monthly">{t("monthlyAmount")}</Label>
+                <RequiredLabel required htmlFor="inst-monthly">{t("monthlyAmount")}</RequiredLabel>
                 <Input
                   id="inst-monthly"
                   type="number"
@@ -317,7 +318,7 @@ function InstallmentFormContent({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="inst-months">{t("totalMonths")}</Label>
+                <RequiredLabel required htmlFor="inst-months">{t("totalMonths")}</RequiredLabel>
                 <Input
                   id="inst-months"
                   type="number"
@@ -339,7 +340,7 @@ function InstallmentFormContent({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="inst-start">{t("startMonth")}</Label>
+              <RequiredLabel required htmlFor="inst-start">{t("startMonth")}</RequiredLabel>
               <Input
                 id="inst-start"
                 type="month"
@@ -364,10 +365,9 @@ function InstallmentFormContent({
             </div>
 
             <div className="space-y-2">
-              <Label>
+              <RequiredLabel required={sourceRequired}>
                 {t("sourceAccount")}
-                {sourceRequired && " *"}
-              </Label>
+              </RequiredLabel>
               <Select
                 value={sourceAccountId}
                 onValueChange={(v) => setSourceAccountId(v ?? "")}
