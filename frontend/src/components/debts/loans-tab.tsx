@@ -267,9 +267,7 @@ function LoanCard({
   };
 
   const handleCardClick = () => {
-    if (!expanded) {
-      router.push(`/debts/loans/${loan.id}`);
-    }
+    router.push(`/debts/loans/${loan.id}`);
   };
 
   return (
