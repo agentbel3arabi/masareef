@@ -100,12 +100,14 @@ function BankLoanFormContent({
   );
 
   // Auto-set payment day from start date when not yet set
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional one-time sync from start_date */
   useEffect(() => {
     if (startDate && !paymentDayOfMonth) {
       const day = new Date(startDate).getDate();
       setPaymentDayOfMonth(String(Math.min(day, 28)));
     }
   }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const livePreview = useMemo(() => {
     if (!principal || !tenureMonths) return null;

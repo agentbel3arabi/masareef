@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -109,10 +109,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const hasOverdueRows = schedule.some((r) => r.status === "overdue");
   const showSetupBanner = isSetupMode && hasOverdueRows && debt.total_paid_minor === 0;
 
-  const linkedAccount = useMemo(
-    () => (debt.linked_account_id ? accounts.find((a) => a.id === debt.linked_account_id) : undefined),
-    [accounts, debt.linked_account_id],
-  );
+  const linkedAccount = debt.linked_account_id ? accounts.find((a) => a.id === debt.linked_account_id) : undefined;
 
   function dismissSetup() {
     router.replace(pathname);

@@ -81,6 +81,7 @@ export function RecordPaymentForm({
   const mutation = useRecordPayment(debtId);
 
   // Set initial view based on suggestions availability
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional reset on dialog open */
   useEffect(() => {
     if (open) {
       if (showMatchSuggestions && suggestions.length > 0) {
@@ -102,6 +103,7 @@ export function RecordPaymentForm({
       setConfirmingTxId(null);
     }
   }, [open, defaultDate, defaultAmount, defaultAccountId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleConfirmMatch = (suggestion: MatchSuggestion) => {
     setConfirmingTxId(suggestion.transaction_id);

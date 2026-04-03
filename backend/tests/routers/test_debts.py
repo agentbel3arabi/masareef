@@ -429,3 +429,67 @@ async def test_create_p2p_without_account_id_fails(client):
         },
     )
     assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_create_loan_with_quarterly_frequency(client):
+    """Quarterly loan creates correct amortization schedule."""
+    resp = await client.post("/api/v1/debts", json={
+        "type": "bank_loan",
+        "name": "Quarterly Loan",
+        "principal_minor": 1200000,
+        "currency": "EGP",
+        "annual_rate_percent": 0,
+        "tenure_months": 12,
+        "start_date": "2025-01-15",
+        "payment_frequency": "quarterly",
+        "payment_day_of_month": 10,
+    })
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["payment_frequency"] == "quarterly"
+    assert data["payment_day_of_month"] == 10
+    assert data["monthly_payment_minor"] > 0  # stores periodic payment
+
+    sched_resp = await client.get(f"/api/v1/debts/{data['id']}/amortization")
+    assert sched_resp.status_code == 200
+    schedule = sched_resp.json()["data"]
+    assert len(schedule) == 4  # 12 months / 3 = 4 quarterly payments
+    # Payment day should be 10
+    assert schedule[0]["date"].endswith("-10")
+
+
+@pytest.mark.asyncio
+async def test_create_loan_with_annual_frequency(client):
+    """Annual loan has correct number of payments."""
+    resp = await client.post("/api/v1/debts", json={
+        "type": "bank_loan",
+        "name": "Annual Loan",
+        "principal_minor": 3000000,
+        "currency": "EGP",
+        "annual_rate_percent": 0,
+        "tenure_months": 36,
+        "start_date": "2025-01-01",
+        "payment_frequency": "annual",
+    })
+    assert resp.status_code == 201
+    sched_resp = await client.get(f"/api/v1/debts/{resp.json()['data']['id']}/amortization")
+    schedule = sched_resp.json()["data"]
+    assert len(schedule) == 3  # 36 / 12 = 3 annual payments
+
+
+@pytest.mark.asyncio
+async def test_default_payment_day_from_start_date(client):
+    """When no payment_day_of_month specified, defaults from start_date."""
+    resp = await client.post("/api/v1/debts", json={
+        "type": "bank_loan",
+        "name": "Default Day Loan",
+        "principal_minor": 1200000,
+        "currency": "EGP",
+        "annual_rate_percent": 0,
+        "tenure_months": 12,
+        "start_date": "2025-03-20",
+    })
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["payment_day_of_month"] == 20  # defaulted from start_date
