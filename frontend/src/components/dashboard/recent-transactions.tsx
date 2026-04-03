@@ -1,14 +1,14 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { CreditCard } from "lucide-react";
 import { useTransactions } from "@/hooks/use-transactions";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { CategoryIcon, getCategoryIcon } from "@/lib/category-icon";
+import { formatDate } from "@/lib/date";
 
 export function RecentTransactions() {
   const t = useTranslations("dashboard");
-  const locale = useLocale();
   const { data, isLoading } = useTransactions({ page: 1, page_size: 5, sort: "-date" });
 
   if (isLoading) {
@@ -39,11 +39,6 @@ export function RecentTransactions() {
     );
   }
 
-  const dateFormatter = new Intl.DateTimeFormat(
-    locale === "ar" ? "ar-EG" : "en-US",
-    { dateStyle: "medium" }
-  );
-
   return (
     <div className="rounded-lg border overflow-hidden">
       {transactions.map((tx) => (
@@ -59,7 +54,7 @@ export function RecentTransactions() {
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{tx.description}</p>
             <p className="text-xs text-muted-foreground">
-              {dateFormatter.format(new Date(tx.date))}
+              {formatDate(tx.date)}
             </p>
           </div>
           <MoneyDisplay

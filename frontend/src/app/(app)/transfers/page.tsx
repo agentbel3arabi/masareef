@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { formatDate } from "@/lib/date";
 import { ArrowLeftRight, Trash2 } from "lucide-react";
 import { useTransfers, useDeleteTransfer, type Transfer } from "@/hooks/use-transfers";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
@@ -92,11 +93,6 @@ export default function TransfersPage() {
   const transfers = (data?.data ?? []) as Transfer[];
   const isEmpty = !isLoading && transfers.length === 0;
 
-  const dateFormatter = new Intl.DateTimeFormat(
-    locale === "ar" ? "ar-EG" : "en-US",
-    { dateStyle: "medium" }
-  );
-
   const allSelected =
     transfers.length > 0 && transfers.every((tr) => selectedTransferIds.has(tr.transfer_id));
 
@@ -106,7 +102,7 @@ export default function TransfersPage() {
       header: t("transfers.date"),
       render: (row: Transfer) => (
         <span className="text-sm text-muted-foreground">
-          {dateFormatter.format(new Date(row.date))}
+          {formatDate(row.date)}
         </span>
       ),
     },

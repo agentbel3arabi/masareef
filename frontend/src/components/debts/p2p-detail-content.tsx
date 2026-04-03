@@ -22,6 +22,7 @@ import {
   useMarkDebtPaid,
   useDeleteDebt,
 } from "@/hooks/use-debts";
+import { formatDate } from "@/lib/date";
 import { usePerson } from "@/hooks/use-persons";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
@@ -56,14 +57,6 @@ function P2PDetailSkeleton() {
 }
 
 // ── Helpers ────────────────────────────────────────────────
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
 function personInitials(name: string): string {
   return name
     .split(/\s+/)
