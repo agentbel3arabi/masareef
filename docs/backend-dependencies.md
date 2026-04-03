@@ -1,3 +1,7 @@
+> **⚠️ DEPRECATED** — This file has been replaced by [`BACKLOG.md`](../BACKLOG.md).
+> All items have been migrated. New backend dependency items go in `BACKLOG.md` with category `backend-dep`.
+> This file is preserved for historical reference only.
+
 # Backend Dependencies
 
 Tracks UI elements that require backend endpoints not yet implemented. Each item maps to a future roadmap phase.
