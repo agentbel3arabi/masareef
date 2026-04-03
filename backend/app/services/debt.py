@@ -592,6 +592,13 @@ async def mark_paid(session: AsyncSession, debt: Debt) -> Debt:
     return debt
 
 
+async def reactivate_debt(session: AsyncSession, debt: Debt) -> Debt:
+    """Revert a paid-off debt back to active status."""
+    debt.status = DebtStatus.ACTIVE
+    await session.flush()
+    return debt
+
+
 async def get_match_suggestions(
     session: AsyncSession,
     household_id: uuid.UUID,

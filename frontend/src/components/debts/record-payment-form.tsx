@@ -76,7 +76,7 @@ export function RecordPaymentForm({
   const { data: matchData } = useMatchSuggestions(
     showMatchSuggestions ? debtId : 0
   );
-  const suggestions = matchData?.data?.suggestions ?? [];
+  const suggestions = matchData?.data ?? [];
 
   const mutation = useRecordPayment(debtId);
 

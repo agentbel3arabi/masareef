@@ -121,7 +121,7 @@ export function useMatchSuggestions(debtId: number) {
   return useQuery({
     queryKey: ["debts", debtId, "match-suggestions"],
     queryFn: () =>
-      apiGet<{ suggestions: MatchSuggestion[] }>(
+      apiGet<MatchSuggestion[]>(
         `/api/v1/debts/${debtId}/match-suggestions`
       ),
     enabled: Number.isFinite(debtId) && debtId > 0,
@@ -135,6 +135,21 @@ export function useMarkDebtPaid() {
     mutationFn: (id: number) =>
       apiPost<DebtResponse>(`/api/v1/debts/${id}/mark-paid`, {}),
     successMessage: t("debtMarkedPaid"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["debts"] });
+      queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useReactivateDebt() {
+  const queryClient = useQueryClient();
+  const t = useTranslations("toast");
+  return useApiMutation({
+    mutationFn: (id: number) =>
+      apiPost<DebtResponse>(`/api/v1/debts/${id}/reactivate`, {}),
+    successMessage: t("debtReactivated"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });

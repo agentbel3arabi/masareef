@@ -212,19 +212,25 @@ export function SetupPastPayments({
           >
             {t("skip")}
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={checkedCount === 0 || bulkMutation.isPending}
-          >
-            {bulkMutation.isPending ? (
-              <>
-                <Loader2 className="me-2 h-4 w-4 animate-spin" />
-                {t("recording")}
-              </>
-            ) : (
-              t("confirm", { count: checkedCount })
-            )}
-          </Button>
+          {linkedAccountId ? (
+            <Button
+              onClick={handleConfirm}
+              disabled={checkedCount === 0 || bulkMutation.isPending}
+            >
+              {bulkMutation.isPending ? (
+                <>
+                  <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                  {t("recording")}
+                </>
+              ) : (
+                t("confirm", { count: checkedCount })
+              )}
+            </Button>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t("linkAccountFirst")}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

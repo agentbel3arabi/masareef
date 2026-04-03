@@ -449,6 +449,39 @@ async def mark_debt_paid(
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
 
 
+@router.post("/{debt_id}/reactivate")
+async def reactivate_debt(
+    debt_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    debt = await debt_service.get_debt(session, household_id, debt_id)
+    if not debt:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
+            ).model_dump(),
+        )
+    _check_p2p_write(debt, role)
+    d_status = debt.status
+    status_val = d_status.value if hasattr(d_status, "value") else d_status
+    if status_val != "paid_off":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ErrorResponse(
+                error=ErrorDetail(
+                    code="NOT_PAID_OFF",
+                    message="Only paid-off debts can be reactivated",
+                )
+            ).model_dump(),
+        )
+    debt = await debt_service.reactivate_debt(session, debt)
+    paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
+    return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
+
+
 @router.get("/{debt_id}/splits")
 async def get_splits(
     debt_id: int,
