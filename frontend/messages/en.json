@@ -118,7 +118,8 @@
     "sectionSettings": "Settings",
     "toggleTheme": "Toggle Theme",
     "signOut": "Sign Out",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "comingSoon": "Coming soon"
   },
   "auth": {
     "login": "Log In",

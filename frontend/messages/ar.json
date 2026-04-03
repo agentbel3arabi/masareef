@@ -118,7 +118,8 @@
     "sectionSettings": "الإعدادات",
     "toggleTheme": "تبديل المظهر",
     "signOut": "تسجيل الخروج",
-    "notifications": "الإشعارات"
+    "notifications": "الإشعارات",
+    "comingSoon": "قريبًا"
   },
   "auth": {
     "login": "تسجيل الدخول",
