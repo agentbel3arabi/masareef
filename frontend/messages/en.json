@@ -831,7 +831,15 @@
         "accountRequired": "Account is required",
         "suggestedMatches": "Suggested Matches",
         "useThis": "Use this",
-        "noMatches": "No matching transactions found"
+        "noMatches": "No matching transactions found",
+        "matchFound": "Matching Transaction Found",
+        "matchScore": "{score}% match",
+        "confirmMatch": "Confirm This Match",
+        "confirming": "Confirming...",
+        "enterManually": "Enter payment details manually",
+        "orManual": "Or Enter Manually",
+        "expected": "Expected: {amount} — Due: {date}",
+        "installmentNumber": "Installment #{number}"
       },
       "installment": {
         "title": "Add Installment Plan",

@@ -831,7 +831,15 @@
         "accountRequired": "الحساب مطلوب",
         "suggestedMatches": "مطابقات مقترحة",
         "useThis": "استخدم هذا",
-        "noMatches": "لم يتم العثور على معاملات مطابقة"
+        "noMatches": "لم يتم العثور على معاملات مطابقة",
+        "matchFound": "تم العثور على معاملة مطابقة",
+        "matchScore": "تطابق {score}%",
+        "confirmMatch": "تأكيد هذه المطابقة",
+        "confirming": "جاري التأكيد...",
+        "enterManually": "أدخل تفاصيل الدفعة يدوياً",
+        "orManual": "أو أدخل يدوياً",
+        "expected": "المتوقع: {amount} — الاستحقاق: {date}",
+        "installmentNumber": "القسط #{number}"
       },
       "installment": {
         "title": "إضافة خطة أقساط",
