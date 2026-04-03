@@ -165,9 +165,10 @@ export function LoansTab({ onAddClick }: LoansTabProps) {
           {showCompleted && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
               {completed.map((loan) => (
-                <div
+                <Link
                   key={loan.id}
-                  className="p-4 bg-card/60 border border-border rounded-xl flex justify-between items-center opacity-70"
+                  href={`/debts/loans/${loan.id}`}
+                  className="block p-4 bg-card/60 border border-border rounded-xl flex justify-between items-center opacity-70 hover:opacity-90 transition-opacity cursor-pointer"
                 >
                   <div>
                     <h5 className="text-sm font-bold text-muted-foreground">
@@ -187,7 +188,7 @@ export function LoansTab({ onAddClick }: LoansTabProps) {
                     </p>
                   </div>
                   <StatusBadge status="completed" />
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -512,6 +513,10 @@ function LoanCard({
         currency={loan.currency}
         linkedAccountId={loan.linked_account_id}
         showMatchSuggestions={!!loan.linked_account_id}
+        prefillAmount={paymentPrefill?.amount}
+        prefillDate={paymentPrefill?.date}
+        prefillAccountId={loan.linked_account_id ?? undefined}
+        installmentNumber={paymentPrefill?.installmentNumber}
       />
     </>
   );

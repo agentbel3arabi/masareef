@@ -879,7 +879,8 @@
         "enterManually": "أدخل تفاصيل الدفعة يدوياً",
         "orManual": "أو أدخل يدوياً",
         "expected": "المتوقع: {amount} — الاستحقاق: {date}",
-        "installmentNumber": "القسط #{number}"
+        "installmentNumber": "القسط #{number}",
+        "dueDateNotPassed": "تاريخ الاستحقاق ({date}) لم يحل بعد. هل أنت متأكد من تسجيل هذا الدفع مبكراً؟"
       },
       "installment": {
         "title": "إضافة خطة أقساط",

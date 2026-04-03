@@ -297,7 +297,9 @@ export function RecordPaymentForm({
               onValueChange={(v) => setAccountId(v ?? "")}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("selectAccount")} />
+                <SelectValue placeholder={t("selectAccount")}>
+                  {accounts.find((a) => String(a.id) === accountId)?.name ?? t("selectAccount")}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {accounts.map((acc) => (
@@ -308,6 +310,15 @@ export function RecordPaymentForm({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Warning if due date hasn't passed yet */}
+          {prefillDate && prefillDate > today && (
+            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                {t("dueDateNotPassed", { date: prefillDate })}
+              </p>
+            </div>
+          )}
 
           <Button
             type="submit"

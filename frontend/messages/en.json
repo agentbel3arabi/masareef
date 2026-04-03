@@ -879,7 +879,8 @@
         "enterManually": "Enter payment details manually",
         "orManual": "Or Enter Manually",
         "expected": "Expected: {amount} — Due: {date}",
-        "installmentNumber": "Installment #{number}"
+        "installmentNumber": "Installment #{number}",
+        "dueDateNotPassed": "The due date ({date}) has not passed yet. Are you sure you want to record this payment early?"
       },
       "installment": {
         "title": "Add Installment Plan",
