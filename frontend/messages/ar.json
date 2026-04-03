@@ -17,6 +17,7 @@
     "debtUpdated": "تم تحديث الدين بنجاح",
     "debtDeleted": "تم حذف الدين بنجاح",
     "debtMarkedPaid": "تم تحديد الدين كمسدد",
+    "debtReactivated": "تم إعادة تنشيط الدين بنجاح",
     "paymentRecorded": "تم تسجيل الدفعة بنجاح",
     "installmentCreated": "تم إنشاء خطة الأقساط",
     "installmentUpdated": "تم تحديث خطة الأقساط",
@@ -54,7 +55,8 @@
     "next": "التالي",
     "back": "رجوع",
     "total": "{count} إجمالي",
-    "select": "اختر..."
+    "select": "اختر...",
+    "permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء"
   },
   "onboarding": {
     "step1": {
@@ -103,6 +105,7 @@
     "import": "استيراد",
     "debts": "الديون",
     "budgets": "الميزانيات",
+    "people": "الأشخاص",
     "gam3eya": "الجمعية",
     "settings": "الإعدادات",
     "openNavigation": "فتح القائمة",
@@ -221,7 +224,21 @@
     "deselectAccount": "إلغاء تحديد الحساب",
     "cardholder": "حامل البطاقة",
     "accountStatusActive": "نشط",
-    "accountStatusInactive": "غير نشط"
+    "accountStatusInactive": "غير نشط",
+    "bnplBadge": "اشتر الآن",
+    "obligations": {
+      "title": "الالتزامات",
+      "linkedLoans": "القروض المرتبطة",
+      "installmentPlans": "خطط التقسيط",
+      "monthlyPayment": "القسط الشهري",
+      "remaining": "المتبقي",
+      "remainingMonths": "{count} شهر متبقي",
+      "noObligations": "لا توجد التزامات مرتبطة بهذا الحساب.",
+      "merchant": "التاجر",
+      "viewAll": "عرض الكل",
+      "activePlans": "{count} خطط نشطة",
+      "perMonth": "/شهر"
+    }
   },
   "transactions": {
     "title": "المعاملات",
@@ -248,6 +265,7 @@
     "deleteConfirmTitle": "حذف المعاملة",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذه المعاملة؟ لا يمكن التراجع عن هذا الإجراء.",
     "editTransaction": "تعديل المعاملة",
+    "historyOnly": "للسجل فقط",
     "actions": "الإجراءات",
     "allAccounts": "كل الحسابات",
     "allCategories": "كل الفئات",
@@ -308,7 +326,11 @@
     "comingSoonPhase2": "قادم في المرحلة 2",
     "comingSoonPhase3": "قادم في المرحلة 3",
     "comingSoonPhase4": "قادم في المرحلة 4",
-    "chartsComingSoon": "الرسوم البيانية قادمة في المرحلة 4"
+    "chartsComingSoon": "الرسوم البيانية قادمة في المرحلة 4",
+    "activeDebtsCount": "{count} نشط",
+    "upcomingPayments": "الدفعات القادمة",
+    "upcomingCount": "{count} مستحقة خلال 30 يوم",
+    "noDebts": "لا توجد ديون"
   },
   "brand": {
     "name": "مصاريف",
@@ -591,15 +613,13 @@
     "subtitle": "تتبع وإدارة القروض والأقساط",
     "tabs": {
       "loans": "القروض",
-      "cardInstallments": "أقساط البطاقات",
-      "financingApps": "تطبيقات التمويل",
-      "storeInstallments": "أقساط المتاجر",
-      "p2p": "ديون شخصية"
+      "installments": "الأقساط",
+      "p2p": "شخصي"
     },
     "summary": {
       "monthlyPayments": "الأقساط الشهرية",
       "totalRemaining": "إجمالي المتبقي",
-      "activeLoans": "{count} قروض",
+      "activeLoans": "{count, plural, zero {لا قروض} one {قرض واحد} two {قرضان} few {# قروض} many {# قرضاً} other {# قرض}}",
       "activePlans": "{count} خطط"
     },
     "status": {
@@ -627,7 +647,13 @@
       "principal": "المبلغ الأصلي",
       "amortization": "جدول الإطفاء",
       "viewDetails": "عرض التفاصيل",
-      "tenureLabel": "المدة"
+      "tenureLabel": "المدة",
+      "totalCost": "الإجمالي مع الفائدة",
+      "nextPayment": "الدفعة القادمة",
+      "noUpcoming": "تم تسجيل جميع الدفعات",
+      "matchFound": "تم العثور على مطابقة — مراجعة",
+      "principalBreakdown": "أصل: {principal} + فائدة: {interest}",
+      "viewFullDetails": "عرض التفاصيل الكاملة"
     },
     "p2p": {
       "lent": "أقرضت",
@@ -643,7 +669,10 @@
       "relationship": "العلاقة",
       "debtsWithPerson": "ديون مع {name}",
       "splitSchedule": "جدول الأقساط",
-      "paymentHistory": "سجل الدفعات"
+      "paymentHistory": "سجل الدفعات",
+      "viewDetails": "عرض التفاصيل",
+      "nextSplit": "التالي: {amount} بتاريخ {date}",
+      "markSettled": "تسوية"
     },
     "installment": {
       "monthlyAmount": "شهرياً",
@@ -692,7 +721,33 @@
       "recordPayment": "تسجيل دفعة",
       "viewSchedule": "عرض الجدول",
       "markPaid": "تحديد كمسدد",
-      "complete": "تحديد كمكتمل"
+      "complete": "تحديد كمكتمل",
+      "reactivate": "إعادة تفعيل",
+      "reactivating": "جاري إعادة التفعيل…",
+      "reactivateConfirm": "هل أنت متأكد من إعادة تفعيل هذا القرض؟",
+      "confirmMarkPaid": "تحديد كمكتمل",
+      "confirmMarkPaidDescription": "كيف تريد تحديد هذا الدين كمكتمل؟",
+      "recordFinalPayment": "تسجيل الدفعة الأخيرة أولاً",
+      "markWithoutPayment": "تحديد كمكتمل بدون دفعة",
+      "reversibleNote": "يمكن التراجع عن هذا الإجراء.",
+      "deleteWithPayments": "هذا القرض يحتوي على {count} دفعة مسجلة. سيتم حذف القرض مع الاحتفاظ بسجل الدفعات والمعاملات المرتبطة.",
+      "completeDialog": {
+        "title": "إكمال هذا القرض؟",
+        "description": "اختر كيفية إكمال هذا القرض:",
+        "recordFinal": "تسجيل الدفعة الأخيرة والإكمال",
+        "completeAsIs": "إكمال كما هو (جميع الدفعات مسجلة بالفعل)",
+        "cancel": "إلغاء"
+      },
+      "deleteDialog": {
+        "title": "حذف {name}؟",
+        "hasPayments": "هذا القرض يحتوي على {count} معاملة دفع مرتبطة.",
+        "noPayments": "هذا القرض لا يحتوي على معاملات دفع مرتبطة.",
+        "deleteOnly": "حذف القرض فقط",
+        "deleteOnlyHint": "سيتم الاحتفاظ بمعاملات الدفع للسجل",
+        "deleteWithTransactions": "حذف القرض والمعاملات",
+        "comingSoon": "قريباً",
+        "cancel": "إلغاء"
+      }
     },
     "detail": {
       "backToDebts": "العودة للديون",
@@ -728,7 +783,11 @@
       "debtLoadError": "فشل تحميل تفاصيل الدين. يرجى المحاولة مرة أخرى.",
       "viewFullSchedule": "عرض الجدول الكامل ←",
       "paidPercent": "{percent}% مدفوع",
-      "marking": "جاري التحديد…"
+      "marking": "جاري التحديد…",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "deleteTitle": "حذف الدين",
+      "deleteDescription": "هل أنت متأكد من حذف هذا الدين؟ لا يمكن التراجع عن هذا الإجراء."
     },
     "form": {
       "loan": {
@@ -751,7 +810,19 @@
         "submit": "إضافة القرض",
         "update": "تحديث القرض",
         "saving": "جاري الحفظ...",
-        "none": "بدون"
+        "recordingPayments": "جاري تسجيل الأقساط السابقة...",
+        "installmentsPaid": "الأقساط المدفوعة مسبقاً",
+        "installmentsPaidHint": "إذا بدأت هذا القرض في الماضي، أدخل عدد الأقساط التي دفعتها بالفعل.",
+        "pastPaymentNote": "دفعة سابقة مسجلة تلقائياً",
+        "none": "بدون",
+        "paymentFrequency": "تكرار الدفع",
+        "paymentDayOfMonth": "يوم الدفع من الشهر",
+        "dayOfMonth": "اليوم {day} من كل شهر",
+        "livePreview": {
+          "totalCost": "التكلفة الإجمالية",
+          "totalInterest": "إجمالي الفوائد",
+          "paymentDay": "يوم الدفع: {day}"
+        }
       },
       "p2p": {
         "title": "إضافة دين شخصي",
@@ -773,7 +844,20 @@
         "update": "تحديث الدين",
         "saving": "جاري الحفظ...",
         "autoNameLent": "قرض لـ {name}",
-        "autoNameBorrowed": "اقتراض من {name}"
+        "autoNameBorrowed": "اقتراض من {name}",
+        "sourceAccount": "حساب المصدر",
+        "destinationAccount": "حساب الوجهة",
+        "selectAccount": "اختر الحساب",
+        "splitAmount": "المبلغ",
+        "splitDate": "التاريخ",
+        "addSplit": "إضافة قسط",
+        "removeSplit": "حذف",
+        "splitsSumError": "مجموع الأقساط يجب أن يساوي المبلغ الإجمالي",
+        "addNewPerson": "+ إضافة شخص جديد",
+        "inlinePersonTitle": "إضافة سريعة لشخص",
+        "savePerson": "حفظ الشخص",
+        "personSaved": "تم إنشاء الشخص!",
+        "addDebtFor": "إضافة دين لـ {name}"
       },
       "payment": {
         "title": "تسجيل دفعة",
@@ -782,7 +866,21 @@
         "amount": "المبلغ",
         "notes": "ملاحظات",
         "submit": "تسجيل الدفعة",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "selectAccount": "اختر الحساب",
+        "accountRequired": "الحساب مطلوب",
+        "suggestedMatches": "مطابقات مقترحة",
+        "useThis": "استخدم هذا",
+        "noMatches": "لم يتم العثور على معاملات مطابقة",
+        "matchFound": "تم العثور على معاملة مطابقة",
+        "matchScore": "تطابق {score}%",
+        "confirmMatch": "تأكيد هذه المطابقة",
+        "confirming": "جاري التأكيد...",
+        "enterManually": "أدخل تفاصيل الدفعة يدوياً",
+        "orManual": "أو أدخل يدوياً",
+        "expected": "المتوقع: {amount} — الاستحقاق: {date}",
+        "installmentNumber": "القسط #{number}",
+        "dueDateNotPassed": "تاريخ الاستحقاق ({date}) لم يحل بعد. هل أنت متأكد من تسجيل هذا الدفع مبكراً؟"
       },
       "installment": {
         "title": "إضافة خطة أقساط",
@@ -809,8 +907,37 @@
         "submit": "إضافة القسط",
         "update": "تحديث القسط",
         "saving": "جارِ الحفظ...",
-        "comingSoon": "قريباً"
+        "comingSoon": "قريباً",
+        "annualRate": "معدل الفائدة السنوي (%)",
+        "annualRateHint": "٠٪ للخطط بدون فوائد",
+        "selectProvider": "اختر أو اكتب اسم مزود التمويل"
       }
+    },
+    "frequency": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "semi_annual": "نصف سنوي",
+      "annual": "سنوي",
+      "paymentLabel": {
+        "monthly": "القسط الشهري",
+        "quarterly": "القسط ربع السنوي",
+        "semi_annual": "القسط نصف السنوي",
+        "annual": "القسط السنوي"
+      }
+    },
+    "setupPastPayments": {
+      "title": "إعداد الأقساط السابقة",
+      "description": "بدأ هذا القرض منذ {months} أشهر. اختر الأقساط التي تم سدادها:",
+      "beforeCutoff": "قبل رصيد الافتتاح ({date})",
+      "beforeCutoffHint": "هذه للسجل فقط — لن تؤثر على الرصيد",
+      "afterCutoff": "بعد رصيد الافتتاح",
+      "afterCutoffWarning": "سيتم خصم {amount} من رصيد حساب {account}",
+      "uncheckHint": "الأقساط غير المحددة ستُعتبر متأخرة.",
+      "confirm": "تأكيد {count} دفعات",
+      "skip": "تخطي الآن",
+      "recording": "جاري تسجيل الدفعات...",
+      "noLinkedAccount": "لا يوجد حساب مرتبط",
+      "linkAccountFirst": "اربط حسابًا بنكيًا بهذا القرض لتسجيل الدفعات السابقة."
     }
   },
   "persons": {
@@ -839,10 +966,55 @@
       "saving": "جاري الحفظ..."
     }
   },
+  "people": {
+    "title": "الأشخاص",
+    "subtitle": "إدارة الأشخاص لتتبع الديون الشخصية",
+    "addPerson": "إضافة شخص",
+    "noPeople": "لم يتم إضافة أشخاص بعد",
+    "noPeopleDescription": "أضف شخصاً لبدء تتبع الديون الشخصية.",
+    "theyOweYou": "مدين لك",
+    "youOweThem": "أنت مدين له",
+    "settled": "مسوّى",
+    "editPerson": "تعديل",
+    "deletePerson": "حذف",
+    "deleteConfirmTitle": "حذف شخص",
+    "deleteConfirmDescription": "هل أنت متأكد من حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "hasActiveDebts": "لا يمكن الحذف — هذا الشخص لديه ديون نشطة.",
+    "cancel": "إلغاء",
+    "confirm": "حذف"
+  },
+  "bulkPayment": {
+    "title": "دفع أقساط BNPL جماعي",
+    "step": "الخطوة {current} من {total}",
+    "selectPlans": "اختر الأقساط للدفع هذا الشهر:",
+    "selected": "المحدد: {count} خطط",
+    "subtotal": "المجموع الفرعي",
+    "next": "التالي",
+    "back": "رجوع",
+    "feesTotal": "الرسوم والإجمالي",
+    "installmentsTotal": "إجمالي الأقساط",
+    "paymentFees": "رسوم الدفع",
+    "totalToPay": "إجمالي المطلوب",
+    "payFrom": "الدفع من",
+    "date": "التاريخ",
+    "linkOrCreate": "مراجعة وتأكيد",
+    "createNew": "إنشاء معاملة جديدة",
+    "confirm": "تأكيد الدفع",
+    "summary": "الملخص",
+    "processing": "جارٍ المعالجة...",
+    "fees": "الرسوم"
+  },
   "installments": {
     "title": "خطط الأقساط",
-    "creditCard": "بطاقة ائتمان",
-    "store": "متجر",
+    "creditCard": "أقساط بطاقات الائتمان",
+    "bnpl": "اشترِ الآن وادفع لاحقاً",
+    "store": "أقساط المتاجر",
+    "bulkPay": "دفع جماعي",
+    "activePlans": "{count, plural, one {خطة نشطة واحدة} other {# خطط نشطة}}",
+    "monthlyCommitment": "{amount}/شهر",
+    "utilized": "{percent}% مستخدم",
+    "creditLimit": "حد الائتمان: {amount}",
+    "noPlans": "لا توجد خطط أقساط بعد",
     "financingApp": "تطبيق تمويل"
   }
 }

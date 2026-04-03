@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
-from app.models.enums import CategoryType
+from app.dependencies_rbac import get_member_role, require_role
+from app.models.enums import CategoryType, HouseholdRole
 from app.schemas.category import CategoryCreate, CategoryResponse, CategoryUpdate
 from app.schemas.common import (
     ErrorDetail,
@@ -25,6 +26,7 @@ async def list_categories(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ):
     categories, total = await category_service.list_categories(
         session=session,
@@ -46,6 +48,7 @@ async def create_category(
     data: CategoryCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ):
     category = await category_service.create_category(session, household_id, data)
     return SuccessResponse(data=CategoryResponse.model_validate(category).model_dump())
@@ -57,6 +60,7 @@ async def update_category(
     data: CategoryUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ):
     category = await category_service.get_category(session, household_id, category_id)
     if not category:
@@ -75,6 +79,7 @@ async def delete_category(
     category_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ):
     category = await category_service.get_category(session, household_id, category_id)
     if not category:

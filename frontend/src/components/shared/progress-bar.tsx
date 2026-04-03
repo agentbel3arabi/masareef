@@ -24,7 +24,7 @@ export function ProgressBar({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <div
-        className={`flex-1 rounded-full bg-muted overflow-hidden ${heightClass}`}
+        className={`flex-1 rounded-full bg-muted overflow-hidden ${heightClass} ring-1 ring-border`}
       >
         <div
           className={`h-full rounded-full ${colorClass} transition-all duration-300`}

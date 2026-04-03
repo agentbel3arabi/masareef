@@ -2,7 +2,7 @@ from app.seed import CURRENCIES, PREDEFINED_CATEGORIES, SAMPLE_EXCHANGE_RATES
 
 
 def test_predefined_categories_count():
-    assert len(PREDEFINED_CATEGORIES) == 18
+    assert len(PREDEFINED_CATEGORIES) == 20
 
 
 def test_predefined_categories_have_required_fields():
@@ -17,12 +17,12 @@ def test_predefined_categories_have_required_fields():
 
 def test_expense_categories_count():
     expenses = [c for c in PREDEFINED_CATEGORIES if c["type"] == "expense"]
-    assert len(expenses) == 12
+    assert len(expenses) == 13
 
 
 def test_income_categories_count():
     incomes = [c for c in PREDEFINED_CATEGORIES if c["type"] == "income"]
-    assert len(incomes) == 3
+    assert len(incomes) == 4
 
 
 def test_special_categories_count():

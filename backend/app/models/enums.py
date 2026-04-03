@@ -61,3 +61,10 @@ class RepaymentMode(enum.StrEnum):
     LUMP_SUM = "lump_sum"
     EQUAL_SPLITS = "equal_splits"
     CUSTOM_SPLITS = "custom_splits"
+
+
+class PaymentFrequency(enum.StrEnum):
+    MONTHLY = "monthly"
+    QUARTERLY = "quarterly"
+    SEMI_ANNUAL = "semi_annual"
+    ANNUAL = "annual"

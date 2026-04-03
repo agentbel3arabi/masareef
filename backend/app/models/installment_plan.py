@@ -38,6 +38,7 @@ class InstallmentPlan(TimestampMixin, SoftDeleteMixin, Base):
     total_months: Mapped[int] = mapped_column(Integer, nullable=False)
     start_month: Mapped[date] = mapped_column(Date, nullable=False)
     currency: Mapped[str] = mapped_column(Text, nullable=False)
+    annual_rate_bps: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     status: Mapped[str] = mapped_column(
         SAEnum(LifecycleStatus, values_callable=_enum_values, create_type=False),
         nullable=False,

@@ -158,6 +158,23 @@ PREDEFINED_CATEGORIES: list[dict] = [
         "color": "#22C55E",
         "sort_order": 18,
     },
+    # Debt-related (2)
+    {
+        "name_en": "Debt Payment",
+        "name_ar": "سداد دين",
+        "type": "expense",
+        "icon": "banknote",
+        "color": "#dc2626",
+        "sort_order": 130,
+    },
+    {
+        "name_en": "Debt Collection",
+        "name_ar": "تحصيل دين",
+        "type": "income",
+        "icon": "hand-coins",
+        "color": "#16a34a",
+        "sort_order": 131,
+    },
 ]
 
 SAMPLE_EXCHANGE_RATES: list[dict] = [

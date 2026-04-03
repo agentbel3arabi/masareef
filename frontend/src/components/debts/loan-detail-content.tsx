@@ -3,19 +3,36 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { Pencil, Trash2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { StatusBadge } from "@/components/debts/status-badge";
 import { RecordPaymentForm } from "@/components/debts/record-payment-form";
+import { BankLoanForm } from "@/components/debts/bank-loan-form";
+import { SetupPastPayments } from "@/components/debts/setup-past-payments";
 import {
   useDebt,
   useAmortizationSchedule,
   useDebtPayments,
   useMarkDebtPaid,
+  useDeleteDebt,
+  useReactivateDebt,
 } from "@/hooks/use-debts";
+import { useAccounts } from "@/hooks/use-accounts";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
 // ── Status mapping ─────────────────────────────────────────
@@ -57,12 +74,30 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const t = useTranslations("debts.detail");
   const tActions = useTranslations("debts.actions");
   const tLoan = useTranslations("debts.loan");
+  const tComplete = useTranslations("debts.actions.completeDialog");
+  const tDeleteDialog = useTranslations("debts.actions.deleteDialog");
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [paymentPrefill, setPaymentPrefill] = useState<{
+    amount?: number;
+    date?: string;
+    installmentNumber?: number;
+  }>({});
+  const [editOpen, setEditOpen] = useState(false);
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [reactivateDialogOpen, setReactivateDialogOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isSetupMode = searchParams.get("setup") === "true";
 
   const { data: debtRes, isLoading: debtLoading, error: debtError } = useDebt(debtId);
   const { data: scheduleRes, isLoading: scheduleLoading } = useAmortizationSchedule(debtId);
   const { data: paymentsRes, isLoading: paymentsLoading } = useDebtPayments(debtId);
+  const { data: accountsRes } = useAccounts();
   const markPaid = useMarkDebtPaid();
+  const deleteMutation = useDeleteDebt();
+  const reactivateMutation = useReactivateDebt();
 
   // Loading
   if (debtLoading) return <LoanDetailSkeleton />;
@@ -87,12 +122,25 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
     );
   }
 
-  const schedule = scheduleRes?.data?.schedule ?? [];
+  const schedule = scheduleRes?.data ?? [];
   const payments = paymentsRes?.data ?? [];
+  const accounts = accountsRes?.data ?? [];
 
+  // Setup banner: show when ?setup=true, schedule has overdue rows, and nothing paid yet
+  const hasOverdueRows = schedule.some((r) => r.status === "overdue");
+  const showSetupBanner = isSetupMode && hasOverdueRows && debt.total_paid_minor === 0;
+
+  const linkedAccount = debt.linked_account_id ? accounts.find((a) => a.id === debt.linked_account_id) : undefined;
+
+  function dismissSetup() {
+    router.replace(pathname);
+  }
+
+  const totalWithInterest = debt.tenure_months * debt.monthly_payment_minor;
+  const remainingPayments = Math.max(0, totalWithInterest - debt.total_paid_minor);
   const progressPercent =
-    debt.principal_minor > 0
-      ? Math.round((debt.total_paid_minor / debt.principal_minor) * 100)
+    totalWithInterest > 0
+      ? Math.min(100, Math.round((debt.total_paid_minor / totalWithInterest) * 100))
       : 0;
 
   const aprPercent = (debt.annual_rate_bps / 100).toFixed(2);
@@ -107,6 +155,20 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         <span>←</span> {t("backToDebts")}
       </Link>
 
+      {/* ── Setup Past Payments Banner ────────────────── */}
+      {showSetupBanner && (
+        <SetupPastPayments
+          debtId={debtId}
+          currency={debt.currency}
+          schedule={schedule}
+          linkedAccountId={debt.linked_account_id}
+          accountOpenedAt={linkedAccount?.opened_at ?? null}
+          accountName={linkedAccount?.name}
+          onComplete={dismissSetup}
+          onSkip={dismissSetup}
+        />
+      )}
+
       {/* ── Header ────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -120,6 +182,12 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             status={debt.status === "active" ? "active" : "completed"}
           />
           <Badge variant="outline">{aprPercent}% APR</Badge>
+          <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setDeleteDialogOpen(true)}>
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
         </div>
       </div>
 
@@ -127,11 +195,11 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{tLoan("principal")}</span>
+            <span className="text-xs text-muted-foreground">{tLoan("totalCost")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
-              amount={debt.principal_minor}
+              amount={totalWithInterest}
               currency={debt.currency}
               size="lg"
             />
@@ -173,7 +241,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
           </CardHeader>
           <CardContent>
             <MoneyDisplay
-              amount={debt.remaining_minor}
+              amount={remainingPayments}
               currency={debt.currency}
               size="lg"
             />
@@ -192,24 +260,156 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
       {/* ── Actions ───────────────────────────────────── */}
       <div className="flex flex-wrap gap-3">
-        <Button onClick={() => setPaymentOpen(true)}>{tActions("recordPayment")}</Button>
         {debt.status === "active" && (
+          <>
+            <Button onClick={() => {
+              const nextRow = schedule.find((r) => r.status !== "paid");
+              setPaymentPrefill(nextRow ? {
+                amount: nextRow.payment_minor,
+                date: nextRow.date,
+                installmentNumber: nextRow.payment_number,
+              } : {});
+              setPaymentOpen(true);
+            }}>
+              {tActions("recordPayment")}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setCompleteDialogOpen(true)}
+            >
+              {tActions("markPaid")}
+            </Button>
+          </>
+        )}
+        {debt.status === "paid_off" && (
           <Button
             variant="outline"
-            onClick={() => markPaid.mutate(debtId)}
-            disabled={markPaid.isPending}
+            onClick={() => setReactivateDialogOpen(true)}
           >
-            {markPaid.isPending ? t("marking") : tActions("markPaid")}
+            <RotateCcw className="h-4 w-4 me-1.5" />
+            {tActions("reactivate")}
           </Button>
         )}
       </div>
+
+      {/* ── Complete Dialog (Bug 1) ──────────────────── */}
+      <AlertDialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tComplete("title")}</AlertDialogTitle>
+            <AlertDialogDescription>{tComplete("description")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => {
+                setCompleteDialogOpen(false);
+                const nextRow = schedule.find((r) => r.status !== "paid");
+                setPaymentPrefill({
+                  amount: remainingPayments,
+                  date: nextRow?.date,
+                  installmentNumber: nextRow?.payment_number,
+                });
+                setPaymentOpen(true);
+              }}
+            >
+              {tComplete("recordFinal")}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                markPaid.mutate(debtId);
+                setCompleteDialogOpen(false);
+              }}
+              disabled={markPaid.isPending}
+            >
+              {tComplete("completeAsIs")}
+            </Button>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tComplete("cancel")}</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Reactivate Dialog (Bug 2) ────────────────── */}
+      <AlertDialog open={reactivateDialogOpen} onOpenChange={setReactivateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tActions("reactivate")}</AlertDialogTitle>
+            <AlertDialogDescription>{tActions("reactivateConfirm")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tComplete("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                reactivateMutation.mutate(debtId);
+                setReactivateDialogOpen(false);
+              }}
+              disabled={reactivateMutation.isPending}
+            >
+              {reactivateMutation.isPending ? tActions("reactivating") : tActions("reactivate")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Delete Dialog (Bug 4) ────────────────────── */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tDeleteDialog("title", { name: debt.name })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {payments.length > 0
+                ? tDeleteDialog("hasPayments", { count: payments.length })
+                : tDeleteDialog("noPayments")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {payments.length > 0 && (
+            <p className="text-xs text-muted-foreground">{tDeleteDialog("deleteOnlyHint")}</p>
+          )}
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="destructive"
+              onClick={() => {
+                deleteMutation.mutate(debtId, {
+                  onSuccess: () => router.push("/debts"),
+                });
+                setDeleteDialogOpen(false);
+              }}
+              disabled={deleteMutation.isPending}
+            >
+              {tDeleteDialog("deleteOnly")}
+            </Button>
+            <Button
+              variant="outline"
+              disabled
+              title={tDeleteDialog("comingSoon")}
+              className="opacity-50"
+            >
+              {tDeleteDialog("deleteWithTransactions")} ({tDeleteDialog("comingSoon")})
+            </Button>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tDeleteDialog("cancel")}</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <RecordPaymentForm
         open={paymentOpen}
         onOpenChange={setPaymentOpen}
         debtId={debtId}
         currency={debt.currency}
+        debtType={debt.type}
+        linkedAccountId={debt.linked_account_id}
+        showMatchSuggestions={!!debt.linked_account_id}
+        prefillAmount={paymentPrefill.amount}
+        prefillDate={paymentPrefill.date}
+        prefillAccountId={debt.linked_account_id ?? undefined}
+        installmentNumber={paymentPrefill.installmentNumber}
       />
+
+      <BankLoanForm open={editOpen} onOpenChange={setEditOpen} initialData={debt} />
 
       {/* ── Amortization schedule ─────────────────────── */}
       <section className="space-y-3">

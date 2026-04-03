@@ -7,6 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role, require_role
+from app.models.enums import HouseholdRole
 from app.models.transaction import Transaction
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.transaction import (
@@ -68,6 +70,7 @@ async def bulk_delete_transactions(
     data: BulkDeleteRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Bulk soft-delete transactions by id list."""
     deleted = await transaction_service.bulk_delete(session, household_id, data.ids)
@@ -79,6 +82,7 @@ async def bulk_categorize_transactions(
     data: BulkCategorizeRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Bulk categorize transactions."""
     try:
@@ -117,6 +121,7 @@ async def list_transactions(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     """List transactions with optional filters and pagination."""
     rows, total = await transaction_service.list_transactions(
@@ -148,6 +153,7 @@ async def create_transaction(
     data: TransactionCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Create a new transaction and update the account balance."""
     try:
@@ -172,6 +178,7 @@ async def get_transaction(
     transaction_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     """Get a single transaction by id."""
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
@@ -186,6 +193,7 @@ async def update_transaction(
     data: TransactionUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Update transaction fields; recalculates balance delta when amount/type changes."""
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
@@ -200,6 +208,7 @@ async def delete_transaction(
     transaction_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> None:
     """Soft-delete a transaction and reverse its balance contribution."""
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
@@ -214,6 +223,7 @@ async def split_transaction(
     data: SplitRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Replace splits for a transaction. Split amounts must sum to abs(amount_minor)."""
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
@@ -270,6 +280,7 @@ async def categorize_transaction(
     data: CategorizeRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Set the category on a single transaction."""
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)

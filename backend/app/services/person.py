@@ -305,4 +305,30 @@ async def compute_persons_balances_bulk(
         if net != 0:
             result.setdefault(row.person_id, {})[row.currency] = net
 
-    return {pid: PersonBalances(by_currency=by_currency) for pid, by_currency in result.items()}
+    # Look up household base currency
+    hh_row = await session.execute(
+        select(Household.base_currency).where(Household.id == household_id)
+    )
+    base_currency = hh_row.scalar_one_or_none() or "EGP"
+
+    # Convert each person's balances to base currency
+    final: dict[int, PersonBalances] = {}
+    for pid, by_currency in result.items():
+        fx_result = await convert_to_base(
+            session=session,
+            balances=by_currency,
+            base_currency=base_currency,
+        )
+        final[pid] = PersonBalances(
+            by_currency=by_currency,
+            total_base_minor=fx_result.total_base_minor,
+            base_currency=fx_result.base_currency,
+            fx_warnings=fx_result.fx_warnings,
+        )
+
+    # Fill missing person_ids with empty balances
+    for pid in person_ids:
+        if pid not in final:
+            final[pid] = PersonBalances(base_currency=base_currency)
+
+    return final

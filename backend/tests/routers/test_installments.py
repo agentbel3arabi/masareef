@@ -180,6 +180,46 @@ async def test_fa_without_source_returns_422(client):
 
 
 @pytest.mark.asyncio
+async def test_create_installment_with_rate(client):
+    fa_id = await _create_account(client, account_type="financing_app")
+    resp = await client.post(
+        "/api/v1/installments",
+        json={
+            "type": "financing_app",
+            "name": "Valu Purchase",
+            "source_account_id": fa_id,
+            "total_amount_minor": 1200000,
+            "monthly_amount_minor": 110000,
+            "total_months": 12,
+            "start_month": "2026-05-01",
+            "currency": "EGP",
+            "annual_rate_bps": 2400,
+        },
+    )
+    assert resp.status_code == 201
+    data = resp.json()["data"]
+    assert data["annual_rate_bps"] == 2400
+
+
+@pytest.mark.asyncio
+async def test_create_installment_default_rate_zero(client):
+    resp = await client.post(
+        "/api/v1/installments",
+        json={
+            "type": "store",
+            "name": "IKEA Sofa",
+            "total_amount_minor": 600000,
+            "monthly_amount_minor": 100000,
+            "total_months": 6,
+            "start_month": "2026-05-01",
+            "currency": "EGP",
+        },
+    )
+    assert resp.status_code == 201
+    assert resp.json()["data"]["annual_rate_bps"] == 0
+
+
+@pytest.mark.asyncio
 async def test_create_store_installment_without_source(client):
     payload = {
         "type": "store",

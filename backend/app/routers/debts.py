@@ -9,6 +9,10 @@ from app.dependencies_rbac import get_member_role
 from app.models.enums import DebtType, HouseholdRole
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.debt import (
+    BulkPastPaymentRequest,
+    BulkPastPaymentResponse,
+    BulkPaymentRequest,
+    BulkPaymentResponse,
     DebtCreate,
     DebtResponse,
     DebtUpdate,
@@ -39,7 +43,12 @@ def _check_p2p_write(debt, role: HouseholdRole) -> None:
         raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
 
 
-def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -> DebtResponse:
+def _debt_to_response(
+    debt,
+    total_paid: int = 0,
+    remaining: int | None = None,
+    credit_utilization_percent: float | None = None,
+) -> DebtResponse:
     """Map Debt ORM object to DebtResponse schema.
 
     remaining: outstanding principal balance from compute_debt_totals.
@@ -49,6 +58,7 @@ def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -
     d_status = debt.status
     d_mode = debt.repayment_mode
     remaining_minor = remaining if remaining is not None else debt.principal_minor
+    d_freq = debt.payment_frequency
     return DebtResponse(
         id=debt.id,
         type=d_type.value if hasattr(d_type, "value") else d_type,
@@ -61,6 +71,8 @@ def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -
         annual_rate_bps=debt.annual_rate_bps,
         tenure_months=debt.tenure_months,
         start_date=debt.start_date,
+        payment_day_of_month=debt.payment_day_of_month,
+        payment_frequency=d_freq.value if hasattr(d_freq, "value") else (d_freq or "monthly"),
         monthly_payment_minor=debt.monthly_payment_minor,
         repayment_mode=d_mode.value if hasattr(d_mode, "value") else d_mode,
         due_date=debt.due_date,
@@ -69,6 +81,7 @@ def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None) -
         is_active=debt.is_active,
         total_paid_minor=total_paid,
         remaining_minor=remaining_minor,
+        credit_utilization_percent=credit_utilization_percent,
     )
 
 
@@ -83,6 +96,29 @@ def _payment_to_response(payment) -> PaymentResponse:
         transaction_id=payment.transaction_id,
         notes=payment.notes,
     )
+
+
+async def _compute_utilization(
+    session: AsyncSession, household_id: uuid.UUID, linked_account_id: int | None
+) -> float | None:
+    if not linked_account_id:
+        return None
+    from app.models.account import Account
+    from app.models.enums import AccountType
+
+    acct = await session.get(Account, linked_account_id)
+    if (
+        not acct
+        or acct.type != AccountType.CREDIT_CARD
+        or not acct.credit_limit
+        or acct.credit_limit <= 0
+    ):
+        return None
+    from app.services.account import compute_displayed_balance
+
+    displayed = await compute_displayed_balance(session, acct)
+    used = abs(min(displayed, 0))
+    return round(used / acct.credit_limit * 100, 1)
 
 
 @router.get("")
@@ -116,6 +152,33 @@ async def list_debts(
     )
 
 
+@router.post("/bulk-payment", status_code=status.HTTP_201_CREATED)
+async def bulk_payment_endpoint(
+    data: BulkPaymentRequest,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    if role in (HouseholdRole.VIEWER, HouseholdRole.CHILD):
+        raise HTTPException(status_code=403, detail="Insufficient permissions for bulk payment")
+    try:
+        result = await debt_service.bulk_payment(
+            session=session,
+            household_id=household_id,
+            items=[item.model_dump() for item in data.items],
+            fee_minor=data.fee_minor,
+            account_id=data.account_id,
+            payment_date=data.date,
+            link_existing_transaction_id=data.link_existing_transaction_id,
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
+        )
+    return SuccessResponse(data=BulkPaymentResponse(**result).model_dump())
+
+
 @router.get("/{debt_id}")
 async def get_debt(
     debt_id: int,
@@ -133,7 +196,8 @@ async def get_debt(
         )
     _check_p2p_read(debt, role)
     paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
-    return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
+    utilization = await _compute_utilization(session, household_id, debt.linked_account_id)
+    return SuccessResponse(data=_debt_to_response(debt, paid, remaining, utilization).model_dump())
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -152,6 +216,16 @@ async def create_debt(
         if data.type == "bank_loan":
             debt = await debt_service.create_bank_loan(session, household_id, data)
         elif data.type in ("personal_lent", "personal_borrowed"):
+            if not data.account_id:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=ErrorResponse(
+                        error=ErrorDetail(
+                            code="ACCOUNT_ID_REQUIRED",
+                            message="P2P debts require account_id",
+                        )
+                    ).model_dump(),
+                )
             debt = await debt_service.create_p2p_debt(session, household_id, data)
         else:
             raise HTTPException(
@@ -283,7 +357,14 @@ async def record_payment(
     _check_p2p_write(debt, role)
     try:
         payment = await debt_service.record_payment(
-            session, debt, data.date, data.amount_minor, data.transaction_id, data.notes
+            session,
+            household_id,
+            debt,
+            data.date,
+            data.amount_minor,
+            data.account_id,
+            data.link_existing_transaction_id,
+            data.notes,
         )
     except ValueError as e:
         raise HTTPException(
@@ -291,6 +372,37 @@ async def record_payment(
             detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
         )
     return SuccessResponse(data=_payment_to_response(payment).model_dump())
+
+
+@router.post("/{debt_id}/bulk-past-payments", status_code=status.HTTP_201_CREATED)
+async def bulk_past_payments(
+    debt_id: int,
+    data: BulkPastPaymentRequest,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    if role == HouseholdRole.VIEWER:
+        raise HTTPException(status_code=403, detail="Viewers cannot record payments")
+    debt = await debt_service.get_debt(session, household_id, debt_id)
+    if not debt:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
+            ).model_dump(),
+        )
+    _check_p2p_write(debt, role)
+    try:
+        result = await debt_service.bulk_record_past_payments(
+            session, household_id, debt, data.installment_numbers, data.account_id
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ErrorResponse(error=ErrorDetail(code=str(e), message=str(e))).model_dump(),
+        )
+    return SuccessResponse(data=BulkPastPaymentResponse(**result).model_dump())
 
 
 @router.get("/{debt_id}/match-suggestions")
@@ -331,6 +443,37 @@ async def mark_debt_paid(
         )
     _check_p2p_write(debt, role)
     debt = await debt_service.mark_paid(session, debt)
+    paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
+    return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
+
+
+@router.post("/{debt_id}/reactivate")
+async def reactivate_debt(
+    debt_id: int,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    debt = await debt_service.get_debt(session, household_id, debt_id)
+    if not debt:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Debt not found")
+            ).model_dump(),
+        )
+    _check_p2p_write(debt, role)
+    if str(debt.status) != "paid_off":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=ErrorResponse(
+                error=ErrorDetail(
+                    code="NOT_PAID_OFF",
+                    message="Only paid-off debts can be reactivated",
+                )
+            ).model_dump(),
+        )
+    debt = await debt_service.reactivate_debt(session, debt)
     paid, remaining = await debt_service.compute_debt_totals(session, debt.id, debt.principal_minor)
     return SuccessResponse(data=_debt_to_response(debt, paid, remaining).model_dump())
 

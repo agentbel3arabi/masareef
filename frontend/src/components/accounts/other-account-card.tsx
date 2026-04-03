@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Wallet, Pencil, Trash2 } from "lucide-react";
+import { Wallet, Pencil, Trash2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { typeIcons, typeColors } from "./account-card.constants";
@@ -27,15 +27,20 @@ export function OtherAccountCard({
   onSelect,
 }: OtherAccountCardProps) {
   const t = useTranslations("accounts");
-  const Icon = typeIcons[account.type] ?? Wallet;
-  const iconColor = typeColors[account.type] ?? "bg-primary/10 text-primary";
+  const isBnpl = account.type === "financing_app";
+  const Icon = isBnpl ? Smartphone : (typeIcons[account.type] ?? Wallet);
+  const iconColor = isBnpl
+    ? "bg-violet-100 text-violet-600 dark:bg-violet-950 dark:text-violet-400"
+    : (typeColors[account.type] ?? "bg-primary/10 text-primary");
 
   // Extract just the background color class for the accent stripe
-  const accentBg = iconColor.split(" ").filter((c) => c.startsWith("bg-") || c.startsWith("dark:bg-")).join(" ");
+  const accentBg = isBnpl
+    ? "bg-violet-500"
+    : iconColor.split(" ").filter((c) => c.startsWith("bg-") || c.startsWith("dark:bg-")).join(" ");
 
   const cardContent = (
     <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
-      {/* Left accent stripe */}
+      {/* Start accent stripe */}
       <div className={cn("w-1.5 shrink-0", accentBg)} />
       {/* Card content */}
       <div className="flex-1 p-5">
@@ -52,8 +57,15 @@ export function OtherAccountCard({
             {selected && <span className="text-xs font-bold">✓</span>}
           </div>
         )}
-        <div className={cn("inline-flex rounded-lg p-2 mb-3", iconColor)}>
-          <Icon className="h-4 w-4" />
+        <div className="flex items-center gap-2 mb-3">
+          <div className={cn("inline-flex rounded-lg p-2", iconColor)}>
+            <Icon className="h-4 w-4" />
+          </div>
+          {isBnpl && (
+            <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300">
+              {t("bnplBadge")}
+            </span>
+          )}
         </div>
         <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
         {account.institution && (

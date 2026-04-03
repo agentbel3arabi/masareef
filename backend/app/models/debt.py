@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
-from app.models.enums import DebtStatus, DebtType, RepaymentMode
+from app.models.enums import DebtStatus, DebtType, PaymentFrequency, RepaymentMode
 
 _enum_values = lambda e: [x.value for x in e]  # noqa: E731
 
@@ -36,6 +36,13 @@ class Debt(TimestampMixin, SoftDeleteMixin, Base):
     annual_rate_bps: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     tenure_months: Mapped[int] = mapped_column(Integer, nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    payment_day_of_month: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    payment_frequency: Mapped[str] = mapped_column(
+        SAEnum(PaymentFrequency, values_callable=_enum_values, create_type=False),
+        nullable=False,
+        default="monthly",
+        server_default="monthly",
+    )
     monthly_payment_minor: Mapped[int] = mapped_column(BigInteger, nullable=False)
     repayment_mode: Mapped[str | None] = mapped_column(
         SAEnum(RepaymentMode, values_callable=_enum_values, create_type=False),

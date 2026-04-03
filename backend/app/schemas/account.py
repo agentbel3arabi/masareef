@@ -7,6 +7,7 @@ from app.models.enums import AccountType
 
 class AccountCreate(BaseModel):
     name: str
+    name_ar: str | None = None
     type: AccountType
     currency: str = Field(max_length=3)
     initial_balance: int = 0  # Minor units, integer only
@@ -19,6 +20,7 @@ class AccountCreate(BaseModel):
 
 class AccountUpdate(BaseModel):
     name: str | None = None
+    name_ar: str | None = None
     institution: str | None = None
     credit_limit: int | None = None
     billing_cycle_day: int | None = Field(default=None, ge=1, le=31)
@@ -29,6 +31,7 @@ class AccountUpdate(BaseModel):
 class AccountResponse(BaseModel):
     id: int
     name: str
+    name_ar: str | None = None
     type: str
     currency: str
     balance_minor: int

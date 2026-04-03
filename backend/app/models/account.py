@@ -30,6 +30,7 @@ class Account(TimestampMixin, SoftDeleteMixin, Base):
         UUID(as_uuid=True), ForeignKey("households.id"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(Text, nullable=False)
+    name_ar: Mapped[str | None] = mapped_column(Text, nullable=True)
     type: Mapped[AccountType] = mapped_column(
         SAEnum(AccountType, values_callable=_enum_values, create_type=False), nullable=False
     )
