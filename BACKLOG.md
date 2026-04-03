@@ -3,7 +3,7 @@
 Centralized tracker for deferred features, tech debt, bugs, new ideas, and backend dependencies.
 Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive.md).
 
-**Active items:** 43 | **By phase:** Phase 3.5 (4, backend-dep) · Phase 4 (21) · Phase 5+ (6) · Unscheduled (12)
+**Active items:** 48 | **By phase:** Phase 3.5 (9) · Phase 4 (21) · Phase 5+ (6) · Unscheduled (12)
 
 ---
 
@@ -11,14 +11,14 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 
 | ID | Item | Category | Target | Priority | Status |
 |----|------|----------|--------|----------|--------|
-| BL-001 | Net worth card green color for negative values | bug | Phase 3.5 | Critical | ✅ Done |
-| BL-002 | Credit card available balance green for negative | bug | Phase 3.5 | Critical | ✅ Done |
-| BL-003 | Transaction form missing account selector | bug | Phase 3.5 | Critical | ✅ Done |
-| BL-004 | Category dropdown shows raw `__uncategorized__` | bug | Phase 3.5 | Critical | ✅ Done |
-| BL-005 | Date format standardization (dd/mm/yyyy) | bug | Phase 3.5 | Critical | ✅ Done |
-| BL-006 | Account balance trend indicator (up/down arrow) | backend-dep | Phase 4 | Low | ⏳ Open |
-| BL-007 | Account last activity date | backend-dep | Phase 4 | Low | ⏳ Open |
-| BL-008 | Default account for new transaction | backend-dep | Phase 4 | Low | ⏳ Open |
+| BL-001 | Net worth card green color for negative values | bug | Phase 3.5 | Critical | ⏳ Open |
+| BL-002 | Credit card available balance green for negative | bug | Phase 3.5 | Critical | ⏳ Open |
+| BL-003 | Transaction form missing account selector | bug | Phase 3.5 | Critical | ⏳ Open |
+| BL-004 | Category dropdown shows raw `__uncategorized__` | bug | Phase 3.5 | Critical | ⏳ Open |
+| BL-005 | Date format standardization (dd/mm/yyyy) | bug | Phase 3.5 | Critical | ⏳ Open |
+| BL-006 | Account balance trend indicator (up/down arrow) | backend-dep | Phase 3.5 | Low | ⏳ Open |
+| BL-007 | Account last activity date | backend-dep | Phase 3.5 | Low | ⏳ Open |
+| BL-008 | Default account for new transaction | backend-dep | Phase 3.5 | Low | ⏳ Open |
 | BL-009 | Monthly spending stat card on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
 | BL-010 | Active debts stat card on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
 | BL-011 | Upcoming payments stat card on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
@@ -57,7 +57,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-044 | Generic[T] response typing (uses Any) | tech-debt | Unscheduled | Low | ⏳ Open |
 | BL-045 | APScheduler job persistence | deferred | Phase 11 — Notifications | Low | ⏳ Open |
 | BL-046 | Category hierarchy reporting aggregation | deferred | Phase 7 — Budgets & Savings Goals | Medium | ⏳ Open |
-| BL-047 | Transaction → debt cross-link in UI | backend-dep | Phase 4 | Low | ⏳ Open |
+| BL-047 | Transaction → debt cross-link in UI | backend-dep | Phase 3.5 | Low | ⏳ Open |
 | BL-048 | Debt remaining calculation uses principal not actual | tech-debt | Unscheduled | Low | ⏳ Open |
 
 ---
@@ -70,7 +70,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Critical
 - **Context:** When net worth is negative, the card background is green (misleading). Must show red/destructive background when value < 0 and green/success when >= 0. Affects Dashboard and Accounts page net worth summary bar.
 - **Acceptance:** Negative net worth displays with destructive color; positive with success color.
-- **Status:** ✅ Done — Fixed in Phase 3.5 polish sprint (StatCard success/destructive variants)
+- **Status:** ⏳ Open
 
 ### BL-002: Credit card available balance green for negative
 - **Category:** bug
@@ -78,7 +78,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Critical
 - **Context:** When credit card "AVAILABLE" balance is negative (e.g., -100,324.98), it displays in green. Must show red text when Available < 0.
 - **Acceptance:** Negative available balance renders in red/destructive; positive in green/success.
-- **Status:** ✅ Done — Fixed in Phase 3.5 polish sprint (conditional text-destructive class)
+- **Status:** ⏳ Open
 
 ### BL-003: Transaction form missing account selector
 - **Category:** bug
@@ -86,7 +86,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Critical
 - **Context:** The New Transaction form has no Account dropdown. Users cannot select which account a transaction belongs to from the global transactions page. Needs an account selector after the Expense/Income toggle, defaulting to the most recent transaction's account.
 - **Acceptance:** Transaction form includes a required account selector populated with active accounts; default pre-selects last used account.
-- **Status:** ✅ Done — Fixed in Phase 3.5 polish sprint (account selector added to transaction form)
+- **Status:** ⏳ Open
 
 ### BL-004: Category dropdown shows raw `__uncategorized__`
 - **Category:** bug
@@ -94,7 +94,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Critical
 - **Context:** Default category in the New Transaction form shows the raw internal value `__uncategorized__` instead of a human-readable label like "Uncategorized" or "Select category".
 - **Acceptance:** Category dropdown displays "Uncategorized" or "Select category" instead of raw internal value.
-- **Status:** ✅ Done — Fixed in Phase 3.5 polish sprint (custom SelectTrigger rendering)
+- **Status:** ⏳ Open
 
 ### BL-005: Date format standardization (dd/mm/yyyy)
 - **Category:** bug
@@ -102,13 +102,13 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Critical
 - **Context:** Date displays are inconsistent across the app: "Apr 3, 2026" on Dashboard, "2026-04-03" in transaction tables. All dates must standardize to dd/mm/yyyy format (Egyptian convention). Requires a shared `formatDate()` utility.
 - **Acceptance:** Every date display and date input across the entire frontend uses dd/mm/yyyy format consistently.
-- **Status:** ✅ Done — Fixed in Phase 3.5 polish sprint (shared formatDate utility, all date displays converted)
+- **Status:** ⏳ Open
 
 ### BL-006: Account balance trend indicator (up/down arrow)
 - **Category:** backend-dep
 - **Origin:** backend-dependencies.md #19; Phase 3.5 UX Polish Sprint spec, Unit 4.5
 - **Priority:** Low
-- **Context:** Accounts page shows no trend indicator (up/down arrow) next to balance. Needs `GET /api/v1/accounts/{id}/balance-history?period=month` to compare current balance to start-of-month. Re-deferred from Phase 3.5 to Phase 4 (requires backend endpoint).
+- **Context:** Accounts page shows no trend indicator (up/down arrow) next to balance. Needs `GET /api/v1/accounts/{id}/balance-history?period=month` to compare current balance to start-of-month.
 - **Acceptance:** Account cards show a green up-arrow or red down-arrow next to the balance based on month-over-month change.
 - **Status:** ⏳ Open
 
@@ -116,7 +116,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Category:** backend-dep
 - **Origin:** backend-dependencies.md #20; Phase 3.5 UX Polish Sprint spec, Unit 4.4
 - **Priority:** Low
-- **Context:** Account cards have no last activity indicator. Needs the most recent transaction date per account. Re-deferred from Phase 3.5 to Phase 4 (requires backend query).
+- **Context:** Account cards have no last activity indicator. Needs the most recent transaction date per account. May be derivable client-side from existing data or via a lightweight query.
 - **Acceptance:** Account cards show "Last activity: X days ago" or "No transactions yet" below the balance.
 - **Status:** ⏳ Open
 
@@ -124,7 +124,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Category:** backend-dep
 - **Origin:** backend-dependencies.md #21; Phase 3.5 UX Polish Sprint spec, Unit 5.2
 - **Priority:** Low
-- **Context:** Transactions linked to debts need `debt_id` exposed in the transaction response to enable navigation from the transaction table to the debt detail page. Re-deferred from Phase 3.5 to Phase 4 (requires backend `debt_id` in response).
+- **Context:** Transactions linked to debts need `debt_id` exposed in the transaction response to enable navigation from the transaction table to the debt detail page.
 - **Acceptance:** Transactions linked to debts show a clickable pill/badge that navigates to the debt detail page.
 - **Status:** ⏳ Open
 
