@@ -285,7 +285,9 @@
     "netFlow": "Net Flow",
     "subtitle": "Review and manage your financial movement across all connected accounts.",
     "count": "Transactions",
-    "list": "Transaction List"
+    "list": "Transaction List",
+    "account": "Account",
+    "selectAccount": "Select account"
   },
   "transfers": {
     "title": "Transfers",
