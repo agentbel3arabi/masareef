@@ -120,7 +120,7 @@ export function CreditAccountCard({
             <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
               {t("available")}
             </p>
-            <p className="text-xs font-semibold text-primary">
+            <p className={cn("text-xs font-semibold", available != null && available < 0 ? "text-destructive" : "text-primary")}>
               {available != null
                 ? formatAmount(available, account.currency)
                 : "—"}

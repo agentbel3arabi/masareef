@@ -28,6 +28,8 @@ export default function DashboardPage() {
       ? String(activeDebtsCount)
       : t("noDebts");
 
+  const netWorthMinor = nw?.total_base_minor ?? 0;
+
   const netWorthValue = netWorthLoading
     ? "..."
     : nw
@@ -44,7 +46,7 @@ export default function DashboardPage() {
           icon={TrendingUp}
           label={t("netWorth")}
           value={netWorthValue}
-          variant="accent"
+          variant={netWorthLoading ? "accent" : netWorthMinor >= 0 ? "success" : "destructive"}
         />
         <StatCard
           icon={ShoppingCart}
