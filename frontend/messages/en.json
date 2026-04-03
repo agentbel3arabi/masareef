@@ -17,6 +17,7 @@
     "debtUpdated": "Debt updated successfully",
     "debtDeleted": "Debt deleted successfully",
     "debtMarkedPaid": "Debt marked as paid",
+    "debtReactivated": "Debt reactivated successfully",
     "paymentRecorded": "Payment recorded successfully",
     "installmentCreated": "Installment plan created",
     "installmentUpdated": "Installment plan updated",
@@ -54,7 +55,8 @@
     "next": "Next",
     "back": "Back",
     "total": "{count} total",
-    "select": "Select..."
+    "select": "Select...",
+    "permissionDenied": "You don't have permission to perform this action"
   },
   "onboarding": {
     "step1": {
@@ -103,6 +105,7 @@
     "import": "Import",
     "debts": "Debts",
     "budgets": "Budgets",
+    "people": "People",
     "gam3eya": "Gam3eya",
     "settings": "Settings",
     "openNavigation": "Open navigation",
@@ -221,7 +224,21 @@
     "deselectAccount": "Deselect account",
     "cardholder": "Cardholder",
     "accountStatusActive": "Active",
-    "accountStatusInactive": "Inactive"
+    "accountStatusInactive": "Inactive",
+    "bnplBadge": "BNPL",
+    "obligations": {
+      "title": "Obligations",
+      "linkedLoans": "Linked Loans",
+      "installmentPlans": "Installment Plans",
+      "monthlyPayment": "Monthly Payment",
+      "remaining": "Remaining",
+      "remainingMonths": "{count} months left",
+      "noObligations": "No obligations linked to this account.",
+      "merchant": "Merchant",
+      "viewAll": "View All",
+      "activePlans": "{count} active plans",
+      "perMonth": "/mo"
+    }
   },
   "transactions": {
     "title": "Transactions",
@@ -248,6 +265,7 @@
     "deleteConfirmTitle": "Delete Transaction",
     "deleteConfirmDescription": "Are you sure you want to delete this transaction? This action cannot be undone.",
     "editTransaction": "Edit Transaction",
+    "historyOnly": "History only",
     "actions": "Actions",
     "allAccounts": "All Accounts",
     "allCategories": "All Categories",
@@ -308,7 +326,11 @@
     "comingSoonPhase2": "Coming in Phase 2",
     "comingSoonPhase3": "Coming in Phase 3",
     "comingSoonPhase4": "Coming in Phase 4",
-    "chartsComingSoon": "Charts coming in Phase 4"
+    "chartsComingSoon": "Charts coming in Phase 4",
+    "activeDebtsCount": "{count} active",
+    "upcomingPayments": "Upcoming Payments",
+    "upcomingCount": "{count} due in 30d",
+    "noDebts": "No debts"
   },
   "brand": {
     "name": "Masareef",
@@ -591,15 +613,13 @@
     "subtitle": "Track and manage your loans and installments",
     "tabs": {
       "loans": "Loans",
-      "cardInstallments": "Card Installments",
-      "financingApps": "Financing Apps",
-      "storeInstallments": "Store Installments",
+      "installments": "Installments",
       "p2p": "P2P"
     },
     "summary": {
       "monthlyPayments": "Monthly Debt Payments",
       "totalRemaining": "Total Active Remaining",
-      "activeLoans": "{count} loans",
+      "activeLoans": "{count, plural, one {# loan} other {# loans}}",
       "activePlans": "{count} plans"
     },
     "status": {
@@ -627,7 +647,13 @@
       "principal": "Principal",
       "amortization": "Amortization Schedule",
       "viewDetails": "View Details",
-      "tenureLabel": "Tenure"
+      "tenureLabel": "Tenure",
+      "totalCost": "Total Cost (w/ Interest)",
+      "nextPayment": "Next Payment",
+      "noUpcoming": "All payments recorded",
+      "matchFound": "Match Found — Review",
+      "principalBreakdown": "Principal: {principal} + Interest: {interest}",
+      "viewFullDetails": "View Full Details"
     },
     "p2p": {
       "lent": "You lent",
@@ -643,7 +669,10 @@
       "relationship": "Relationship",
       "debtsWithPerson": "Debts with {name}",
       "splitSchedule": "Split Schedule",
-      "paymentHistory": "Payment History"
+      "paymentHistory": "Payment History",
+      "viewDetails": "View Details",
+      "nextSplit": "Next: {amount} due {date}",
+      "markSettled": "Mark Settled"
     },
     "installment": {
       "monthlyAmount": "Monthly",
@@ -692,7 +721,33 @@
       "recordPayment": "Record Payment",
       "viewSchedule": "View Schedule",
       "markPaid": "Mark as Paid",
-      "complete": "Mark Complete"
+      "complete": "Mark Complete",
+      "reactivate": "Reactivate",
+      "reactivating": "Reactivating…",
+      "reactivateConfirm": "Are you sure you want to reactivate this loan?",
+      "confirmMarkPaid": "Mark as Completed",
+      "confirmMarkPaidDescription": "How would you like to mark this debt as completed?",
+      "recordFinalPayment": "Record final payment first",
+      "markWithoutPayment": "Mark as completed without payment",
+      "reversibleNote": "This action can be reversed.",
+      "deleteWithPayments": "This loan has {count} recorded payments. Deleting will remove the loan but keep payment history and linked transactions.",
+      "completeDialog": {
+        "title": "Complete this loan?",
+        "description": "Choose how to complete this loan:",
+        "recordFinal": "Record final payment & complete",
+        "completeAsIs": "Complete as-is (all payments already recorded)",
+        "cancel": "Cancel"
+      },
+      "deleteDialog": {
+        "title": "Delete {name}?",
+        "hasPayments": "This loan has {count} linked payment transactions.",
+        "noPayments": "This loan has no linked payment transactions.",
+        "deleteOnly": "Delete Loan Only",
+        "deleteOnlyHint": "Payment transactions will be kept for history",
+        "deleteWithTransactions": "Delete Loan & Transactions",
+        "comingSoon": "Coming soon",
+        "cancel": "Cancel"
+      }
     },
     "detail": {
       "backToDebts": "Back to Debts",
@@ -728,7 +783,11 @@
       "debtLoadError": "Failed to load debt details. Please try again.",
       "viewFullSchedule": "View Full Schedule →",
       "paidPercent": "{percent}% paid",
-      "marking": "Marking…"
+      "marking": "Marking…",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete Debt",
+      "deleteDescription": "Are you sure you want to delete this debt? This action cannot be undone."
     },
     "form": {
       "loan": {
@@ -751,7 +810,19 @@
         "submit": "Add Loan",
         "update": "Update Loan",
         "saving": "Saving...",
-        "none": "None"
+        "recordingPayments": "Recording past payments...",
+        "installmentsPaid": "Installments Already Paid",
+        "installmentsPaidHint": "If you started this loan in the past, enter how many installments you have already paid.",
+        "pastPaymentNote": "Auto-recorded past payment",
+        "none": "None",
+        "paymentFrequency": "Payment Frequency",
+        "paymentDayOfMonth": "Payment Day of Month",
+        "dayOfMonth": "Day {day} of each month",
+        "livePreview": {
+          "totalCost": "Total Cost",
+          "totalInterest": "Total Interest",
+          "paymentDay": "Payment day: {day}th"
+        }
       },
       "p2p": {
         "title": "Add Personal Debt",
@@ -773,7 +844,20 @@
         "update": "Update Debt",
         "saving": "Saving...",
         "autoNameLent": "Loan to {name}",
-        "autoNameBorrowed": "Borrowed from {name}"
+        "autoNameBorrowed": "Borrowed from {name}",
+        "sourceAccount": "Source account",
+        "destinationAccount": "Destination account",
+        "selectAccount": "Select account",
+        "splitAmount": "Amount",
+        "splitDate": "Date",
+        "addSplit": "Add Split",
+        "removeSplit": "Remove",
+        "splitsSumError": "Split amounts must equal the total",
+        "addNewPerson": "+ Add new person",
+        "inlinePersonTitle": "Quick Add Person",
+        "savePerson": "Save Person",
+        "personSaved": "Person created!",
+        "addDebtFor": "Add Debt for {name}"
       },
       "payment": {
         "title": "Record Payment",
@@ -782,7 +866,21 @@
         "amount": "Amount",
         "notes": "Notes",
         "submit": "Record Payment",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "selectAccount": "Select account",
+        "accountRequired": "Account is required",
+        "suggestedMatches": "Suggested Matches",
+        "useThis": "Use this",
+        "noMatches": "No matching transactions found",
+        "matchFound": "Matching Transaction Found",
+        "matchScore": "{score}% match",
+        "confirmMatch": "Confirm This Match",
+        "confirming": "Confirming...",
+        "enterManually": "Enter payment details manually",
+        "orManual": "Or Enter Manually",
+        "expected": "Expected: {amount} — Due: {date}",
+        "installmentNumber": "Installment #{number}",
+        "dueDateNotPassed": "The due date ({date}) has not passed yet. Are you sure you want to record this payment early?"
       },
       "installment": {
         "title": "Add Installment Plan",
@@ -809,8 +907,37 @@
         "submit": "Add Installment",
         "update": "Update Installment",
         "saving": "Saving...",
-        "comingSoon": "Coming soon"
+        "comingSoon": "Coming soon",
+        "annualRate": "Annual Interest Rate (%)",
+        "annualRateHint": "0% for interest-free plans",
+        "selectProvider": "Select or type provider name"
       }
+    },
+    "frequency": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semi_annual": "Semi-Annual",
+      "annual": "Annual",
+      "paymentLabel": {
+        "monthly": "Monthly Payment",
+        "quarterly": "Quarterly Payment",
+        "semi_annual": "Semi-Annual Payment",
+        "annual": "Annual Payment"
+      }
+    },
+    "setupPastPayments": {
+      "title": "Setup Past Payments",
+      "description": "This loan started {months} months ago. Select which installments have been paid:",
+      "beforeCutoff": "Before opening balance ({date})",
+      "beforeCutoffHint": "These are for history only — won't affect balance",
+      "afterCutoff": "After opening balance",
+      "afterCutoffWarning": "These will reduce your {account} balance by {amount}",
+      "uncheckHint": "Unchecked installments will be marked as overdue.",
+      "confirm": "Confirm {count} Payments",
+      "skip": "Skip for Now",
+      "recording": "Recording payments...",
+      "noLinkedAccount": "No linked account",
+      "linkAccountFirst": "Link a bank account to this loan to record past payments."
     }
   },
   "persons": {
@@ -839,10 +966,55 @@
       "saving": "Saving..."
     }
   },
+  "people": {
+    "title": "People",
+    "subtitle": "Manage people for personal debt tracking",
+    "addPerson": "Add Person",
+    "noPeople": "No people added yet",
+    "noPeopleDescription": "Add a person to start tracking personal debts.",
+    "theyOweYou": "They owe you",
+    "youOweThem": "You owe them",
+    "settled": "Settled",
+    "editPerson": "Edit",
+    "deletePerson": "Delete",
+    "deleteConfirmTitle": "Delete Person",
+    "deleteConfirmDescription": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "hasActiveDebts": "Cannot delete — this person has active debts.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
+  },
+  "bulkPayment": {
+    "title": "BNPL Bulk Payment",
+    "step": "Step {current} of {total}",
+    "selectPlans": "Select installments to pay this month:",
+    "selected": "Selected: {count} plans",
+    "subtotal": "Subtotal",
+    "next": "Next",
+    "back": "Back",
+    "feesTotal": "Fees & Total",
+    "installmentsTotal": "Installments total",
+    "paymentFees": "Payment fees",
+    "totalToPay": "Total to pay",
+    "payFrom": "Pay from",
+    "date": "Date",
+    "linkOrCreate": "Review & Confirm",
+    "createNew": "Create new transaction",
+    "confirm": "Confirm Payment",
+    "summary": "Summary",
+    "processing": "Processing...",
+    "fees": "Fees"
+  },
   "installments": {
     "title": "Installment Plans",
-    "creditCard": "Credit Card",
-    "store": "Store",
+    "creditCard": "Credit Card Installments",
+    "bnpl": "BNPL",
+    "store": "Store Installments",
+    "bulkPay": "Bulk Pay",
+    "activePlans": "{count, plural, one {# active plan} other {# active plans}}",
+    "monthlyCommitment": "{amount}/mo",
+    "utilized": "{percent}% utilized",
+    "creditLimit": "Credit limit: {amount}",
+    "noPlans": "No installment plans yet",
     "financingApp": "Financing App"
   }
 }

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Check, AlertCircle, Circle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, AlertCircle, Circle, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,11 +13,14 @@ import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { StatusBadge } from "@/components/debts/status-badge";
 import { RecordPaymentForm } from "@/components/debts/record-payment-form";
+import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import {
   useDebt,
   useDebtSplits,
   useDebtPayments,
   useMarkDebtPaid,
+  useDeleteDebt,
 } from "@/hooks/use-debts";
 import { usePerson } from "@/hooks/use-persons";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
@@ -80,6 +84,8 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
   const tActions = useTranslations("debts.actions");
   const tPersons = useTranslations("persons");
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const router = useRouter();
 
   const {
     data: debtRes,
@@ -90,6 +96,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
   const { data: paymentsRes, isLoading: paymentsLoading } =
     useDebtPayments(debtId);
   const markPaid = useMarkDebtPaid();
+  const deleteMutation = useDeleteDebt();
 
   const debt = debtRes?.data;
   const personId = debt?.person_id ?? 0;
@@ -177,6 +184,23 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
           >
             {typeLabel}
           </Badge>
+          <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <DeleteConfirmation
+            itemName={debt.name}
+            onConfirm={() => {
+              deleteMutation.mutate(debtId, {
+                onSuccess: () => router.push("/debts"),
+              });
+            }}
+            isPending={deleteMutation.isPending}
+            trigger={
+              <Button variant="ghost" size="icon">
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            }
+          />
         </div>
       </div>
 
@@ -251,7 +275,11 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
         onOpenChange={setPaymentOpen}
         debtId={debtId}
         currency={debt.currency}
+        debtType={debt.type}
+        linkedAccountId={debt.linked_account_id}
       />
+
+      <P2PDebtForm open={editOpen} onOpenChange={setEditOpen} initialData={debt} />
 
       {/* ── Split Schedule (timeline) ─────────────────── */}
       {hasSplits && (

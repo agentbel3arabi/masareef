@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { TrendingUp, ShoppingCart, HandCoins, Clock, BarChart3, PieChart } from "lucide-react";
 import { useNetWorth } from "@/hooks/use-accounts";
+import { useDebts } from "@/hooks/use-debts";
+import { useInstallments } from "@/hooks/use-installments";
 import { StatCard } from "@/components/shared/stat-card";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { formatAmount, formatAmountAr } from "@/lib/money";
@@ -13,6 +15,18 @@ export default function DashboardPage() {
   const locale = useLocale();
   const { data: nwResponse, isLoading: netWorthLoading } = useNetWorth();
   const nw = nwResponse?.data;
+
+  const { data: debtsData, isLoading: debtsLoading } = useDebts({ status: "active" });
+  const { data: installmentsData, isLoading: installmentsLoading } = useInstallments({ status: "active" });
+
+  const activeDebtsCount = (debtsData?.data?.length ?? 0) + (installmentsData?.data?.length ?? 0);
+  const debtsStatsLoading = debtsLoading || installmentsLoading;
+
+  const activeDebtsValue = debtsStatsLoading
+    ? "..."
+    : activeDebtsCount > 0
+      ? String(activeDebtsCount)
+      : t("noDebts");
 
   const netWorthValue = netWorthLoading
     ? "..."
@@ -47,8 +61,12 @@ export default function DashboardPage() {
         <StatCard
           icon={Clock}
           label={t("activeDebts")}
-          value="—"
-          trend={{ direction: "flat", text: t("comingSoonPhase3") }}
+          value={activeDebtsValue}
+          trend={
+            activeDebtsCount > 0
+              ? { direction: "flat", text: t("activeDebtsCount", { count: activeDebtsCount }) }
+              : undefined
+          }
         />
       </div>
 

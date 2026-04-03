@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api-client";
 import { useApiMutation } from "@/hooks/use-api-mutation";
@@ -13,6 +13,10 @@ import type {
   ScheduleRow,
   MatchSuggestion,
   P2PDebtSplitResponse,
+  BulkPastPaymentRequest,
+  BulkPastPaymentResponse,
+  BulkPaymentRequest,
+  BulkPaymentResponse,
 } from "@/lib/types/debts";
 
 export function useDebts(params?: { type?: DebtType; status?: DebtStatus }) {
@@ -46,6 +50,7 @@ export function useCreateDebt() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -72,6 +77,7 @@ export function useDeleteDebt() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -80,7 +86,7 @@ export function useAmortizationSchedule(debtId: number) {
   return useQuery({
     queryKey: ["debts", debtId, "amortization"],
     queryFn: () =>
-      apiGet<{ schedule: ScheduleRow[] }>(
+      apiGet<ScheduleRow[]>(
         `/api/v1/debts/${debtId}/amortization`
       ),
     enabled: Number.isFinite(debtId) && debtId > 0,
@@ -106,6 +112,7 @@ export function useRecordPayment(debtId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -114,7 +121,7 @@ export function useMatchSuggestions(debtId: number) {
   return useQuery({
     queryKey: ["debts", debtId, "match-suggestions"],
     queryFn: () =>
-      apiGet<{ suggestions: MatchSuggestion[] }>(
+      apiGet<MatchSuggestion[]>(
         `/api/v1/debts/${debtId}/match-suggestions`
       ),
     enabled: Number.isFinite(debtId) && debtId > 0,
@@ -131,6 +138,22 @@ export function useMarkDebtPaid() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useReactivateDebt() {
+  const queryClient = useQueryClient();
+  const t = useTranslations("toast");
+  return useApiMutation({
+    mutationFn: (id: number) =>
+      apiPost<DebtResponse>(`/api/v1/debts/${id}/reactivate`, {}),
+    successMessage: t("debtReactivated"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["debts"] });
+      queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -141,5 +164,32 @@ export function useDebtSplits(debtId: number) {
     queryFn: () =>
       apiGet<P2PDebtSplitResponse[]>(`/api/v1/debts/${debtId}/splits`),
     enabled: Number.isFinite(debtId) && debtId > 0,
+  });
+}
+
+export function useBulkPastPayments(debtId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: BulkPastPaymentRequest) =>
+      apiPost<BulkPastPaymentResponse>(
+        `/api/v1/debts/${debtId}/bulk-past-payments`,
+        data
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["debts"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useBulkPayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: BulkPaymentRequest) =>
+      apiPost<BulkPaymentResponse>("/api/v1/debts/bulk-payment", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["debts"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
   });
 }

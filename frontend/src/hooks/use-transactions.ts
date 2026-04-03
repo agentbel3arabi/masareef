@@ -24,6 +24,7 @@ export interface Transaction {
   ai_categorized: boolean;
   ai_confidence: number | null;
   notes: string | null;
+  applies_to_balance: boolean;
 }
 
 export interface TransactionFilters {

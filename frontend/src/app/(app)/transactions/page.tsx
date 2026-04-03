@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Plus, Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2 } from "lucide-react";
+import { Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2 } from "lucide-react";
 import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useAccounts } from "@/hooks/use-accounts";
@@ -15,6 +15,7 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
+import { FAB } from "@/components/shared/fab";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CategoryIcon } from "@/lib/category-icon";
@@ -245,13 +246,10 @@ export default function TransactionsPage() {
 
       {firstAccountId !== undefined && (
         <>
-          <button
+          <FAB
             onClick={() => setCreateOpen(true)}
-            aria-label={t("transactions.addTransaction")}
-            className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg hover:shadow-xl active:scale-95 transition-all"
-          >
-            <Plus className="h-6 w-6" />
-          </button>
+            ariaLabel={t("transactions.addTransaction")}
+          />
           <TransactionForm
             accountId={firstAccountId}
             open={createOpen}

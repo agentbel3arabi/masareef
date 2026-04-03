@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowLeftRight, Trash2, Plus } from "lucide-react";
+import { ArrowLeftRight, Trash2 } from "lucide-react";
 import { useTransfers, useDeleteTransfer, type Transfer } from "@/hooks/use-transfers";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
+import { FAB } from "@/components/shared/fab";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { AccountMiniCard } from "@/components/transfers/account-mini-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
@@ -224,13 +225,10 @@ export default function TransfersPage() {
       )}
 
       {/* FAB */}
-      <button
+      <FAB
         onClick={() => setCreateOpen(true)}
-        aria-label={t("transfers.newTransfer")}
-        className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg hover:shadow-xl active:scale-95 transition-all"
-      >
-        <Plus className="h-6 w-6" />
-      </button>
+        ariaLabel={t("transfers.newTransfer")}
+      />
 
       <TransferForm open={createOpen} onOpenChange={setCreateOpen} />
 

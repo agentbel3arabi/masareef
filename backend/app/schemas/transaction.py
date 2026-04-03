@@ -16,6 +16,7 @@ class TransactionCreate(BaseModel):
     notes: str | None = None
     gam3eya_id: int | None = None
     asset_id: int | None = None
+    applies_to_balance: bool = True
 
 
 class TransactionUpdate(BaseModel):
@@ -72,6 +73,7 @@ class TransactionResponse(BaseModel):
     is_split: bool = False
     transfer_id: UUID | None = None
     asset_id: int | None = None
+    applies_to_balance: bool = True
     ai_categorized: bool | None = False
     ai_confidence: float | None = None
     notes: str | None = None

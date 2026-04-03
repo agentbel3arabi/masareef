@@ -46,7 +46,7 @@ async def create_transaction(
         notes=data.notes,
         gam3eya_id=data.gam3eya_id,
         asset_id=data.asset_id,
-        applies_to_balance=True,
+        applies_to_balance=data.applies_to_balance,
     )
     session.add(tx)
     await session.flush()

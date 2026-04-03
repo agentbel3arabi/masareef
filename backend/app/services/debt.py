@@ -10,12 +10,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.account import Account
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
-from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode
+from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode, TransactionType
 from app.models.p2p_debt_split import P2PDebtSplit
 from app.models.person import Person
 from app.models.transaction import Transaction
 from app.schemas.debt import DebtCreate, DebtUpdate
-from app.services.amortization import compute_monthly_payment, generate_schedule
+from app.schemas.transaction import TransactionCreate
+from app.services.account import get_balance_cutoff_date
+from app.services.amortization import (
+    FREQUENCY_MONTHS,
+    compute_periodic_payment,
+    generate_schedule,
+)
+from app.services.transaction import create_transaction
 
 
 async def list_debts(
@@ -70,11 +77,17 @@ async def create_bank_loan(
     household_id: uuid.UUID,
     data: DebtCreate,
 ) -> Debt:
-    """Create a bank loan debt with computed monthly payment."""
+    """Create a bank loan debt with computed periodic payment."""
     annual_rate_bps = int(round(data.annual_rate_percent * 100))
-    monthly_payment = compute_monthly_payment(
-        data.principal_minor, annual_rate_bps, data.tenure_months
+    frequency_months = FREQUENCY_MONTHS.get(data.payment_frequency, 1)
+    periodic_payment = compute_periodic_payment(
+        data.principal_minor, annual_rate_bps, data.tenure_months, frequency_months
     )
+
+    # Default payment_day_of_month from start_date if not provided
+    payment_day = data.payment_day_of_month
+    if payment_day is None:
+        payment_day = min(data.start_date.day, 28)
 
     # Validate linked_account_id if provided
     if data.linked_account_id:
@@ -92,7 +105,9 @@ async def create_bank_loan(
         annual_rate_bps=annual_rate_bps,
         tenure_months=data.tenure_months,
         start_date=data.start_date,
-        monthly_payment_minor=monthly_payment,
+        payment_day_of_month=payment_day,
+        payment_frequency=data.payment_frequency,
+        monthly_payment_minor=periodic_payment,
         linked_account_id=data.linked_account_id,
         notes=data.notes,
         status=DebtStatus.ACTIVE,
@@ -108,6 +123,8 @@ async def create_p2p_debt(
     data: DebtCreate,
 ) -> Debt:
     """Create a P2P debt with splits based on repayment mode."""
+    if not data.account_id:
+        raise ValueError("ACCOUNT_ID_REQUIRED")
     if not data.person_id:
         raise ValueError("PERSON_REQUIRED")
 
@@ -180,6 +197,25 @@ async def create_p2p_debt(
         session.add(split)
     await session.flush()
 
+    # Auto-create initial transaction
+    if data.type == "personal_lent":
+        tx_type = TransactionType.DEBIT
+        tx_desc = f"Lent to: {person.name}"
+    else:
+        tx_type = TransactionType.CREDIT
+        tx_desc = f"Borrowed from: {person.name}"
+
+    debt_category_id = await _get_debt_category_id(session, tx_type)
+    tx_data = TransactionCreate(
+        account_id=data.account_id,
+        date=data.start_date,
+        description=tx_desc,
+        amount_minor=data.principal_minor,
+        type=tx_type,
+        category_id=debt_category_id,
+    )
+    await create_transaction(session, household_id, tx_data)
+
     return debt
 
 
@@ -222,6 +258,11 @@ async def has_payments(session: AsyncSession, debt_id: int) -> bool:
     return count > 0
 
 
+async def count_payments(session: AsyncSession, debt_id: int) -> int:
+    q = select(func.count(DebtPayment.id)).where(DebtPayment.debt_id == debt_id)
+    return (await session.execute(q)).scalar_one()
+
+
 async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
     debt.is_active = False
     await session.flush()
@@ -229,22 +270,50 @@ async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
 
 async def get_amortization_schedule(session: AsyncSession, debt: Debt) -> list[dict]:
     payments = await _get_payments(session, debt.id)
+    freq = str(debt.payment_frequency or "monthly")
+    frequency_months = FREQUENCY_MONTHS.get(freq, 1)
     return generate_schedule(
         principal_minor=debt.principal_minor,
         annual_rate_bps=debt.annual_rate_bps,
         tenure_months=debt.tenure_months,
         start_date=debt.start_date,
         payments=payments,
+        frequency_months=frequency_months,
+        payment_day_of_month=debt.payment_day_of_month,
     )
+
+
+def _payment_transaction_details(debt: Debt, notes: str | None) -> tuple[TransactionType, str]:
+    """Return (transaction_type, description) for auto-created payment transaction."""
+    if debt.type == DebtType.PERSONAL_LENT:
+        return TransactionType.CREDIT, f"Debt collection: {debt.name}"
+    else:
+        return TransactionType.DEBIT, f"Debt payment: {debt.name}"
+
+
+async def _get_debt_category_id(session: AsyncSession, tx_type: TransactionType) -> int | None:
+    """Find the predefined Debt Payment or Debt Collection category."""
+    from app.models.category import Category
+
+    target_name = "Debt Collection" if tx_type == TransactionType.CREDIT else "Debt Payment"
+    q = select(Category).where(
+        Category.is_predefined.is_(True),
+        Category.name_en == target_name,
+    )
+    cat = (await session.execute(q)).scalar_one_or_none()
+    return cat.id if cat else None
 
 
 async def record_payment(
     session: AsyncSession,
+    household_id: uuid.UUID,
     debt: Debt,
     payment_date: date,
     amount_minor: int,
-    transaction_id: int | None = None,
+    account_id: int,
+    link_existing_transaction_id: int | None = None,
     notes: str | None = None,
+    applies_to_balance_override: bool | None = None,
 ) -> DebtPayment:
     """Record a payment, auto-computing principal/interest split for bank loans."""
     # Use principal-paid sum (not total-paid) so that interest portions in prior
@@ -266,12 +335,16 @@ async def record_payment(
         # canonical principal/interest split per installment.  Passing payments=[]
         # is intentional — all rows will have status != "paid", which is what we
         # need to find the matching month's ratio without previous-payment state.
+        freq = str(debt.payment_frequency or "monthly")
+        fm = FREQUENCY_MONTHS.get(freq, 1)
         schedule = generate_schedule(
             principal_minor=debt.principal_minor,
             annual_rate_bps=debt.annual_rate_bps,
             tenure_months=debt.tenure_months,
             start_date=debt.start_date,
             payments=[],
+            frequency_months=fm,
+            payment_day_of_month=debt.payment_day_of_month,
         )
         # Find the matching schedule row by calendar month
         matching_row = None
@@ -307,11 +380,49 @@ async def record_payment(
         amount_minor=amount_minor,
         principal_minor=principal_portion,
         interest_minor=interest_portion,
-        transaction_id=transaction_id,
         notes=notes,
     )
     session.add(payment)
     await session.flush()
+
+    # --- Auto-create or link transaction ---
+    if link_existing_transaction_id is not None:
+        existing_tx = await session.get(Transaction, link_existing_transaction_id)
+        if (
+            existing_tx is None
+            or not existing_tx.is_active
+            or existing_tx.household_id != household_id
+            or existing_tx.account_id != account_id
+        ):
+            raise ValueError("TRANSACTION_NOT_FOUND")
+        payment.transaction_id = existing_tx.id
+        await session.flush()
+    else:
+        # Determine whether this payment affects the account balance
+        if applies_to_balance_override is not None:
+            affects_balance = applies_to_balance_override
+        else:
+            account = await session.get(Account, account_id)
+            if account is None or not account.is_active or account.household_id != household_id:
+                raise ValueError("ACCOUNT_NOT_FOUND")
+            cutoff = get_balance_cutoff_date(account)
+            affects_balance = payment_date >= cutoff if cutoff else True
+
+        tx_type, tx_description = _payment_transaction_details(debt, notes)
+        debt_category_id = await _get_debt_category_id(session, tx_type)
+        tx_data = TransactionCreate(
+            account_id=account_id,
+            date=payment_date,
+            description=tx_description,
+            amount_minor=amount_minor,
+            type=tx_type,
+            category_id=debt_category_id,
+            notes=notes,
+            applies_to_balance=affects_balance,
+        )
+        new_tx = await create_transaction(session, household_id, tx_data)
+        payment.transaction_id = new_tx.id
+        await session.flush()
 
     # For P2P debts, find the earliest unpaid split and mark it paid
     if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
@@ -340,12 +451,146 @@ async def record_payment(
     return payment
 
 
+async def bulk_record_past_payments(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    debt: Debt,
+    installment_numbers: list[int],
+    account_id: int,
+) -> dict:
+    """Record multiple past payments in bulk, respecting balance cutoff dates."""
+    # Validate account
+    account = await session.get(Account, account_id)
+    if account is None or not account.is_active or account.household_id != household_id:
+        raise ValueError("ACCOUNT_NOT_FOUND")
+
+    cutoff = get_balance_cutoff_date(account)
+
+    # Generate the amortization schedule
+    freq = str(debt.payment_frequency or "monthly")
+    frequency_months = FREQUENCY_MONTHS.get(freq, 1)
+    payments_list = await _get_payments(session, debt.id)
+    schedule = generate_schedule(
+        principal_minor=debt.principal_minor,
+        annual_rate_bps=debt.annual_rate_bps,
+        tenure_months=debt.tenure_months,
+        start_date=debt.start_date,
+        payments=payments_list,
+        frequency_months=frequency_months,
+        payment_day_of_month=debt.payment_day_of_month,
+    )
+    schedule_by_num = {row["payment_number"]: row for row in schedule}
+
+    recorded_count = 0
+    balance_affecting_count = 0
+    history_only_count = 0
+    total_balance_impact_minor = 0
+
+    for num in sorted(installment_numbers):
+        row = schedule_by_num.get(num)
+        if row is None:
+            continue
+        payment_date = row["date"]
+        amount = row["payment_minor"]
+        affects_balance = payment_date >= cutoff if cutoff else True
+
+        await record_payment(
+            session=session,
+            household_id=household_id,
+            debt=debt,
+            payment_date=payment_date,
+            amount_minor=amount,
+            account_id=account_id,
+            applies_to_balance_override=affects_balance,
+        )
+        recorded_count += 1
+        if affects_balance:
+            balance_affecting_count += 1
+            total_balance_impact_minor += amount
+        else:
+            history_only_count += 1
+
+    return {
+        "recorded_count": recorded_count,
+        "balance_affecting_count": balance_affecting_count,
+        "history_only_count": history_only_count,
+        "total_balance_impact_minor": total_balance_impact_minor,
+    }
+
+
+async def bulk_payment(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    items: list[dict],
+    fee_minor: int,
+    account_id: int,
+    payment_date: date,
+    link_existing_transaction_id: int | None = None,
+) -> dict:
+    """Process a bulk BNPL payment across multiple debts, with optional fee transaction."""
+    payments_created = 0
+    total_minor = 0
+
+    for item in items:
+        debt = await get_debt(session, household_id, item["debt_id"])
+        if not debt:
+            raise ValueError(f"DEBT_NOT_FOUND:{item['debt_id']}")
+
+        await record_payment(
+            session=session,
+            household_id=household_id,
+            debt=debt,
+            payment_date=payment_date,
+            amount_minor=item["amount_minor"],
+            account_id=account_id,
+            link_existing_transaction_id=link_existing_transaction_id,
+        )
+        payments_created += 1
+        total_minor += item["amount_minor"]
+
+    fee_transaction_id: int | None = None
+    if fee_minor > 0:
+        from app.models.category import Category
+
+        q = select(Category).where(
+            Category.is_predefined.is_(True),
+            Category.name_en == "Fees & Charges",
+        )
+        fee_cat = (await session.execute(q)).scalar_one_or_none()
+        fee_category_id = fee_cat.id if fee_cat else None
+
+        tx_data = TransactionCreate(
+            account_id=account_id,
+            date=payment_date,
+            description="BNPL Payment Fees",
+            amount_minor=fee_minor,
+            type=TransactionType.DEBIT,
+            category_id=fee_category_id,
+        )
+        fee_tx = await create_transaction(session, household_id, tx_data)
+        fee_transaction_id = fee_tx.id
+        total_minor += fee_minor
+
+    return {
+        "payments_created": payments_created,
+        "total_minor": total_minor,
+        "fee_transaction_id": fee_transaction_id,
+    }
+
+
 async def get_payments(session: AsyncSession, debt_id: int) -> list[DebtPayment]:
     return await _get_payments(session, debt_id)
 
 
 async def mark_paid(session: AsyncSession, debt: Debt) -> Debt:
     debt.status = DebtStatus.PAID_OFF
+    await session.flush()
+    return debt
+
+
+async def reactivate_debt(session: AsyncSession, debt: Debt) -> Debt:
+    """Revert a paid-off debt back to active status."""
+    debt.status = DebtStatus.ACTIVE
     await session.flush()
     return debt
 

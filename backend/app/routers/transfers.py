@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import get_member_role, require_role
+from app.models.enums import HouseholdRole
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.schemas.transfer import TransferCreate
 from app.services import transfer as transfer_service
@@ -17,6 +19,7 @@ async def create_transfer(
     data: TransferCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     try:
         result = await transfer_service.create_transfer(session, household_id, data)
@@ -44,6 +47,7 @@ async def delete_transfer(
     transfer_id: uuid.UUID,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> None:
     try:
         await transfer_service.delete_transfer(session, household_id, transfer_id)
@@ -63,6 +67,7 @@ async def list_transfers(
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     items, total = await transfer_service.list_transfers(
         session,

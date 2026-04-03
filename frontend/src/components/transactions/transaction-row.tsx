@@ -27,6 +27,7 @@ import {
 import { useDeleteTransaction, useUpdateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { AccountPill } from "./account-pill";
 import type { Transaction } from "@/hooks/use-transactions";
 import type { Account } from "@/hooks/use-accounts";
@@ -110,9 +111,11 @@ export function TransactionRow({
   return (
     <>
       <tr
-        className={`border-b transition-colors group ${
-          selected ? "bg-primary/10 border-s-2 border-primary" : "hover:bg-muted/40"
-        }`}
+        className={cn(
+          "border-b transition-colors group",
+          selected ? "bg-primary/10 border-s-2 border-primary" : "hover:bg-muted/40",
+          transaction.applies_to_balance === false && "opacity-50"
+        )}
       >
         {bulkMode && (
           <td className="px-4 py-3 w-10">
@@ -125,7 +128,14 @@ export function TransactionRow({
         )}
         <td className="px-4 py-3 text-sm">{transaction.date}</td>
         <td className="px-4 py-3 text-sm">
-          <div>{transaction.description || "—"}</div>
+          <div className="flex items-center gap-1.5">
+            <span>{transaction.description || "—"}</span>
+            {transaction.applies_to_balance === false && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground whitespace-nowrap">
+                {t("transactions.historyOnly")}
+              </span>
+            )}
+          </div>
           {transaction.notes && (
             <div className="text-xs text-muted-foreground">{transaction.notes}</div>
           )}

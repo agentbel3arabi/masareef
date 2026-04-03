@@ -10,19 +10,25 @@ import {
   ChevronDown,
   Calendar,
   Plus,
-  UserPlus,
+  Pencil,
+  Trash2,
+  CreditCard,
+  CheckCircle2,
+  ExternalLink,
 } from "lucide-react";
-import { useDebts } from "@/hooks/use-debts";
+import { useDebts, useDeleteDebt, useDebtSplits } from "@/hooks/use-debts";
+import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import { usePersons } from "@/hooks/use-persons";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { StatusBadge } from "@/components/debts/status-badge";
+import { RecordPaymentForm } from "@/components/debts/record-payment-form";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
+import { Button } from "@/components/ui/button";
+import { formatAmount, formatAmountAr, formatWithCurrency, CURRENCIES } from "@/lib/money";
 import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
-import { PersonForm } from "@/components/debts/person-form";
-import type { DebtResponse, PersonResponse } from "@/lib/types/debts";
+import type { DebtResponse, PersonResponse, P2PDebtSplitResponse } from "@/lib/types/debts";
 
 interface PersonGroup {
   person: PersonResponse | undefined;
@@ -48,14 +54,21 @@ const STATUS_MAP: Record<string, "active" | "completed"> = {
   paid_off: "completed",
 };
 
-export function P2PTab() {
+interface P2PTabProps {
+  onAddClick?: () => void;
+}
+
+export function P2PTab({ onAddClick }: P2PTabProps) {
   const t = useTranslations();
   const tActions = useTranslations("debts.actions");
-  const tPersons = useTranslations("persons");
+  const tDetail = useTranslations("debts.detail");
+  const tP2P = useTranslations("debts.p2p");
   const locale = useLocale();
   const [expandedPersonId, setExpandedPersonId] = useState<number | null>(null);
-  const [showDebtForm, setShowDebtForm] = useState(false);
-  const [showPersonForm, setShowPersonForm] = useState(false);
+  const [addDebtForPersonId, setAddDebtForPersonId] = useState<number | null>(null);
+  const [editingDebt, setEditingDebt] = useState<DebtResponse | null>(null);
+  const [paymentDebt, setPaymentDebt] = useState<DebtResponse | null>(null);
+  const deleteMutation = useDeleteDebt();
 
   const {
     data: lentData,
@@ -168,7 +181,7 @@ export function P2PTab() {
         icon={Users}
         title={t("emptyStates.p2p.title")}
         description={t("emptyStates.p2p.description")}
-        action={{ label: tActions("addDebt"), onClick: () => setShowDebtForm(true) }}
+        action={{ label: tActions("addDebt"), onClick: onAddClick ?? (() => {}) }}
       />
     );
   }
@@ -179,34 +192,14 @@ export function P2PTab() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatCard
           icon={ArrowUpRight}
-          label={t("debts.p2p.lent")}
+          label={tP2P("lent")}
           value={fmt(totalLent, summaryCurrency)}
         />
         <StatCard
           icon={ArrowDownLeft}
-          label={t("debts.p2p.borrowed")}
+          label={tP2P("borrowed")}
           value={fmt(totalBorrowed, summaryCurrency)}
         />
-      </div>
-
-      {/* Add Buttons */}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => setShowDebtForm(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          {tActions("addDebt")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowPersonForm(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
-        >
-          <UserPlus className="h-4 w-4" />
-          {tPersons("form.title")}
-        </button>
       </div>
 
       {/* Person Cards */}
@@ -221,13 +214,48 @@ export function P2PTab() {
                 expandedPersonId === group.personId ? null : group.personId,
               )
             }
+            onEdit={(debt) => setEditingDebt(debt)}
+            onDelete={(id) => deleteMutation.mutate(id)}
+            onRecordPayment={(debt) => setPaymentDebt(debt)}
+            onAddDebtForPerson={(personId) => setAddDebtForPersonId(personId)}
+            isDeleting={deleteMutation.isPending}
             t={t}
+            tDetail={tDetail}
+            tP2P={tP2P}
             locale={locale}
           />
         ))}
       </div>
-      <P2PDebtForm open={showDebtForm} onOpenChange={setShowDebtForm} />
-      <PersonForm open={showPersonForm} onOpenChange={setShowPersonForm} />
+
+      {/* Add debt for specific person */}
+      {addDebtForPersonId !== null && (
+        <P2PDebtForm
+          open={true}
+          onOpenChange={(open) => { if (!open) setAddDebtForPersonId(null); }}
+          preSelectedPersonId={addDebtForPersonId}
+        />
+      )}
+
+      {/* Edit debt form */}
+      {editingDebt && (
+        <P2PDebtForm
+          open={!!editingDebt}
+          onOpenChange={(open) => { if (!open) setEditingDebt(null); }}
+          initialData={editingDebt}
+        />
+      )}
+
+      {/* Record payment form */}
+      {paymentDebt && (
+        <RecordPaymentForm
+          open={!!paymentDebt}
+          onOpenChange={(open) => { if (!open) setPaymentDebt(null); }}
+          debtId={paymentDebt.id}
+          currency={paymentDebt.currency}
+          debtType={paymentDebt.type}
+          linkedAccountId={paymentDebt.linked_account_id}
+        />
+      )}
     </div>
   );
 }
@@ -240,7 +268,14 @@ interface PersonDebtCardProps {
   group: PersonGroup;
   expanded: boolean;
   onToggle: () => void;
+  onEdit: (debt: DebtResponse) => void;
+  onDelete: (id: number) => void;
+  onRecordPayment: (debt: DebtResponse) => void;
+  onAddDebtForPerson: (personId: number) => void;
+  isDeleting: boolean;
   t: ReturnType<typeof useTranslations>;
+  tDetail: ReturnType<typeof useTranslations>;
+  tP2P: ReturnType<typeof useTranslations>;
   locale: string;
 }
 
@@ -248,7 +283,14 @@ function PersonDebtCard({
   group,
   expanded,
   onToggle,
+  onEdit,
+  onDelete,
+  onRecordPayment,
+  onAddDebtForPerson,
+  isDeleting,
   t,
+  tDetail,
+  tP2P,
   locale,
 }: PersonDebtCardProps) {
   const { person, lent, borrowed, netRemaining, defaultCurrency } = group;
@@ -256,11 +298,10 @@ function PersonDebtCard({
     locale === "ar" && person?.name_ar ? person.name_ar : (person?.name ?? `Person #${group.personId}`);
 
   const balances = person?.balances;
-  const netCurrency = balances?.base_currency ?? defaultCurrency;
 
   return (
     <div className="rounded-xl bg-card border border-border shadow-sm overflow-hidden">
-      {/* Collapsed header — always visible */}
+      {/* Collapsed header -- always visible */}
       <button
         type="button"
         onClick={onToggle}
@@ -284,8 +325,8 @@ function PersonDebtCard({
 
         <div className="flex items-center gap-2 shrink-0">
           <MoneyDisplay
-            amount={balances ? balances.total_base_minor : netRemaining}
-            currency={balances ? balances.base_currency : netCurrency}
+            amount={netRemaining}
+            currency={defaultCurrency}
             colorize
             size="sm"
             showCurrency
@@ -303,7 +344,7 @@ function PersonDebtCard({
           {balances && Object.keys(balances.by_currency).length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {t("debts.p2p.netOwed")}
+                {tP2P("netOwed")}
               </p>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(balances.by_currency).map(
@@ -332,10 +373,16 @@ function PersonDebtCard({
           {/* Lent debts */}
           {lent.length > 0 && (
             <DebtSection
-              title={t("debts.p2p.lent")}
+              title={tP2P("lent")}
               debts={lent}
               icon={ArrowUpRight}
               iconClass="text-emerald-500"
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onRecordPayment={onRecordPayment}
+              isDeleting={isDeleting}
+              tDetail={tDetail}
+              tP2P={tP2P}
               locale={locale}
             />
           )}
@@ -343,14 +390,31 @@ function PersonDebtCard({
           {/* Borrowed debts */}
           {borrowed.length > 0 && (
             <DebtSection
-              title={t("debts.p2p.borrowed")}
+              title={tP2P("borrowed")}
               debts={borrowed}
               icon={ArrowDownLeft}
               iconClass="text-rose-500"
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onRecordPayment={onRecordPayment}
+              isDeleting={isDeleting}
+              tDetail={tDetail}
+              tP2P={tP2P}
               locale={locale}
             />
           )}
 
+          {/* Add Debt for Person button */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => onAddDebtForPerson(group.personId)}
+          >
+            <Plus className="me-1.5 h-3.5 w-3.5" />
+            {t("debts.form.p2p.addDebtFor", { name: displayName })}
+          </Button>
         </div>
       )}
     </div>
@@ -366,6 +430,12 @@ interface DebtSectionProps {
   debts: DebtResponse[];
   icon: typeof ArrowUpRight;
   iconClass: string;
+  onEdit: (debt: DebtResponse) => void;
+  onDelete: (id: number) => void;
+  onRecordPayment: (debt: DebtResponse) => void;
+  isDeleting: boolean;
+  tDetail: ReturnType<typeof useTranslations>;
+  tP2P: ReturnType<typeof useTranslations>;
   locale: string;
 }
 
@@ -374,6 +444,12 @@ function DebtSection({
   debts,
   icon: Icon,
   iconClass,
+  onEdit,
+  onDelete,
+  onRecordPayment,
+  isDeleting,
+  tDetail,
+  tP2P,
   locale,
 }: DebtSectionProps) {
   return (
@@ -383,32 +459,173 @@ function DebtSection({
       </p>
       <div className="space-y-1.5">
         {debts.map((debt) => (
-          <div
+          <DebtRow
             key={debt.id}
-            className="flex items-center gap-3 rounded-lg bg-muted/40 px-3 py-2"
-          >
-            <Icon className={`h-4 w-4 shrink-0 ${iconClass}`} />
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-              {debt.name}
-            </span>
-            <MoneyDisplay
-              amount={debt.remaining_minor}
-              currency={debt.currency}
-              size="sm"
-              showCurrency
-            />
-            <StatusBadge status={STATUS_MAP[debt.status] ?? "active"} />
-            {debt.due_date && (
-              <span className="hidden sm:inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                {new Date(debt.due_date).toLocaleDateString(
-                  locale === "ar" ? "ar-EG" : "en-US",
-                  { month: "short", day: "numeric" },
-                )}
-              </span>
-            )}
-          </div>
+            debt={debt}
+            icon={Icon}
+            iconClass={iconClass}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onRecordPayment={onRecordPayment}
+            isDeleting={isDeleting}
+            tDetail={tDetail}
+            tP2P={tP2P}
+            locale={locale}
+          />
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  DebtRow — individual debt with next split info and actions          */
+/* ------------------------------------------------------------------ */
+
+interface DebtRowProps {
+  debt: DebtResponse;
+  icon: typeof ArrowUpRight;
+  iconClass: string;
+  onEdit: (debt: DebtResponse) => void;
+  onDelete: (id: number) => void;
+  onRecordPayment: (debt: DebtResponse) => void;
+  isDeleting: boolean;
+  tDetail: ReturnType<typeof useTranslations>;
+  tP2P: ReturnType<typeof useTranslations>;
+  locale: string;
+}
+
+function DebtRow({
+  debt,
+  icon: Icon,
+  iconClass,
+  onEdit,
+  onDelete,
+  onRecordPayment,
+  isDeleting,
+  tDetail,
+  tP2P,
+  locale,
+}: DebtRowProps) {
+  // Fetch splits for this debt to show next upcoming
+  const { data: splitsData } = useDebtSplits(
+    debt.repayment_mode && debt.repayment_mode !== "lump_sum" ? debt.id : 0
+  );
+  const splits: P2PDebtSplitResponse[] = splitsData?.data ?? [];
+  const nextUnpaidSplit = splits.find((s) => !s.paid);
+
+  const isFullyPaid = debt.total_paid_minor >= debt.principal_minor;
+
+  return (
+    <div className="rounded-lg bg-muted/40 px-3 py-2 space-y-2">
+      {/* Main row */}
+      <div className="flex items-center gap-3">
+        <Icon className={`h-4 w-4 shrink-0 ${iconClass}`} />
+        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+          {debt.name}
+        </span>
+        <MoneyDisplay
+          amount={debt.remaining_minor}
+          currency={debt.currency}
+          size="sm"
+          showCurrency
+        />
+        <StatusBadge status={STATUS_MAP[debt.status] ?? "active"} />
+      </div>
+
+      {/* Next split info */}
+      {nextUnpaidSplit && (
+        <p className="text-xs text-muted-foreground ps-7">
+          {tP2P("nextSplit", {
+            amount: formatWithCurrency(nextUnpaidSplit.amount_minor, debt.currency),
+            date: new Date(nextUnpaidSplit.due_date).toLocaleDateString(
+              locale === "ar" ? "ar-EG" : "en-US",
+              { month: "short", day: "numeric" },
+            ),
+          })}
+        </p>
+      )}
+
+      {/* Due date for lump sum */}
+      {debt.due_date && !nextUnpaidSplit && (
+        <p className="text-xs text-muted-foreground ps-7 inline-flex items-center gap-1">
+          <Calendar className="h-3 w-3" />
+          {new Date(debt.due_date).toLocaleDateString(
+            locale === "ar" ? "ar-EG" : "en-US",
+            { month: "short", day: "numeric" },
+          )}
+        </p>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex items-center gap-1.5 ps-7 flex-wrap">
+        {/* Record Payment — only for active debts */}
+        {!isFullyPaid && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs"
+            onClick={(e) => { e.stopPropagation(); onRecordPayment(debt); }}
+          >
+            <CreditCard className="me-1 h-3 w-3" />
+            {tDetail("payment")}
+          </Button>
+        )}
+
+        {/* Mark Settled — for fully paid debts still showing as active */}
+        {isFullyPaid && debt.status === "active" && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+            onClick={(e) => { e.stopPropagation(); }}
+            disabled
+            title="Auto-settled when fully paid"
+          >
+            <CheckCircle2 className="me-1 h-3 w-3" />
+            {tP2P("markSettled")}
+          </Button>
+        )}
+
+        {/* View Details */}
+        <a
+          href={`/debts/p2p/${debt.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex items-center gap-1 h-7 px-2 text-xs font-medium text-primary hover:underline"
+        >
+          <ExternalLink className="h-3 w-3" />
+          {tP2P("viewDetails")}
+        </a>
+
+        {/* Edit */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+          onClick={(e) => { e.stopPropagation(); onEdit(debt); }}
+          aria-label={tDetail("edit")}
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </Button>
+
+        {/* Delete */}
+        <DeleteConfirmation
+          itemName={debt.name}
+          onConfirm={() => onDelete(debt.id)}
+          isPending={isDeleting}
+          trigger={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+              aria-label={tDetail("delete")}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          }
+        />
       </div>
     </div>
   );

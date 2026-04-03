@@ -20,6 +20,10 @@ class DebtCreate(BaseModel):
     annual_rate_percent: float = Field(ge=0, default=0)
     tenure_months: int = Field(gt=0)
     start_date: date
+    payment_day_of_month: int | None = Field(default=None, ge=1, le=28)
+    payment_frequency: Literal["monthly", "quarterly", "semi_annual", "annual"] = Field(
+        default="monthly"
+    )
     linked_account_id: int | None = None
     notes: str | None = None
     # P2P fields
@@ -28,6 +32,8 @@ class DebtCreate(BaseModel):
     due_date: date | None = None
     split_count: int | None = Field(default=None, gt=0)
     splits: list[SplitInput] | None = None
+    # Account for auto-transaction (required for P2P, optional for bank_loan)
+    account_id: int | None = None
 
 
 class DebtUpdate(BaseModel):
@@ -49,6 +55,8 @@ class DebtResponse(BaseModel):
     annual_rate_bps: int
     tenure_months: int
     start_date: date
+    payment_day_of_month: int | None = None
+    payment_frequency: Literal["monthly", "quarterly", "semi_annual", "annual"] = "monthly"
     monthly_payment_minor: int
     repayment_mode: str | None = None
     due_date: date | None = None
@@ -57,6 +65,7 @@ class DebtResponse(BaseModel):
     is_active: bool
     total_paid_minor: int = 0
     remaining_minor: int = 0
+    credit_utilization_percent: float | None = None
 
     model_config = {"from_attributes": True}
 
@@ -64,7 +73,8 @@ class DebtResponse(BaseModel):
 class PaymentCreate(BaseModel):
     date: date
     amount_minor: int = Field(gt=0)
-    transaction_id: int | None = None
+    account_id: int
+    link_existing_transaction_id: int | None = None
     notes: str | None = None
 
 
@@ -97,6 +107,37 @@ class MatchSuggestion(BaseModel):
     amount_minor: int
     description: str
     score: float = Field(ge=0.0, le=1.0)
+
+
+class BulkPastPaymentRequest(BaseModel):
+    installment_numbers: list[int] = Field(min_length=1)
+    account_id: int
+
+
+class BulkPastPaymentResponse(BaseModel):
+    recorded_count: int
+    balance_affecting_count: int
+    history_only_count: int
+    total_balance_impact_minor: int
+
+
+class BulkPaymentItem(BaseModel):
+    debt_id: int
+    amount_minor: int = Field(gt=0)
+
+
+class BulkPaymentRequest(BaseModel):
+    items: list[BulkPaymentItem] = Field(min_length=1)
+    fee_minor: int = Field(ge=0, default=0)
+    account_id: int
+    date: date
+    link_existing_transaction_id: int | None = None
+
+
+class BulkPaymentResponse(BaseModel):
+    payments_created: int
+    total_minor: int
+    fee_transaction_id: int | None = None
 
 
 class P2PDebtSplitResponse(BaseModel):

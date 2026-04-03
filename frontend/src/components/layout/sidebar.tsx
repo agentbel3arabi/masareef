@@ -24,7 +24,7 @@ const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
   {
     label: "nav.sectionPlanning",
     items: navItems.filter((i) =>
-      ["/budgets", "/debts", "/gam3eya"].includes(i.href)
+      ["/budgets", "/debts", "/people", "/gam3eya"].includes(i.href)
     ),
   },
   {
