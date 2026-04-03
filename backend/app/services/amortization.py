@@ -34,6 +34,12 @@ def compute_periodic_payment(
     if principal_minor <= 0:
         raise ValueError("principal_minor must be positive")
 
+    if tenure_months % frequency_months != 0:
+        raise ValueError(
+            f"tenure_months ({tenure_months}) must be divisible by "
+            f"frequency_months ({frequency_months})"
+        )
+
     num_periods = tenure_months // frequency_months
     if num_periods <= 0:
         raise ValueError("num_periods must be positive (tenure_months / frequency_months)")
@@ -143,7 +149,8 @@ def generate_schedule(
 
         # Determine status
         has_payment = any(
-            _dates_match_period(pd, payment_date, frequency_months) for pd in payment_dates
+            _dates_match_period(pd, payment_date, frequency_months, start_date)
+            for pd in payment_dates
         )
         if has_payment:
             status = "paid"
@@ -167,13 +174,29 @@ def generate_schedule(
     return schedule
 
 
-def _dates_match_period(d1: date, d2: date, frequency_months: int = 1) -> bool:
+def _dates_match_period(
+    d1: date,
+    d2: date,
+    frequency_months: int = 1,
+    start_date: date | None = None,
+) -> bool:
     """Check if two dates fall within the same payment period.
 
     For monthly frequency, matches by year-month.
-    For non-monthly, checks if the dates are within frequency_months of each other.
+    For non-monthly with a start_date, computes the period index for each date
+    deterministically so that a payment cannot match multiple periods.
+    Falls back to year-month comparison when start_date is not provided.
     """
     if frequency_months == 1:
         return d1.year == d2.year and d1.month == d2.month
-    month_diff = (d1.year - d2.year) * 12 + (d1.month - d2.month)
-    return abs(month_diff) < frequency_months
+
+    if start_date is not None:
+
+        def _period_index(d: date) -> int:
+            months_since = (d.year - start_date.year) * 12 + (d.month - start_date.month)
+            return months_since // frequency_months
+
+        return _period_index(d1) == _period_index(d2)
+
+    # Legacy fallback: year-month match
+    return d1.year == d2.year and d1.month == d2.month

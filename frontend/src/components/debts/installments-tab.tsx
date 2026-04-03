@@ -165,50 +165,43 @@ export function InstallmentsTab({ onAddClick }: InstallmentsTabProps) {
         return (
           <section key={key} className="rounded-xl border border-border overflow-hidden">
             {/* Section Header */}
-            <button
-              type="button"
-              onClick={() => toggleSection(key)}
+            <div
               className={`w-full flex items-center justify-between p-4 transition-colors ${
                 isBnpl
                   ? "bg-violet-50 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-950/30"
                   : "bg-muted/50 hover:bg-muted"
               }`}
             >
-              <span className="font-bold flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => toggleSection(key)}
+                className="font-bold flex items-center gap-2 bg-transparent border-none cursor-pointer p-0"
+              >
                 <Icon className={`h-4 w-4 ${isBnpl ? "text-violet-600 dark:text-violet-400" : ""}`} />
                 {t(i18nKey)}
                 <span className="text-sm text-muted-foreground font-normal">
                   ({sectionPlans.length})
                 </span>
-              </span>
-              <div className="flex items-center gap-2">
-                {isBnpl && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setBulkPayOpen(true);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.stopPropagation();
-                        e.preventDefault();
-                      }
-                    }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-colors"
-                  >
-                    <Banknote className="h-3.5 w-3.5" />
-                    {t("bulkPay")}
-                  </span>
-                )}
                 <ChevronDown
                   className={`h-4 w-4 text-muted-foreground transition-transform ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />
-              </div>
-            </button>
+              </button>
+              {isBnpl && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setBulkPayOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-colors"
+                >
+                  <Banknote className="h-3.5 w-3.5" />
+                  {t("bulkPay")}
+                </button>
+              )}
+            </div>
 
             {/* Section Content */}
             {isOpen && (

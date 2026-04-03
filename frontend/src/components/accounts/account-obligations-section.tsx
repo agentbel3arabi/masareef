@@ -90,9 +90,13 @@ export function AccountObligationsSection({ accountId, accountType, currency }: 
     return null;
   }
 
-  const isLoanSection = accountType === "bank_account";
-  const sectionTitle = isLoanSection ? t("linkedLoans") : t("installmentPlans");
-  const viewAllHref = isLoanSection ? "/debts?tab=loans" : "/debts?tab=installments";
+  const sectionTitle =
+    hasDebts && hasInstallments
+      ? t("title")
+      : hasDebts
+        ? t("linkedLoans")
+        : t("installmentPlans");
+  const viewAllHref = hasDebts ? "/debts?tab=loans" : "/debts?tab=installments";
 
   // Compute total monthly commitment for installments
   const totalMonthlyMinor = obligations?.installments?.reduce(

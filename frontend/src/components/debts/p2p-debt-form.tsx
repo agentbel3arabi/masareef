@@ -88,6 +88,7 @@ function P2PDebtFormContent({
   const [customSplits, setCustomSplits] = useState<{ amount: string; due_date: string }[]>([{ amount: "", due_date: "" }]);
 
   const [accountId, setAccountId] = useState("");
+  const [splitsSumError, setSplitsSumError] = useState(false);
 
   // Inline person creation state
   const [showInlinePersonForm, setShowInlinePersonForm] = useState(false);
@@ -176,9 +177,20 @@ function P2PDebtFormContent({
       if (repaymentMode === "equal_splits" && !splitCount) return;
       const selectedPersonName = selectedPerson?.name ?? "";
       const exponent = CURRENCIES[currency]?.exponent ?? 2;
+      const totalMinor = parseMajorToMinor(amount, exponent);
       const splitsPayload = repaymentMode === "custom_splits"
         ? customSplits.map((s) => ({ amount_minor: parseMajorToMinor(s.amount, exponent), due_date: s.due_date }))
         : null;
+
+      // Validate custom splits sum to total
+      if (repaymentMode === "custom_splits" && splitsPayload) {
+        const splitsSum = splitsPayload.reduce((sum, s) => sum + s.amount_minor, 0);
+        if (splitsSum !== totalMinor) {
+          setSplitsSumError(true);
+          return;
+        }
+        setSplitsSumError(false);
+      }
       createMutation.mutate(
         {
           type: debtType,
@@ -186,7 +198,7 @@ function P2PDebtFormContent({
             debtType === "personal_lent"
               ? t("autoNameLent", { name: selectedPersonName })
               : t("autoNameBorrowed", { name: selectedPersonName }),
-          principal_minor: parseMajorToMinor(amount, exponent),
+          principal_minor: totalMinor,
           currency,
           tenure_months:
             repaymentMode === "equal_splits" && splitCount
@@ -489,6 +501,9 @@ function P2PDebtFormContent({
             >
               {t("addSplit")}
             </Button>
+            {splitsSumError && (
+              <p className="text-sm text-destructive">{t("splitsSumError")}</p>
+            )}
           </div>
         )}
 
@@ -502,7 +517,15 @@ function P2PDebtFormContent({
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={
+            createMutation.isPending ||
+            updateMutation.isPending ||
+            (!isEdit && !accountId)
+          }
+        >
           {createMutation.isPending || updateMutation.isPending ? t("saving") : isEdit ? t("update") : t("submit")}
         </Button>
       </form>
