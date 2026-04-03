@@ -15,6 +15,7 @@ import {
 import { useInstallments, useDeleteInstallment } from "@/hooks/use-installments";
 import { useAccounts, type Account } from "@/hooks/use-accounts";
 import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { InstallmentPlanRow } from "@/components/debts/installment-plan-row";
@@ -306,26 +307,28 @@ export function InstallmentsTab({ onAddClick }: InstallmentsTabProps) {
                               className="absolute top-2 end-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <button
-                                type="button"
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground"
                                 onClick={() => setEditingPlan(plan)}
-                                className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                                 aria-label={tDetail("edit")}
                               >
                                 <Pencil className="h-3.5 w-3.5" />
-                              </button>
+                              </Button>
                               <DeleteConfirmation
                                 itemName={plan.name}
                                 onConfirm={() => deleteMutation.mutate(plan.id)}
                                 isPending={deleteMutation.isPending}
                                 trigger={
-                                  <button
-                                    type="button"
-                                    className="inline-flex items-center p-1.5 rounded-md bg-background/80 backdrop-blur text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 bg-background/80 backdrop-blur text-muted-foreground hover:text-destructive"
                                     aria-label={tDetail("delete")}
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
+                                  </Button>
                                 }
                               />
                             </div>

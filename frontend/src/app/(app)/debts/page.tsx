@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { LoansTab } from "@/components/debts/loans-tab";
 import { InstallmentsTab } from "@/components/debts/installments-tab";
 import { P2PTab } from "@/components/debts/p2p-tab";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { FAB } from "@/components/shared/fab";
 
 const TAB_KEYS = ["loans", "installments", "p2p"] as const;
@@ -31,6 +32,12 @@ export default function DebtsPage() {
   const t = useTranslations();
   const tDebts = useTranslations("debts");
   const [activeTab, setActiveTab] = useState<TabKey>("loans");
+  const { setActions } = useNavbarActions();
+
+  useEffect(() => {
+    setActions(null); // No navbar actions for debts page currently
+    return () => setActions(null);
+  }, [setActions]);
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 

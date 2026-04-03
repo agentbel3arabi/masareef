@@ -600,14 +600,15 @@ function DebtRow({
         </a>
 
         {/* Edit */}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-muted-foreground hover:text-foreground"
           onClick={(e) => { e.stopPropagation(); onEdit(debt); }}
-          className="inline-flex items-center p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           aria-label={tDetail("edit")}
         >
           <Pencil className="h-3.5 w-3.5" />
-        </button>
+        </Button>
 
         {/* Delete */}
         <DeleteConfirmation
@@ -615,13 +616,14 @@ function DebtRow({
           onConfirm={() => onDelete(debt.id)}
           isPending={isDeleting}
           trigger={
-            <button
-              type="button"
-              className="inline-flex items-center p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
               aria-label={tDetail("delete")}
             >
               <Trash2 className="h-3.5 w-3.5" />
-            </button>
+            </Button>
           }
         />
       </div>

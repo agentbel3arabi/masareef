@@ -8,6 +8,7 @@ import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { RecordPaymentForm } from "@/components/debts/record-payment-form";
 import { useDebts, useAmortizationSchedule, useMatchSuggestions, useDeleteDebt } from "@/hooks/use-debts";
 import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/shared/stat-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
@@ -395,26 +396,27 @@ function LoanCard({
 
               {/* Action buttons */}
               <div className="flex items-center gap-2 pt-2 border-t border-border" onClick={(e) => e.stopPropagation()}>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={onEdit}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted text-foreground hover:bg-muted/80 transition-colors"
                 >
-                  <Pencil className="h-3.5 w-3.5" />
+                  <Pencil className="h-3.5 w-3.5 me-1.5" />
                   {tDetail("edit")}
-                </button>
+                </Button>
                 <DeleteConfirmation
                   itemName={loan.name}
                   onConfirm={onDelete}
                   isPending={isDeleting}
                   trigger={
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-3.5 w-3.5 me-1.5" />
                       {tDetail("delete")}
-                    </button>
+                    </Button>
                   }
                 />
                 <Link
@@ -547,8 +549,8 @@ function NextPaymentPreview({
 
         {/* Action buttons */}
         <div className="flex gap-2 pt-1">
-          <button
-            type="button"
+          <Button
+            size="sm"
             onClick={() =>
               onRecordPayment({
                 amount: nextPayment.payment_minor,
@@ -556,14 +558,15 @@ function NextPaymentPreview({
                 installmentNumber: nextPayment.payment_number,
               })
             }
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
-            <CreditCard className="h-3.5 w-3.5" />
+            <CreditCard className="h-3.5 w-3.5 me-1.5" />
             {tActions("recordPayment")}
-          </button>
+          </Button>
           {hasMatch && (
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-emerald-600 dark:text-emerald-400 border-emerald-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
               onClick={() =>
                 onRecordPayment({
                   amount: nextPayment.payment_minor,
@@ -571,11 +574,10 @@ function NextPaymentPreview({
                   installmentNumber: nextPayment.payment_number,
                 })
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors"
             >
-              <Sparkles className="h-3.5 w-3.5" />
+              <Sparkles className="h-3.5 w-3.5 me-1.5" />
               {tLoan("matchFound")}
-            </button>
+            </Button>
           )}
         </div>
       </div>
