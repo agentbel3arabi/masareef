@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { HandCoins, ShoppingCart } from "lucide-react";
+import { HandCoins, ShoppingCart, ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { useAccountObligations } from "@/hooks/use-account-obligations";
@@ -16,7 +17,10 @@ interface AccountObligationsSectionProps {
 function DebtRow({ debt, currency }: { debt: ObligationDebt; currency: string }) {
   const t = useTranslations("accounts.obligations");
   return (
-    <div className="flex items-center justify-between py-3 border-b border-border last:border-b-0">
+    <Link
+      href={`/debts/loans/${debt.id}`}
+      className="flex items-center justify-between py-3 border-b border-border last:border-b-0 hover:bg-muted/50 -mx-4 px-4 transition-colors"
+    >
       <div className="flex items-center gap-3 min-w-0">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
           <HandCoins className="h-4 w-4 text-primary" />
@@ -28,13 +32,16 @@ function DebtRow({ debt, currency }: { debt: ObligationDebt; currency: string })
           </p>
         </div>
       </div>
-      <div className="text-end shrink-0">
-        <p className="text-sm font-semibold">
-          <MoneyDisplay amount={debt.remaining_minor} currency={currency} className="inline text-sm" />
-        </p>
-        <p className="text-xs text-muted-foreground">{t("remaining")}</p>
+      <div className="flex items-center gap-2 shrink-0">
+        <div className="text-end">
+          <p className="text-sm font-semibold">
+            <MoneyDisplay amount={debt.remaining_minor} currency={currency} className="inline text-sm" />
+          </p>
+          <p className="text-xs text-muted-foreground">{t("remaining")}</p>
+        </div>
+        <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -83,12 +90,40 @@ export function AccountObligationsSection({ accountId, accountType, currency }: 
     return null;
   }
 
-  const sectionTitle =
-    accountType === "bank_account" ? t("linkedLoans") : t("installmentPlans");
+  const isLoanSection = accountType === "bank_account";
+  const sectionTitle = isLoanSection ? t("linkedLoans") : t("installmentPlans");
+  const viewAllHref = isLoanSection ? "/debts?tab=loans" : "/debts?tab=installments";
+
+  // Compute total monthly commitment for installments
+  const totalMonthlyMinor = obligations?.installments?.reduce(
+    (sum, inst) => sum + inst.monthly_amount_minor,
+    0
+  ) ?? 0;
 
   return (
     <div>
-      <h2 className="text-base font-semibold mb-4">{sectionTitle}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-base font-semibold">{sectionTitle}</h2>
+          {hasInstallments && (
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t("activePlans", { count: obligations!.installments.length })}
+              {totalMonthlyMinor > 0 && (
+                <span className="ms-2">
+                  · <MoneyDisplay amount={totalMonthlyMinor} currency={currency} className="inline text-xs" />{t("perMonth")}
+                </span>
+              )}
+            </p>
+          )}
+        </div>
+        <Link
+          href={viewAllHref}
+          className="text-xs font-medium text-primary hover:underline flex items-center gap-1"
+        >
+          {t("viewAll")}
+          <ArrowUpRight className="h-3 w-3" />
+        </Link>
+      </div>
       <Card className="p-4">
         {hasDebts &&
           obligations!.debts.map((debt) => (

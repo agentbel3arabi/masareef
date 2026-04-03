@@ -224,6 +224,7 @@
     "cardholder": "حامل البطاقة",
     "accountStatusActive": "نشط",
     "accountStatusInactive": "غير نشط",
+    "bnplBadge": "اشتر الآن",
     "obligations": {
       "title": "الالتزامات",
       "linkedLoans": "القروض المرتبطة",
@@ -232,7 +233,10 @@
       "remaining": "المتبقي",
       "remainingMonths": "{count} شهر متبقي",
       "noObligations": "لا توجد التزامات مرتبطة بهذا الحساب.",
-      "merchant": "التاجر"
+      "merchant": "التاجر",
+      "viewAll": "عرض الكل",
+      "activePlans": "{count} خطط نشطة",
+      "perMonth": "/شهر"
     }
   },
   "transactions": {

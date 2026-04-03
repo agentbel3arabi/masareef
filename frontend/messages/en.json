@@ -224,6 +224,7 @@
     "cardholder": "Cardholder",
     "accountStatusActive": "Active",
     "accountStatusInactive": "Inactive",
+    "bnplBadge": "BNPL",
     "obligations": {
       "title": "Obligations",
       "linkedLoans": "Linked Loans",
@@ -232,7 +233,10 @@
       "remaining": "Remaining",
       "remainingMonths": "{count} months left",
       "noObligations": "No obligations linked to this account.",
-      "merchant": "Merchant"
+      "merchant": "Merchant",
+      "viewAll": "View All",
+      "activePlans": "{count} active plans",
+      "perMonth": "/mo"
     }
   },
   "transactions": {
