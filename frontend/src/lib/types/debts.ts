@@ -8,6 +8,7 @@
 export type DebtType = "bank_loan" | "personal_lent" | "personal_borrowed";
 export type DebtStatus = "active" | "paid_off";
 export type RepaymentMode = "lump_sum" | "equal_splits" | "custom_splits";
+export type PaymentFrequency = "monthly" | "quarterly" | "semi_annual" | "annual";
 
 export interface DebtResponse {
   id: number;
@@ -21,6 +22,8 @@ export interface DebtResponse {
   annual_rate_bps: number;
   tenure_months: number;
   start_date: string;
+  payment_day_of_month: number | null;
+  payment_frequency: PaymentFrequency;
   monthly_payment_minor: number;
   repayment_mode: RepaymentMode | null;
   due_date: string | null;
@@ -40,6 +43,8 @@ export interface DebtCreateInput {
   annual_rate_percent?: number;
   tenure_months: number;
   start_date: string;
+  payment_day_of_month?: number | null;
+  payment_frequency?: PaymentFrequency;
   linked_account_id?: number | null;
   notes?: string | null;
   person_id?: number | null;
@@ -226,4 +231,37 @@ export interface PersonUpdateInput {
   email?: string | null;
   relationship?: PersonRelationship | null;
   notes?: string | null;
+}
+
+// ── Bulk Payment Types ────────────────────────────────────
+
+export interface BulkPastPaymentRequest {
+  installment_numbers: number[];
+  account_id: number;
+}
+
+export interface BulkPastPaymentResponse {
+  recorded_count: number;
+  balance_affecting_count: number;
+  history_only_count: number;
+  total_balance_impact_minor: number;
+}
+
+export interface BulkPaymentItem {
+  debt_id: number;
+  amount_minor: number;
+}
+
+export interface BulkPaymentRequest {
+  items: BulkPaymentItem[];
+  fee_minor: number;
+  account_id: number;
+  date: string;
+  link_existing_transaction_id?: number | null;
+}
+
+export interface BulkPaymentResponse {
+  payments_created: number;
+  total_minor: number;
+  fee_transaction_id: number | null;
 }

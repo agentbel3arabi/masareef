@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api-client";
 import { useApiMutation } from "@/hooks/use-api-mutation";
@@ -13,6 +13,10 @@ import type {
   ScheduleRow,
   MatchSuggestion,
   P2PDebtSplitResponse,
+  BulkPastPaymentRequest,
+  BulkPastPaymentResponse,
+  BulkPaymentRequest,
+  BulkPaymentResponse,
 } from "@/lib/types/debts";
 
 export function useDebts(params?: { type?: DebtType; status?: DebtStatus }) {
@@ -145,5 +149,32 @@ export function useDebtSplits(debtId: number) {
     queryFn: () =>
       apiGet<P2PDebtSplitResponse[]>(`/api/v1/debts/${debtId}/splits`),
     enabled: Number.isFinite(debtId) && debtId > 0,
+  });
+}
+
+export function useBulkPastPayments(debtId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: BulkPastPaymentRequest) =>
+      apiPost<BulkPastPaymentResponse>(
+        `/api/v1/debts/${debtId}/bulk-past-payments`,
+        data
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["debts"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useBulkPayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: BulkPaymentRequest) =>
+      apiPost<BulkPaymentResponse>("/api/v1/debts/bulk-payment", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["debts"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
   });
 }
