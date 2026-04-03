@@ -667,7 +667,10 @@
       "relationship": "Relationship",
       "debtsWithPerson": "Debts with {name}",
       "splitSchedule": "Split Schedule",
-      "paymentHistory": "Payment History"
+      "paymentHistory": "Payment History",
+      "viewDetails": "View Details",
+      "nextSplit": "Next: {amount} due {date}",
+      "markSettled": "Mark Settled"
     },
     "installment": {
       "monthlyAmount": "Monthly",
@@ -821,7 +824,12 @@
         "splitDate": "Date",
         "addSplit": "Add Split",
         "removeSplit": "Remove",
-        "splitsSumError": "Split amounts must equal the total"
+        "splitsSumError": "Split amounts must equal the total",
+        "addNewPerson": "+ Add new person",
+        "inlinePersonTitle": "Quick Add Person",
+        "savePerson": "Save Person",
+        "personSaved": "Person created!",
+        "addDebtFor": "Add Debt for {name}"
       },
       "payment": {
         "title": "Record Payment",

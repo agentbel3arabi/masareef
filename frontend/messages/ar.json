@@ -667,7 +667,10 @@
       "relationship": "العلاقة",
       "debtsWithPerson": "ديون مع {name}",
       "splitSchedule": "جدول الأقساط",
-      "paymentHistory": "سجل الدفعات"
+      "paymentHistory": "سجل الدفعات",
+      "viewDetails": "عرض التفاصيل",
+      "nextSplit": "التالي: {amount} بتاريخ {date}",
+      "markSettled": "تسوية"
     },
     "installment": {
       "monthlyAmount": "شهرياً",
@@ -821,7 +824,12 @@
         "splitDate": "التاريخ",
         "addSplit": "إضافة قسط",
         "removeSplit": "حذف",
-        "splitsSumError": "مجموع الأقساط يجب أن يساوي المبلغ الإجمالي"
+        "splitsSumError": "مجموع الأقساط يجب أن يساوي المبلغ الإجمالي",
+        "addNewPerson": "+ إضافة شخص جديد",
+        "inlinePersonTitle": "إضافة سريعة لشخص",
+        "savePerson": "حفظ الشخص",
+        "personSaved": "تم إنشاء الشخص!",
+        "addDebtFor": "إضافة دين لـ {name}"
       },
       "payment": {
         "title": "تسجيل دفعة",

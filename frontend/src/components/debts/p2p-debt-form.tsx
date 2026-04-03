@@ -14,20 +14,30 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useCreateDebt, useUpdateDebt } from "@/hooks/use-debts";
-import { usePersons } from "@/hooks/use-persons";
+import { usePersons, useCreatePerson } from "@/hooks/use-persons";
 import { useAccounts } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
-import type { DebtResponse, DebtType, RepaymentMode } from "@/lib/types/debts";
+import { UserPlus, ChevronUp } from "lucide-react";
+import type { DebtResponse, DebtType, RepaymentMode, PersonRelationship } from "@/lib/types/debts";
 
 interface P2PDebtFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: DebtResponse;
+  /** Pre-select a person when adding a debt for a specific person */
+  preSelectedPersonId?: number;
 }
 
 const CURRENCY_CODES = Object.keys(CURRENCIES);
+const RELATIONSHIPS: PersonRelationship[] = [
+  "family",
+  "friend",
+  "colleague",
+  "business",
+  "other",
+];
 
-export function P2PDebtForm({ open, onOpenChange, initialData }: P2PDebtFormProps) {
+export function P2PDebtForm({ open, onOpenChange, initialData, preSelectedPersonId }: P2PDebtFormProps) {
   const t = useTranslations("debts.form.p2p");
   const isEdit = !!initialData;
 
@@ -39,9 +49,10 @@ export function P2PDebtForm({ open, onOpenChange, initialData }: P2PDebtFormProp
       description={t("description")}
     >
       <P2PDebtFormContent
-        key={initialData?.id ?? "new"}
+        key={initialData?.id ?? `new-${preSelectedPersonId ?? ""}`}
         initialData={initialData}
         onOpenChange={onOpenChange}
+        preSelectedPersonId={preSelectedPersonId}
       />
     </FormSheet>
   );
@@ -50,13 +61,19 @@ export function P2PDebtForm({ open, onOpenChange, initialData }: P2PDebtFormProp
 function P2PDebtFormContent({
   initialData,
   onOpenChange,
+  preSelectedPersonId,
 }: Omit<P2PDebtFormProps, "open">) {
   const t = useTranslations("debts.form.p2p");
   const tRepayment = useTranslations("debts.p2p");
+  const tPersons = useTranslations("persons");
   const isEdit = !!initialData;
 
   const [personId, setPersonId] = useState(
-    initialData?.person_id ? String(initialData.person_id) : ""
+    initialData?.person_id
+      ? String(initialData.person_id)
+      : preSelectedPersonId
+        ? String(preSelectedPersonId)
+        : ""
   );
   const [debtType, setDebtType] = useState<DebtType>(
     initialData?.type ?? "personal_lent"
@@ -72,8 +89,16 @@ function P2PDebtFormContent({
 
   const [accountId, setAccountId] = useState("");
 
+  // Inline person creation state
+  const [showInlinePersonForm, setShowInlinePersonForm] = useState(false);
+  const [inlineName, setInlineName] = useState("");
+  const [inlineNameAr, setInlineNameAr] = useState("");
+  const [inlinePhone, setInlinePhone] = useState("");
+  const [inlineRelationship, setInlineRelationship] = useState("");
+
   const createMutation = useCreateDebt();
   const updateMutation = useUpdateDebt();
+  const createPersonMutation = useCreatePerson();
   const { data: personsData } = usePersons();
   const persons = personsData?.data ?? [];
   const { data: accountsData } = useAccounts();
@@ -94,6 +119,43 @@ function P2PDebtFormContent({
     setNotes("");
     setCustomSplits([{ amount: "", due_date: "" }]);
     setAccountId("");
+  };
+
+  const resetInlinePersonFields = () => {
+    setInlineName("");
+    setInlineNameAr("");
+    setInlinePhone("");
+    setInlineRelationship("");
+  };
+
+  const handleInlinePersonSave = () => {
+    if (!inlineName.trim()) return;
+    createPersonMutation.mutate(
+      {
+        name: inlineName.trim(),
+        name_ar: inlineNameAr.trim() || null,
+        phone: inlinePhone.trim() || null,
+        relationship: (inlineRelationship as PersonRelationship) || null,
+      },
+      {
+        onSuccess: (response) => {
+          const newPerson = response.data;
+          setPersonId(String(newPerson.id));
+          setShowInlinePersonForm(false);
+          resetInlinePersonFields();
+        },
+      }
+    );
+  };
+
+  const handlePersonSelectChange = (value: string | null) => {
+    if (value === "__add_new__") {
+      setShowInlinePersonForm(true);
+      // Don't change personId - keep the old selection or empty
+    } else {
+      setPersonId(value ?? "");
+      setShowInlinePersonForm(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -157,7 +219,7 @@ function P2PDebtFormContent({
         {!isEdit && (
           <div className="space-y-2">
             <Label>{t("person")}</Label>
-            <Select value={personId} onValueChange={(v) => setPersonId(v ?? "")}>
+            <Select value={personId} onValueChange={handlePersonSelectChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t("selectPerson")}>
                   {selectedPerson?.name}
@@ -169,8 +231,91 @@ function P2PDebtFormContent({
                     {p.name}
                   </SelectItem>
                 ))}
+                <SelectItem value="__add_new__" className="text-primary font-medium">
+                  <span className="inline-flex items-center gap-1.5">
+                    <UserPlus className="h-3.5 w-3.5" />
+                    {t("addNewPerson")}
+                  </span>
+                </SelectItem>
               </SelectContent>
             </Select>
+
+            {/* Inline person creation form */}
+            {showInlinePersonForm && (
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-foreground">
+                    {t("inlinePersonTitle")}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowInlinePersonForm(false);
+                      resetInlinePersonFields();
+                    }}
+                    className="inline-flex items-center p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="inline-person-name">{tPersons("name")} *</Label>
+                  <Input
+                    id="inline-person-name"
+                    value={inlineName}
+                    onChange={(e) => setInlineName(e.target.value)}
+                    required={showInlinePersonForm}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="inline-person-name-ar">{tPersons("nameAr")}</Label>
+                  <Input
+                    id="inline-person-name-ar"
+                    dir="rtl"
+                    value={inlineNameAr}
+                    onChange={(e) => setInlineNameAr(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="inline-person-phone">{tPersons("phone")}</Label>
+                  <Input
+                    id="inline-person-phone"
+                    type="tel"
+                    value={inlinePhone}
+                    onChange={(e) => setInlinePhone(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{tPersons("relationship")}</Label>
+                  <Select value={inlineRelationship} onValueChange={(v) => setInlineRelationship(v ?? "")}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={tPersons("relationship")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RELATIONSHIPS.map((rel) => (
+                        <SelectItem key={rel} value={rel}>
+                          {tPersons(`relationships.${rel}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  className="w-full"
+                  disabled={!inlineName.trim() || createPersonMutation.isPending}
+                  onClick={handleInlinePersonSave}
+                >
+                  {createPersonMutation.isPending ? tPersons("form.saving") : t("savePerson")}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
