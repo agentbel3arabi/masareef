@@ -201,6 +201,8 @@
     "dueToday": "Due today",
     "overdue": "Overdue",
     "dueInDays": "Due in {days} days",
+    "viewTransactions": "View Transactions",
+    "viewStatement": "View Statement",
     "editAccount": "Edit Account",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "This account will be hidden. Transaction history is preserved.",
