@@ -4,34 +4,35 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 
 ## Phase Overview
 
-| Phase | Name | Goal | Est. Effort |
-|-------|------|------|-------------|
-| 1 | Foundation | Accounts, transactions, categories — the core data loop | Large |
-| 1.5 | Gap Remediation & Polish | Infrastructure upgrade, UI foundation, landing page, workflow formalization | Large |
-| 1.75 | Design System & Page Redesign | Full Stitch design fidelity — design tokens, page redesigns, UI consistency | Medium |
-| 2 | Import & Templates | Bank statement import pipeline with template system | Large |
-| 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large |
-| 4 | Dashboard & Charts | Net worth, spending trends, category breakdown, Plotly | Medium |
-| 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium |
-| 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium |
-| 7 | Budgets & Savings Goals | Envelope budgeting, savings targets, auto-suggest | Medium |
-| 8 | Forecasting | 12-month cash flow, debt payoff, non-recurring estimation | Medium |
-| 9 | AI Categorization | Multi-provider AI, rule engine, feedback loop | Medium |
-| 10 | Multi-User & Household | Roles, invitations, child accounts, activity log | Large |
-| 11 | Notifications | Bill reminders, budget alerts, Telegram bot, email | Medium |
-| 12 | Reports & Export | 7 report types, PDF/Excel/CSV export | Medium |
-| 13 | Settings & Polish | Settings pages, locale, data management, onboarding wizard | Medium |
-| 14 | Scanned PDF (Premium) | Landing AI OCR for scanned bank statements | Small |
-| 15 | Receipt Scanning | Camera/upload receipt OCR, transaction auto-create | Medium |
-| 16 | Subscription Tracking | Auto-detect recurring charges, renewal reminders | Small |
-| 17 | Telegram/WhatsApp Bot | Expense logging via chat, balance queries | Medium |
-| 18 | Islamic Finance Mode | Zakat calculation, Shariah compliance tagging | Medium |
-| 19 | Scenario Planning | What-if forecasting simulations | Small |
-| 20 | Mobile App (PWA) | Progressive web app for native-like mobile experience | Medium |
+| Phase | Name | Goal | Est. Effort | Status |
+|-------|------|------|-------------|--------|
+| 1 | Foundation | Accounts, transactions, categories — the core data loop | Large | ✅ Complete |
+| 1.5 | Gap Remediation & Polish | Infrastructure upgrade, UI foundation, landing page, workflow formalization | Large | ✅ Complete |
+| 1.75 | Design System & Page Redesign | Full Stitch design fidelity — design tokens, page redesigns, UI consistency | Medium | ✅ Complete |
+| 2 | Import & Templates | Bank statement import pipeline with template system | Large | ✅ Complete |
+| 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large | ✅ Complete |
+| **3.5** | **UX Polish Sprint** | **Fix critical UX bugs, form consistency, card enhancements, date standardization** | **Medium** | **🔨 In Progress** |
+| 4 | Dashboard & Charts | Net worth, spending trends, category breakdown, Plotly | Medium | ⏳ Pending |
+| 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium | ⏳ Pending |
+| 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium | ⏳ Pending |
+| 7 | Budgets & Savings Goals | Envelope budgeting, savings targets, auto-suggest | Medium | ⏳ Pending |
+| 8 | Forecasting | 12-month cash flow, debt payoff, non-recurring estimation | Medium | ⏳ Pending |
+| 9 | AI Categorization | Multi-provider AI, rule engine, feedback loop | Medium | ⏳ Pending |
+| 10 | Multi-User & Household | Roles, invitations, child accounts, activity log | Large | ⏳ Pending |
+| 11 | Notifications | Bill reminders, budget alerts, Telegram bot, email | Medium | ⏳ Pending |
+| 12 | Reports & Export | 7 report types, PDF/Excel/CSV export | Medium | ⏳ Pending |
+| 13 | Settings & Polish | Settings pages, locale, data management, onboarding wizard | Medium | ⏳ Pending |
+| 14 | Scanned PDF (Premium) | Landing AI OCR for scanned bank statements | Small | ⏳ Pending |
+| 15 | Receipt Scanning | Camera/upload receipt OCR, transaction auto-create | Medium | ⏳ Pending |
+| 16 | Subscription Tracking | Auto-detect recurring charges, renewal reminders | Small | ⏳ Pending |
+| 17 | Telegram/WhatsApp Bot | Expense logging via chat, balance queries | Medium | ⏳ Pending |
+| 18 | Islamic Finance Mode | Zakat calculation, Shariah compliance tagging | Medium | ⏳ Pending |
+| 19 | Scenario Planning | What-if forecasting simulations | Small | ⏳ Pending |
+| 20 | Mobile App (PWA) | Progressive web app for native-like mobile experience | Medium | ⏳ Pending |
 
 ---
 
-## Phase 1: Foundation
+## Phase 1: Foundation ✅
 **Unlocks:** Everything. No feature works without accounts, transactions, and categories.
 
 ### Deliverables
@@ -89,9 +90,11 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 
 **Required reading:** `00-overview.md`, `01-architecture.md`, `02-data-models.md`, `03-features/accounts.md`, `03-features/transactions.md`, `03-features/transfers.md`, `03-features/categories.md`, `03-features/exchange-rates.md`, `guides/08-testing.md`, `guides/09-design-tokens.md`
 
+**Status:** ✅ Complete (Units 1A–1J)
+
 ---
 
-## Phase 1.5: Gap Remediation & Polish
+## Phase 1.5: Gap Remediation & Polish ✅
 **Unlocks:** Full visual fidelity, landing page, workflow formalization. Required before Phase 2.
 
 ### Deliverables
@@ -113,7 +116,7 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 
 ---
 
-## Phase 1.75: Design System & Page Redesign
+## Phase 1.75: Design System & Page Redesign ✅
 **Unlocks:** Visual consistency, correct branding, and shared component foundation before feature expansion in Phase 2.
 
 ### Problem
@@ -184,9 +187,11 @@ Pages were built functionality-first across Phase 1 and 1.5. They work correctly
 
 **Required reading:** `guides/09-design-tokens.md`, `stitch-screen-map.md`, `docs/superpowers/specs/2026-03-30-phase-1.75-design-system-redesign.md`
 
+**Status:** ✅ Complete (Waves 1–2c)
+
 ---
 
-## Phase 2: Import & Templates
+## Phase 2: Import & Templates ✅
 **Unlocks:** User onramp. Without import, users must enter transactions manually — too much friction.
 
 ### Deliverables
@@ -230,9 +235,11 @@ Pages were built functionality-first across Phase 1 and 1.5. They work correctly
 
 **Required reading:** `01-architecture.md`, `02-data-models.md`, `03-features/import.md`
 
+**Status:** ✅ Complete (Units 2A–2C)
+
 ---
 
-## Phase 3: Debts & Installments
+## Phase 3: Debts & Installments ✅
 **Unlocks:** Debt tracking is a primary use case for Egyptian users. Installments are cultural.
 
 ### Deliverables
@@ -278,6 +285,77 @@ Pages were built functionality-first across Phase 1 and 1.5. They work correctly
 13. Installment form — create plan, link to source account
 
 **Required reading:** `02-data-models.md`, `03-features/debts.md`, `03-features/financing-apps.md`
+
+**Status:** ✅ Complete (Phases 3A–3D). Phase 3E (CC Statement Cycle & Pending/Posted Transactions) deferred to Phase 4.
+
+### Deferred from Phase 3 → Phase 4
+- Credit card statement cycle — statement generation date, current vs statement balance, minimum payment calculation _(plan: `docs/superpowers/plans/phase-3/2026-04-02-phase-3e-cc-statement-cycle.md`)_
+- Transaction pending vs posted state for credit card reconciliation
+
+---
+
+## Phase 3.5: UX Polish Sprint 🔨
+**Unlocks:** Production-quality UX before adding new features. Fixes critical bugs, standardizes patterns, enhances cards.
+
+> **Execution plan:** `docs/superpowers/specs/phase-3.5-ux-polish-sprint.md`
+
+### Background
+Post-Phase 3 browser audit (April 2026) found 20+ UX issues across the app: critical bugs (negative values in wrong colors, missing form fields), inconsistent patterns (3 date formats, mixed form types), and missing polish (no required markers, truncated labels, no empty states).
+
+### Deliverables
+
+**Unit 1 — Critical Bug Fixes**
+- Net worth card: red for negative, green for positive
+- Credit card "Available" balance: red when negative
+- Transaction form: add Account selector (default to last-used account)
+- Category dropdown: replace `__uncategorized__` with human-readable label
+- Date format: standardize to dd/mm/yyyy everywhere (shared `formatDate()` utility)
+
+**Unit 2 — Form UX Improvements**
+- Convert Add Account form from center modal to side sheet (consistency)
+- Add required field markers (*) to all forms
+- Fix raw enum values in dropdowns (e.g., `credit_card` → "Credit Card")
+- Fix "Opening Balance" → "Current Balance Due" for credit cards
+- Fix truncated filter labels ("Max amoun" → "Max amount")
+- Add inline form validation (error messages on blur + submit)
+
+**Unit 3 — Placeholder & Status Text Cleanup**
+- Replace "Coming in Phase X" with subtle clock icon (no text)
+- Standardize stat card placeholders across all pages
+- Add clock icon + tooltip to disabled sidebar items (Budgets, Gam3eya)
+
+**Unit 4 — Account Card Enhancements**
+- 3-dot action menu (Edit, Delete, View Transactions, Transfer)
+- Hover states (shadow, border, cursor)
+- Account type sub-labels
+- Last activity indicator
+- Balance trend indicator (↑/↓ arrow) — may need backend endpoint
+- Warning state for negative balances
+- Consistent status badges across all card types
+
+**Unit 5 — Navigation & Cross-Linking**
+- Breadcrumb navigation on all detail pages
+- Link transactions to related debts
+- Dashboard cards clickable → navigate to detail pages
+
+**Unit 6 — Miscellaneous Polish**
+- Empty state designs (no accounts, no transactions, no debts)
+- FAB button tooltips
+- Success toast after form submissions
+
+### Success Criteria
+- All 5 critical bugs fixed
+- All forms use side sheet pattern with required markers and inline validation
+- All dates display as dd/mm/yyyy
+- All placeholder text uses consistent clock icon pattern
+- Account cards enhanced with action menus, hover states, status badges
+- `pnpm build` + `pnpm lint` + `tsc --noEmit` pass
+- No physical directional CSS classes
+
+### Implementation Sequence
+Units 1–6, in order. See execution plan for full details.
+
+**Required reading:** `guides/09-design-tokens.md`, `docs/superpowers/specs/phase-3.5-ux-polish-sprint.md`
 
 ---
 
@@ -609,13 +687,14 @@ Delivered after core platform is stable. Each is independent — order can shift
 ## Dependency Graph
 
 ```
-Phase 1 (Foundation)
+Phase 1 (Foundation) ✅
   └── Phase 1.5 (Gap Remediation & Polish) ✅
-        └── Phase 1.75 (Design System & Page Redesign)
-              ├── Phase 2 (Import)
-              ├── Phase 3 (Debts)
-              │     └── Phase 8 (Forecasting) ←── also needs Phase 5, 7
-              ├── Phase 4 (Dashboard) ←── benefits from Phase 3, 5, 6
+        └── Phase 1.75 (Design System & Page Redesign) ✅
+              ├── Phase 2 (Import) ✅
+              ├── Phase 3 (Debts) ✅
+              │     └── Phase 3.5 (UX Polish Sprint) 🔨 ← YOU ARE HERE
+              │           └── Phase 4 (Dashboard & Charts)
+              │                 └── Phase 8 (Forecasting) ←── also needs Phase 5, 7
               ├── Phase 5 (Gam3eya)
               ├── Phase 6 (Assets)
               ├── Phase 7 (Budgets)
@@ -632,7 +711,7 @@ Phase 14–20: independent, after core stable
 
 | Milestone | Phases | Outcome |
 |-----------|--------|---------|
-| **v1.0 — Core** | 1, 1.5, 1.75, 2–4 | Usable single-user finance tracker with import and dashboard |
+| **v1.0 — Core** | 1, 1.5, 1.75, 2, 3, 3.5, 4 | Usable single-user finance tracker with import and dashboard |
 | **v1.1 — Egyptian Features** | 5–6 | Gam3eya + assets = distinctly MENA product |
 | **v1.2 — Smart Money** | 7–9 | Budgets + forecasting + AI = intelligent finance tool |
 | **v1.3 — Family Platform** | 10–11 | Multi-user + notifications = household product, SaaS-ready |

@@ -1,6 +1,6 @@
-# Backend Dependencies — Discovered During Phase 1.75
+# Backend Dependencies
 
-Tracks UI elements added during Phase 1.75 page redesign that require backend endpoints not yet implemented. Each item maps to a future roadmap phase.
+Tracks UI elements that require backend endpoints not yet implemented. Each item maps to a future roadmap phase.
 
 > **Updated:** after each Wave that introduces "coming soon" UI elements.
 > **Reviewed at phase end:** confirm all items are mapped to a roadmap phase.
@@ -26,6 +26,12 @@ Tracks UI elements added during Phase 1.75 page redesign that require backend en
 | 16 | Financing app used/available from balance | Debts — Financing Apps | Similar to #15 — actual account balance vs credit limit for financing accounts | Phase 3+ | ✅ Done — computed in financing-apps summary endpoint |
 | 17 | P2P debt amounts linked to transactions | Debts — P2P tab | Link debt payments to actual transactions for accurate tracking | Phase 3+ | 🔨 In Progress — Debts Complete Unit 1 |
 | 18 | Card installment row → account detail link | Debts — Card Installments | Card name in header should link to `/accounts/{id}` detail page | Phase 3+ | ✅ Done — frontend wired in Phase 3D |
+| 19 | Account balance trend indicator (↑/↓) | Accounts | `GET /api/v1/accounts/{id}/balance-history?period=month` — compare current balance to start-of-month | Phase 3.5/4 | ⏳ Pending |
+| 20 | Account last activity date | Accounts | Query most recent transaction date per account — may be derivable client-side from existing data | Phase 3.5 | ⏳ Pending |
+| 21 | Transaction → debt cross-link | Transactions | Transactions linked to debts need `debt_id` exposed in response to enable navigation | Phase 3.5 | ⏳ Pending |
+| 22 | Default account for new transaction | Transactions | Query last transaction's `account_id` for the household to pre-select | Phase 3.5 | ⏳ Pending |
+| 23 | CC statement cycle (deferred 3E) | Account Detail | Statement balance, min payment, billing dates — `GET /api/v1/accounts/{id}/statement` | Phase 4 | ⏳ Pending |
+| 24 | Transaction posting status (deferred 3E) | Transactions | `posting_status` field (pending/posted) for CC reconciliation | Phase 4 | ⏳ Pending |
 
 ---
 

@@ -1,5 +1,7 @@
 # Debts Section Complete — Implementation Plan
 
+> ✅ **STATUS: PHASE 3 COMPLETE** — This plan was executed during Phase 3D. Remaining items not covered here are addressed in Phase 3.5 UX polish sprint.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Complete the `/debts` section to production quality — every debt payment auto-creates a transaction on the selected account, installment plans track interest rates, P2P gets custom splits UI, detail pages get edit/delete, and RBAC extends to all routers.

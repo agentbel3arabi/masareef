@@ -23,8 +23,9 @@ The table below lists every doc file and when to load it:
 | [guides/12-uat-template.md](./docs/guides/12-uat-template.md)   | UAT checklist template with standard + phase-specific checks                                                | Writing UAT checklists                                   |
 | [stitch-screen-map.md](./docs/stitch-screen-map.md)            | Maps every feature and phase to its matching Stitch design screen(s)                                         | Planning any phase with frontend work                    |
 | [stitch-designs/stitch-project-reference.md](./docs/stitch-designs/stitch-project-reference.md) | Masareef v2 Stitch project ID, design system asset ID, all 8 approved screen IDs with verified titles | Any frontend phase using Stitch MCP to generate or implement screens |
-| [backend-dependencies.md](./docs/backend-dependencies.md) | UI elements from Phase 1.75 redesign that need future backend endpoints, mapped to roadmap phases | Planning Phase 2+ — check before scoping any backend work |
+| [backend-dependencies.md](./docs/backend-dependencies.md) | UI elements that need future backend endpoints, mapped to roadmap phases | Planning any phase — check before scoping backend work |
 | [superpowers/handoff/](./docs/superpowers/handoff/) | Session handoff notes — what was completed, key decisions, known gaps, what's next | **Start of any implementation unit** — read the most recent handoff for the current phase before writing a single line of code |
+| [superpowers/specs/phase-3.5-ux-polish-sprint.md](./docs/superpowers/specs/phase-3.5-ux-polish-sprint.md) | Phase 3.5 UX polish sprint — 6-unit execution plan covering critical bugs, form UX, placeholders, card enhancements, navigation, misc polish | **Phase 3.5 implementation** — read before starting any Phase 3.5 unit |
 
 ```
 masareef/
@@ -72,7 +73,10 @@ masareef/
 │   ├── stitch-prompts/                 # Prompts used to generate each design
 │   ├── handoff-template.md             # Template for session handoff notes
 │   └── superpowers/
-│       └── handoff/                    # Session handoff notes (phase-N-unit-X.md)
+│       ├── handoff/                    # Session handoff notes (phase-N-unit-X.md)
+│       ├── plans/                      # Detailed implementation plans (per phase)
+│       ├── specs/                      # High-level design specs and sprint plans
+│       └── reports/                    # Audit reports
 ```
 
 ## C — Task Router
@@ -88,6 +92,7 @@ Load only what's relevant. **Do not load all files at once.**
 | Testing                        | `CLAUDE.md` + `guides/08-testing.md` + feature spec                                              | —                                              |
 | Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | —                                              |
 | Full-stack feature (Phase N)   | `CLAUDE.md` + `05-roadmap.md` (Phase N section) + feature spec(s) listed there                   | All files listed in phase's "Required Reading" |
+| Phase 3.5 UX polish            | `CLAUDE.md` + `docs/superpowers/specs/phase-3.5-ux-polish-sprint.md` + `guides/09-design-tokens.md` | Relevant feature specs for the unit being implemented |
 | Starting any implementation unit | `CLAUDE.md` + plan file + feature spec                                                          | Most recent `docs/superpowers/handoff/phase-N-unit-X.md` — **always read this first** |
 
 ### Frontend Planning Rule
