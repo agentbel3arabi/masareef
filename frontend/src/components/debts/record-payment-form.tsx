@@ -199,7 +199,7 @@ export function RecordPaymentForm({
                       size="sm"
                     />
                     <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                      {t("matchScore", { score: s.score })}
+                      {t("matchScore", { score: Math.round(s.score * 100) })}
                     </span>
                   </div>
                 </div>
@@ -208,10 +208,7 @@ export function RecordPaymentForm({
                   type="button"
                   className="w-full"
                   size="sm"
-                  disabled={
-                    mutation.isPending &&
-                    confirmingTxId === s.transaction_id
-                  }
+                  disabled={mutation.isPending}
                   onClick={() => handleConfirmMatch(s)}
                 >
                   <CheckCircle2 className="me-2 h-4 w-4" />

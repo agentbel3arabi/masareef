@@ -935,8 +935,8 @@
       "confirm": "Confirm {count} Payments",
       "skip": "Skip for Now",
       "recording": "Recording payments...",
-      "noLinkedAccount": "No linked account — payments will be recorded without transactions",
-      "linkAccountFirst": "Link an account to this loan before recording past payments, or skip for now."
+      "noLinkedAccount": "No linked account",
+      "linkAccountFirst": "Link a bank account to this loan to record past payments."
     }
   },
   "persons": {

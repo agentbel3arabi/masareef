@@ -135,16 +135,14 @@ async def test_delete_debt_soft_deletes(client):
     create_resp = await client.post("/api/v1/debts", json=_create_loan_payload())
     debt_id = create_resp.json()["data"]["id"]
     delete_resp = await client.delete(f"/api/v1/debts/{debt_id}")
-    assert delete_resp.status_code == 200
-    assert delete_resp.json()["data"]["deleted"] is True
-    assert delete_resp.json()["data"]["payment_count"] == 0
+    assert delete_resp.status_code == 204
     list_resp = await client.get("/api/v1/debts")
     ids = [d["id"] for d in list_resp.json()["data"]]
     assert debt_id not in ids
 
 
 @pytest.mark.asyncio
-async def test_delete_debt_with_payments_returns_200_with_count(client):
+async def test_delete_debt_with_payments_returns_204(client):
     acct_id = await _create_test_account(client)
     loan = await client.post(
         "/api/v1/debts",
@@ -160,8 +158,7 @@ async def test_delete_debt_with_payments_returns_200_with_count(client):
         json={"date": "2026-04-01", "amount_minor": 100000, "account_id": acct_id},
     )
     resp = await client.delete(f"/api/v1/debts/{debt_id}")
-    assert resp.status_code == 200
-    assert resp.json()["data"]["payment_count"] == 1
+    assert resp.status_code == 204
 
 
 @pytest.mark.asyncio

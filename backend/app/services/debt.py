@@ -200,10 +200,10 @@ async def create_p2p_debt(
     # Auto-create initial transaction
     if data.type == "personal_lent":
         tx_type = TransactionType.DEBIT
-        tx_desc = f"Lent to: {debt.name}"
+        tx_desc = f"Lent to: {person.name}"
     else:
         tx_type = TransactionType.CREDIT
-        tx_desc = f"Borrowed from: {debt.name}"
+        tx_desc = f"Borrowed from: {person.name}"
 
     debt_category_id = await _get_debt_category_id(session, tx_type)
     tx_data = TransactionCreate(

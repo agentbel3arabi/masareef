@@ -21,7 +21,9 @@ class DebtCreate(BaseModel):
     tenure_months: int = Field(gt=0)
     start_date: date
     payment_day_of_month: int | None = Field(default=None, ge=1, le=28)
-    payment_frequency: str = Field(default="monthly")
+    payment_frequency: Literal["monthly", "quarterly", "semi_annual", "annual"] = Field(
+        default="monthly"
+    )
     linked_account_id: int | None = None
     notes: str | None = None
     # P2P fields
@@ -54,7 +56,7 @@ class DebtResponse(BaseModel):
     tenure_months: int
     start_date: date
     payment_day_of_month: int | None = None
-    payment_frequency: str = "monthly"
+    payment_frequency: Literal["monthly", "quarterly", "semi_annual", "annual"] = "monthly"
     monthly_payment_minor: int
     repayment_mode: str | None = None
     due_date: date | None = None
