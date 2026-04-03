@@ -264,6 +264,7 @@
     "deleteConfirmTitle": "حذف المعاملة",
     "deleteConfirmDescription": "هل أنت متأكد من حذف هذه المعاملة؟ لا يمكن التراجع عن هذا الإجراء.",
     "editTransaction": "تعديل المعاملة",
+    "historyOnly": "للسجل فقط",
     "actions": "الإجراءات",
     "allAccounts": "كل الحسابات",
     "allCategories": "كل الفئات",
