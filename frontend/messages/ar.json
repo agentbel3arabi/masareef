@@ -17,6 +17,7 @@
     "debtUpdated": "تم تحديث الدين بنجاح",
     "debtDeleted": "تم حذف الدين بنجاح",
     "debtMarkedPaid": "تم تحديد الدين كمسدد",
+    "debtReactivated": "تم إعادة تنشيط الدين بنجاح",
     "paymentRecorded": "تم تسجيل الدفعة بنجاح",
     "installmentCreated": "تم إنشاء خطة الأقساط",
     "installmentUpdated": "تم تحديث خطة الأقساط",
@@ -720,7 +721,33 @@
       "recordPayment": "تسجيل دفعة",
       "viewSchedule": "عرض الجدول",
       "markPaid": "تحديد كمسدد",
-      "complete": "تحديد كمكتمل"
+      "complete": "تحديد كمكتمل",
+      "reactivate": "إعادة تفعيل",
+      "reactivating": "جاري إعادة التفعيل…",
+      "reactivateConfirm": "هل أنت متأكد من إعادة تفعيل هذا القرض؟",
+      "confirmMarkPaid": "تحديد كمكتمل",
+      "confirmMarkPaidDescription": "كيف تريد تحديد هذا الدين كمكتمل؟",
+      "recordFinalPayment": "تسجيل الدفعة الأخيرة أولاً",
+      "markWithoutPayment": "تحديد كمكتمل بدون دفعة",
+      "reversibleNote": "يمكن التراجع عن هذا الإجراء.",
+      "deleteWithPayments": "هذا القرض يحتوي على {count} دفعة مسجلة. سيتم حذف القرض مع الاحتفاظ بسجل الدفعات والمعاملات المرتبطة.",
+      "completeDialog": {
+        "title": "إكمال هذا القرض؟",
+        "description": "اختر كيفية إكمال هذا القرض:",
+        "recordFinal": "تسجيل الدفعة الأخيرة والإكمال",
+        "completeAsIs": "إكمال كما هو (جميع الدفعات مسجلة بالفعل)",
+        "cancel": "إلغاء"
+      },
+      "deleteDialog": {
+        "title": "حذف {name}؟",
+        "hasPayments": "هذا القرض يحتوي على {count} معاملة دفع مرتبطة.",
+        "noPayments": "هذا القرض لا يحتوي على معاملات دفع مرتبطة.",
+        "deleteOnly": "حذف القرض فقط",
+        "deleteOnlyHint": "سيتم الاحتفاظ بمعاملات الدفع للسجل",
+        "deleteWithTransactions": "حذف القرض والمعاملات",
+        "comingSoon": "قريباً",
+        "cancel": "إلغاء"
+      }
     },
     "detail": {
       "backToDebts": "العودة للديون",

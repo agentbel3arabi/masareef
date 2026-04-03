@@ -3,17 +3,26 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { Landmark, Building2, CheckCircle2, ChevronDown, Pencil, Trash2, ArrowRight, CreditCard, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Landmark, Building2, CheckCircle2, ChevronDown, ChevronUp, Pencil, Trash2, ArrowRight, CreditCard, Sparkles } from "lucide-react";
 import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { RecordPaymentForm } from "@/components/debts/record-payment-form";
-import { useDebts, useAmortizationSchedule, useMatchSuggestions, useDeleteDebt } from "@/hooks/use-debts";
+import { useDebts, useAmortizationSchedule, useMatchSuggestions, useDebtPayments, useDeleteDebt } from "@/hooks/use-debts";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StatCard } from "@/components/shared/stat-card";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { StatusBadge } from "@/components/debts/status-badge";
-import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
 import { formatAmount, formatAmountAr, CURRENCIES } from "@/lib/money";
 import type { DebtResponse, ScheduleRowStatus } from "@/lib/types/debts";
 
@@ -217,6 +226,8 @@ function LoanCard({
   const tLoan = useTranslations("debts.loan");
   const tDetail = useTranslations("debts.detail");
   const tFreq = useTranslations("debts.frequency");
+  const tDeleteDialog = useTranslations("debts.actions.deleteDialog");
+  const router = useRouter();
   const totalWithInterest = loan.tenure_months * loan.monthly_payment_minor;
   const progressPct =
     totalWithInterest > 0
@@ -227,11 +238,15 @@ function LoanCard({
   const aprFormatted = (loan.annual_rate_bps / 100).toFixed(2);
 
   const [paymentFormOpen, setPaymentFormOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [paymentPrefill, setPaymentPrefill] = useState<{
     amount: number;
     date: string;
     installmentNumber: number;
   } | null>(null);
+
+  const { data: paymentsRes } = useDebtPayments(loan.id);
+  const paymentCount = paymentsRes?.data?.length ?? 0;
 
   const paymentLabel = tFreq(`paymentLabel.${loan.payment_frequency || "monthly"}`);
 
@@ -250,23 +265,29 @@ function LoanCard({
     setPaymentFormOpen(true);
   };
 
+  const handleCardClick = () => {
+    if (!expanded) {
+      router.push(`/debts/loans/${loan.id}`);
+    }
+  };
+
   return (
     <>
       <div
         className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-        onClick={onToggle}
+        onClick={handleCardClick}
         role="button"
         tabIndex={0}
         aria-expanded={expanded}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            onToggle();
+            handleCardClick();
           }
         }}
       >
         <div className="p-6">
-          {/* Top row: name + badges | payment amount */}
+          {/* Top row: name + badges | payment amount + expand chevron */}
           <div className="flex justify-between items-start mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -282,16 +303,33 @@ function LoanCard({
                 </p>
               )}
             </div>
-            <div className="text-end">
-              <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-                {paymentLabel}
-              </p>
-              <MoneyDisplay
-                amount={loan.monthly_payment_minor}
-                currency={loan.currency}
-                size="md"
-                className="font-bold text-primary"
-              />
+            <div className="flex items-center gap-2">
+              <div className="text-end">
+                <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
+                  {paymentLabel}
+                </p>
+                <MoneyDisplay
+                  amount={loan.monthly_payment_minor}
+                  currency={loan.currency}
+                  size="md"
+                  className="font-bold text-primary"
+                />
+              </div>
+              <button
+                type="button"
+                className="p-1.5 rounded-md hover:bg-muted transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle();
+                }}
+                aria-label={expanded ? "Collapse" : "Expand"}
+              >
+                {expanded ? (
+                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -320,7 +358,7 @@ function LoanCard({
 
           {/* Expanded */}
           {expanded && (
-            <div className="space-y-4">
+            <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
               {/* Info grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
@@ -395,7 +433,7 @@ function LoanCard({
               />
 
               {/* Action buttons */}
-              <div className="flex items-center gap-2 pt-2 border-t border-border" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2 pt-2 border-t border-border">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -404,25 +442,18 @@ function LoanCard({
                   <Pencil className="h-3.5 w-3.5 me-1.5" />
                   {tDetail("edit")}
                 </Button>
-                <DeleteConfirmation
-                  itemName={loan.name}
-                  onConfirm={onDelete}
-                  isPending={isDeleting}
-                  trigger={
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 me-1.5" />
-                      {tDetail("delete")}
-                    </Button>
-                  }
-                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="h-3.5 w-3.5 me-1.5" />
+                  {tDetail("delete")}
+                </Button>
                 <Link
                   href={`/debts/loans/${loan.id}`}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary hover:bg-primary/10 transition-colors ms-auto"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   {tLoan("viewFullDetails")}
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -432,6 +463,46 @@ function LoanCard({
           )}
         </div>
       </div>
+
+      {/* Delete Dialog (Bug 4) */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tDeleteDialog("title", { name: loan.name })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {paymentCount > 0
+                ? tDeleteDialog("hasPayments", { count: paymentCount })
+                : tDeleteDialog("noPayments")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {paymentCount > 0 && (
+            <p className="text-xs text-muted-foreground">{tDeleteDialog("deleteOnlyHint")}</p>
+          )}
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="destructive"
+              onClick={() => {
+                onDelete();
+                setDeleteDialogOpen(false);
+              }}
+              disabled={isDeleting}
+            >
+              {tDeleteDialog("deleteOnly")}
+            </Button>
+            <Button
+              variant="outline"
+              disabled
+              title={tDeleteDialog("comingSoon")}
+              className="opacity-50"
+            >
+              {tDeleteDialog("deleteWithTransactions")} ({tDeleteDialog("comingSoon")})
+            </Button>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tDeleteDialog("cancel")}</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Record Payment Form */}
       <RecordPaymentForm
@@ -475,7 +546,7 @@ function NextPaymentPreview({
   const { data: matchData } = useMatchSuggestions(
     linkedAccountId ? loanId : 0
   );
-  const suggestions = matchData?.data?.suggestions ?? [];
+  const suggestions = matchData?.data ?? [];
   const hasMatch = suggestions.length > 0;
 
   const formatDate = (dateStr: string) =>

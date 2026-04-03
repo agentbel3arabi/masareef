@@ -17,6 +17,7 @@
     "debtUpdated": "Debt updated successfully",
     "debtDeleted": "Debt deleted successfully",
     "debtMarkedPaid": "Debt marked as paid",
+    "debtReactivated": "Debt reactivated successfully",
     "paymentRecorded": "Payment recorded successfully",
     "installmentCreated": "Installment plan created",
     "installmentUpdated": "Installment plan updated",
@@ -720,7 +721,33 @@
       "recordPayment": "Record Payment",
       "viewSchedule": "View Schedule",
       "markPaid": "Mark as Paid",
-      "complete": "Mark Complete"
+      "complete": "Mark Complete",
+      "reactivate": "Reactivate",
+      "reactivating": "Reactivating…",
+      "reactivateConfirm": "Are you sure you want to reactivate this loan?",
+      "confirmMarkPaid": "Mark as Completed",
+      "confirmMarkPaidDescription": "How would you like to mark this debt as completed?",
+      "recordFinalPayment": "Record final payment first",
+      "markWithoutPayment": "Mark as completed without payment",
+      "reversibleNote": "This action can be reversed.",
+      "deleteWithPayments": "This loan has {count} recorded payments. Deleting will remove the loan but keep payment history and linked transactions.",
+      "completeDialog": {
+        "title": "Complete this loan?",
+        "description": "Choose how to complete this loan:",
+        "recordFinal": "Record final payment & complete",
+        "completeAsIs": "Complete as-is (all payments already recorded)",
+        "cancel": "Cancel"
+      },
+      "deleteDialog": {
+        "title": "Delete {name}?",
+        "hasPayments": "This loan has {count} linked payment transactions.",
+        "noPayments": "This loan has no linked payment transactions.",
+        "deleteOnly": "Delete Loan Only",
+        "deleteOnlyHint": "Payment transactions will be kept for history",
+        "deleteWithTransactions": "Delete Loan & Transactions",
+        "comingSoon": "Coming soon",
+        "cancel": "Cancel"
+      }
     },
     "detail": {
       "backToDebts": "Back to Debts",
@@ -908,7 +935,8 @@
       "confirm": "Confirm {count} Payments",
       "skip": "Skip for Now",
       "recording": "Recording payments...",
-      "noLinkedAccount": "No linked account — payments will be recorded without transactions"
+      "noLinkedAccount": "No linked account — payments will be recorded without transactions",
+      "linkAccountFirst": "Link an account to this loan before recording past payments, or skip for now."
     }
   },
   "persons": {
