@@ -642,7 +642,12 @@
       "amortization": "جدول الإطفاء",
       "viewDetails": "عرض التفاصيل",
       "tenureLabel": "المدة",
-      "totalCost": "الإجمالي مع الفائدة"
+      "totalCost": "الإجمالي مع الفائدة",
+      "nextPayment": "الدفعة القادمة",
+      "noUpcoming": "تم تسجيل جميع الدفعات",
+      "matchFound": "تم العثور على مطابقة — مراجعة",
+      "principalBreakdown": "أصل: {principal} + فائدة: {interest}",
+      "viewFullDetails": "عرض التفاصيل الكاملة"
     },
     "p2p": {
       "lent": "أقرضت",

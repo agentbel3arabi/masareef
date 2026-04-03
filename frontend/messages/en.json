@@ -642,7 +642,12 @@
       "amortization": "Amortization Schedule",
       "viewDetails": "View Details",
       "tenureLabel": "Tenure",
-      "totalCost": "Total Cost (w/ Interest)"
+      "totalCost": "Total Cost (w/ Interest)",
+      "nextPayment": "Next Payment",
+      "noUpcoming": "All payments recorded",
+      "matchFound": "Match Found — Review",
+      "principalBreakdown": "Principal: {principal} + Interest: {interest}",
+      "viewFullDetails": "View Full Details"
     },
     "p2p": {
       "lent": "You lent",
