@@ -77,7 +77,11 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const tComplete = useTranslations("debts.actions.completeDialog");
   const tDeleteDialog = useTranslations("debts.actions.deleteDialog");
   const [paymentOpen, setPaymentOpen] = useState(false);
-  const [paymentPrefillAmount, setPaymentPrefillAmount] = useState<number | undefined>(undefined);
+  const [paymentPrefill, setPaymentPrefill] = useState<{
+    amount?: number;
+    date?: string;
+    installmentNumber?: number;
+  }>({});
   const [editOpen, setEditOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -258,7 +262,15 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       <div className="flex flex-wrap gap-3">
         {debt.status === "active" && (
           <>
-            <Button onClick={() => { setPaymentPrefillAmount(undefined); setPaymentOpen(true); }}>
+            <Button onClick={() => {
+              const nextRow = schedule.find((r) => r.status !== "paid");
+              setPaymentPrefill(nextRow ? {
+                amount: nextRow.payment_minor,
+                date: nextRow.date,
+                installmentNumber: nextRow.payment_number,
+              } : {});
+              setPaymentOpen(true);
+            }}>
               {tActions("recordPayment")}
             </Button>
             <Button
@@ -291,7 +303,12 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             <Button
               onClick={() => {
                 setCompleteDialogOpen(false);
-                setPaymentPrefillAmount(remainingPayments);
+                const nextRow = schedule.find((r) => r.status !== "paid");
+                setPaymentPrefill({
+                  amount: remainingPayments,
+                  date: nextRow?.date,
+                  installmentNumber: nextRow?.payment_number,
+                });
                 setPaymentOpen(true);
               }}
             >
@@ -386,7 +403,10 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
         debtType={debt.type}
         linkedAccountId={debt.linked_account_id}
         showMatchSuggestions={!!debt.linked_account_id}
-        prefillAmount={paymentPrefillAmount}
+        prefillAmount={paymentPrefill.amount}
+        prefillDate={paymentPrefill.date}
+        prefillAccountId={debt.linked_account_id ?? undefined}
+        installmentNumber={paymentPrefill.installmentNumber}
       />
 
       <BankLoanForm open={editOpen} onOpenChange={setEditOpen} initialData={debt} />
