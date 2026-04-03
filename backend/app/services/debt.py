@@ -16,13 +16,12 @@ from app.models.person import Person
 from app.models.transaction import Transaction
 from app.schemas.debt import DebtCreate, DebtUpdate
 from app.schemas.transaction import TransactionCreate
+from app.services.account import get_balance_cutoff_date
 from app.services.amortization import (
     FREQUENCY_MONTHS,
-    compute_monthly_payment,
     compute_periodic_payment,
     generate_schedule,
 )
-from app.services.account import get_balance_cutoff_date
 from app.services.transaction import create_transaction
 
 
@@ -339,9 +338,7 @@ async def record_payment(
         # is intentional — all rows will have status != "paid", which is what we
         # need to find the matching month's ratio without previous-payment state.
         freq = debt.payment_frequency
-        fm = FREQUENCY_MONTHS.get(
-            freq.value if hasattr(freq, "value") else (freq or "monthly"), 1
-        )
+        fm = FREQUENCY_MONTHS.get(freq.value if hasattr(freq, "value") else (freq or "monthly"), 1)
         schedule = generate_schedule(
             principal_minor=debt.principal_minor,
             annual_rate_bps=debt.annual_rate_bps,

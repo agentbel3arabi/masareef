@@ -60,7 +60,9 @@ def compute_monthly_payment(principal_minor: int, annual_rate_bps: int, tenure_m
     Returns:
         Monthly payment in minor units, rounded up (ceiling).
     """
-    return compute_periodic_payment(principal_minor, annual_rate_bps, tenure_months, frequency_months=1)
+    return compute_periodic_payment(
+        principal_minor, annual_rate_bps, tenure_months, frequency_months=1
+    )
 
 
 def generate_schedule(
@@ -126,7 +128,8 @@ def generate_schedule(
             if i == num_periods - 1:
                 # Final payment absorbs rounding error
                 principal_portion = remaining
-                interest = periodic_payment - remaining if periodic_payment > remaining else interest
+                if periodic_payment > remaining:
+                    interest = periodic_payment - remaining
             else:
                 principal_portion = periodic_payment - interest
 

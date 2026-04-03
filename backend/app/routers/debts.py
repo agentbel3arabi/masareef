@@ -43,7 +43,12 @@ def _check_p2p_write(debt, role: HouseholdRole) -> None:
         raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
 
 
-def _debt_to_response(debt, total_paid: int = 0, remaining: int | None = None, credit_utilization_percent: float | None = None) -> DebtResponse:
+def _debt_to_response(
+    debt,
+    total_paid: int = 0,
+    remaining: int | None = None,
+    credit_utilization_percent: float | None = None,
+) -> DebtResponse:
     """Map Debt ORM object to DebtResponse schema.
 
     remaining: outstanding principal balance from compute_debt_totals.
@@ -102,7 +107,12 @@ async def _compute_utilization(
     from app.models.enums import AccountType
 
     acct = await session.get(Account, linked_account_id)
-    if not acct or acct.type != AccountType.CREDIT_CARD or not acct.credit_limit or acct.credit_limit <= 0:
+    if (
+        not acct
+        or acct.type != AccountType.CREDIT_CARD
+        or not acct.credit_limit
+        or acct.credit_limit <= 0
+    ):
         return None
     from app.services.account import compute_displayed_balance
 
@@ -210,7 +220,10 @@ async def create_debt(
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail=ErrorResponse(
-                        error=ErrorDetail(code="ACCOUNT_ID_REQUIRED", message="P2P debts require account_id")
+                        error=ErrorDetail(
+                            code="ACCOUNT_ID_REQUIRED",
+                            message="P2P debts require account_id",
+                        )
                     ).model_dump(),
                 )
             debt = await debt_service.create_p2p_debt(session, household_id, data)
@@ -346,7 +359,14 @@ async def record_payment(
     _check_p2p_write(debt, role)
     try:
         payment = await debt_service.record_payment(
-            session, household_id, debt, data.date, data.amount_minor, data.account_id, data.link_existing_transaction_id, data.notes
+            session,
+            household_id,
+            debt,
+            data.date,
+            data.amount_minor,
+            data.account_id,
+            data.link_existing_transaction_id,
+            data.notes,
         )
     except ValueError as e:
         raise HTTPException(

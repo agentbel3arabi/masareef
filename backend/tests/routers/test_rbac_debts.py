@@ -201,7 +201,13 @@ async def test_member_can_create_p2p_debt(db_session: AsyncSession, client) -> N
     person = Person(household_id=household_id, name="Target")
     db_session.add(person)
     await db_session.flush()
-    acct = Account(household_id=household_id, name="Test Acct", type="bank_account", currency="EGP", balance_minor=0)
+    acct = Account(
+        household_id=household_id,
+        name="Test Acct",
+        type="bank_account",
+        currency="EGP",
+        balance_minor=0,
+    )
     db_session.add(acct)
     await db_session.flush()
     await db_session.commit()

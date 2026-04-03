@@ -8,6 +8,7 @@ Create Date: 2026-04-03
 from collections.abc import Sequence
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision: str = "phase3_005"
@@ -19,7 +20,10 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     # Create the enum type first
     paymentfrequency_enum = sa.Enum(
-        "monthly", "quarterly", "semi_annual", "annual",
+        "monthly",
+        "quarterly",
+        "semi_annual",
+        "annual",
         name="paymentfrequency",
     )
     paymentfrequency_enum.create(op.get_bind(), checkfirst=True)

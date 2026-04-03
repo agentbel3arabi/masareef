@@ -16,6 +16,7 @@ def child_role():
 
     app.dependency_overrides[get_member_role] = _child
     yield
+
     # Restore the ADMIN override that conftest sets
     async def _admin() -> HouseholdRole:
         return HouseholdRole.ADMIN
