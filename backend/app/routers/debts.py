@@ -465,9 +465,7 @@ async def reactivate_debt(
             ).model_dump(),
         )
     _check_p2p_write(debt, role)
-    d_status = debt.status
-    status_val = d_status.value if hasattr(d_status, "value") else d_status
-    if status_val != "paid_off":
+    if str(debt.status) != "paid_off":
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=ErrorResponse(

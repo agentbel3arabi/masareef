@@ -88,16 +88,16 @@ class TestPaymentCreateSchema:
     def test_payment_create_requires_account_id(self):
         """PaymentCreate must require account_id."""
         with pytest.raises(ValidationError, match="account_id"):
-            PaymentCreate(date="2026-04-01", amount_minor=100000)
+            PaymentCreate(date=date(2026, 4, 1), amount_minor=100000)  # type: ignore[call-arg]
 
     def test_payment_create_with_account_id(self):
-        p = PaymentCreate(date="2026-04-01", amount_minor=100000, account_id=1)
+        p = PaymentCreate(date=date(2026, 4, 1), amount_minor=100000, account_id=1)
         assert p.account_id == 1
         assert p.link_existing_transaction_id is None
 
     def test_payment_create_with_link_existing(self):
         p = PaymentCreate(
-            date="2026-04-01",
+            date=date(2026, 4, 1),
             amount_minor=100000,
             account_id=1,
             link_existing_transaction_id=42,
@@ -113,10 +113,10 @@ class TestDebtCreateAccountId:
             principal_minor=500000,
             currency="EGP",
             tenure_months=1,
-            start_date="2026-04-01",
+            start_date=date(2026, 4, 1),
             person_id=1,
             repayment_mode="lump_sum",
-            due_date="2026-05-01",
+            due_date=date(2026, 5, 1),
             account_id=5,
         )
         assert d.account_id == 5
@@ -129,6 +129,6 @@ class TestDebtCreateAccountId:
             currency="EGP",
             annual_rate_percent=14.5,
             tenure_months=60,
-            start_date="2026-01-01",
+            start_date=date(2026, 1, 1),
         )
         assert d.account_id is None

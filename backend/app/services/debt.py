@@ -270,10 +270,8 @@ async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
 
 async def get_amortization_schedule(session: AsyncSession, debt: Debt) -> list[dict]:
     payments = await _get_payments(session, debt.id)
-    freq = debt.payment_frequency
-    frequency_months = FREQUENCY_MONTHS.get(
-        freq.value if hasattr(freq, "value") else (freq or "monthly"), 1
-    )
+    freq = str(debt.payment_frequency or "monthly")
+    frequency_months = FREQUENCY_MONTHS.get(freq, 1)
     return generate_schedule(
         principal_minor=debt.principal_minor,
         annual_rate_bps=debt.annual_rate_bps,
@@ -285,7 +283,7 @@ async def get_amortization_schedule(session: AsyncSession, debt: Debt) -> list[d
     )
 
 
-def _payment_transaction_details(debt: Debt, notes: str | None) -> tuple[str, str]:
+def _payment_transaction_details(debt: Debt, notes: str | None) -> tuple[TransactionType, str]:
     """Return (transaction_type, description) for auto-created payment transaction."""
     if debt.type == DebtType.PERSONAL_LENT:
         return TransactionType.CREDIT, f"Debt collection: {debt.name}"
@@ -293,7 +291,7 @@ def _payment_transaction_details(debt: Debt, notes: str | None) -> tuple[str, st
         return TransactionType.DEBIT, f"Debt payment: {debt.name}"
 
 
-async def _get_debt_category_id(session: AsyncSession, tx_type: str) -> int | None:
+async def _get_debt_category_id(session: AsyncSession, tx_type: TransactionType) -> int | None:
     """Find the predefined Debt Payment or Debt Collection category."""
     from app.models.category import Category
 
@@ -337,8 +335,8 @@ async def record_payment(
         # canonical principal/interest split per installment.  Passing payments=[]
         # is intentional — all rows will have status != "paid", which is what we
         # need to find the matching month's ratio without previous-payment state.
-        freq = debt.payment_frequency
-        fm = FREQUENCY_MONTHS.get(freq.value if hasattr(freq, "value") else (freq or "monthly"), 1)
+        freq = str(debt.payment_frequency or "monthly")
+        fm = FREQUENCY_MONTHS.get(freq, 1)
         schedule = generate_schedule(
             principal_minor=debt.principal_minor,
             annual_rate_bps=debt.annual_rate_bps,
@@ -469,10 +467,8 @@ async def bulk_record_past_payments(
     cutoff = get_balance_cutoff_date(account)
 
     # Generate the amortization schedule
-    freq = debt.payment_frequency
-    frequency_months = FREQUENCY_MONTHS.get(
-        freq.value if hasattr(freq, "value") else (freq or "monthly"), 1
-    )
+    freq = str(debt.payment_frequency or "monthly")
+    frequency_months = FREQUENCY_MONTHS.get(freq, 1)
     payments_list = await _get_payments(session, debt.id)
     schedule = generate_schedule(
         principal_minor=debt.principal_minor,
