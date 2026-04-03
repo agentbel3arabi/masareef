@@ -96,7 +96,7 @@ class TestComputePeriodicPayment:
         """tenure_months < frequency_months should raise ValueError."""
         import pytest
 
-        with pytest.raises(ValueError, match="num_periods must be positive"):
+        with pytest.raises(ValueError, match="must be divisible by"):
             compute_periodic_payment(1000000, 0, 2, frequency_months=3)
 
     def test_invalid_principal(self):
