@@ -618,7 +618,7 @@
     "summary": {
       "monthlyPayments": "الأقساط الشهرية",
       "totalRemaining": "إجمالي المتبقي",
-      "activeLoans": "{count} قروض",
+      "activeLoans": "{count, plural, zero {لا قروض} one {قرض واحد} two {قرضان} few {# قروض} many {# قرضاً} other {# قرض}}",
       "activePlans": "{count} خطط"
     },
     "status": {

@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils";
 import { LoansTab } from "@/components/debts/loans-tab";
 import { InstallmentsTab } from "@/components/debts/installments-tab";
 import { P2PTab } from "@/components/debts/p2p-tab";
+import { BankLoanForm } from "@/components/debts/bank-loan-form";
+import { InstallmentForm } from "@/components/debts/installment-form";
+import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { FAB } from "@/components/shared/fab";
 
@@ -32,6 +35,9 @@ export default function DebtsPage() {
   const t = useTranslations();
   const tDebts = useTranslations("debts");
   const [activeTab, setActiveTab] = useState<TabKey>("loans");
+  const [showLoanForm, setShowLoanForm] = useState(false);
+  const [showInstallmentForm, setShowInstallmentForm] = useState(false);
+  const [showP2PForm, setShowP2PForm] = useState(false);
   const { setActions } = useNavbarActions();
 
   useEffect(() => {
@@ -82,10 +88,25 @@ export default function DebtsPage() {
       {/* FAB — context-sensitive label based on active tab */}
       <FAB
         onClick={() => {
-          // TODO: Wire to tab-specific create form in a later task
+          switch (activeTab) {
+            case "loans":
+              setShowLoanForm(true);
+              break;
+            case "installments":
+              setShowInstallmentForm(true);
+              break;
+            case "p2p":
+              setShowP2PForm(true);
+              break;
+          }
         }}
         ariaLabel={t(FAB_LABEL_KEYS[activeTab])}
       />
+
+      {/* Create form sheets */}
+      <BankLoanForm open={showLoanForm} onOpenChange={setShowLoanForm} />
+      <InstallmentForm open={showInstallmentForm} onOpenChange={setShowInstallmentForm} />
+      <P2PDebtForm open={showP2PForm} onOpenChange={setShowP2PForm} />
     </div>
   );
 }

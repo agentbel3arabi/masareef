@@ -618,7 +618,7 @@
     "summary": {
       "monthlyPayments": "Monthly Debt Payments",
       "totalRemaining": "Total Active Remaining",
-      "activeLoans": "{count} loans",
+      "activeLoans": "{count, plural, one {# loan} other {# loans}}",
       "activePlans": "{count} plans"
     },
     "status": {
