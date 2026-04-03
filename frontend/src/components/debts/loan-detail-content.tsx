@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { StatusBadge } from "@/components/debts/status-badge";
 import { RecordPaymentForm } from "@/components/debts/record-payment-form";
 import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { DeleteConfirmation } from "@/components/shared/delete-confirmation";
+import { SetupPastPayments } from "@/components/debts/setup-past-payments";
 import {
   useDebt,
   useAmortizationSchedule,
@@ -21,6 +22,7 @@ import {
   useMarkDebtPaid,
   useDeleteDebt,
 } from "@/hooks/use-debts";
+import { useAccounts } from "@/hooks/use-accounts";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
 // ── Status mapping ─────────────────────────────────────────
@@ -65,10 +67,14 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isSetupMode = searchParams.get("setup") === "true";
 
   const { data: debtRes, isLoading: debtLoading, error: debtError } = useDebt(debtId);
   const { data: scheduleRes, isLoading: scheduleLoading } = useAmortizationSchedule(debtId);
   const { data: paymentsRes, isLoading: paymentsLoading } = useDebtPayments(debtId);
+  const { data: accountsRes } = useAccounts();
   const markPaid = useMarkDebtPaid();
   const deleteMutation = useDeleteDebt();
 
@@ -97,10 +103,26 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
   const schedule = scheduleRes?.data ?? [];
   const payments = paymentsRes?.data ?? [];
+  const accounts = accountsRes?.data ?? [];
 
+  // Setup banner: show when ?setup=true, schedule has overdue rows, and nothing paid yet
+  const hasOverdueRows = schedule.some((r) => r.status === "overdue");
+  const showSetupBanner = isSetupMode && hasOverdueRows && debt.total_paid_minor === 0;
+
+  const linkedAccount = useMemo(
+    () => (debt.linked_account_id ? accounts.find((a) => a.id === debt.linked_account_id) : undefined),
+    [accounts, debt.linked_account_id],
+  );
+
+  function dismissSetup() {
+    router.replace(pathname);
+  }
+
+  const totalWithInterest = debt.tenure_months * debt.monthly_payment_minor;
+  const remainingPayments = Math.max(0, totalWithInterest - debt.total_paid_minor);
   const progressPercent =
-    debt.principal_minor > 0
-      ? Math.round((debt.total_paid_minor / debt.principal_minor) * 100)
+    totalWithInterest > 0
+      ? Math.min(100, Math.round((debt.total_paid_minor / totalWithInterest) * 100))
       : 0;
 
   const aprPercent = (debt.annual_rate_bps / 100).toFixed(2);
@@ -114,6 +136,20 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       >
         <span>←</span> {t("backToDebts")}
       </Link>
+
+      {/* ── Setup Past Payments Banner ────────────────── */}
+      {showSetupBanner && (
+        <SetupPastPayments
+          debtId={debtId}
+          currency={debt.currency}
+          schedule={schedule}
+          linkedAccountId={debt.linked_account_id}
+          accountOpenedAt={linkedAccount?.opened_at ?? null}
+          accountName={linkedAccount?.name}
+          onComplete={dismissSetup}
+          onSkip={dismissSetup}
+        />
+      )}
 
       {/* ── Header ────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -152,11 +188,11 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{tLoan("principal")}</span>
+            <span className="text-xs text-muted-foreground">{tLoan("totalCost")}</span>
           </CardHeader>
           <CardContent>
             <MoneyDisplay
-              amount={debt.principal_minor}
+              amount={totalWithInterest}
               currency={debt.currency}
               size="lg"
             />
@@ -198,7 +234,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
           </CardHeader>
           <CardContent>
             <MoneyDisplay
-              amount={debt.remaining_minor}
+              amount={remainingPayments}
               currency={debt.currency}
               size="lg"
             />

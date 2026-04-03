@@ -875,6 +875,19 @@
         "semi_annual": "القسط نصف السنوي",
         "annual": "القسط السنوي"
       }
+    },
+    "setupPastPayments": {
+      "title": "إعداد الأقساط السابقة",
+      "description": "بدأ هذا القرض منذ {months} أشهر. اختر الأقساط التي تم سدادها:",
+      "beforeCutoff": "قبل رصيد الافتتاح ({date})",
+      "beforeCutoffHint": "هذه للسجل فقط — لن تؤثر على الرصيد",
+      "afterCutoff": "بعد رصيد الافتتاح",
+      "afterCutoffWarning": "سيتم خصم {amount} من رصيد حساب {account}",
+      "uncheckHint": "الأقساط غير المحددة ستُعتبر متأخرة.",
+      "confirm": "تأكيد {count} دفعات",
+      "skip": "تخطي الآن",
+      "recording": "جاري تسجيل الدفعات...",
+      "noLinkedAccount": "لا يوجد حساب مرتبط — سيتم تسجيل الدفعات بدون معاملات"
     }
   },
   "persons": {

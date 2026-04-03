@@ -875,6 +875,19 @@
         "semi_annual": "Semi-Annual Payment",
         "annual": "Annual Payment"
       }
+    },
+    "setupPastPayments": {
+      "title": "Setup Past Payments",
+      "description": "This loan started {months} months ago. Select which installments have been paid:",
+      "beforeCutoff": "Before opening balance ({date})",
+      "beforeCutoffHint": "These are for history only — won't affect balance",
+      "afterCutoff": "After opening balance",
+      "afterCutoffWarning": "These will reduce your {account} balance by {amount}",
+      "uncheckHint": "Unchecked installments will be marked as overdue.",
+      "confirm": "Confirm {count} Payments",
+      "skip": "Skip for Now",
+      "recording": "Recording payments...",
+      "noLinkedAccount": "No linked account — payments will be recorded without transactions"
     }
   },
   "persons": {
