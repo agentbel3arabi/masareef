@@ -22,6 +22,7 @@ def _account_to_response(account: Account, displayed_balance: int) -> AccountRes
     return AccountResponse(
         id=account.id,
         name=account.name,
+        name_ar=account.name_ar,
         type=acct_type.value if hasattr(acct_type, "value") else acct_type,
         currency=account.currency,
         balance_minor=account.balance_minor,
