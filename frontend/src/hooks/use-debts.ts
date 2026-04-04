@@ -72,12 +72,22 @@ export function useDeleteDebt() {
   const queryClient = useQueryClient();
   const t = useTranslations("toast");
   return useApiMutation({
-    mutationFn: (id: number) => apiDelete(`/api/v1/debts/${id}`),
+    mutationFn: ({
+      id,
+      deleteTransactions,
+    }: {
+      id: number;
+      deleteTransactions?: boolean;
+    }) => {
+      const params = deleteTransactions ? "?delete_transactions=true" : "";
+      return apiDelete(`/api/v1/debts/${id}${params}`);
+    },
     successMessage: t("debtDeleted"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }

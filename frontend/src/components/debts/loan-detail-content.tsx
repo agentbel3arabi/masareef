@@ -406,7 +406,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             <Button
               variant="destructive"
               onClick={() => {
-                deleteMutation.mutate(debtId, {
+                deleteMutation.mutate({ id: debtId }, {
                   onSuccess: () => router.push("/debts"),
                 });
                 setDeleteDialogOpen(false);

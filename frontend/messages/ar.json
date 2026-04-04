@@ -621,6 +621,10 @@
   "debts": {
     "title": "إدارة الديون",
     "subtitle": "تتبع وإدارة القروض والأقساط",
+    "manage": "إدارة",
+    "cancel": "إلغاء",
+    "selected": "{count} محدد",
+    "deleteSelected": "حذف المحدد",
     "tabs": {
       "loans": "القروض",
       "installments": "الأقساط",
@@ -663,7 +667,9 @@
       "noUpcoming": "تم تسجيل جميع الدفعات",
       "matchFound": "تم العثور على مطابقة — مراجعة",
       "principalBreakdown": "أصل: {principal} + فائدة: {interest}",
-      "viewFullDetails": "عرض التفاصيل الكاملة"
+      "viewFullDetails": "عرض التفاصيل الكاملة",
+      "editLoan": "تعديل",
+      "deleteLoan": "حذف"
     },
     "p2p": {
       "lent": "أقرضت",
@@ -755,7 +761,7 @@
         "deleteOnly": "حذف القرض فقط",
         "deleteOnlyHint": "سيتم الاحتفاظ بمعاملات الدفع للسجل",
         "deleteWithTransactions": "حذف القرض والمعاملات",
-        "comingSoon": "قريباً",
+        "deleteWithTransactionsHint": "سيتم أيضاً حذف جميع معاملات الدفع المرتبطة",
         "cancel": "إلغاء"
       }
     },

@@ -233,7 +233,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
           <DeleteConfirmation
             itemName={debt.name}
             onConfirm={() => {
-              deleteMutation.mutate(debtId, {
+              deleteMutation.mutate({ id: debtId }, {
                 onSuccess: () => router.push("/debts"),
               });
             }}

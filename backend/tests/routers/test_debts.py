@@ -542,3 +542,78 @@ async def test_default_payment_day_from_start_date(client):
     assert resp.status_code == 201
     data = resp.json()["data"]
     assert data["payment_day_of_month"] == 20  # defaulted from start_date
+
+
+@pytest.mark.asyncio
+async def test_delete_debt_with_transactions_soft_deletes_linked(client):
+    """delete_transactions=true soft-deletes linked transactions and hard-deletes payments."""
+    acct_id = await _create_test_account(client)
+    loan = await client.post(
+        "/api/v1/debts",
+        json=_create_loan_payload(
+            principal_minor=1200000,
+            annual_rate_percent=0,
+            tenure_months=12,
+        ),
+    )
+    debt_id = loan.json()["data"]["id"]
+
+    # Record a payment (auto-creates a transaction)
+    pay_resp = await client.post(
+        f"/api/v1/debts/{debt_id}/payments",
+        json={"date": "2026-04-01", "amount_minor": 100000, "account_id": acct_id},
+    )
+    assert pay_resp.status_code == 201
+    tx_id = pay_resp.json()["data"]["transaction_id"]
+    assert tx_id is not None
+
+    # Delete with transactions
+    resp = await client.delete(
+        f"/api/v1/debts/{debt_id}?delete_transactions=true"
+    )
+    assert resp.status_code == 204
+
+    # Debt should be gone from list
+    list_resp = await client.get("/api/v1/debts")
+    ids = [d["id"] for d in list_resp.json()["data"]]
+    assert debt_id not in ids
+
+    # Transaction should also be soft-deleted (not in active list)
+    tx_resp = await client.get("/api/v1/transactions")
+    tx_ids = [t["id"] for t in tx_resp.json()["data"]]
+    assert tx_id not in tx_ids
+
+    # Payments should be hard-deleted
+    payments_resp = await client.get(f"/api/v1/debts/{debt_id}/payments")
+    # Debt is soft-deleted so this returns 404
+    assert payments_resp.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_delete_debt_without_flag_keeps_transactions(client):
+    """Default delete (no flag) keeps linked transactions active."""
+    acct_id = await _create_test_account(client)
+    loan = await client.post(
+        "/api/v1/debts",
+        json=_create_loan_payload(
+            principal_minor=1200000,
+            annual_rate_percent=0,
+            tenure_months=12,
+        ),
+    )
+    debt_id = loan.json()["data"]["id"]
+
+    pay_resp = await client.post(
+        f"/api/v1/debts/{debt_id}/payments",
+        json={"date": "2026-04-01", "amount_minor": 100000, "account_id": acct_id},
+    )
+    tx_id = pay_resp.json()["data"]["transaction_id"]
+
+    # Delete without flag
+    resp = await client.delete(f"/api/v1/debts/{debt_id}")
+    assert resp.status_code == 204
+
+    # Transaction should still be active
+    tx_resp = await client.get("/api/v1/transactions")
+    tx_ids = [t["id"] for t in tx_resp.json()["data"]]
+    assert tx_id in tx_ids
