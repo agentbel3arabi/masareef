@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +66,7 @@ function P2PDebtFormContent({
   preSelectedPersonId,
 }: Omit<P2PDebtFormProps, "open">) {
   const t = useTranslations("debts.form.p2p");
+  const tCommon = useTranslations("common");
   const tRepayment = useTranslations("debts.p2p");
   const tPersons = useTranslations("persons");
   const isEdit = !!initialData;
@@ -90,6 +92,7 @@ function P2PDebtFormContent({
 
   const [accountId, setAccountId] = useState("");
   const [splitsSumError, setSplitsSumError] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   // Inline person creation state
   const [showInlinePersonForm, setShowInlinePersonForm] = useState(false);
@@ -162,6 +165,7 @@ function P2PDebtFormContent({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
     if (isEdit && initialData) {
       updateMutation.mutate(
         {
@@ -252,6 +256,8 @@ function P2PDebtFormContent({
                 </SelectItem>
               </SelectContent>
             </Select>
+
+            <FieldError show={submitted && !personId} message={tCommon("fieldRequired")} />
 
             {/* Inline person creation form */}
             {showInlinePersonForm && (
@@ -391,6 +397,7 @@ function P2PDebtFormContent({
                 ))}
               </SelectContent>
             </Select>
+            <FieldError show={submitted && !accountId} message={tCommon("fieldRequired")} />
           </div>
         )}
 
@@ -405,6 +412,7 @@ function P2PDebtFormContent({
               onChange={(e) => setAmount(e.target.value)}
               required
             />
+            <FieldError show={submitted && !amount} message={tCommon("fieldRequired")} />
           </div>
         )}
 

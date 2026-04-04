@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,7 @@ function PersonFormContent({
   onOpenChange,
 }: Omit<PersonFormProps, "open">) {
   const t = useTranslations("persons");
+  const tCommon = useTranslations("common");
   const tForm = useTranslations("persons.form");
   const isEdit = !!initialData;
 
@@ -67,6 +69,7 @@ function PersonFormContent({
     initialData?.relationship ?? ""
   );
   const [notes, setNotes] = useState(initialData?.notes ?? "");
+  const [submitted, setSubmitted] = useState(false);
 
   const createMutation = useCreatePerson();
   const updateMutation = useUpdatePerson();
@@ -82,6 +85,8 @@ function PersonFormContent({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!name.trim()) return;
     if (isEdit && initialData) {
       updateMutation.mutate(
         {
@@ -127,6 +132,7 @@ function PersonFormContent({
             onChange={(e) => setName(e.target.value)}
             required
           />
+          <FieldError show={submitted && !name.trim()} message={tCommon("fieldRequired")} />
         </div>
 
         <div className="space-y-2">
