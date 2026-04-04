@@ -18,6 +18,8 @@ class InstallmentCreate(BaseModel):
     start_month: date
     currency: str = Field(min_length=3, max_length=3)
     annual_rate_bps: int = 0
+    payment_day_of_month: int | None = Field(default=None, ge=1, le=28)
+    notes: str | None = None
 
 
 class InstallmentUpdate(BaseModel):
@@ -25,6 +27,7 @@ class InstallmentUpdate(BaseModel):
     merchant_name: str | None = None
     linked_account_id: int | None = None
     annual_rate_bps: int | None = None
+    notes: str | None = None
 
 
 class InstallmentResponse(BaseModel):
@@ -40,6 +43,8 @@ class InstallmentResponse(BaseModel):
     start_month: date
     currency: str
     annual_rate_bps: int
+    payment_day_of_month: int | None = None
+    notes: str | None = None
     status: Literal["active", "completed"]
     months_paid: int
     remaining_months: int

@@ -937,19 +937,27 @@
         "currency": "العملة",
         "selectCurrency": "اختر العملة",
         "totalAmount": "المبلغ الإجمالي",
-        "monthlyAmount": "القسط الشهري",
-        "totalMonths": "عدد الأشهر",
-        "startMonth": "شهر البداية",
-        "sourceAccount": "الحساب المصدر",
+        "rate": "معدل الفائدة السنوي (%)",
+        "rateHint": "٠٪ للخطط بدون فوائد",
+        "tenure": "المدة (أشهر)",
+        "startDate": "تاريخ البداية",
+        "paymentDayOfMonth": "يوم الدفع من الشهر",
+        "paymentDayPlaceholder": "١–٢٨",
+        "linkedAccount": "الحساب المرتبط",
         "selectAccount": "اختر الحساب",
         "none": "بدون",
+        "notes": "ملاحظات",
         "submit": "إضافة القسط",
         "update": "تحديث القسط",
         "saving": "جارِ الحفظ...",
         "comingSoon": "قريباً",
-        "annualRate": "معدل الفائدة السنوي (%)",
-        "annualRateHint": "٠٪ للخطط بدون فوائد",
-        "selectProvider": "اختر أو اكتب اسم مزود التمويل"
+        "selectProvider": "اختر أو اكتب اسم مزود التمويل",
+        "livePreview": {
+          "monthlyPayment": "القسط الشهري",
+          "totalCost": "التكلفة الإجمالية",
+          "totalInterest": "إجمالي الفائدة",
+          "paymentDay": "يوم الدفع: {day}"
+        }
       }
     },
     "frequency": {

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
+import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -88,21 +89,20 @@ function InstallmentFormContent({
       ? formatAmount(initialData.total_amount_minor, initialData.currency)
       : ""
   );
-  const [monthlyAmount, setMonthlyAmount] = useState(
-    initialData
-      ? formatAmount(initialData.monthly_amount_minor, initialData.currency)
-      : ""
+  const [annualRate, setAnnualRate] = useState(
+    initialData ? String(initialData.annual_rate_bps / 100) : "0"
   );
   const [totalMonths, setTotalMonths] = useState(
     initialData ? String(initialData.total_months) : ""
   );
-  const [startMonth, setStartMonth] = useState(initialData?.start_month ?? "");
-  const [annualRate, setAnnualRate] = useState(
-    initialData ? String(initialData.annual_rate_bps / 100) : "0"
+  const [startDate, setStartDate] = useState(initialData?.start_month ?? "");
+  const [paymentDayOfMonth, setPaymentDayOfMonth] = useState(
+    initialData?.payment_day_of_month ? String(initialData.payment_day_of_month) : ""
   );
   const [sourceAccountId, setSourceAccountId] = useState(
     initialData?.source_account_id ? String(initialData.source_account_id) : ""
   );
+  const [notes, setNotes] = useState(initialData?.notes ?? "");
 
   const createMutation = useCreateInstallment();
   const updateMutation = useUpdateInstallment();
@@ -126,25 +126,66 @@ function InstallmentFormContent({
   const sourceRequired = type === "credit_card" || type === "financing_app";
   const [submitted, setSubmitted] = useState(false);
 
+  // Auto-set payment day from start date when not yet set
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional one-time sync from start_date */
+  useEffect(() => {
+    if (startDate && !paymentDayOfMonth) {
+      const [, , dayPart] = startDate.split("-");
+      const day = Number.parseInt(dayPart ?? "", 10);
+      if (!Number.isNaN(day)) {
+        setPaymentDayOfMonth(String(Math.min(day, 28)));
+      }
+    }
+  }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  // Live preview calculation (matches loan form amortization)
+  const livePreview = useMemo(() => {
+    if (!totalAmount || !totalMonths) return null;
+    const exponent = CURRENCIES[currency]?.exponent ?? 2;
+    const totalMinor = parseMajorToMinor(totalAmount, exponent);
+    const rateBps = annualRate ? Math.round(parseFloat(annualRate) * 100) : 0;
+    const months = parseInt(totalMonths, 10);
+    if (months <= 0 || totalMinor <= 0) return null;
+
+    let monthlyPayment: number;
+    if (rateBps === 0) {
+      monthlyPayment = Math.ceil(totalMinor / months);
+    } else {
+      const periodRate = rateBps / (10000 * 12);
+      const factor = Math.pow(1 + periodRate, months);
+      monthlyPayment = Math.ceil(totalMinor * (periodRate * factor) / (factor - 1));
+    }
+    const totalCost = monthlyPayment * months;
+    const totalInterest = totalCost - totalMinor;
+
+    return { monthlyPayment, totalCost, totalInterest };
+  }, [totalAmount, totalMonths, annualRate, currency]);
+
   const resetFields = () => {
     setType(defaultType ?? "credit_card");
     setName("");
     setMerchantName("");
     setCurrency("EGP");
     setTotalAmount("");
-    setMonthlyAmount("");
-    setTotalMonths("");
-    setStartMonth("");
     setAnnualRate("0");
+    setTotalMonths("");
+    setStartDate("");
+    setPaymentDayOfMonth("");
     setSourceAccountId("");
+    setNotes("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    if (!isEdit && (!name.trim() || !totalAmount || !monthlyAmount || !totalMonths || !startMonth)) return;
+    if (!isEdit && (!name.trim() || !totalAmount || !totalMonths || !startDate)) return;
+    if (!isEdit && sourceRequired && (!sourceAccountId || sourceAccountId === "__none__")) return;
     if (isEdit && !name.trim()) return;
     const exponent = CURRENCIES[currency]?.exponent ?? 2;
+
+    // Calculate monthly amount from live preview for submission
+    const monthlyAmountMinor = livePreview?.monthlyPayment ?? Math.ceil(parseMajorToMinor(totalAmount, exponent) / parseInt(totalMonths || "1", 10));
 
     if (isEdit && initialData) {
       updateMutation.mutate(
@@ -153,6 +194,7 @@ function InstallmentFormContent({
           name,
           merchant_name: merchantName || null,
           linked_account_id: null,
+          notes: notes || null,
         },
         {
           onSuccess: () => {
@@ -172,11 +214,13 @@ function InstallmentFormContent({
               : null,
           linked_account_id: null,
           total_amount_minor: parseMajorToMinor(totalAmount, exponent),
-          monthly_amount_minor: parseMajorToMinor(monthlyAmount, exponent),
+          monthly_amount_minor: monthlyAmountMinor,
           total_months: parseInt(totalMonths, 10),
-          start_month: `${startMonth}-01`,
+          start_month: startDate,
           currency,
-          annual_rate_bps: Math.round(parseFloat(annualRate || "0") * 100),
+          annual_rate_bps: Number.isFinite(parseFloat(annualRate)) ? Math.round(parseFloat(annualRate) * 100) : 0,
+          payment_day_of_month: paymentDayOfMonth ? parseInt(paymentDayOfMonth, 10) : null,
+          notes: notes || null,
         },
         {
           onSuccess: () => {
@@ -192,6 +236,7 @@ function InstallmentFormContent({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Installment Type — create only */}
         {!isEdit && (
           <div className="space-y-2">
             <Label>{t("type")}</Label>
@@ -203,7 +248,7 @@ function InstallmentFormContent({
               }}
             >
               <SelectTrigger className="w-full">
-                <SelectValue />
+                <SelectValue>{t(`types.${type}`)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {INSTALLMENT_TYPES.map((it) => (
@@ -216,6 +261,7 @@ function InstallmentFormContent({
           </div>
         )}
 
+        {/* Plan Name */}
         <div className="space-y-2">
           <RequiredLabel required htmlFor="inst-name">{t("name")}</RequiredLabel>
           {type === "financing_app" && !isEdit ? (
@@ -245,6 +291,7 @@ function InstallmentFormContent({
           <FieldError show={submitted && !name.trim()} message={tCommon("fieldRequired")} />
         </div>
 
+        {/* Merchant Name */}
         <div className="space-y-2">
           <Label htmlFor="inst-merchant">{t("merchant")}</Label>
           <Input
@@ -256,6 +303,7 @@ function InstallmentFormContent({
 
         {!isEdit && (
           <>
+            {/* Currency */}
             <div className="space-y-2">
               <Label>{t("currency")}</Label>
               <Select
@@ -275,6 +323,7 @@ function InstallmentFormContent({
               </Select>
             </div>
 
+            {/* Total Amount */}
             <div className="space-y-2">
               <RequiredLabel required htmlFor="inst-total">{t("totalAmount")}</RequiredLabel>
               <Input
@@ -284,85 +333,16 @@ function InstallmentFormContent({
                   Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2))
                 )}
                 value={totalAmount}
-                onChange={(e) => {
-                  setTotalAmount(e.target.value);
-                  if (e.target.value && totalMonths) {
-                    const total = parseFloat(e.target.value);
-                    const months = parseInt(totalMonths, 10);
-                    if (total > 0 && months > 0) {
-                      setMonthlyAmount((total / months).toFixed(CURRENCIES[currency]?.exponent ?? 2));
-                    }
-                  }
-                }}
+                onChange={(e) => setTotalAmount(e.target.value)}
                 required
                 min="0.01"
               />
               <FieldError show={submitted && !totalAmount} message={tCommon("fieldRequired")} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <RequiredLabel required htmlFor="inst-monthly">{t("monthlyAmount")}</RequiredLabel>
-                <Input
-                  id="inst-monthly"
-                  type="number"
-                  step={String(
-                    Math.pow(10, -(CURRENCIES[currency]?.exponent ?? 2))
-                  )}
-                  value={monthlyAmount}
-                  onChange={(e) => {
-                    setMonthlyAmount(e.target.value);
-                    if (e.target.value && totalMonths) {
-                      const monthly = parseFloat(e.target.value);
-                      const months = parseInt(totalMonths, 10);
-                      if (monthly > 0 && months > 0) {
-                        setTotalAmount((monthly * months).toFixed(CURRENCIES[currency]?.exponent ?? 2));
-                      }
-                    }
-                  }}
-                  required
-                  min="0.01"
-                />
-                <FieldError show={submitted && !monthlyAmount} message={tCommon("fieldRequired")} />
-              </div>
-
-              <div className="space-y-2">
-                <RequiredLabel required htmlFor="inst-months">{t("totalMonths")}</RequiredLabel>
-                <Input
-                  id="inst-months"
-                  type="number"
-                  min="1"
-                  value={totalMonths}
-                  onChange={(e) => {
-                    setTotalMonths(e.target.value);
-                    if (totalAmount && e.target.value) {
-                      const total = parseFloat(totalAmount);
-                      const months = parseInt(e.target.value, 10);
-                      if (total > 0 && months > 0) {
-                        setMonthlyAmount((total / months).toFixed(CURRENCIES[currency]?.exponent ?? 2));
-                      }
-                    }
-                  }}
-                  required
-                />
-                <FieldError show={submitted && !totalMonths} message={tCommon("fieldRequired")} />
-              </div>
-            </div>
-
+            {/* Annual Rate */}
             <div className="space-y-2">
-              <RequiredLabel required htmlFor="inst-start">{t("startMonth")}</RequiredLabel>
-              <Input
-                id="inst-start"
-                type="month"
-                value={startMonth}
-                onChange={(e) => setStartMonth(e.target.value)}
-                required
-              />
-              <FieldError show={submitted && !startMonth} message={tCommon("fieldRequired")} />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="inst-rate">{t("annualRate")}</Label>
+              <Label htmlFor="inst-rate">{t("rate")}</Label>
               <Input
                 id="inst-rate"
                 type="number"
@@ -370,14 +350,82 @@ function InstallmentFormContent({
                 min="0"
                 value={annualRate}
                 onChange={(e) => setAnnualRate(e.target.value)}
-                disabled={isEdit}
               />
-              <p className="text-xs text-muted-foreground">{t("annualRateHint")}</p>
+              <p className="text-xs text-muted-foreground">{t("rateHint")}</p>
             </div>
 
+            {/* Tenure (months) */}
+            <div className="space-y-2">
+              <RequiredLabel required htmlFor="inst-months">{t("tenure")}</RequiredLabel>
+              <Input
+                id="inst-months"
+                type="number"
+                min="1"
+                value={totalMonths}
+                onChange={(e) => setTotalMonths(e.target.value)}
+                required
+              />
+              <FieldError show={submitted && !totalMonths} message={tCommon("fieldRequired")} />
+            </div>
+
+            {/* Live Preview */}
+            {livePreview && (
+              <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">{t("livePreview.monthlyPayment")}</span>
+                  <MoneyDisplay amount={livePreview.monthlyPayment} currency={currency} size="md" className="font-bold text-primary" />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">{t("livePreview.totalCost")}</span>
+                  <MoneyDisplay amount={livePreview.totalCost} currency={currency} size="sm" />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">{t("livePreview.totalInterest")}</span>
+                  <MoneyDisplay amount={livePreview.totalInterest} currency={currency} size="sm" />
+                </div>
+                {paymentDayOfMonth && (
+                  <p className="text-xs text-muted-foreground">{t("livePreview.paymentDay", { day: paymentDayOfMonth })}</p>
+                )}
+              </div>
+            )}
+
+            {/* Start Date */}
+            <div className="space-y-2">
+              <RequiredLabel required htmlFor="inst-start">{t("startDate")}</RequiredLabel>
+              <Input
+                id="inst-start"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                required
+              />
+              <FieldError show={submitted && !startDate} message={tCommon("fieldRequired")} />
+            </div>
+
+            {/* Payment Day of Month */}
+            <div className="space-y-2">
+              <Label>{t("paymentDayOfMonth")}</Label>
+              <Select
+                value={paymentDayOfMonth}
+                onValueChange={(v) => setPaymentDayOfMonth(v ?? "")}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t("paymentDayPlaceholder")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                    <SelectItem key={day} value={String(day)}>
+                      {String(day)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Linked Account (Source Account) */}
             <div className="space-y-2">
               <RequiredLabel required={sourceRequired}>
-                {t("sourceAccount")}
+                {t("linkedAccount")}
               </RequiredLabel>
               <Select
                 value={sourceAccountId}
@@ -399,9 +447,24 @@ function InstallmentFormContent({
                   ))}
                 </SelectContent>
               </Select>
+              <FieldError
+                show={submitted && sourceRequired && (!sourceAccountId || sourceAccountId === "__none__")}
+                message={tCommon("fieldRequired")}
+              />
             </div>
           </>
         )}
+
+        {/* Notes */}
+        <div className="space-y-2">
+          <Label htmlFor="inst-notes">{t("notes")}</Label>
+          <textarea
+            id="inst-notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="flex min-h-[80px] w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        </div>
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? t("saving") : isEdit ? t("update") : t("submit")}

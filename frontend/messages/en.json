@@ -937,19 +937,27 @@
         "currency": "Currency",
         "selectCurrency": "Select currency",
         "totalAmount": "Total Amount",
-        "monthlyAmount": "Monthly Payment",
-        "totalMonths": "Number of Months",
-        "startMonth": "Start Month",
-        "sourceAccount": "Source Account",
+        "rate": "Annual Rate (%)",
+        "rateHint": "0% for interest-free plans",
+        "tenure": "Tenure (months)",
+        "startDate": "Start Date",
+        "paymentDayOfMonth": "Payment Day of Month",
+        "paymentDayPlaceholder": "1–28",
+        "linkedAccount": "Linked Account",
         "selectAccount": "Select account",
         "none": "None",
+        "notes": "Notes",
         "submit": "Add Installment",
         "update": "Update Installment",
         "saving": "Saving...",
         "comingSoon": "Coming soon",
-        "annualRate": "Annual Interest Rate (%)",
-        "annualRateHint": "0% for interest-free plans",
-        "selectProvider": "Select or type provider name"
+        "selectProvider": "Select or type provider name",
+        "livePreview": {
+          "monthlyPayment": "Monthly Payment",
+          "totalCost": "Total Cost",
+          "totalInterest": "Total Interest",
+          "paymentDay": "Payment day: {day}th"
+        }
       }
     },
     "frequency": {
