@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -111,6 +111,8 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
   const debt = debtRes?.data;
   const schedule = scheduleRes?.data ?? [];
+  const scheduleRef = useRef(schedule);
+  scheduleRef.current = schedule;
 
   useEffect(() => {
     if (!debt) {
@@ -124,7 +126,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             variant="outline"
             size="sm"
             onClick={() => {
-              const nextRow = schedule.find((r) => r.status !== "paid");
+              const nextRow = scheduleRef.current.find((r) => r.status !== "paid");
               setPaymentPrefill(nextRow ? {
                 amount: nextRow.payment_minor,
                 date: nextRow.date,
@@ -161,7 +163,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       setActions(null);
     }
     return () => setActions(null);
-  }, [debt?.status, debt?.id, schedule, tActions, setActions]);
+  }, [debt?.status, debt?.id, tActions, setActions]);
 
   // Loading
   if (debtLoading) return <LoanDetailSkeleton />;
