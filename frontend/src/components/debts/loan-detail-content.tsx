@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { formatDate } from "@/lib/date";
 import { Pencil, Trash2, RotateCcw, CreditCard, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -263,62 +264,79 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       </div>
 
       {/* ── Summary cards ─────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{tLoan("totalCost")}</span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={totalWithInterest}
-              currency={debt.currency}
-              size="lg"
-            />
-          </CardContent>
-        </Card>
+      {(() => {
+        const nextPaymentRow = schedule.find((r) => r.status !== "paid");
+        return (
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">
+                  {tLoan("monthlyPayment")}
+                </span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={debt.monthly_payment_minor}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">
-              {tLoan("monthlyPayment")}
-            </span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={debt.monthly_payment_minor}
-              currency={debt.currency}
-              size="lg"
-            />
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">
+                  {tLoan("nextPayment")}
+                </span>
+              </CardHeader>
+              <CardContent>
+                <span className="text-lg font-bold text-foreground">
+                  {nextPaymentRow ? formatDate(nextPaymentRow.date) : "—"}
+                </span>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{t("totalPaid")}</span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={debt.total_paid_minor}
-              currency={debt.currency}
-              size="lg"
-              colorize
-            />
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">{tLoan("principal")}</span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={debt.principal_minor}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{t("remainingAmount")}</span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={remainingPayments}
-              currency={debt.currency}
-              size="lg"
-            />
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">{tLoan("totalCost")}</span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={totalWithInterest}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">{t("remainingAmount")}</span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={remainingPayments}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        );
+      })()}
 
       {/* ── Progress ──────────────────────────────────── */}
       <div className="space-y-1">

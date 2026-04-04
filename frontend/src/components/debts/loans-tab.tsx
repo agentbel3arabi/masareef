@@ -322,7 +322,7 @@ function LoanCard({
         {manageMode && (
           <div
             className={cn(
-              "absolute top-3 end-3 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
+              "absolute top-3 start-3 z-20 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none",
               selected
                 ? "bg-primary border-primary text-white"
                 : "bg-background/90 border-border",
@@ -333,33 +333,20 @@ function LoanCard({
           </div>
         )}
 
-        {/* Top row: name + badges | payment amount */}
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h4 className="font-bold text-foreground">{loan.name}</h4>
-              <StatusBadge status="active" />
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground">
-                {aprFormatted}% APR
-              </span>
-            </div>
-            {loan.institution && (
-              <p className="text-xs text-muted-foreground">
-                {loan.institution}
-              </p>
-            )}
+        {/* Top row: name + badges */}
+        <div className="mb-4">
+          <div className={cn("flex items-center gap-2 mb-1", manageMode && "ps-8")}>
+            <h4 className="font-bold text-foreground">{loan.name}</h4>
+            <StatusBadge status="active" />
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground">
+              {aprFormatted}% APR
+            </span>
           </div>
-          <div className="text-end">
-            <p className="text-[10px] text-muted-foreground font-bold uppercase mb-0.5">
-              {paymentLabel}
+          {loan.institution && (
+            <p className={cn("text-xs text-muted-foreground", manageMode && "ps-8")}>
+              {loan.institution}
             </p>
-            <MoneyDisplay
-              amount={loan.monthly_payment_minor}
-              currency={loan.currency}
-              size="md"
-              className="font-bold text-primary"
-            />
-          </div>
+          )}
         </div>
 
         {/* Info grid */}
@@ -383,7 +370,7 @@ function LoanCard({
               amount={loan.monthly_payment_minor}
               currency={loan.currency}
               size="sm"
-              className="font-semibold"
+              className="font-semibold text-primary"
             />
           </div>
           <div>
