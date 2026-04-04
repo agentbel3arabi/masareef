@@ -7,6 +7,7 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
+    env_file: .env
     networks:
       - masareef
 
@@ -14,10 +15,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     container_name: masareef-web
     restart: unless-stopped
     ports:
       - "3001:3000"
+    env_file: .env
     depends_on:
       - masareef-api
     networks:
