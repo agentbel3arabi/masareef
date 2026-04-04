@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, MoreVertical } from "lucide-react";
 import { CategoryIcon, getCategoryIcon } from "@/lib/category-icon";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,12 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useDeleteTransaction, useUpdateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
@@ -184,26 +190,51 @@ export function TransactionRow({
         </td>
         <td className="px-4 py-3">
           {!bulkMode && (
-            <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                onClick={openEdit}
-                aria-label={t("common.edit")}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={() => setDeleteOpen(true)}
-                aria-label={t("common.delete.button")}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
+            <>
+              {/* Desktop: hover-reveal buttons */}
+              <div className="hidden sm:flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={openEdit}
+                  aria-label={t("common.edit")}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  onClick={() => setDeleteOpen(true)}
+                  aria-label={t("common.delete.button")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              {/* Mobile: overflow menu */}
+              <div className="sm:hidden flex justify-end">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={openEdit}>
+                      <Pencil className="h-4 w-4 me-2" />
+                      {t("common.edit")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive">
+                      <Trash2 className="h-4 w-4 me-2" />
+                      {t("common.delete.button")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </>
           )}
         </td>
       </tr>
