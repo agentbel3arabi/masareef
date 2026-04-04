@@ -318,7 +318,8 @@
     "actions": "Actions",
     "selected": "selected",
     "selectAll": "Select all transfers",
-    "selectTransfer": "Select transfer {id}"
+    "selectTransfer": "Select transfer {id}",
+    "subtitle": "Track money moved between your accounts"
   },
   "dashboard": {
     "title": "Dashboard",

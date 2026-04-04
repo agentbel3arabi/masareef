@@ -202,7 +202,10 @@ export default function TransfersPage() {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <h1 className="text-2xl font-bold text-foreground">{t("nav.transfers")}</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">{t("nav.transfers")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("transfers.subtitle")}</p>
+      </div>
 
       {isLoading ? (
         <TransactionTableSkeleton />

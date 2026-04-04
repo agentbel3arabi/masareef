@@ -318,7 +318,8 @@
     "actions": "الإجراءات",
     "selected": "محدد",
     "selectAll": "تحديد جميع التحويلات",
-    "selectTransfer": "تحديد التحويل {id}"
+    "selectTransfer": "تحديد التحويل {id}",
+    "subtitle": "تتبع التحويلات بين حساباتك"
   },
   "dashboard": {
     "title": "لوحة التحكم",
