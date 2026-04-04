@@ -17,6 +17,7 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import { ComingSoon } from "@/components/shared/coming-soon";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CategoryIcon } from "@/lib/category-icon";
 
@@ -62,10 +63,12 @@ export default function AccountDetailPage() {
           <ArrowLeftRight className="h-4 w-4 me-1" />
           {tAccounts("transferFunds")}
         </Button>
-        <Button size="sm" variant="outline" disabled>
-          <Receipt className="h-4 w-4 me-1" />
-          {tAccounts("accountStatements")}
-        </Button>
+        <ComingSoon>
+          <Button size="sm" variant="outline" disabled>
+            <Receipt className="h-4 w-4 me-1" />
+            {tAccounts("accountStatements")}
+          </Button>
+        </ComingSoon>
       </div>
     );
 
