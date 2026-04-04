@@ -6,6 +6,7 @@ import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredLabel } from "@/components/shared/required-label";
 import {
   Select,
   SelectTrigger,
@@ -230,7 +231,7 @@ function P2PDebtFormContent({
     <form onSubmit={handleSubmit} className="space-y-4">
         {!isEdit && (
           <div className="space-y-2">
-            <Label>{t("person")}</Label>
+            <RequiredLabel required>{t("person")}</RequiredLabel>
             <Select value={personId} onValueChange={handlePersonSelectChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t("selectPerson")}>
@@ -272,7 +273,7 @@ function P2PDebtFormContent({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="inline-person-name">{tPersons("name")} *</Label>
+                  <RequiredLabel required htmlFor="inline-person-name">{tPersons("name")}</RequiredLabel>
                   <Input
                     id="inline-person-name"
                     value={inlineName}
@@ -375,9 +376,9 @@ function P2PDebtFormContent({
 
         {!isEdit && (
           <div className="space-y-2">
-            <Label>
-              {debtType === "personal_lent" ? t("sourceAccount") : t("destinationAccount")} *
-            </Label>
+            <RequiredLabel required>
+              {debtType === "personal_lent" ? t("sourceAccount") : t("destinationAccount")}
+            </RequiredLabel>
             <Select value={accountId} onValueChange={(v) => setAccountId(v ?? "")}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t("selectAccount")} />
@@ -395,7 +396,7 @@ function P2PDebtFormContent({
 
         {!isEdit && (
           <div className="space-y-2">
-            <Label htmlFor="p2p-amount">{t("amount")}</Label>
+            <RequiredLabel required htmlFor="p2p-amount">{t("amount")}</RequiredLabel>
             <Input
               id="p2p-amount"
               type="number"

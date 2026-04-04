@@ -118,7 +118,8 @@
     "sectionSettings": "Settings",
     "toggleTheme": "Toggle Theme",
     "signOut": "Sign Out",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "comingSoon": "Coming soon"
   },
   "auth": {
     "login": "Log In",
@@ -179,6 +180,7 @@
     "financingApp": "Financing App",
     "balance": "Balance",
     "openingBalance": "Opening Balance",
+    "currentBalanceDue": "Current Balance Due",
     "openedAt": "Account Opening Date",
     "available": "Available",
     "amountDue": "Amount Due",
@@ -199,7 +201,10 @@
     "dueToday": "Due today",
     "overdue": "Overdue",
     "dueInDays": "Due in {days} days",
+    "viewTransactions": "View Transactions",
+    "viewStatement": "View Statement",
     "editAccount": "Edit Account",
+    "accountActions": "Account actions",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "This account will be hidden. Transaction history is preserved.",
     "creditLimit": "Credit Limit",
@@ -269,8 +274,8 @@
     "actions": "Actions",
     "allAccounts": "All Accounts",
     "allCategories": "All Categories",
-    "amountMin": "Min amount",
-    "amountMax": "Max amount",
+    "amountMin": "Min",
+    "amountMax": "Max",
     "resetFilters": "Reset",
     "manage": "Manage",
     "cancel": "Cancel",
@@ -285,7 +290,9 @@
     "netFlow": "Net Flow",
     "subtitle": "Review and manage your financial movement across all connected accounts.",
     "count": "Transactions",
-    "list": "Transaction List"
+    "list": "Transaction List",
+    "account": "Account",
+    "selectAccount": "Select account"
   },
   "transfers": {
     "title": "Transfers",
@@ -787,7 +794,12 @@
       "edit": "Edit",
       "delete": "Delete",
       "deleteTitle": "Delete Debt",
-      "deleteDescription": "Are you sure you want to delete this debt? This action cannot be undone."
+      "deleteDescription": "Are you sure you want to delete this debt? This action cannot be undone.",
+      "breadcrumb": {
+        "debts": "Debts",
+        "loans": "Loans",
+        "p2p": "P2P"
+      }
     },
     "form": {
       "loan": {

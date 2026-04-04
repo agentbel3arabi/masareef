@@ -31,6 +31,12 @@ const FAB_LABEL_KEYS: Record<TabKey, string> = {
   p2p: "debts.actions.addDebt",
 };
 
+const FAB_TOOLTIP_KEYS: Record<TabKey, string> = {
+  loans: "debts.actions.addLoan",
+  installments: "debts.actions.addInstallment",
+  p2p: "debts.actions.addDebt",
+};
+
 export default function DebtsPage() {
   const t = useTranslations();
   const tDebts = useTranslations("debts");
@@ -101,6 +107,7 @@ export default function DebtsPage() {
           }
         }}
         ariaLabel={t(FAB_LABEL_KEYS[activeTab])}
+        tooltip={t(FAB_TOOLTIP_KEYS[activeTab])}
       />
 
       {/* Create form sheets */}

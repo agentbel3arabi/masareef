@@ -9,6 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -147,13 +155,22 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* ── Back link ─────────────────────────────────── */}
-      <Link
-        href="/debts"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
-      >
-        <span>←</span> {t("backToDebts")}
-      </Link>
+      {/* ── Breadcrumb ────────────────────────────────── */}
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/debts" />}>{t("breadcrumb.debts")}</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/debts" />}>{t("breadcrumb.loans")}</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{debt?.name ?? "..."}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* ── Setup Past Payments Banner ────────────────── */}
       {showSetupBanner && (

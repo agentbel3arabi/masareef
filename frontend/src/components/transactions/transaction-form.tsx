@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredLabel } from "@/components/shared/required-label";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { useCreateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
+import { useAccounts } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import {
   Select,
@@ -19,7 +21,7 @@ import {
 import { CategoryIcon } from "@/lib/category-icon";
 
 interface TransactionFormProps {
-  accountId: number;
+  accountId?: number;
   accountCurrency?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,7 +29,7 @@ interface TransactionFormProps {
 
 export function TransactionForm({
   accountId,
-  accountCurrency = "EGP",
+  accountCurrency,
   open,
   onOpenChange,
 }: TransactionFormProps) {
@@ -39,27 +41,45 @@ export function TransactionForm({
   const [type, setType] = useState<"debit" | "credit">("debit");
   const [notes, setNotes] = useState("");
   const [categoryId, setCategoryId] = useState<number | "">("");
+  const [selectedAccountId, setSelectedAccountId] = useState<number | "">(accountId ?? "");
+
+  const { data: accountsData } = useAccounts();
+  const accounts = accountsData?.data ?? [];
+
+  // Reset account selection when form opens
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional reset on open */
+  useEffect(() => {
+    if (open) {
+      setSelectedAccountId(accountId ?? "");
+    }
+  }, [open, accountId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const activeAccountId = accountId ?? (selectedAccountId || undefined);
+  const selectedAccount = accounts.find((a) => a.id === activeAccountId);
+  const effectiveCurrency = selectedAccount?.currency ?? accountCurrency ?? "EGP";
 
   const createTx = useCreateTransaction();
   const { data: categoriesData } = useCategories(type === "debit" ? "expense" : "income");
   const selectedCategory = categoriesData?.data?.find((c) => c.id === categoryId);
 
-  const exponent = CURRENCIES[accountCurrency]?.exponent ?? 2;
+  const exponent = CURRENCIES[effectiveCurrency]?.exponent ?? 2;
   const amountStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!activeAccountId) return;
     const amountMinor = Math.abs(parseMajorToMinor(amount, exponent));
     if (amountMinor === 0) return;
 
     try {
       await createTx.mutateAsync({
-        account_id: accountId,
+        account_id: activeAccountId,
         date,
         description,
         amount_minor: amountMinor,
         type,
-        currency: accountCurrency,
+        currency: effectiveCurrency,
         category_id: categoryId || undefined,
         notes: notes || undefined,
       });
@@ -100,13 +120,36 @@ export function TransactionForm({
           </Button>
         </div>
 
+        {!accountId && (
+          <div className="space-y-2">
+            <RequiredLabel required>{t("transactions.account")}</RequiredLabel>
+            <Select
+              value={selectedAccountId ? String(selectedAccountId) : ""}
+              onValueChange={(val) => setSelectedAccountId(Number(val))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("transactions.selectAccount")} />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts
+                  .filter((a) => a.is_active !== false)
+                  .map((a) => (
+                    <SelectItem key={a.id} value={String(a.id)}>
+                      {a.name}{a.institution ? ` · ${a.institution}` : ""} ({a.currency})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <div className="space-y-2">
-          <Label>{t("common.date")}</Label>
+          <RequiredLabel required>{t("common.date")}</RequiredLabel>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
         </div>
 
         <div className="space-y-2">
-          <Label>{t("common.description")}</Label>
+          <RequiredLabel required>{t("common.description")}</RequiredLabel>
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -150,7 +193,7 @@ export function TransactionForm({
         </div>
 
         <div className="space-y-2">
-          <Label>{t("common.amount")} ({accountCurrency})</Label>
+          <RequiredLabel required>{t("common.amount")} ({effectiveCurrency})</RequiredLabel>
           <Input
             type="number"
             step={amountStep}
@@ -166,7 +209,7 @@ export function TransactionForm({
           <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
         </div>
 
-        <Button type="submit" className="w-full" disabled={createTx.isPending}>
+        <Button type="submit" className="w-full" disabled={createTx.isPending || !activeAccountId}>
           {createTx.isPending ? t("common.loading") : t("common.save")}
         </Button>
       </form>

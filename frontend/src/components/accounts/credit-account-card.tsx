@@ -1,9 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MoreVertical, Eye, Pencil, FileText, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { UtilizationBar } from "./utilization-bar";
 import { formatAmount } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -39,6 +46,7 @@ export function CreditAccountCard({
   onSelect,
 }: CreditAccountCardProps) {
   const t = useTranslations("accounts");
+  const router = useRouter();
   const gradient = creditCardGradient(account.id);
   const last4 = maskedLast4(account.id);
   const available =
@@ -120,7 +128,7 @@ export function CreditAccountCard({
             <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
               {t("available")}
             </p>
-            <p className="text-xs font-semibold text-primary">
+            <p className={cn("text-xs font-semibold", available != null && available < 0 ? "text-destructive" : "text-primary")}>
               {available != null
                 ? formatAmount(available, account.currency)
                 : "—"}
@@ -147,31 +155,45 @@ export function CreditAccountCard({
       )}
 
       {!manageMode && (
-        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 bg-white/20 text-white hover:bg-white/30"
-            onClick={(e) => {
-              e.preventDefault();
-              onEdit();
-            }}
-            aria-label={t("editAccount")}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 bg-white/20 text-white hover:bg-destructive hover:text-destructive-foreground"
-            onClick={(e) => {
-              e.preventDefault();
-              onDelete();
-            }}
-            aria-label={t("deleteAccount")}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+        <div
+          className="absolute top-3 end-3 z-10"
+          onClick={(e) => e.preventDefault()}
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-white/20 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/30"
+                  aria-label={t("accountActions")}
+                >
+                  <MoreVertical className="h-3.5 w-3.5" />
+                </button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => router.push(`/accounts/${account.id}`)}>
+                <Eye className="h-4 w-4 me-2" />
+                {t("viewTransactions")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onEdit}>
+                <Pencil className="h-4 w-4 me-2" />
+                {t("editAccount")}
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <FileText className="h-4 w-4 me-2" />
+                {t("viewStatement")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={onDelete}
+              >
+                <Trash2 className="h-4 w-4 me-2" />
+                {t("deleteAccount")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
     </div>

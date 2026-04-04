@@ -28,9 +28,12 @@ Architectural choices made during this unit that aren't obvious from the code. F
 
 ## 3. Known Gaps / Deferred
 
-What is *not* done and why. Distinguish blockers from intentional deferrals.
+<!-- For each gap: add to BACKLOG.md if not already tracked, then reference the BL-ID here -->
 
-- **Gap description** — reason deferred, target phase/unit if known
+What is *not* done and why. Every item listed here MUST also exist in `BACKLOG.md` with a `BL-NNN` ID.
+
+- **BL-XXX: [item name]** — [brief description]. Target: Phase N.
+- **BL-YYY: [item name]** — [brief description]. Target: Phase N.
 
 ---
 

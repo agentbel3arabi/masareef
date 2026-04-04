@@ -1,9 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Wallet, Pencil, Trash2, Smartphone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Wallet, MoreVertical, Eye, Pencil, Trash2, Smartphone } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { typeIcons, typeColors } from "./account-card.constants";
 import { cn } from "@/lib/utils";
@@ -27,6 +34,7 @@ export function OtherAccountCard({
   onSelect,
 }: OtherAccountCardProps) {
   const t = useTranslations("accounts");
+  const router = useRouter();
   const isBnpl = account.type === "financing_app";
   const Icon = isBnpl ? Smartphone : (typeIcons[account.type] ?? Wallet);
   const iconColor = isBnpl
@@ -39,7 +47,7 @@ export function OtherAccountCard({
     : iconColor.split(" ").filter((c) => c.startsWith("bg-") || c.startsWith("dark:bg-")).join(" ");
 
   const cardContent = (
-    <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 transition-all duration-200 cursor-pointer flex">
+    <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:-translate-y-1 hover:border-primary/50 hover:shadow-md transition-all duration-200 cursor-pointer flex border border-transparent">
       {/* Start accent stripe */}
       <div className={cn("w-1.5 shrink-0", accentBg)} />
       {/* Card content */}
@@ -77,6 +85,19 @@ export function OtherAccountCard({
           size="lg"
           colorize
         />
+        <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
+          <div
+            className={cn(
+              "w-2 h-2 rounded-full",
+              account.is_active !== false ? "bg-primary" : "bg-muted-foreground"
+            )}
+          />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {account.is_active !== false
+              ? t("accountStatusActive")
+              : t("accountStatusInactive")}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -96,15 +117,41 @@ export function OtherAccountCard({
         <Link href={`/accounts/${account.id}`}>{cardContent}</Link>
       )}
       {!manageMode && (
-        <div className="absolute top-3 end-3 hidden group-hover:flex group-focus-within:flex gap-1 z-10">
-          <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-background"
-            onClick={(e) => { e.preventDefault(); onEdit(); }} aria-label={t("editAccount")}>
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 bg-background/90 shadow-sm hover:bg-destructive hover:text-destructive-foreground"
-            onClick={(e) => { e.preventDefault(); onDelete(); }} aria-label={t("deleteAccount")}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+        <div
+          className="absolute top-3 end-3 z-10"
+          onClick={(e) => e.preventDefault()}
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-background/90 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+                  aria-label={t("accountActions")}
+                >
+                  <MoreVertical className="h-3.5 w-3.5" />
+                </button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => router.push(`/accounts/${account.id}`)}>
+                <Eye className="h-4 w-4 me-2" />
+                {t("viewTransactions")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onEdit}>
+                <Pencil className="h-4 w-4 me-2" />
+                {t("editAccount")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={onDelete}
+              >
+                <Trash2 className="h-4 w-4 me-2" />
+                {t("deleteAccount")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
     </div>

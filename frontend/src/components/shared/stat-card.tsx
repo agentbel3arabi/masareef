@@ -10,18 +10,18 @@ interface StatCardProps {
     direction: "up" | "down" | "flat";
     text: string;
   };
-  variant?: "default" | "accent";
+  variant?: "default" | "accent" | "success" | "destructive";
   className?: string;
 }
 
 export function StatCard({ icon: Icon, label, value, trend, variant = "default", className }: StatCardProps) {
-  const isAccent = variant === "accent";
-
   return (
     <Card
       className={cn(
         "p-4",
-        isAccent && "bg-gradient-to-br from-primary to-primary/80 border-0 text-white",
+        variant === "accent" && "bg-gradient-to-br from-primary to-primary/80 border-0 text-white",
+        variant === "success" && "bg-gradient-to-br from-green-600 to-green-700 border-0 text-white",
+        variant === "destructive" && "bg-gradient-to-br from-red-600 to-red-700 border-0 text-white",
         className
       )}
     >
@@ -29,18 +29,18 @@ export function StatCard({ icon: Icon, label, value, trend, variant = "default",
         <div
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
-            isAccent ? "bg-white/20" : "bg-primary/10"
+            variant === "default" ? "bg-primary/10" : "bg-white/20"
           )}
         >
           <Icon
-            className={cn("h-5 w-5", isAccent ? "text-white" : "text-primary")}
+            className={cn("h-5 w-5", variant === "default" ? "text-primary" : "text-white")}
           />
         </div>
         <div className="min-w-0">
           <p
             className={cn(
               "text-xs font-medium truncate",
-              isAccent ? "text-white/70" : "text-muted-foreground"
+              variant === "default" ? "text-muted-foreground" : "text-white/70"
             )}
           >
             {label}
@@ -48,7 +48,7 @@ export function StatCard({ icon: Icon, label, value, trend, variant = "default",
           <p
             className={cn(
               "text-lg font-bold truncate",
-              isAccent ? "text-white" : "text-foreground"
+              variant === "default" ? "text-foreground" : "text-white"
             )}
           >
             {value}
@@ -59,11 +59,11 @@ export function StatCard({ icon: Icon, label, value, trend, variant = "default",
         <p
           className={cn(
             "mt-2 text-xs font-medium",
-            isAccent
+            variant !== "default"
               ? "text-white/70"
               : trend.direction === "up" && "text-primary",
-            !isAccent && trend.direction === "down" && "text-destructive",
-            !isAccent && trend.direction === "flat" && "text-muted-foreground"
+            variant === "default" && trend.direction === "down" && "text-destructive",
+            variant === "default" && trend.direction === "flat" && "text-muted-foreground"
           )}
         >
           {trend.direction === "up" && "↑ "}
