@@ -122,7 +122,8 @@
     "toggleTheme": "Toggle Theme",
     "signOut": "Sign Out",
     "notifications": "Notifications",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "search": "Search"
   },
   "auth": {
     "login": "Log In",
@@ -341,7 +342,21 @@
     "activeDebtsCount": "{count} active",
     "upcomingPayments": "Upcoming Payments",
     "upcomingCount": "{count} due in 30d",
-    "noDebts": "No debts"
+    "noDebts": "No debts",
+    "getStarted": {
+      "title": "Getting Started",
+      "addAccount": "Add your first account",
+      "recordTransaction": "Record or import transactions",
+      "setupDebts": "Set up your debts",
+      "dismiss": "Dismiss"
+    },
+    "accountsGlance": "Accounts at a Glance",
+    "monthActivity": "This Month's Activity",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "netFlow": "Net Flow",
+    "transactionCount": "{count} transactions",
+    "noActivity": "No transactions this month"
   },
   "brand": {
     "name": "Masareef",
@@ -363,47 +378,47 @@
   },
   "emptyStates": {
     "accounts": {
-      "title": "No accounts yet",
-      "description": "Add your first account to get started tracking your finances.",
+      "title": "Let's set up your first account",
+      "description": "Add a bank account, cash wallet, or digital wallet to start seeing your full financial picture.",
       "action": "Add Account"
     },
     "transactions": {
-      "title": "No transactions yet",
-      "description": "Record your first transaction or import a bank statement.",
+      "title": "Ready to track your spending?",
+      "description": "Record a transaction manually or import a bank statement to get started in seconds.",
       "action": "Add Transaction"
     },
     "transfers": {
-      "title": "No transfers yet",
-      "description": "Create a transfer to move money between your accounts.",
+      "title": "Move money between accounts",
+      "description": "Once you have two or more accounts, you can record transfers between them here.",
       "action": "New Transfer"
     },
     "accountTransactions": {
-      "title": "No transactions",
-      "description": "This account has no transaction history yet.",
+      "title": "No transactions yet",
+      "description": "This account is empty. Add your first transaction or import a statement to see activity here.",
       "action": "Add Transaction"
     },
     "searchResults": {
       "title": "No results found",
-      "description": "Try adjusting your filters or search terms."
+      "description": "Try adjusting your filters or search terms to find what you're looking for."
     },
     "debts": {
-      "title": "No debts yet",
-      "description": "Add your first loan or debt to start tracking.",
+      "title": "Stay on top of what you owe",
+      "description": "Track loans, credit cards, and money owed to keep your finances clear.",
       "action": "Add Debt"
     },
     "installments": {
-      "title": "No installment plans yet",
-      "description": "Track your credit card, store, or financing app installments.",
+      "title": "Track your installment plans",
+      "description": "Keep tabs on credit card, store, or financing app installments all in one place.",
       "action": "Add Installment"
     },
     "p2p": {
-      "title": "No P2P debts yet",
-      "description": "Track money lent to or borrowed from friends and family.",
+      "title": "Track personal debts",
+      "description": "Keep a clear record of money lent to or borrowed from friends and family.",
       "action": "Add Debt"
     },
     "persons": {
-      "title": "No people yet",
-      "description": "Add a person before creating P2P debts.",
+      "title": "Add someone you share money with",
+      "description": "Add a person to start tracking personal debts and shared expenses.",
       "action": "Add Person"
     }
   },
@@ -1038,5 +1053,12 @@
     "creditLimit": "Credit limit: {amount}",
     "noPlans": "No installment plans yet",
     "financingApp": "Financing App"
+  },
+  "commandPalette": {
+    "label": "Search",
+    "placeholder": "Search pages, accounts...",
+    "noResults": "No results found.",
+    "pages": "Pages",
+    "accounts": "Accounts"
   }
 }
