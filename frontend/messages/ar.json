@@ -204,6 +204,7 @@
     "viewTransactions": "عرض المعاملات",
     "viewStatement": "كشف حساب",
     "editAccount": "تعديل الحساب",
+    "accountActions": "إجراءات الحساب",
     "deleteAccount": "حذف الحساب",
     "deleteAccountConfirm": "سيتم إخفاء الحساب. سيتم الاحتفاظ بسجل المعاملات.",
     "creditLimit": "حد الائتمان",

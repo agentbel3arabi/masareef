@@ -165,7 +165,7 @@ export function CreditAccountCard({
                 <button
                   type="button"
                   className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-white/20 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/30"
-                  aria-label={t("editAccount")}
+                  aria-label={t("accountActions")}
                 >
                   <MoreVertical className="h-3.5 w-3.5" />
                 </button>

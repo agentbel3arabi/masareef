@@ -5,11 +5,22 @@
 
 /** Format a date string or Date object as dd/mm/yyyy */
 export function formatDate(value: string | Date): string {
-  const d = typeof value === "string" ? new Date(value) : value;
-  if (isNaN(d.getTime())) return String(value);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
+  let dd: string, mm: string, yyyy: number;
+
+  // Parse date-only strings (YYYY-MM-DD) via string split to avoid
+  // UTC interpretation that can shift the calendar day in negative timezones.
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [y, m, d] = value.split("-");
+    yyyy = Number(y);
+    mm = m;
+    dd = d;
+  } else {
+    const d = typeof value === "string" ? new Date(value) : value;
+    if (isNaN(d.getTime())) return String(value);
+    dd = String(d.getDate()).padStart(2, "0");
+    mm = String(d.getMonth() + 1).padStart(2, "0");
+    yyyy = d.getFullYear();
+  }
   return `${dd}/${mm}/${yyyy}`;
 }
 

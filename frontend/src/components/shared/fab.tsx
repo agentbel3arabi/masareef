@@ -26,7 +26,7 @@ export function FAB({ onClick, ariaLabel, tooltip }: FABProps) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{button}</TooltipTrigger>
+        <TooltipTrigger render={button} />
         <TooltipContent side="inline-start">
           <p>{tooltip}</p>
         </TooltipContent>

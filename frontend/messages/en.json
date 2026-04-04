@@ -204,6 +204,7 @@
     "viewTransactions": "View Transactions",
     "viewStatement": "View Statement",
     "editAccount": "Edit Account",
+    "accountActions": "Account actions",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "This account will be hidden. Transaction history is preserved.",
     "creditLimit": "Credit Limit",
