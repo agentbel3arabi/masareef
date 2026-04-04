@@ -415,14 +415,21 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             >
               {tDeleteDialog("deleteOnly")}
             </Button>
-            <Button
-              variant="outline"
-              disabled
-              title={tDeleteDialog("comingSoon")}
-              className="opacity-50"
-            >
-              {tDeleteDialog("deleteWithTransactions")} ({tDeleteDialog("comingSoon")})
-            </Button>
+            {payments.length > 0 && (
+              <Button
+                variant="outline"
+                className="border-destructive text-destructive hover:bg-destructive/10"
+                onClick={() => {
+                  deleteMutation.mutate({ id: debtId, deleteTransactions: true }, {
+                    onSuccess: () => router.push("/debts"),
+                  });
+                  setDeleteDialogOpen(false);
+                }}
+                disabled={deleteMutation.isPending}
+              >
+                {tDeleteDialog("deleteWithTransactions")}
+              </Button>
+            )}
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel>{tDeleteDialog("cancel")}</AlertDialogCancel>
