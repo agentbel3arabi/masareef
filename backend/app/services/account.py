@@ -214,7 +214,13 @@ async def get_balance_history(
         return None  # type: ignore[return-value]
 
     today = datetime.now().date()
-    period_start = today.replace(day=1)
+    if period == "year":
+        period_start = today.replace(month=1, day=1)
+    elif period == "quarter":
+        q_start_month = ((today.month - 1) // 3) * 3 + 1
+        period_start = today.replace(month=q_start_month, day=1)
+    else:  # "month" (default)
+        period_start = today.replace(day=1)
 
     displayed = await compute_displayed_balance(session, account)
 

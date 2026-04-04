@@ -1,9 +1,10 @@
 "use client";
 
+import type { InputHTMLAttributes } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-interface CurrencyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface CurrencyInputProps extends InputHTMLAttributes<HTMLInputElement> {
   currency: string;
 }
 
