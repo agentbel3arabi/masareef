@@ -6,6 +6,7 @@ from typing import Any
 
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.account import Account
 from app.models.category import Category
@@ -50,6 +51,8 @@ async def create_transaction(
     )
     session.add(tx)
     await session.flush()
+    # Eagerly load category to avoid lazy-load in async context
+    await session.refresh(tx, attribute_names=["category"])
     return tx
 
 
@@ -59,10 +62,14 @@ async def get_transaction(
     transaction_id: int,
 ) -> Transaction | None:
     """Return a single active transaction scoped to household, or None."""
-    q = select(Transaction).where(
-        Transaction.id == transaction_id,
-        Transaction.household_id == household_id,
-        Transaction.is_active.is_(True),
+    q = (
+        select(Transaction)
+        .options(selectinload(Transaction.category))
+        .where(
+            Transaction.id == transaction_id,
+            Transaction.household_id == household_id,
+            Transaction.is_active.is_(True),
+        )
     )
     result = await session.execute(q)
     return result.scalar_one_or_none()
@@ -101,6 +108,8 @@ async def update_transaction(
         setattr(tx, field, value)
 
     await session.flush()
+    # Eagerly load category to avoid lazy-load in async context
+    await session.refresh(tx, attribute_names=["category"])
     return tx
 
 
@@ -202,6 +211,7 @@ async def list_transactions(
 
     fetch_q = (
         select(Transaction)
+        .options(selectinload(Transaction.category))
         .where(*base_filters)
         .order_by(*order_clauses)
         .offset((page - 1) * page_size)
@@ -308,6 +318,7 @@ async def categorize_transaction(
     await validate_category_access(session, category_id, household_id)
     tx.category_id = category_id
     await session.flush()
+    await session.refresh(tx, attribute_names=["category"])
 
 
 async def bulk_categorize(
