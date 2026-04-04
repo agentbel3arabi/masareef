@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Wallet, ArrowLeftRight, Plus, Trash2, Upload, Settings } from "lucide-react";
+import { Wallet, ArrowLeftRight, Trash2, Upload, Settings } from "lucide-react";
 import { NavbarActions } from "@/components/layout/navbar-actions-portal";
+import { FAB } from "@/components/shared/fab";
 import { useAccounts, useNetWorth, useDeleteAccount } from "@/hooks/use-accounts";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { AccountGrid } from "@/components/accounts/account-grid";
@@ -164,48 +165,45 @@ export default function AccountsPage() {
       <TransferForm open={transferOpen} onOpenChange={setTransferOpen} />
 
       {!manageMode ? (
-        <NavbarActions>
-          <ResponsiveActions
-            primary={
-              <Button size="sm" onClick={() => setCreateOpen(true)}>
-                <Plus className="h-4 w-4 me-1" />
-                {t("addAccount")}
-              </Button>
-            }
-            secondary={
-              <>
-                <Button variant="outline" size="sm" onClick={enterManageMode}>
-                  <Settings className="h-4 w-4 me-1" />
-                  {t("manage")}
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => router.push("/import")}>
-                  <Upload className="h-4 w-4 me-1" />
-                  {tImport("import")}
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
-                  <ArrowLeftRight className="h-4 w-4 me-1" />
-                  {tTransfers("newTransfer")}
-                </Button>
-              </>
-            }
-            secondaryMenuItems={
-              <>
-                <DropdownMenuItem onClick={enterManageMode}>
-                  <Settings className="h-4 w-4 me-1" />
-                  {t("manage")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/import")}>
-                  <Upload className="h-4 w-4 me-1" />
-                  {tImport("import")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTransferOpen(true)}>
-                  <ArrowLeftRight className="h-4 w-4 me-1" />
-                  {tTransfers("newTransfer")}
-                </DropdownMenuItem>
-              </>
-            }
-          />
-        </NavbarActions>
+        <>
+          <NavbarActions>
+            <ResponsiveActions
+              secondary={
+                <>
+                  <Button variant="outline" size="sm" onClick={enterManageMode}>
+                    <Settings className="h-4 w-4 me-1" />
+                    {t("manage")}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => router.push("/import")}>
+                    <Upload className="h-4 w-4 me-1" />
+                    {tImport("import")}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+                    <ArrowLeftRight className="h-4 w-4 me-1" />
+                    {tTransfers("newTransfer")}
+                  </Button>
+                </>
+              }
+              secondaryMenuItems={
+                <>
+                  <DropdownMenuItem onClick={enterManageMode}>
+                    <Settings className="h-4 w-4 me-1" />
+                    {t("manage")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push("/import")}>
+                    <Upload className="h-4 w-4 me-1" />
+                    {tImport("import")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTransferOpen(true)}>
+                    <ArrowLeftRight className="h-4 w-4 me-1" />
+                    {tTransfers("newTransfer")}
+                  </DropdownMenuItem>
+                </>
+              }
+            />
+          </NavbarActions>
+          <FAB onClick={() => setCreateOpen(true)} ariaLabel={t("addAccount")} tooltip={t("addAccount")} />
+        </>
       ) : selectedAccountIds.size === 0 ? (
         <NavbarActions>
           <Button variant="secondary" size="sm" onClick={exitManageMode}>
