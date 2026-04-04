@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredLabel } from "@/components/shared/required-label";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCreateTransfer } from "@/hooks/use-transfers";
@@ -66,7 +67,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label>{t("transfers.fromAccount")}</Label>
+          <RequiredLabel required>{t("transfers.fromAccount")}</RequiredLabel>
           <select
             value={fromId}
             onChange={(e) => setFromId(e.target.value)}
@@ -83,7 +84,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>{t("transfers.toAccount")}</Label>
+          <RequiredLabel required>{t("transfers.toAccount")}</RequiredLabel>
           <select
             value={toId}
             onChange={(e) => setToId(e.target.value)}
@@ -100,7 +101,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>{t("common.amount")} ({fromAccount?.currency || ""})</Label>
+          <RequiredLabel required>{t("common.amount")} ({fromAccount?.currency || ""})</RequiredLabel>
           <Input
             type="number"
             step={amountStep}
@@ -113,12 +114,12 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
 
         {isCrossCurrency && (
           <div className="space-y-2">
-            <Label>
+            <RequiredLabel required>
               {t("transfers.exchangeRate", {
                 from: fromAccount?.currency,
                 to: toAccount?.currency,
               })}
-            </Label>
+            </RequiredLabel>
             <Input
               type="number"
               step="0.0001"
@@ -131,7 +132,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
         )}
 
         <div className="space-y-2">
-          <Label>{t("common.date")}</Label>
+          <RequiredLabel required>{t("common.date")}</RequiredLabel>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
         </div>
 

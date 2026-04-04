@@ -28,6 +28,8 @@ export default function DashboardPage() {
       ? String(activeDebtsCount)
       : t("noDebts");
 
+  const netWorthMinor = nw?.total_base_minor ?? 0;
+
   const netWorthValue = netWorthLoading
     ? "..."
     : nw
@@ -44,45 +46,44 @@ export default function DashboardPage() {
           icon={TrendingUp}
           label={t("netWorth")}
           value={netWorthValue}
-          variant="accent"
+          variant={netWorthLoading ? "accent" : netWorthMinor >= 0 ? "success" : "destructive"}
         />
         <StatCard
           icon={ShoppingCart}
           label={t("monthlyIncome")}
           value="—"
-          trend={{ direction: "flat", text: t("comingSoonPhase2") }}
         />
         <StatCard
           icon={HandCoins}
           label={t("monthlySpending")}
           value="—"
-          trend={{ direction: "flat", text: t("comingSoonPhase2") }}
         />
-        <StatCard
-          icon={Clock}
-          label={t("activeDebts")}
-          value={activeDebtsValue}
-          trend={
-            activeDebtsCount > 0
-              ? { direction: "flat", text: t("activeDebtsCount", { count: activeDebtsCount }) }
-              : undefined
-          }
-        />
+        <Link href="/debts" className="block">
+          <StatCard
+            icon={Clock}
+            label={t("activeDebts")}
+            value={activeDebtsValue}
+            trend={
+              activeDebtsCount > 0
+                ? { direction: "flat", text: t("activeDebtsCount", { count: activeDebtsCount }) }
+                : undefined
+            }
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          />
+        </Link>
       </div>
 
       {/* Charts + Recent Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart placeholders — 2/3 width */}
         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-xl border bg-muted/30 flex flex-col items-center justify-center h-56 gap-3">
-            <BarChart3 className="h-8 w-8 text-muted-foreground/40" />
-            <p className="text-sm font-medium text-muted-foreground">{t("incomeVsExpenses")}</p>
-            <p className="text-xs text-muted-foreground/60">{t("chartsComingSoon")}</p>
+          <div className="rounded-xl border border-dashed bg-muted/20 flex flex-col items-center justify-center h-56 gap-3">
+            <BarChart3 className="h-8 w-8 text-muted-foreground/30" />
+            <p className="text-sm font-medium text-muted-foreground/50">{t("incomeVsExpenses")}</p>
           </div>
-          <div className="rounded-xl border bg-muted/30 flex flex-col items-center justify-center h-56 gap-3">
-            <PieChart className="h-8 w-8 text-muted-foreground/40" />
-            <p className="text-sm font-medium text-muted-foreground">{t("spendingByCategory")}</p>
-            <p className="text-xs text-muted-foreground/60">{t("chartsComingSoon")}</p>
+          <div className="rounded-xl border border-dashed bg-muted/20 flex flex-col items-center justify-center h-56 gap-3">
+            <PieChart className="h-8 w-8 text-muted-foreground/30" />
+            <p className="text-sm font-medium text-muted-foreground/50">{t("spendingByCategory")}</p>
           </div>
         </div>
 

@@ -27,6 +27,7 @@ import { RecordPaymentForm } from "@/components/debts/record-payment-form";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { formatAmount, formatAmountAr, formatWithCurrency, CURRENCIES } from "@/lib/money";
+import { formatDate } from "@/lib/date";
 import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
 import type { DebtResponse, PersonResponse, P2PDebtSplitResponse } from "@/lib/types/debts";
 
@@ -538,10 +539,7 @@ function DebtRow({
         <p className="text-xs text-muted-foreground ps-7">
           {tP2P("nextSplit", {
             amount: formatWithCurrency(nextUnpaidSplit.amount_minor, debt.currency),
-            date: new Date(nextUnpaidSplit.due_date).toLocaleDateString(
-              locale === "ar" ? "ar-EG" : "en-US",
-              { month: "short", day: "numeric" },
-            ),
+            date: formatDate(nextUnpaidSplit.due_date),
           })}
         </p>
       )}
@@ -550,10 +548,7 @@ function DebtRow({
       {debt.due_date && !nextUnpaidSplit && (
         <p className="text-xs text-muted-foreground ps-7 inline-flex items-center gap-1">
           <Calendar className="h-3 w-3" />
-          {new Date(debt.due_date).toLocaleDateString(
-            locale === "ar" ? "ar-EG" : "en-US",
-            { month: "short", day: "numeric" },
-          )}
+          {formatDate(debt.due_date)}
         </p>
       )}
 

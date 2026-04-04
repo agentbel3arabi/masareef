@@ -23,13 +23,15 @@ The table below lists every doc file and when to load it:
 | [guides/12-uat-template.md](./docs/guides/12-uat-template.md)   | UAT checklist template with standard + phase-specific checks                                                | Writing UAT checklists                                   |
 | [stitch-screen-map.md](./docs/stitch-screen-map.md)            | Maps every feature and phase to its matching Stitch design screen(s)                                         | Planning any phase with frontend work                    |
 | [stitch-designs/stitch-project-reference.md](./docs/stitch-designs/stitch-project-reference.md) | Masareef v2 Stitch project ID, design system asset ID, all 8 approved screen IDs with verified titles | Any frontend phase using Stitch MCP to generate or implement screens |
-| [backend-dependencies.md](./docs/backend-dependencies.md) | UI elements that need future backend endpoints, mapped to roadmap phases | Planning any phase — check before scoping backend work |
+| [BACKLOG.md](./BACKLOG.md) | Centralized tracker: deferred features, tech debt, bugs, new ideas, backend deps | Any implementation or planning task |
+| [backend-dependencies.md](./docs/backend-dependencies.md) | ⚠️ DEPRECATED — migrated to BACKLOG.md | Historical reference only |
 | [superpowers/handoff/](./docs/superpowers/handoff/) | Session handoff notes — what was completed, key decisions, known gaps, what's next | **Start of any implementation unit** — read the most recent handoff for the current phase before writing a single line of code |
 | [superpowers/specs/phase-3.5-ux-polish-sprint.md](./docs/superpowers/specs/phase-3.5-ux-polish-sprint.md) | Phase 3.5 UX polish sprint — 6-unit execution plan covering critical bugs, form UX, placeholders, card enhancements, navigation, misc polish | **Phase 3.5 implementation** — read before starting any Phase 3.5 unit |
 
 ```
 masareef/
 ├── CLAUDE.md                           # This file — load first, always
+├── BACKLOG.md                          # Centralized backlog — deferred, tech debt, bugs, ideas, backend deps
 ├── logos/                              # Brand assets (SVG + PNG)
 │   ├── svg/{dark,light,transparent}/   # Vector logos (preferred for web)
 │   └── png/{dark,light,transparent}/   # Raster logos (@1x + @3x)
@@ -90,10 +92,10 @@ Load only what's relevant. **Do not load all files at once.**
 | Frontend: new page / component | `CLAUDE.md` + feature spec + `guides/09-design-tokens.md` + matching `stitch-designs/html/` file | `04-user-flows.md` if flow unclear; `guides/10-brand-assets.md` if placing logos; `stitch-designs/stitch-project-reference.md` if using Stitch MCP |
 | Backend: API endpoint          | `CLAUDE.md` + `01-architecture.md` + feature spec                                                | `02-data-models.md` for query patterns         |
 | Testing                        | `CLAUDE.md` + `guides/08-testing.md` + feature spec                                              | —                                              |
-| Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | —                                              |
+| Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | `BACKLOG.md`                                   |
 | Full-stack feature (Phase N)   | `CLAUDE.md` + `05-roadmap.md` (Phase N section) + feature spec(s) listed there                   | All files listed in phase's "Required Reading" |
 | Phase 3.5 UX polish            | `CLAUDE.md` + `docs/superpowers/specs/phase-3.5-ux-polish-sprint.md` + `guides/09-design-tokens.md` | Relevant feature specs for the unit being implemented |
-| Starting any implementation unit | `CLAUDE.md` + plan file + feature spec                                                          | Most recent `docs/superpowers/handoff/phase-N-unit-X.md` — **always read this first** |
+| Starting any implementation unit | `CLAUDE.md` + plan file + feature spec                                                          | Most recent `docs/superpowers/handoff/phase-N-unit-X.md` — **always read this first**; `BACKLOG.md` — check for items tagged to current phase |
 
 ### Frontend Planning Rule
 
@@ -237,11 +239,13 @@ Frontend subscribes to these channels for live updates:
 
 7. **Frontend Stack Strictness:** Use **Next.js 16** with the **App Router** (`app/` directory). All components must use strict TypeScript, shadcn/ui, and **Tailwind CSS v4**. **shadcn/ui:** Use `shadcn@latest` with **"base-nova" style** (`@base-ui/react` primitives). When adding new shadcn components, use: `pnpm dlx shadcn@latest add -y <component>`. After adding, audit for physical directional CSS classes and convert to logical equivalents. Required libraries: use **TanStack Query** for all server state management and cache invalidation; use **react-plotly.js** for all charts and data visualizations (Recharts and Chart.js are **strictly forbidden**); use **next-intl** for all i18n formatting (dates, numbers, currencies, plurals).
 
-8. **Track every "coming soon" UI element in `backend-dependencies.md`.** Any time frontend code shows `"—"`, a disabled button, a "Coming soon" tooltip, or a placeholder instead of real data — because the backend endpoint doesn't exist yet — you MUST add a row to `docs/backend-dependencies.md` with: the UI element name, the page it appears on, the exact endpoint needed, and the target phase. This file is read by Phase 2+ planners to know what's already wired up and waiting. Failure to track here creates silent gaps between frontend and backend work.
+8. **Track every "coming soon" UI element in `BACKLOG.md`.** Any time frontend code shows `"—"`, a disabled button, a "Coming soon" tooltip, or a placeholder instead of real data — because the backend endpoint doesn't exist yet — add a row to `BACKLOG.md` with category `backend-dep`, the UI element name, the page it appears on, the exact endpoint needed, and the target phase. This is read by phase planners to know what's already wired up and waiting.
 
 9. **Backend Stack Strictness:** Use **Python 3.12**.
 
 10. **Session handoff notes are mandatory.** At the **start** of any implementation unit, read the most recent handoff note in `docs/superpowers/handoff/` before writing any code — it contains decisions, surprises, and gaps that aren't visible in the code. At the **end** of any implementation unit, create a new handoff note at `docs/superpowers/handoff/phase-N-unit-X.md` using the template at `docs/handoff-template.md`, commit it to main, and push. Do not end a session without this note in place. Build an asynchronous FastAPI application (`async def`). Use Pydantic V2 for all data validation and serialization — call `model.model_dump()` exclusively; `model.dict()` is **forbidden** (Pydantic V1 syntax). Database interactions must use asynchronous SQLAlchemy. Use **uv** for dependency management (`pyproject.toml` + `uv.lock`). Do not use Poetry or Conda. Use **`fastapi.BackgroundTasks`** for fire-and-forget logic (e.g., triggering AI categorization after an import commit). Use **APScheduler** for recurring cron-style jobs (e.g., nightly exchange rate refresh, forecast recalculation).
+
+11. **Backlog is mandatory.** At the end of every implementation unit, extract all deferred items, bugs, tech debt, and new ideas into `BACKLOG.md` with a `BL-NNN` ID. At the start of every phase plan, pull all items tagged for that phase and either include them in the plan or explicitly re-defer them. At phase completion, archive resolved items to `docs/backlog-archive.md`. See `BACKLOG.md` header for format and taxonomy.
 
 ## F — Tooling
 

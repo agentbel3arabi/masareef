@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { formatDate } from "@/lib/date";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Landmark, Building2, CheckCircle2, ChevronDown, ChevronUp, Pencil, Trash2, ArrowRight, CreditCard, Sparkles } from "lucide-react";
@@ -250,12 +251,6 @@ function LoanCard({
   const paymentCount = paymentsRes?.data?.length ?? 0;
 
   const paymentLabel = tFreq(`paymentLabel.${loan.payment_frequency || "monthly"}`);
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString(
-      locale === "ar" ? "ar-EG" : "en-US",
-      { year: "numeric", month: "short" },
-    );
 
   const handleRecordPayment = (prefill: {
     amount: number;
@@ -551,12 +546,6 @@ function NextPaymentPreview({
   );
   const suggestions = matchData?.data ?? [];
   const hasMatch = suggestions.length > 0;
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString(
-      locale === "ar" ? "ar-EG" : "en-US",
-      { year: "numeric", month: "short", day: "numeric" },
-    );
 
   if (isLoading) {
     return (

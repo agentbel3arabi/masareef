@@ -244,19 +244,15 @@ export default function TransactionsPage() {
         </>
       )}
 
-      {firstAccountId !== undefined && (
-        <>
-          <FAB
-            onClick={() => setCreateOpen(true)}
-            ariaLabel={t("transactions.addTransaction")}
-          />
-          <TransactionForm
-            accountId={firstAccountId}
-            open={createOpen}
-            onOpenChange={setCreateOpen}
-          />
-        </>
-      )}
+      <FAB
+        onClick={() => setCreateOpen(true)}
+        ariaLabel={t("transactions.addTransaction")}
+        tooltip={t("transactions.newTransaction")}
+      />
+      <TransactionForm
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+      />
     </div>
   );
 }

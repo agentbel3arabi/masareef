@@ -4,31 +4,31 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 
 ## Phase Overview
 
-| Phase | Name | Goal | Est. Effort | Status |
-|-------|------|------|-------------|--------|
-| 1 | Foundation | Accounts, transactions, categories — the core data loop | Large | ✅ Complete |
-| 1.5 | Gap Remediation & Polish | Infrastructure upgrade, UI foundation, landing page, workflow formalization | Large | ✅ Complete |
-| 1.75 | Design System & Page Redesign | Full Stitch design fidelity — design tokens, page redesigns, UI consistency | Medium | ✅ Complete |
-| 2 | Import & Templates | Bank statement import pipeline with template system | Large | ✅ Complete |
-| 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large | ✅ Complete |
-| **3.5** | **UX Polish Sprint** | **Fix critical UX bugs, form consistency, card enhancements, date standardization** | **Medium** | **🔨 In Progress** |
-| 4 | Dashboard & Charts | Net worth, spending trends, category breakdown, Plotly | Medium | ⏳ Pending |
-| 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium | ⏳ Pending |
-| 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium | ⏳ Pending |
-| 7 | Budgets & Savings Goals | Envelope budgeting, savings targets, auto-suggest | Medium | ⏳ Pending |
-| 8 | Forecasting | 12-month cash flow, debt payoff, non-recurring estimation | Medium | ⏳ Pending |
-| 9 | AI Categorization | Multi-provider AI, rule engine, feedback loop | Medium | ⏳ Pending |
-| 10 | Multi-User & Household | Roles, invitations, child accounts, activity log | Large | ⏳ Pending |
-| 11 | Notifications | Bill reminders, budget alerts, Telegram bot, email | Medium | ⏳ Pending |
-| 12 | Reports & Export | 7 report types, PDF/Excel/CSV export | Medium | ⏳ Pending |
-| 13 | Settings & Polish | Settings pages, locale, data management, onboarding wizard | Medium | ⏳ Pending |
-| 14 | Scanned PDF (Premium) | Landing AI OCR for scanned bank statements | Small | ⏳ Pending |
-| 15 | Receipt Scanning | Camera/upload receipt OCR, transaction auto-create | Medium | ⏳ Pending |
-| 16 | Subscription Tracking | Auto-detect recurring charges, renewal reminders | Small | ⏳ Pending |
-| 17 | Telegram/WhatsApp Bot | Expense logging via chat, balance queries | Medium | ⏳ Pending |
-| 18 | Islamic Finance Mode | Zakat calculation, Shariah compliance tagging | Medium | ⏳ Pending |
-| 19 | Scenario Planning | What-if forecasting simulations | Small | ⏳ Pending |
-| 20 | Mobile App (PWA) | Progressive web app for native-like mobile experience | Medium | ⏳ Pending |
+| Phase | Name | Goal | Est. Effort | Backlog | Status |
+|-------|------|------|-------------|---------|--------|
+| 1 | Foundation | Accounts, transactions, categories — the core data loop | Large | — | ✅ Complete |
+| 1.5 | Gap Remediation & Polish | Infrastructure upgrade, UI foundation, landing page, workflow formalization | Large | — | ✅ Complete |
+| 1.75 | Design System & Page Redesign | Full Stitch design fidelity — design tokens, page redesigns, UI consistency | Medium | — | ✅ Complete |
+| 2 | Import & Templates | Bank statement import pipeline with template system | Large | — | ✅ Complete |
+| 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large | — | ✅ Complete |
+| **3.5** | **UX Polish Sprint** | **Fix critical UX bugs, form consistency, card enhancements, date standardization** | **Medium** | **9 open** | **🔨 In Progress** |
+| 4 | Dashboard & Charts | Net worth, spending trends, category breakdown, Plotly | Medium | 21 open | ⏳ Pending |
+| 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium | 1 open | ⏳ Pending |
+| 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium | — | ⏳ Pending |
+| 7 | Budgets & Savings Goals | Envelope budgeting, savings targets, auto-suggest | Medium | 1 open | ⏳ Pending |
+| 8 | Forecasting | 12-month cash flow, debt payoff, non-recurring estimation | Medium | — | ⏳ Pending |
+| 9 | AI Categorization | Multi-provider AI, rule engine, feedback loop | Medium | — | ⏳ Pending |
+| 10 | Multi-User & Household | Roles, invitations, child accounts, activity log | Large | 1 open | ⏳ Pending |
+| 11 | Notifications | Bill reminders, budget alerts, Telegram bot, email | Medium | 1 open | ⏳ Pending |
+| 12 | Reports & Export | 7 report types, PDF/Excel/CSV export | Medium | — | ⏳ Pending |
+| 13 | Settings & Polish | Settings pages, locale, data management, onboarding wizard | Medium | 1 open | ⏳ Pending |
+| 14 | Scanned PDF (Premium) | Landing AI OCR for scanned bank statements | Small | 1 open | ⏳ Pending |
+| 15 | Receipt Scanning | Camera/upload receipt OCR, transaction auto-create | Medium | — | ⏳ Pending |
+| 16 | Subscription Tracking | Auto-detect recurring charges, renewal reminders | Small | — | ⏳ Pending |
+| 17 | Telegram/WhatsApp Bot | Expense logging via chat, balance queries | Medium | — | ⏳ Pending |
+| 18 | Islamic Finance Mode | Zakat calculation, Shariah compliance tagging | Medium | — | ⏳ Pending |
+| 19 | Scenario Planning | What-if forecasting simulations | Small | — | ⏳ Pending |
+| 20 | Mobile App (PWA) | Progressive web app for native-like mobile experience | Medium | — | ⏳ Pending |
 
 ---
 

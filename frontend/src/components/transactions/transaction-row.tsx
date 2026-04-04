@@ -27,6 +27,7 @@ import {
 import { useDeleteTransaction, useUpdateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import { formatDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { AccountPill } from "./account-pill";
 import type { Transaction } from "@/hooks/use-transactions";
@@ -126,7 +127,7 @@ export function TransactionRow({
             />
           </td>
         )}
-        <td className="px-4 py-3 text-sm">{transaction.date}</td>
+        <td className="px-4 py-3 text-sm">{formatDate(transaction.date)}</td>
         <td className="px-4 py-3 text-sm">
           <div className="flex items-center gap-1.5">
             <span>{transaction.description || "—"}</span>

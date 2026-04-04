@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { ChevronsLeft, ChevronsRight, CircleHelp, LogOut } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, CircleHelp, Clock, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo, LOGO_SIZES } from "@/components/shared/logo";
 import { navItems } from "@/lib/nav-items";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { useAuth } from "@/hooks/use-auth";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const NAV_SECTIONS: { label: string; items: typeof navItems }[] = [
   {
@@ -120,19 +121,33 @@ export function Sidebar() {
 
                 if (item.disabled) {
                   return (
-                    <span
-                      key={item.href}
-                      title={collapsed ? t(item.label) : undefined}
-                      className={cn(
-                        "flex items-center rounded-lg text-sm text-muted-foreground/40 cursor-not-allowed",
-                        collapsed
-                          ? "justify-center px-2 py-2"
-                          : "gap-3 px-3 py-2"
-                      )}
-                    >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && t(item.label)}
-                    </span>
+                    <TooltipProvider key={item.href}>
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <span
+                              className={cn(
+                                "flex items-center rounded-lg text-sm text-muted-foreground/40 cursor-not-allowed",
+                                collapsed
+                                  ? "justify-center px-2 py-2"
+                                  : "gap-3 px-3 py-2"
+                              )}
+                            />
+                          }
+                        >
+                          <item.icon className="h-4 w-4 shrink-0" />
+                          {!collapsed && (
+                            <>
+                              <span className="flex-1 truncate">{t(item.label)}</span>
+                              <Clock className="h-3.5 w-3.5" />
+                            </>
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent side="inline-end">
+                          <p>{t(item.disabledTooltip ?? "nav.comingSoon")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   );
                 }
 

@@ -118,7 +118,8 @@
     "sectionSettings": "الإعدادات",
     "toggleTheme": "تبديل المظهر",
     "signOut": "تسجيل الخروج",
-    "notifications": "الإشعارات"
+    "notifications": "الإشعارات",
+    "comingSoon": "قريبًا"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -179,6 +180,7 @@
     "financingApp": "تطبيق تمويل",
     "balance": "الرصيد",
     "openingBalance": "الرصيد الافتتاحي",
+    "currentBalanceDue": "الرصيد المستحق الحالي",
     "openedAt": "تاريخ فتح الحساب",
     "available": "المتاح",
     "amountDue": "المبلغ المستحق",
@@ -199,7 +201,10 @@
     "dueToday": "مستحق اليوم",
     "overdue": "متأخر",
     "dueInDays": "مستحق خلال {days} يوم",
+    "viewTransactions": "عرض المعاملات",
+    "viewStatement": "كشف حساب",
     "editAccount": "تعديل الحساب",
+    "accountActions": "إجراءات الحساب",
     "deleteAccount": "حذف الحساب",
     "deleteAccountConfirm": "سيتم إخفاء الحساب. سيتم الاحتفاظ بسجل المعاملات.",
     "creditLimit": "حد الائتمان",
@@ -269,8 +274,8 @@
     "actions": "الإجراءات",
     "allAccounts": "كل الحسابات",
     "allCategories": "كل الفئات",
-    "amountMin": "الحد الأدنى",
-    "amountMax": "الحد الأقصى",
+    "amountMin": "أقل",
+    "amountMax": "أكثر",
     "resetFilters": "إعادة تعيين",
     "manage": "إدارة",
     "cancel": "إلغاء",
@@ -285,7 +290,9 @@
     "netFlow": "صافي التدفق",
     "subtitle": "راجع وأدر حركاتك المالية عبر جميع حساباتك المرتبطة.",
     "count": "المعاملات",
-    "list": "قائمة المعاملات"
+    "list": "قائمة المعاملات",
+    "account": "الحساب",
+    "selectAccount": "اختر الحساب"
   },
   "transfers": {
     "title": "التحويلات",
@@ -787,7 +794,12 @@
       "edit": "تعديل",
       "delete": "حذف",
       "deleteTitle": "حذف الدين",
-      "deleteDescription": "هل أنت متأكد من حذف هذا الدين؟ لا يمكن التراجع عن هذا الإجراء."
+      "deleteDescription": "هل أنت متأكد من حذف هذا الدين؟ لا يمكن التراجع عن هذا الإجراء.",
+      "breadcrumb": {
+        "debts": "الديون",
+        "loans": "القروض",
+        "p2p": "شخصية"
+      }
     },
     "form": {
       "loan": {

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { FormSheet } from "@/components/shared/form-sheet";
+import { RequiredLabel } from "@/components/shared/required-label";
 import { Label } from "@/components/ui/label";
 import { useCreateAccount } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
-import { Plus } from "lucide-react";
 
 const CREDIT_TYPES = new Set(["credit_card", "financing_app"]);
 
@@ -21,25 +21,16 @@ const ACCOUNT_TYPES = [
 ];
 
 interface CreateAccountDialogProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function CreateAccountDialog({
-  open: controlledOpen,
-  onOpenChange: controlledOnOpenChange,
-}: CreateAccountDialogProps = {}) {
+  open,
+  onOpenChange,
+}: CreateAccountDialogProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const [internalOpen, setInternalOpen] = useState(false);
-  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
-  const open = isControlled ? controlledOpen : internalOpen;
-  const setOpen = (next: boolean) => {
-    if (!isControlled) {
-      setInternalOpen(next);
-    }
-    controlledOnOpenChange?.(next);
-  };
   const [name, setName] = useState("");
   const [type, setType] = useState("bank_account");
   const [currency, setCurrency] = useState("EGP");
@@ -80,7 +71,7 @@ export function CreateAccountDialog({
         billing_cycle_day: isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
         payment_due_day: isCreditType && paymentDueDay ? parseInt(paymentDueDay, 10) : undefined,
       });
-      setOpen(false);
+      onOpenChange(false);
       reset();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.unexpectedError"));
@@ -88,139 +79,134 @@ export function CreateAccountDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      {!isControlled && (
-        <DialogTrigger render={<Button />}>
-          <Plus className="h-4 w-4 me-2" />
-          {t("accounts.addAccount")}
-        </DialogTrigger>
-      )}
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("accounts.addAccount")}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+    <FormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("accounts.addAccount")}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <p className="text-sm text-destructive">{error}</p>
+        )}
 
-          <div className="space-y-2">
-            <Label htmlFor="account-name">{t("common.name")}</Label>
-            <Input id="account-name" value={name} onChange={(e) => setName(e.target.value)} required />
-          </div>
+        <div className="space-y-2">
+          <RequiredLabel required htmlFor="account-name">{t("accounts.name")}</RequiredLabel>
+          <Input id="account-name" value={name} onChange={(e) => setName(e.target.value)} required />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="account-type">{t("accounts.type")}</Label>
-            <select
-              id="account-type"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              {ACCOUNT_TYPES.map((t_item) => (
-                <option key={t_item.value} value={t_item.value}>
-                  {t(t_item.label)}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="space-y-2">
+          <RequiredLabel required htmlFor="account-type">{t("accounts.type")}</RequiredLabel>
+          <select
+            id="account-type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            {ACCOUNT_TYPES.map((t_item) => (
+              <option key={t_item.value} value={t_item.value}>
+                {t(t_item.label)}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="account-currency">{t("accounts.currency")}</Label>
-            <select
-              id="account-currency"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              {Object.entries(CURRENCIES).map(([code, info]) => (
-                <option key={code} value={code}>
-                  {code} — {locale === "ar" ? info.nameAr : info.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="space-y-2">
+          <RequiredLabel required htmlFor="account-currency">{t("accounts.currency")}</RequiredLabel>
+          <select
+            id="account-currency"
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            {Object.entries(CURRENCIES).map(([code, info]) => (
+              <option key={code} value={code}>
+                {code} — {locale === "ar" ? info.nameAr : info.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="account-institution">{t("accounts.institution")}</Label>
-            <Input
-              id="account-institution"
-              value={institution}
-              onChange={(e) => setInstitution(e.target.value)}
-              placeholder={t("accounts.institutionPlaceholder")}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="account-institution">{t("accounts.institution")}</Label>
+          <Input
+            id="account-institution"
+            value={institution}
+            onChange={(e) => setInstitution(e.target.value)}
+            placeholder={t("accounts.institutionPlaceholder")}
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="account-balance">{t("accounts.openingBalance")}</Label>
-            <Input
-              id="account-balance"
-              type="number"
-              step={balanceStep}
-              value={initialBalance}
-              onChange={(e) => setInitialBalance(e.target.value)}
-              placeholder={balancePlaceholder}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="account-balance">
+            {type === "credit_card" ? t("accounts.currentBalanceDue") : t("accounts.openingBalance")}
+          </Label>
+          <Input
+            id="account-balance"
+            type="number"
+            step={balanceStep}
+            value={initialBalance}
+            onChange={(e) => setInitialBalance(e.target.value)}
+            placeholder={balancePlaceholder}
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="account-opened-at">{t("accounts.openedAt")}</Label>
-            <Input
-              id="account-opened-at"
-              type="date"
-              value={openedAt}
-              onChange={(e) => setOpenedAt(e.target.value)}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="account-opened-at">{t("accounts.openedAt")}</Label>
+          <Input
+            id="account-opened-at"
+            type="date"
+            value={openedAt}
+            onChange={(e) => setOpenedAt(e.target.value)}
+          />
+        </div>
 
-          {isCreditType && (
-            <>
+        {isCreditType && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="account-credit-limit">{t("accounts.creditLimit")}</Label>
+              <Input
+                id="account-credit-limit"
+                type="number"
+                step={balanceStep}
+                min="0"
+                value={creditLimit}
+                onChange={(e) => setCreditLimit(e.target.value)}
+                placeholder={balancePlaceholder}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="account-credit-limit">{t("accounts.creditLimit")}</Label>
+                <Label htmlFor="account-billing-day">{t("accounts.billingCycleDay")}</Label>
                 <Input
-                  id="account-credit-limit"
+                  id="account-billing-day"
                   type="number"
-                  step={balanceStep}
-                  min="0"
-                  value={creditLimit}
-                  onChange={(e) => setCreditLimit(e.target.value)}
-                  placeholder={balancePlaceholder}
+                  min="1"
+                  max="31"
+                  value={billingDay}
+                  onChange={(e) => setBillingDay(e.target.value)}
+                  placeholder="1–31"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="account-billing-day">{t("accounts.billingCycleDay")}</Label>
-                  <Input
-                    id="account-billing-day"
-                    type="number"
-                    min="1"
-                    max="31"
-                    value={billingDay}
-                    onChange={(e) => setBillingDay(e.target.value)}
-                    placeholder="1–31"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="account-payment-due-day">{t("accounts.paymentDueDay")}</Label>
-                  <Input
-                    id="account-payment-due-day"
-                    type="number"
-                    min="1"
-                    max="31"
-                    value={paymentDueDay}
-                    onChange={(e) => setPaymentDueDay(e.target.value)}
-                    placeholder="1–31"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="account-payment-due-day">{t("accounts.paymentDueDay")}</Label>
+                <Input
+                  id="account-payment-due-day"
+                  type="number"
+                  min="1"
+                  max="31"
+                  value={paymentDueDay}
+                  onChange={(e) => setPaymentDueDay(e.target.value)}
+                  placeholder="1–31"
+                />
               </div>
-            </>
-          )}
+            </div>
+          </>
+        )}
 
-          <Button type="submit" className="w-full" disabled={createAccount.isPending}>
-            {createAccount.isPending ? t("common.loading") : t("common.create")}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <Button type="submit" className="w-full" disabled={createAccount.isPending}>
+          {createAccount.isPending ? t("common.loading") : t("common.create")}
+        </Button>
+      </form>
+    </FormSheet>
   );
 }
