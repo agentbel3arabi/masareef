@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RequiredLabel } from "@/components/shared/required-label";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCreateTransfer } from "@/hooks/use-transfers";
@@ -26,6 +27,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [description, setDescription] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const [fxRate, setFxRate] = useState("");
 
   const accounts = accountsData?.data || [];
@@ -38,6 +40,8 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!fromId || !toId || !amount || !date) return;
     const amountMinor = parseMajorToMinor(amount, fromExponent);
 
     await createTransfer.mutateAsync({
@@ -81,6 +85,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
               </option>
             ))}
           </select>
+          <FieldError show={submitted && !fromId} message={t("common.fieldRequired")} />
         </div>
 
         <div className="space-y-2">
@@ -98,6 +103,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
               </option>
             ))}
           </select>
+          <FieldError show={submitted && !toId} message={t("common.fieldRequired")} />
         </div>
 
         <div className="space-y-2">
@@ -110,6 +116,7 @@ export function TransferForm({ open, onOpenChange }: TransferFormProps) {
             onChange={(e) => setAmount(e.target.value)}
             required
           />
+          <FieldError show={submitted && !amount} message={t("common.fieldRequired")} />
         </div>
 
         {isCrossCurrency && (

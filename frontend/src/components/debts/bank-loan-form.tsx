@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,7 @@ function BankLoanFormContent({
   onOpenChange,
 }: Omit<BankLoanFormProps, "open">) {
   const t = useTranslations("debts.form.loan");
+  const tCommon = useTranslations("common");
   const tFreq = useTranslations("debts.frequency");
   const router = useRouter();
   const isEdit = !!initialData;
@@ -88,6 +90,7 @@ function BankLoanFormContent({
     initialData?.linked_account_id ? String(initialData.linked_account_id) : ""
   );
   const [notes, setNotes] = useState(initialData?.notes ?? "");
+  const [submitted, setSubmitted] = useState(false);
 
   const createMutation = useCreateDebt();
   const updateMutation = useUpdateDebt();
@@ -149,6 +152,9 @@ function BankLoanFormContent({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!isEdit && (!name.trim() || !principal || !tenureMonths || !startDate)) return;
+    if (isEdit && !name.trim()) return;
     if (isEdit && initialData) {
       updateMutation.mutate(
         {
@@ -212,6 +218,7 @@ function BankLoanFormContent({
             onChange={(e) => setName(e.target.value)}
             required
           />
+          <FieldError show={submitted && !name.trim()} message={tCommon("fieldRequired")} />
         </div>
 
         <div className="space-y-2">
@@ -252,6 +259,7 @@ function BankLoanFormContent({
             required
             disabled={isEdit}
           />
+          <FieldError show={submitted && !isEdit && !principal} message={tCommon("fieldRequired")} />
         </div>
 
         <div className="space-y-2">
@@ -276,6 +284,7 @@ function BankLoanFormContent({
             required
             disabled={isEdit}
           />
+          <FieldError show={submitted && !isEdit && !tenureMonths} message={tCommon("fieldRequired")} />
         </div>
 
         <div className="space-y-2">
@@ -308,6 +317,7 @@ function BankLoanFormContent({
             required
             disabled={isEdit}
           />
+          <FieldError show={submitted && !isEdit && !startDate} message={tCommon("fieldRequired")} />
         </div>
 
         <div className="space-y-2">

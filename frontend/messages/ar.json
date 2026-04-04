@@ -25,7 +25,9 @@
     "installmentCompleted": "تم إكمال خطة الأقساط",
     "personCreated": "تم إنشاء الشخص بنجاح",
     "personUpdated": "تم تحديث الشخص بنجاح",
-    "personDeleted": "تم حذف الشخص بنجاح"
+    "personDeleted": "تم حذف الشخص بنجاح",
+    "bulkPastPaymentsRecorded": "تم تسجيل المدفوعات السابقة بنجاح",
+    "bulkPaymentRecorded": "تم تسجيل الدفعة الجماعية بنجاح"
   },
   "common": {
     "appName": "مصاريف",
@@ -48,6 +50,7 @@
     "name": "الاسم",
     "unexpectedError": "حدث خطأ غير متوقع",
     "notFound": "غير موجود",
+    "fieldRequired": "هذا الحقل مطلوب",
     "date": "التاريخ",
     "description": "الوصف",
     "amount": "المبلغ",
@@ -618,6 +621,10 @@
   "debts": {
     "title": "إدارة الديون",
     "subtitle": "تتبع وإدارة القروض والأقساط",
+    "manage": "إدارة",
+    "cancel": "إلغاء",
+    "selected": "{count} محدد",
+    "deleteSelected": "حذف المحدد",
     "tabs": {
       "loans": "القروض",
       "installments": "الأقساط",
@@ -660,7 +667,9 @@
       "noUpcoming": "تم تسجيل جميع الدفعات",
       "matchFound": "تم العثور على مطابقة — مراجعة",
       "principalBreakdown": "أصل: {principal} + فائدة: {interest}",
-      "viewFullDetails": "عرض التفاصيل الكاملة"
+      "viewFullDetails": "عرض التفاصيل الكاملة",
+      "editLoan": "تعديل",
+      "deleteLoan": "حذف"
     },
     "p2p": {
       "lent": "أقرضت",
@@ -752,7 +761,7 @@
         "deleteOnly": "حذف القرض فقط",
         "deleteOnlyHint": "سيتم الاحتفاظ بمعاملات الدفع للسجل",
         "deleteWithTransactions": "حذف القرض والمعاملات",
-        "comingSoon": "قريباً",
+        "deleteWithTransactionsHint": "سيتم أيضاً حذف جميع معاملات الدفع المرتبطة",
         "cancel": "إلغاء"
       }
     },

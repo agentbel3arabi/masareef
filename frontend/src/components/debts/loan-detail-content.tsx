@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Pencil, Trash2, RotateCcw } from "lucide-react";
+import { formatDate } from "@/lib/date";
+import { Pencil, Trash2, RotateCcw, CreditCard, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,7 @@ import {
   useReactivateDebt,
 } from "@/hooks/use-debts";
 import { useAccounts } from "@/hooks/use-accounts";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
 // ── Status mapping ─────────────────────────────────────────
@@ -106,6 +108,63 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const markPaid = useMarkDebtPaid();
   const deleteMutation = useDeleteDebt();
   const reactivateMutation = useReactivateDebt();
+  const { setActions } = useNavbarActions();
+
+  const debt = debtRes?.data;
+  const schedule = scheduleRes?.data ?? [];
+  const scheduleRef = useRef(schedule);
+  scheduleRef.current = schedule;
+
+  useEffect(() => {
+    if (!debt) {
+      setActions(null);
+      return;
+    }
+    if (debt.status === "active") {
+      setActions(
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const nextRow = scheduleRef.current.find((r) => r.status !== "paid");
+              setPaymentPrefill(nextRow ? {
+                amount: nextRow.payment_minor,
+                date: nextRow.date,
+                installmentNumber: nextRow.payment_number,
+              } : {});
+              setPaymentOpen(true);
+            }}
+          >
+            <CreditCard className="h-4 w-4 me-1" />
+            {tActions("recordPayment")}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCompleteDialogOpen(true)}
+          >
+            <CheckCircle className="h-4 w-4 me-1" />
+            {tActions("markPaid")}
+          </Button>
+        </div>
+      );
+    } else if (debt.status === "paid_off") {
+      setActions(
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setReactivateDialogOpen(true)}
+        >
+          <RotateCcw className="h-4 w-4 me-1" />
+          {tActions("reactivate")}
+        </Button>
+      );
+    } else {
+      setActions(null);
+    }
+    return () => setActions(null);
+  }, [debt?.status, debt?.id, tActions, setActions]);
 
   // Loading
   if (debtLoading) return <LoanDetailSkeleton />;
@@ -119,8 +178,6 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
     );
   }
 
-  const debt = debtRes?.data;
-
   // Not found
   if (!debt) {
     return (
@@ -129,8 +186,6 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       </div>
     );
   }
-
-  const schedule = scheduleRes?.data ?? [];
   const payments = paymentsRes?.data ?? [];
   const accounts = accountsRes?.data ?? [];
 
@@ -209,62 +264,79 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       </div>
 
       {/* ── Summary cards ─────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{tLoan("totalCost")}</span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={totalWithInterest}
-              currency={debt.currency}
-              size="lg"
-            />
-          </CardContent>
-        </Card>
+      {(() => {
+        const nextPaymentRow = schedule.find((r) => r.status !== "paid");
+        return (
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">
+                  {tLoan("monthlyPayment")}
+                </span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={debt.monthly_payment_minor}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">
-              {tLoan("monthlyPayment")}
-            </span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={debt.monthly_payment_minor}
-              currency={debt.currency}
-              size="lg"
-            />
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">
+                  {tLoan("nextPayment")}
+                </span>
+              </CardHeader>
+              <CardContent>
+                <span className="text-lg font-bold text-foreground">
+                  {nextPaymentRow ? formatDate(nextPaymentRow.date) : "—"}
+                </span>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{t("totalPaid")}</span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={debt.total_paid_minor}
-              currency={debt.currency}
-              size="lg"
-              colorize
-            />
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">{tLoan("principal")}</span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={debt.principal_minor}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-1">
-            <span className="text-xs text-muted-foreground">{t("remainingAmount")}</span>
-          </CardHeader>
-          <CardContent>
-            <MoneyDisplay
-              amount={remainingPayments}
-              currency={debt.currency}
-              size="lg"
-            />
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">{tLoan("totalCost")}</span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={totalWithInterest}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-1">
+                <span className="text-xs text-muted-foreground">{t("remainingAmount")}</span>
+              </CardHeader>
+              <CardContent>
+                <MoneyDisplay
+                  amount={remainingPayments}
+                  currency={debt.currency}
+                  size="lg"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        );
+      })()}
 
       {/* ── Progress ──────────────────────────────────── */}
       <div className="space-y-1">
@@ -273,40 +345,6 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
           <span className="font-medium">{progressPercent}%</span>
         </div>
         <ProgressBar value={progressPercent} size="md" showLabel={false} />
-      </div>
-
-      {/* ── Actions ───────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3">
-        {debt.status === "active" && (
-          <>
-            <Button onClick={() => {
-              const nextRow = schedule.find((r) => r.status !== "paid");
-              setPaymentPrefill(nextRow ? {
-                amount: nextRow.payment_minor,
-                date: nextRow.date,
-                installmentNumber: nextRow.payment_number,
-              } : {});
-              setPaymentOpen(true);
-            }}>
-              {tActions("recordPayment")}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setCompleteDialogOpen(true)}
-            >
-              {tActions("markPaid")}
-            </Button>
-          </>
-        )}
-        {debt.status === "paid_off" && (
-          <Button
-            variant="outline"
-            onClick={() => setReactivateDialogOpen(true)}
-          >
-            <RotateCcw className="h-4 w-4 me-1.5" />
-            {tActions("reactivate")}
-          </Button>
-        )}
       </div>
 
       {/* ── Complete Dialog (Bug 1) ──────────────────── */}
@@ -388,7 +426,7 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             <Button
               variant="destructive"
               onClick={() => {
-                deleteMutation.mutate(debtId, {
+                deleteMutation.mutate({ id: debtId }, {
                   onSuccess: () => router.push("/debts"),
                 });
                 setDeleteDialogOpen(false);
@@ -397,14 +435,21 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
             >
               {tDeleteDialog("deleteOnly")}
             </Button>
-            <Button
-              variant="outline"
-              disabled
-              title={tDeleteDialog("comingSoon")}
-              className="opacity-50"
-            >
-              {tDeleteDialog("deleteWithTransactions")} ({tDeleteDialog("comingSoon")})
-            </Button>
+            {payments.length > 0 && (
+              <Button
+                variant="outline"
+                className="border-destructive text-destructive hover:bg-destructive/10"
+                onClick={() => {
+                  deleteMutation.mutate({ id: debtId, deleteTransactions: true }, {
+                    onSuccess: () => router.push("/debts"),
+                  });
+                  setDeleteDialogOpen(false);
+                }}
+                disabled={deleteMutation.isPending}
+              >
+                {tDeleteDialog("deleteWithTransactions")}
+              </Button>
+            )}
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel>{tDeleteDialog("cancel")}</AlertDialogCancel>

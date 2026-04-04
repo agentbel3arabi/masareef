@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ export function RecordPaymentForm({
   installmentNumber,
 }: RecordPaymentFormProps) {
   const t = useTranslations("debts.form.payment");
+  const tCommon = useTranslations("common");
   const today = new Date().toISOString().split("T")[0];
 
   const exponent = CURRENCIES[currency]?.exponent ?? 2;
@@ -67,6 +69,7 @@ export function RecordPaymentForm({
   const [accountId, setAccountId] = useState(defaultAccountId);
   const [linkExistingTxId, setLinkExistingTxId] = useState<number | null>(null);
   const [confirmingTxId, setConfirmingTxId] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const { data: accountsData } = useAccounts();
   const accounts = (accountsData?.data ?? []).filter(
@@ -131,6 +134,8 @@ export function RecordPaymentForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!amount || !date || !accountId) return;
     mutation.mutate(
       {
         date,
@@ -266,6 +271,7 @@ export function RecordPaymentForm({
               onChange={(e) => setDate(e.target.value)}
               required
             />
+            <FieldError show={submitted && !date} message={tCommon("fieldRequired")} />
           </div>
 
           <div className="space-y-2">
@@ -278,6 +284,7 @@ export function RecordPaymentForm({
               onChange={(e) => setAmount(e.target.value)}
               required
             />
+            <FieldError show={submitted && !amount} message={tCommon("fieldRequired")} />
           </div>
 
           <div className="space-y-2">
@@ -309,6 +316,7 @@ export function RecordPaymentForm({
                 ))}
               </SelectContent>
             </Select>
+            <FieldError show={submitted && !accountId} message={tCommon("fieldRequired")} />
           </div>
 
           {/* Warning if due date hasn't passed yet */}

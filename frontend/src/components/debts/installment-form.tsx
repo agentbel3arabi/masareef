@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,7 @@ function InstallmentFormContent({
   onOpenChange,
 }: Omit<InstallmentFormProps, "open">) {
   const t = useTranslations("debts.form.installment");
+  const tCommon = useTranslations("common");
   const isEdit = !!initialData;
 
   const [type, setType] = useState<InstallmentType>(
@@ -122,6 +124,7 @@ function InstallmentFormContent({
   );
 
   const sourceRequired = type === "credit_card" || type === "financing_app";
+  const [submitted, setSubmitted] = useState(false);
 
   const resetFields = () => {
     setType(defaultType ?? "credit_card");
@@ -138,6 +141,9 @@ function InstallmentFormContent({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!isEdit && (!name.trim() || !totalAmount || !monthlyAmount || !totalMonths || !startMonth)) return;
+    if (isEdit && !name.trim()) return;
     const exponent = CURRENCIES[currency]?.exponent ?? 2;
 
     if (isEdit && initialData) {
@@ -236,6 +242,7 @@ function InstallmentFormContent({
               required
             />
           )}
+          <FieldError show={submitted && !name.trim()} message={tCommon("fieldRequired")} />
         </div>
 
         <div className="space-y-2">
@@ -290,6 +297,7 @@ function InstallmentFormContent({
                 required
                 min="0.01"
               />
+              <FieldError show={submitted && !totalAmount} message={tCommon("fieldRequired")} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -315,6 +323,7 @@ function InstallmentFormContent({
                   required
                   min="0.01"
                 />
+                <FieldError show={submitted && !monthlyAmount} message={tCommon("fieldRequired")} />
               </div>
 
               <div className="space-y-2">
@@ -336,6 +345,7 @@ function InstallmentFormContent({
                   }}
                   required
                 />
+                <FieldError show={submitted && !totalMonths} message={tCommon("fieldRequired")} />
               </div>
             </div>
 
@@ -348,6 +358,7 @@ function InstallmentFormContent({
                 onChange={(e) => setStartMonth(e.target.value)}
                 required
               />
+              <FieldError show={submitted && !startMonth} message={tCommon("fieldRequired")} />
             </div>
 
             <div className="space-y-2">

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api-client";
 import { useApiMutation } from "@/hooks/use-api-mutation";
@@ -72,12 +72,22 @@ export function useDeleteDebt() {
   const queryClient = useQueryClient();
   const t = useTranslations("toast");
   return useApiMutation({
-    mutationFn: (id: number) => apiDelete(`/api/v1/debts/${id}`),
+    mutationFn: ({
+      id,
+      deleteTransactions,
+    }: {
+      id: number;
+      deleteTransactions?: boolean;
+    }) => {
+      const params = deleteTransactions ? "?delete_transactions=true" : "";
+      return apiDelete(`/api/v1/debts/${id}${params}`);
+    },
     successMessage: t("debtDeleted"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["persons"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
@@ -169,12 +179,14 @@ export function useDebtSplits(debtId: number) {
 
 export function useBulkPastPayments(debtId: number) {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: (data: BulkPastPaymentRequest) =>
       apiPost<BulkPastPaymentResponse>(
         `/api/v1/debts/${debtId}/bulk-past-payments`,
         data
       ),
+    successMessage: t("bulkPastPaymentsRecorded"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -184,9 +196,11 @@ export function useBulkPastPayments(debtId: number) {
 
 export function useBulkPayment() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const t = useTranslations("toast");
+  return useApiMutation({
     mutationFn: (data: BulkPaymentRequest) =>
       apiPost<BulkPaymentResponse>("/api/v1/debts/bulk-payment", data),
+    successMessage: t("bulkPaymentRecorded"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["debts"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });

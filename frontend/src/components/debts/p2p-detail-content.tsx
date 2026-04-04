@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, AlertCircle, Circle, Pencil, Trash2 } from "lucide-react";
+import { Check, AlertCircle, Circle, Pencil, Trash2, CreditCard, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,7 @@ import {
 } from "@/hooks/use-debts";
 import { formatDate } from "@/lib/date";
 import { usePerson } from "@/hooks/use-persons";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
 // ── Status mapping ─────────────────────────────────────────
@@ -98,11 +99,43 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
     useDebtPayments(debtId);
   const markPaid = useMarkDebtPaid();
   const deleteMutation = useDeleteDebt();
+  const { setActions } = useNavbarActions();
 
   const debt = debtRes?.data;
   const personId = debt?.person_id ?? 0;
   const { data: personRes } = usePerson(personId);
   const person = personRes?.data ?? null;
+
+  useEffect(() => {
+    if (!debt) {
+      setActions(null);
+      return;
+    }
+    setActions(
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPaymentOpen(true)}
+        >
+          <CreditCard className="h-4 w-4 me-1" />
+          {tActions("recordPayment")}
+        </Button>
+        {debt.status === "active" && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => markPaid.mutate(debtId)}
+            disabled={markPaid.isPending}
+          >
+            <CheckCircle className="h-4 w-4 me-1" />
+            {markPaid.isPending ? t("marking") : tActions("markPaid")}
+          </Button>
+        )}
+      </div>
+    );
+    return () => setActions(null);
+  }, [debt?.status, debt?.id, markPaid.isPending, debtId, tActions, t, setActions]);
 
   // Loading
   if (debtLoading) return <P2PDetailSkeleton />;
@@ -200,7 +233,7 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
           <DeleteConfirmation
             itemName={debt.name}
             onConfirm={() => {
-              deleteMutation.mutate(debtId, {
+              deleteMutation.mutate({ id: debtId }, {
                 onSuccess: () => router.push("/debts"),
               });
             }}
@@ -264,20 +297,6 @@ export function P2PDetailContent({ debtId }: P2PDetailContentProps) {
           <span className="font-medium">{progressPercent}%</span>
         </div>
         <ProgressBar value={progressPercent} size="md" showLabel={false} />
-      </div>
-
-      {/* ── Actions ───────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3">
-        <Button onClick={() => setPaymentOpen(true)}>{tActions("recordPayment")}</Button>
-        {debt.status === "active" && (
-          <Button
-            variant="outline"
-            onClick={() => markPaid.mutate(debtId)}
-            disabled={markPaid.isPending}
-          >
-            {markPaid.isPending ? t("marking") : tActions("markPaid")}
-          </Button>
-        )}
       </div>
 
       <RecordPaymentForm

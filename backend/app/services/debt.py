@@ -4,7 +4,7 @@ import uuid
 from datetime import date, timedelta
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import func, select
+from sqlalchemy import delete as sa_delete, func, select, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
@@ -13,7 +13,7 @@ from app.models.debt_payment import DebtPayment
 from app.models.enums import AccountType, DebtStatus, DebtType, RepaymentMode, TransactionType
 from app.models.p2p_debt_split import P2PDebtSplit
 from app.models.person import Person
-from app.models.transaction import Transaction
+from app.models.transaction import Transaction, TransactionSplit
 from app.schemas.debt import DebtCreate, DebtUpdate
 from app.schemas.transaction import TransactionCreate
 from app.services.account import get_balance_cutoff_date
@@ -263,7 +263,33 @@ async def count_payments(session: AsyncSession, debt_id: int) -> int:
     return (await session.execute(q)).scalar_one()
 
 
-async def soft_delete_debt(session: AsyncSession, debt: Debt) -> None:
+async def soft_delete_debt(
+    session: AsyncSession, debt: Debt, *, delete_transactions: bool = False
+) -> None:
+    if delete_transactions:
+        # Get all debt_payments that have a linked transaction
+        payments = await _get_payments(session, debt.id)
+        tx_ids = [p.transaction_id for p in payments if p.transaction_id]
+
+        if tx_ids:
+            # Soft-delete linked transaction splits
+            await session.execute(
+                sa_update(TransactionSplit)
+                .where(TransactionSplit.transaction_id.in_(tx_ids))
+                .values(is_active=False)
+            )
+            # Soft-delete linked transactions
+            await session.execute(
+                sa_update(Transaction)
+                .where(Transaction.id.in_(tx_ids))
+                .values(is_active=False)
+            )
+
+        # Hard-delete debt_payments (no is_active column on this model)
+        await session.execute(
+            sa_delete(DebtPayment).where(DebtPayment.debt_id == debt.id)
+        )
+
     debt.is_active = False
     await session.flush()
 

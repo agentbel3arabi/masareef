@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2 } from "lucide-react";
+import { Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2, Settings } from "lucide-react";
 import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useAccounts } from "@/hooks/use-accounts";
@@ -69,6 +69,7 @@ export default function TransactionsPage() {
     if (!bulkMode) {
       setActions(
         <Button variant="outline" size="sm" onClick={enterBulkMode}>
+          <Settings className="h-4 w-4 me-1" />
           {t("transactions.manage")}
         </Button>
       );

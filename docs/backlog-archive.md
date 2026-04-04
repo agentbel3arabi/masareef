@@ -17,6 +17,11 @@ Organized by the phase in which items were resolved.
 | BL-054 | Rate limiting and file size limits | deferred | Phase 1.5 | ✅ Done |
 | BL-055 | P2P debt types (personal_lent, personal_borrowed) | deferred | Phase 3B | ✅ Done |
 | BL-056 | Error handling architecture | deferred | Phase 2 | ✅ Done |
+| BL-001 | Net worth card green color for negative values | bug | Phase 3.5 | ✅ Done |
+| BL-002 | Credit card available balance green for negative | bug | Phase 3.5 | ✅ Done |
+| BL-003 | Transaction form missing account selector | bug | Phase 3.5 | ✅ Done |
+| BL-004 | Category dropdown shows raw __uncategorized__ | bug | Phase 3.5 | ✅ Done |
+| BL-005 | Date format standardization (dd/mm/yyyy) | bug | Phase 3.5 | ✅ Done |
 
 ---
 
@@ -119,3 +124,63 @@ Items that were deferred in earlier phases but confirmed resolved by the time th
 **Status:** ✅ Done
 
 ---
+
+## Resolved During Phase 3.5 (2026-04-04)
+
+### BL-001: Net worth card green color for negative values
+
+**Category:** bug
+**Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.1
+**Resolved in:** Phase 3.5 (PR #51)
+**Resolution date:** 2026-04-04
+**Context:** Net worth card showed green background when net worth was negative.
+**Resolution:** StatCard uses conditional `variant` based on net worth sign — `"success"` when >= 0, `"destructive"` when < 0.
+**Status:** ✅ Done
+
+---
+
+### BL-002: Credit card available balance green for negative
+
+**Category:** bug
+**Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.2
+**Resolved in:** Phase 3.5 (PR #51)
+**Resolution date:** 2026-04-04
+**Context:** Credit card "Available" balance showed green text when negative.
+**Resolution:** Applied conditional color logic — red/destructive when Available < 0.
+**Status:** ✅ Done
+
+---
+
+### BL-003: Transaction form missing account selector
+
+**Category:** bug
+**Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.3
+**Resolved in:** Phase 3.5 (PR #51)
+**Resolution date:** 2026-04-04
+**Context:** New Transaction form had no account dropdown when accessed from global transactions page.
+**Resolution:** Added account selector with `selectedAccountId` state, populated from `useAccounts()` hook.
+**Status:** ✅ Done
+
+---
+
+### BL-004: Category dropdown shows raw __uncategorized__
+
+**Category:** bug
+**Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.4
+**Resolved in:** Phase 3.5 (PR #51 + completion sprint)
+**Resolution date:** 2026-04-04
+**Context:** Category dropdown showed raw `__uncategorized__` string after selecting uncategorized option.
+**Resolution:** Replaced `<SelectValue>` with explicit `<span>` rendering translated label. `<SelectValue>` renders the raw value string when a value is set, ignoring the placeholder prop.
+**Status:** ✅ Done
+
+---
+
+### BL-005: Date format standardization (dd/mm/yyyy)
+
+**Category:** bug
+**Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.5
+**Resolved in:** Phase 3.5 (PR #51)
+**Resolution date:** 2026-04-04
+**Context:** Dates were inconsistent — "Apr 3, 2026" on Dashboard, "2026-04-03" in tables.
+**Resolution:** Created centralized `formatDate()` utility in `lib/date.ts`, applied across all components.
+**Status:** ✅ Done

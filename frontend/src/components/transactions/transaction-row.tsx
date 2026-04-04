@@ -301,7 +301,7 @@ export function TransactionRow({
                         </span>
                       );
                     }
-                    return <SelectValue placeholder={t("transactions.uncategorized")} />;
+                    return <span className="text-muted-foreground">{t("transactions.uncategorized")}</span>;
                   })()}
                 </SelectTrigger>
                 <SelectContent>
