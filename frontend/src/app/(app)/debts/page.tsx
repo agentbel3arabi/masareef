@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Settings, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LoansTab } from "@/components/debts/loans-tab";
@@ -10,7 +10,7 @@ import { P2PTab } from "@/components/debts/p2p-tab";
 import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { InstallmentForm } from "@/components/debts/installment-form";
 import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
-import { useNavbarActions } from "@/contexts/navbar-actions-context";
+import { NavbarActions } from "@/components/layout/navbar-actions-portal";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useDeleteDebt } from "@/hooks/use-debts";
 import { FAB } from "@/components/shared/fab";
@@ -49,13 +49,10 @@ const FAB_TOOLTIP_KEYS: Record<TabKey, string> = {
 export default function DebtsPage() {
   const t = useTranslations();
   const tDebts = useTranslations("debts");
-  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<TabKey>("loans");
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [showInstallmentForm, setShowInstallmentForm] = useState(false);
   const [showP2PForm, setShowP2PForm] = useState(false);
-  const { setActions } = useNavbarActions();
-
   const {
     bulkMode: manageMode,
     selectedIds,
@@ -73,75 +70,6 @@ export default function DebtsPage() {
       exitManageMode();
     }
   }, [activeTab, manageMode, exitManageMode]);
-
-  // Navbar actions
-  useEffect(() => {
-    if (activeTab !== "loans") {
-      setActions(null);
-      return;
-    }
-
-    if (!manageMode) {
-      setActions(
-        <Button variant="outline" size="sm" onClick={enterManageMode}>
-          <Settings className="h-4 w-4 me-1" />
-          {tDebts("manage")}
-        </Button>,
-      );
-    } else if (selectedIds.size === 0) {
-      setActions(
-        <Button variant="secondary" size="sm" onClick={exitManageMode}>
-          {tDebts("cancel")}
-        </Button>,
-      );
-    } else {
-      setActions(
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {tDebts("selected", { count: selectedIds.size })}
-          </span>
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={deleteMutation.isPending}
-            onClick={async () => {
-              const idsArray = [...selectedIds];
-              const results = await Promise.allSettled(
-                idsArray.map((id) =>
-                  deleteMutation.mutateAsync({ id }),
-                ),
-              );
-              const failedIds = new Set(
-                idsArray.filter(
-                  (_, i) => results[i].status === "rejected",
-                ),
-              );
-              if (failedIds.size === 0) {
-                exitManageMode();
-              } else {
-                selectAll([...failedIds]);
-              }
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5 me-1" />
-            {tDebts("deleteSelected")}
-          </Button>
-          <Button variant="ghost" size="sm" onClick={exitManageMode}>
-            {tDebts("cancel")}
-          </Button>
-        </div>,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    activeTab,
-    manageMode,
-    [...selectedIds].sort().join(","),
-    deleteMutation.isPending,
-    locale,
-  ]);
-
-  useEffect(() => () => setActions(null), [setActions]);
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 
@@ -219,6 +147,58 @@ export default function DebtsPage() {
         onOpenChange={setShowInstallmentForm}
       />
       <P2PDebtForm open={showP2PForm} onOpenChange={setShowP2PForm} />
+
+      {activeTab === "loans" && !manageMode ? (
+        <NavbarActions>
+          <Button variant="outline" size="sm" onClick={enterManageMode}>
+            <Settings className="h-4 w-4 me-1" />
+            {tDebts("manage")}
+          </Button>
+        </NavbarActions>
+      ) : activeTab === "loans" && manageMode && selectedIds.size === 0 ? (
+        <NavbarActions>
+          <Button variant="secondary" size="sm" onClick={exitManageMode}>
+            {tDebts("cancel")}
+          </Button>
+        </NavbarActions>
+      ) : activeTab === "loans" && manageMode && selectedIds.size > 0 ? (
+        <NavbarActions>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {tDebts("selected", { count: selectedIds.size })}
+            </span>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={deleteMutation.isPending}
+              onClick={async () => {
+                const idsArray = [...selectedIds];
+                const results = await Promise.allSettled(
+                  idsArray.map((id) =>
+                    deleteMutation.mutateAsync({ id }),
+                  ),
+                );
+                const failedIds = new Set(
+                  idsArray.filter(
+                    (_, i) => results[i].status === "rejected",
+                  ),
+                );
+                if (failedIds.size === 0) {
+                  exitManageMode();
+                } else {
+                  selectAll([...failedIds]);
+                }
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5 me-1" />
+              {tDebts("deleteSelected")}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={exitManageMode}>
+              {tDebts("cancel")}
+            </Button>
+          </div>
+        </NavbarActions>
+      ) : null}
     </div>
   );
 }

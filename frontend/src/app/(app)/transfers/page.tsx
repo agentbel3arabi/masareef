@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { formatDate } from "@/lib/date";
 import { ArrowLeftRight, Trash2, Settings } from "lucide-react";
 import { useTransfers, useDeleteTransfer, type Transfer } from "@/hooks/use-transfers";
-import { useNavbarActions } from "@/contexts/navbar-actions-context";
+import { NavbarActions } from "@/components/layout/navbar-actions-portal";
 import { FAB } from "@/components/shared/fab";
 import { TransferForm } from "@/components/transfers/transfer-form";
 import { AccountMiniCard } from "@/components/transfers/account-mini-card";
@@ -27,9 +27,6 @@ import {
 export default function TransfersPage() {
   const t = useTranslations();
   const tEmpty = useTranslations("emptyStates");
-  const locale = useLocale();
-
-  const { setActions } = useNavbarActions();
 
   const [page] = useState(1);
   const { data, isLoading } = useTransfers(page);
@@ -38,58 +35,6 @@ export default function TransfersPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedTransferIds, setSelectedTransferIds] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    if (!bulkMode) {
-      setActions(
-        <Button variant="outline" size="sm" onClick={() => { setBulkMode(true); setSelectedTransferIds(new Set()); }}>
-          <Settings className="h-4 w-4 me-1" />
-          {t("transactions.manage")}
-        </Button>
-      );
-    } else if (selectedTransferIds.size === 0) {
-      setActions(
-        <Button variant="secondary" size="sm" onClick={() => { setBulkMode(false); setSelectedTransferIds(new Set()); }}>
-          {t("common.cancel")}
-        </Button>
-      );
-    } else {
-      setActions(
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">{selectedTransferIds.size} {t("transfers.selected")}</span>
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={deleteTransfer.isPending}
-            onClick={async () => {
-              const idsArray = [...selectedTransferIds];
-              const results = await Promise.allSettled(
-                idsArray.map((id) => deleteTransfer.mutateAsync(id))
-              );
-              const failedIds = new Set(
-                idsArray.filter((_, i) => results[i].status === "rejected")
-              );
-              if (failedIds.size === 0) {
-                setBulkMode(false);
-                setSelectedTransferIds(new Set());
-              } else {
-                setSelectedTransferIds(failedIds);
-              }
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5 me-1" />
-            {t("common.delete.button")} ({selectedTransferIds.size})
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => { setBulkMode(false); setSelectedTransferIds(new Set()); }}>
-            {t("common.cancel")}
-          </Button>
-        </div>
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, [...selectedTransferIds].sort().join(','), deleteTransfer.isPending, locale]);
-
-  useEffect(() => () => setActions(null), [setActions]);
 
   const transfers = (data?.data ?? []) as Transfer[];
   const isEmpty = !isLoading && transfers.length === 0;
@@ -265,6 +210,52 @@ export default function TransfersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {!bulkMode ? (
+        <NavbarActions>
+          <Button variant="outline" size="sm" onClick={() => { setBulkMode(true); setSelectedTransferIds(new Set()); }}>
+            <Settings className="h-4 w-4 me-1" />
+            {t("transactions.manage")}
+          </Button>
+        </NavbarActions>
+      ) : selectedTransferIds.size === 0 ? (
+        <NavbarActions>
+          <Button variant="secondary" size="sm" onClick={() => { setBulkMode(false); setSelectedTransferIds(new Set()); }}>
+            {t("common.cancel")}
+          </Button>
+        </NavbarActions>
+      ) : (
+        <NavbarActions>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{selectedTransferIds.size} {t("transfers.selected")}</span>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={deleteTransfer.isPending}
+              onClick={async () => {
+                const idsArray = [...selectedTransferIds];
+                const results = await Promise.allSettled(
+                  idsArray.map((id) => deleteTransfer.mutateAsync(id))
+                );
+                const failedIds = new Set(
+                  idsArray.filter((_, i) => results[i].status === "rejected")
+                );
+                if (failedIds.size === 0) {
+                  setBulkMode(false);
+                  setSelectedTransferIds(new Set());
+                } else {
+                  setSelectedTransferIds(failedIds);
+                }
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5 me-1" />
+              {t("common.delete.button")} ({selectedTransferIds.size})
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => { setBulkMode(false); setSelectedTransferIds(new Set()); }}>
+              {t("common.cancel")}
+            </Button>
+          </div>
+        </NavbarActions>
+      )}
     </div>
   );
 }
