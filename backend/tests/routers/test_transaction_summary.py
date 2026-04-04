@@ -54,13 +54,9 @@ async def test_custom_period_with_transactions(client):
     """Custom period with transactions returns correct totals."""
     acct_id = await _create_account(client)
     # Create income (credit)
-    await _create_tx(
-        client, acct_id, amount_minor=200000, tx_type="credit", date="2026-04-10"
-    )
+    await _create_tx(client, acct_id, amount_minor=200000, tx_type="credit", date="2026-04-10")
     # Create expense (debit)
-    await _create_tx(
-        client, acct_id, amount_minor=50000, tx_type="debit", date="2026-04-15"
-    )
+    await _create_tx(client, acct_id, amount_minor=50000, tx_type="debit", date="2026-04-15")
 
     resp = await client.get(
         "/api/v1/transactions/summary",
@@ -94,12 +90,8 @@ async def test_account_filter(client):
     )
     acct2 = resp.json()["data"]["id"]
 
-    await _create_tx(
-        client, acct1, amount_minor=50000, tx_type="debit", date="2026-04-05"
-    )
-    await _create_tx(
-        client, acct2, amount_minor=70000, tx_type="debit", date="2026-04-05"
-    )
+    await _create_tx(client, acct1, amount_minor=50000, tx_type="debit", date="2026-04-05")
+    await _create_tx(client, acct2, amount_minor=70000, tx_type="debit", date="2026-04-05")
 
     resp = await client.get(
         "/api/v1/transactions/summary",

@@ -1,7 +1,8 @@
 """Account business logic. No HTTP awareness."""
 
 import uuid
-from datetime import date as date_type, datetime
+from datetime import date as date_type
+from datetime import datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -218,9 +219,7 @@ async def get_balance_history(
     displayed = await compute_displayed_balance(session, account)
 
     # Sum of transactions in the current period
-    period_sum_q = select(
-        func.coalesce(func.sum(Transaction.amount_minor), 0)
-    ).where(
+    period_sum_q = select(func.coalesce(func.sum(Transaction.amount_minor), 0)).where(
         Transaction.account_id == account_id,
         Transaction.household_id == household_id,
         Transaction.is_active.is_(True),

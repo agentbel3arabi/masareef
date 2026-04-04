@@ -16,7 +16,7 @@ interface DatePickerProps {
   required?: boolean;
 }
 
-export function DatePicker({ value, onChange, placeholder, required }: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const locale = useLocale();
   const selectedDate = value ? new Date(value + "T00:00:00") : undefined;

@@ -133,7 +133,7 @@ export default function TransfersPage() {
         onCheckedChange={() => {
           setSelectedTransferIds((prev) => {
             const next = new Set(prev);
-            next.has(row.transfer_id) ? next.delete(row.transfer_id) : next.add(row.transfer_id);
+            if (next.has(row.transfer_id)) { next.delete(row.transfer_id); } else { next.add(row.transfer_id); }
             return next;
           });
         }}

@@ -81,9 +81,7 @@ async def list_accounts(
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)
         items.append(
-            _account_to_response(
-                acct, displayed, last_transaction_date=last_tx_map.get(acct.id)
-            )
+            _account_to_response(acct, displayed, last_transaction_date=last_tx_map.get(acct.id))
         )
     return SuccessResponse(
         data=[item.model_dump() for item in items],
@@ -109,9 +107,7 @@ async def get_balance_history(
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
-    result = await account_service.get_balance_history(
-        session, household_id, account_id, period
-    )
+    result = await account_service.get_balance_history(session, household_id, account_id, period)
     if result is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

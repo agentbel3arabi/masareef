@@ -1,7 +1,6 @@
 """Tests for the transaction summary service."""
 
 import datetime
-import uuid
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -216,16 +215,28 @@ async def test_category_filter(db_session: AsyncSession):
     await db_session.flush()
 
     await _seed_tx(
-        db_session, acct_id, -50000, datetime.date(2026, 4, 5),
-        tx_type="debit", category_id=cat1.id,
+        db_session,
+        acct_id,
+        -50000,
+        datetime.date(2026, 4, 5),
+        tx_type="debit",
+        category_id=cat1.id,
     )
     await _seed_tx(
-        db_session, acct_id, -30000, datetime.date(2026, 4, 6),
-        tx_type="debit", category_id=cat1.id,
+        db_session,
+        acct_id,
+        -30000,
+        datetime.date(2026, 4, 6),
+        tx_type="debit",
+        category_id=cat1.id,
     )
     await _seed_tx(
-        db_session, acct_id, -20000, datetime.date(2026, 4, 7),
-        tx_type="debit", category_id=cat2.id,
+        db_session,
+        acct_id,
+        -20000,
+        datetime.date(2026, 4, 7),
+        tx_type="debit",
+        category_id=cat2.id,
     )
     await db_session.commit()
 

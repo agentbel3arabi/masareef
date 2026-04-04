@@ -130,9 +130,7 @@ async def get_last_used_account(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=ErrorResponse(
-                error=ErrorDetail(
-                    code="NOT_FOUND", message="No transactions found"
-                )
+                error=ErrorDetail(code="NOT_FOUND", message="No transactions found")
             ).model_dump(),
         )
     return SuccessResponse(data={"account_id": row})
@@ -233,15 +231,11 @@ async def list_transactions(
             DebtPayment.transaction_id.in_(tx_ids),
         )
         debt_result = await session.execute(debt_stmt)
-        debt_map: dict[int, int] = {
-            row.transaction_id: row.debt_id for row in debt_result
-        }
+        debt_map: dict[int, int] = {row.transaction_id: row.debt_id for row in debt_result}
     else:
         debt_map = {}
 
-    items = [
-        _tx_to_response(tx, debt_id=debt_map.get(tx.id)).model_dump() for tx in rows
-    ]
+    items = [_tx_to_response(tx, debt_id=debt_map.get(tx.id)).model_dump() for tx in rows]
     return SuccessResponse(
         data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),
