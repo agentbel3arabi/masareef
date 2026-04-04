@@ -22,6 +22,7 @@ from app.schemas.transaction import (
     TransactionUpdate,
 )
 from app.services import transaction as transaction_service
+from app.services import transaction_summary as summary_service
 
 router = APIRouter(prefix="/api/v1/transactions", tags=["transactions"])
 
@@ -97,6 +98,47 @@ async def bulk_categorize_transactions(
             ).model_dump(),
         )
     return SuccessResponse(data={"updated": updated})
+
+
+# ---------------------------------------------------------------------------
+# Summary route — must be declared BEFORE /{transaction_id} to avoid collision
+# ---------------------------------------------------------------------------
+
+
+@router.get("/summary")
+async def get_transaction_summary(
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    period: str = Query("month", pattern="^(month|quarter|year|custom)$"),
+    start_date: datetime.date | None = Query(None),
+    end_date: datetime.date | None = Query(None),
+    account_id: int | None = Query(None),
+    category_id: int | None = Query(None),
+    type: str | None = Query(None, pattern="^(income|expense)$"),
+    currency: str = Query("EGP"),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    """Return aggregated income/expense totals for a period."""
+    try:
+        result = await summary_service.get_transaction_summary(
+            session,
+            household_id,
+            period=period,
+            start_date=start_date,
+            end_date=end_date,
+            account_id=account_id,
+            category_id=category_id,
+            type=type,
+            currency=currency,
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+            ).model_dump(),
+        )
+    return SuccessResponse(data=result.model_dump())
 
 
 # ---------------------------------------------------------------------------
