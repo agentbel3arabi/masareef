@@ -8,12 +8,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - SUPABASE_URL=${{project.SUPABASE_URL}}
-      - SUPABASE_ANON_KEY=${{project.SUPABASE_ANON_KEY}}
-      - SUPABASE_SERVICE_ROLE_KEY=${{project.SUPABASE_SERVICE_ROLE_KEY}}
-      - SUPABASE_JWT_SECRET=${{project.SUPABASE_JWT_SECRET}}
-      - DATABASE_URL=${{project.DATABASE_URL}}
-      - DIRECT_DATABASE_URL=${{project.DIRECT_DATABASE_URL}}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_DATABASE_URL=${DIRECT_DATABASE_URL}
     networks:
       - masareef
 
@@ -22,18 +22,18 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_SUPABASE_URL=${{project.NEXT_PUBLIC_SUPABASE_URL}}
-        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${{project.NEXT_PUBLIC_SUPABASE_ANON_KEY}}
-        - NEXT_PUBLIC_API_URL=${{project.NEXT_PUBLIC_API_URL}}
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     container_name: masareef-web
     restart: unless-stopped
     ports:
       - "3001:3000"
     environment:
-      - NEXT_PUBLIC_SUPABASE_URL=${{project.NEXT_PUBLIC_SUPABASE_URL}}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${{project.NEXT_PUBLIC_SUPABASE_ANON_KEY}}
-      - NEXT_PUBLIC_API_URL=${{project.NEXT_PUBLIC_API_URL}}
-      - NODE_ENV=${{project.NODE_ENV}}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NODE_ENV=${NODE_ENV}
     depends_on:
       - masareef-api
     networks:
