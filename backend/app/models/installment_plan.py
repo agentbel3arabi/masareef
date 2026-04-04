@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 
-from sqlalchemy import BigInteger, Date, ForeignKey, Index, Integer, Text
+from sqlalchemy import BigInteger, CheckConstraint, Date, ForeignKey, Index, Integer, Text
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -17,6 +17,10 @@ class InstallmentPlan(TimestampMixin, SoftDeleteMixin, Base):
     __table_args__ = (
         Index("ix_installment_plans_household_type", "household_id", "type"),
         Index("ix_installment_plans_household_source", "household_id", "source_account_id"),
+        CheckConstraint(
+            "payment_day_of_month >= 1 AND payment_day_of_month <= 28",
+            name="ck_installment_plans_payment_day_range",
+        ),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -39,6 +43,8 @@ class InstallmentPlan(TimestampMixin, SoftDeleteMixin, Base):
     start_month: Mapped[date] = mapped_column(Date, nullable=False)
     currency: Mapped[str] = mapped_column(Text, nullable=False)
     annual_rate_bps: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    payment_day_of_month: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(
         SAEnum(LifecycleStatus, values_callable=_enum_values, create_type=False),
         nullable=False,

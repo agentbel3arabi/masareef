@@ -77,6 +77,11 @@ async def create_installment(
 
     start_month = data.start_month.replace(day=1)
 
+    # Default payment_day_of_month from start_date if not provided
+    payment_day = data.payment_day_of_month
+    if payment_day is None:
+        payment_day = min(data.start_month.day, 28)
+
     plan = InstallmentPlan(
         household_id=household_id,
         type=data.type,
@@ -90,6 +95,8 @@ async def create_installment(
         start_month=start_month,
         currency=data.currency,
         annual_rate_bps=data.annual_rate_bps,
+        payment_day_of_month=payment_day,
+        notes=data.notes,
     )
     session.add(plan)
     await session.flush()

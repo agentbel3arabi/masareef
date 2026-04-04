@@ -134,6 +134,8 @@ export interface InstallmentResponse {
   start_month: string;
   currency: string;
   annual_rate_bps: number;
+  payment_day_of_month: number | null;
+  notes: string | null;
   status: LifecycleStatus;
   is_active: boolean;
   months_paid: number;
@@ -153,6 +155,8 @@ export interface InstallmentCreateInput {
   start_month: string;
   currency: string;
   annual_rate_bps?: number;
+  payment_day_of_month?: number | null;
+  notes?: string | null;
 }
 
 export interface InstallmentUpdateInput {
@@ -160,6 +164,7 @@ export interface InstallmentUpdateInput {
   merchant_name?: string | null;
   linked_account_id?: number | null;
   annual_rate_bps?: number | null;
+  notes?: string | null;
 }
 
 export interface FinancingAppDetail {
