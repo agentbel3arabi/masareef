@@ -4,7 +4,9 @@ import uuid
 from datetime import date, timedelta
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import delete as sa_delete, func, select, update as sa_update
+from sqlalchemy import delete as sa_delete
+from sqlalchemy import func, select
+from sqlalchemy import update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
@@ -280,15 +282,11 @@ async def soft_delete_debt(
             )
             # Soft-delete linked transactions
             await session.execute(
-                sa_update(Transaction)
-                .where(Transaction.id.in_(tx_ids))
-                .values(is_active=False)
+                sa_update(Transaction).where(Transaction.id.in_(tx_ids)).values(is_active=False)
             )
 
         # Hard-delete debt_payments (no is_active column on this model)
-        await session.execute(
-            sa_delete(DebtPayment).where(DebtPayment.debt_id == debt.id)
-        )
+        await session.execute(sa_delete(DebtPayment).where(DebtPayment.debt_id == debt.id))
 
     debt.is_active = False
     await session.flush()

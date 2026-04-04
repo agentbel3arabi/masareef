@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2, Settings } from "lucide-react";
@@ -8,7 +8,7 @@ import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactio
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useCategories } from "@/hooks/use-categories";
-import { useNavbarActions } from "@/contexts/navbar-actions-context";
+import { NavbarActions } from "@/components/layout/navbar-actions-portal";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
 import { TransactionForm } from "@/components/transactions/transaction-form";
@@ -49,7 +49,6 @@ export default function TransactionsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const { bulkMode, selectedIds, enterBulkMode, exitBulkMode, toggleSelect, selectAll } = useBulkSelection();
 
-  const { setActions } = useNavbarActions();
   const { data: categoriesData } = useCategories();
   const bulkDelete = useBulkDeleteTransactions();
   const bulkCategorize = useBulkCategorizeTransactions();
@@ -64,78 +63,6 @@ export default function TransactionsPage() {
   for (const acc of accountsData?.data ?? []) {
     accountsMap[acc.id] = acc;
   }
-
-  useEffect(() => {
-    if (!bulkMode) {
-      setActions(
-        <Button variant="outline" size="sm" onClick={enterBulkMode}>
-          <Settings className="h-4 w-4 me-1" />
-          {t("transactions.manage")}
-        </Button>
-      );
-    } else if (selectedIds.size === 0) {
-      setActions(
-        <Button variant="secondary" size="sm" onClick={exitBulkMode}>
-          {t("transactions.cancel")}
-        </Button>
-      );
-    } else {
-      setActions(
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {t("transactions.selectedCount", { count: selectedIds.size })}
-          </span>
-          <Select
-            onValueChange={async (val) => {
-              try {
-                await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
-                exitBulkMode();
-              } catch (error) {
-                console.error("Bulk categorize failed:", error);
-              }
-            }}
-            disabled={bulkCategorize.isPending}
-          >
-            <SelectTrigger className="h-8 w-40 text-xs">
-              <SelectValue placeholder={t("transactions.recategorize")} />
-            </SelectTrigger>
-            <SelectContent>
-              {(categoriesData?.data || []).map((cat) => (
-                <SelectItem key={cat.id} value={String(cat.id)}>
-                  <span className="flex items-center gap-2">
-                    <CategoryIcon icon={cat.icon} className="h-3.5 w-3.5 shrink-0" />
-                    {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={bulkDelete.isPending}
-            onClick={async () => {
-              try {
-                await bulkDelete.mutateAsync({ ids: [...selectedIds] });
-                exitBulkMode();
-              } catch (error) {
-                console.error("Bulk delete failed:", error);
-              }
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5 me-1" />
-            {t("transactions.deleteSelected")}
-          </Button>
-          <Button variant="ghost" size="sm" onClick={exitBulkMode}>
-            {t("transactions.cancel")}
-          </Button>
-        </div>
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bulkMode, [...selectedIds].sort().join(','), bulkDelete.isPending, bulkCategorize.isPending, categoriesData, locale]);
-
-  useEffect(() => () => setActions(null), [setActions]);
 
   // Page-level summary stats from current page data
   const visibleTxs = data?.data ?? [];
@@ -254,6 +181,73 @@ export default function TransactionsPage() {
         open={createOpen}
         onOpenChange={setCreateOpen}
       />
+
+      {!bulkMode ? (
+        <NavbarActions>
+          <Button variant="outline" size="sm" onClick={enterBulkMode}>
+            <Settings className="h-4 w-4 me-1" />
+            {t("transactions.manage")}
+          </Button>
+        </NavbarActions>
+      ) : selectedIds.size === 0 ? (
+        <NavbarActions>
+          <Button variant="secondary" size="sm" onClick={exitBulkMode}>
+            {t("transactions.cancel")}
+          </Button>
+        </NavbarActions>
+      ) : (
+        <NavbarActions>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {t("transactions.selectedCount", { count: selectedIds.size })}
+            </span>
+            <Select
+              onValueChange={async (val) => {
+                try {
+                  await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
+                  exitBulkMode();
+                } catch (error) {
+                  console.error("Bulk categorize failed:", error);
+                }
+              }}
+              disabled={bulkCategorize.isPending}
+            >
+              <SelectTrigger className="h-8 w-40 text-xs">
+                <SelectValue placeholder={t("transactions.recategorize")} />
+              </SelectTrigger>
+              <SelectContent>
+                {(categoriesData?.data || []).map((cat) => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    <span className="flex items-center gap-2">
+                      <CategoryIcon icon={cat.icon} className="h-3.5 w-3.5 shrink-0" />
+                      {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={bulkDelete.isPending}
+              onClick={async () => {
+                try {
+                  await bulkDelete.mutateAsync({ ids: [...selectedIds] });
+                  exitBulkMode();
+                } catch (error) {
+                  console.error("Bulk delete failed:", error);
+                }
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5 me-1" />
+              {t("transactions.deleteSelected")}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={exitBulkMode}>
+              {t("transactions.cancel")}
+            </Button>
+          </div>
+        </NavbarActions>
+      )}
     </div>
   );
 }

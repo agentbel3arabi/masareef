@@ -113,7 +113,9 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const debt = debtRes?.data;
   const schedule = scheduleRes?.data ?? [];
   const scheduleRef = useRef(schedule);
-  scheduleRef.current = schedule;
+  useEffect(() => {
+    scheduleRef.current = schedule;
+  }, [schedule]);
 
   useEffect(() => {
     if (!debt) {

@@ -304,12 +304,6 @@ function LoanCard({
     setPaymentFormOpen(true);
   };
 
-  const handleCardClick = () => {
-    if (!manageMode) {
-      router.push(`/debts/loans/${loan.id}`);
-    }
-  };
-
   const cardContent = (
     <div
       className={cn(
@@ -452,19 +446,9 @@ function LoanCard({
             {cardContent}
           </div>
         ) : (
-          <div
-            onClick={handleCardClick}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleCardClick();
-              }
-            }}
-          >
+          <Link href={`/debts/loans/${loan.id}`}>
             {cardContent}
-          </div>
+          </Link>
         )}
 
         {/* MoreVertical dropdown menu */}

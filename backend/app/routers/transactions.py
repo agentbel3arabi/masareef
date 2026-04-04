@@ -22,6 +22,7 @@ from app.schemas.transaction import (
     TransactionUpdate,
 )
 from app.services import transaction as transaction_service
+from app.services import transaction_summary as summary_service
 
 router = APIRouter(prefix="/api/v1/transactions", tags=["transactions"])
 
@@ -31,7 +32,7 @@ router = APIRouter(prefix="/api/v1/transactions", tags=["transactions"])
 # ---------------------------------------------------------------------------
 
 
-def _tx_to_response(tx: Transaction) -> TransactionResponse:
+def _tx_to_response(tx: Transaction, debt_id: int | None = None) -> TransactionResponse:
     """Build a TransactionResponse from an ORM Transaction object."""
     tx_type = tx.type
     return TransactionResponse(
@@ -48,6 +49,7 @@ def _tx_to_response(tx: Transaction) -> TransactionResponse:
         ai_categorized=tx.ai_categorized,
         ai_confidence=tx.ai_confidence,
         notes=tx.notes,
+        debt_id=debt_id,
     )
 
 
@@ -100,6 +102,82 @@ async def bulk_categorize_transactions(
 
 
 # ---------------------------------------------------------------------------
+# Last-used-account — must be declared BEFORE /{transaction_id} to avoid collision
+# ---------------------------------------------------------------------------
+
+
+@router.get("/last-used-account")
+async def get_last_used_account(
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    """Return the account_id of the most recently created transaction."""
+    from sqlalchemy import select
+
+    stmt = (
+        select(Transaction.account_id)
+        .where(
+            Transaction.household_id == household_id,
+            Transaction.is_active.is_(True),
+        )
+        .order_by(Transaction.created_at.desc())
+        .limit(1)
+    )
+    result = await session.execute(stmt)
+    row = result.scalar_one_or_none()
+    if row is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="No transactions found")
+            ).model_dump(),
+        )
+    return SuccessResponse(data={"account_id": row})
+
+
+# ---------------------------------------------------------------------------
+# Summary route — must be declared BEFORE /{transaction_id} to avoid collision
+# ---------------------------------------------------------------------------
+
+
+@router.get("/summary")
+async def get_transaction_summary(
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    period: str = Query("month", pattern="^(month|quarter|year|custom)$"),
+    start_date: datetime.date | None = Query(None),
+    end_date: datetime.date | None = Query(None),
+    account_id: int | None = Query(None),
+    category_id: int | None = Query(None),
+    type: str | None = Query(None, pattern="^(income|expense)$"),
+    currency: str = Query("EGP"),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    """Return aggregated income/expense totals for a period."""
+    try:
+        result = await summary_service.get_transaction_summary(
+            session,
+            household_id,
+            period=period,
+            start_date=start_date,
+            end_date=end_date,
+            account_id=account_id,
+            category_id=category_id,
+            type=type,
+            currency=currency,
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+            ).model_dump(),
+        )
+    return SuccessResponse(data=result.model_dump())
+
+
+# ---------------------------------------------------------------------------
 # Collection routes
 # ---------------------------------------------------------------------------
 
@@ -141,7 +219,23 @@ async def list_transactions(
         page=page,
         page_size=page_size,
     )
-    items = [_tx_to_response(tx).model_dump() for tx in rows]
+
+    # Batch fetch debt_id per transaction via debt_payments
+    from sqlalchemy import select as sa_select
+
+    from app.models.debt_payment import DebtPayment
+
+    tx_ids = [tx.id for tx in rows]
+    if tx_ids:
+        debt_stmt = sa_select(DebtPayment.transaction_id, DebtPayment.debt_id).where(
+            DebtPayment.transaction_id.in_(tx_ids),
+        )
+        debt_result = await session.execute(debt_stmt)
+        debt_map: dict[int, int] = {row.transaction_id: row.debt_id for row in debt_result}
+    else:
+        debt_map = {}
+
+    items = [_tx_to_response(tx, debt_id=debt_map.get(tx.id)).model_dump() for tx in rows]
     return SuccessResponse(
         data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),

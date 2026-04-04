@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import date as date_type
+from datetime import datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -196,3 +197,61 @@ async def reconcile_account(
     account.balance_minor += discrepancy
     await session.flush()
     return discrepancy
+
+
+async def get_balance_history(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    account_id: int,
+    period: str = "month",
+) -> dict:
+    """Compute balance change over the current period for an account.
+
+    Returns current balance, period-start balance, change amount, and direction.
+    """
+    account = await get_account(session, household_id, account_id)
+    if account is None:
+        return None  # type: ignore[return-value]
+
+    today = datetime.now().date()
+    if period == "year":
+        period_start = today.replace(month=1, day=1)
+    elif period == "quarter":
+        q_start_month = ((today.month - 1) // 3) * 3 + 1
+        period_start = today.replace(month=q_start_month, day=1)
+    else:  # "month" (default)
+        period_start = today.replace(day=1)
+
+    displayed = await compute_displayed_balance(session, account)
+
+    # Sum of transactions in the current period
+    period_sum_q = select(func.coalesce(func.sum(Transaction.amount_minor), 0)).where(
+        Transaction.account_id == account_id,
+        Transaction.household_id == household_id,
+        Transaction.is_active.is_(True),
+        Transaction.applies_to_balance.is_(True),
+        Transaction.date >= period_start,
+        Transaction.date <= today,
+    )
+    period_sum: int = (await session.execute(period_sum_q)).scalar_one()
+
+    period_start_balance = displayed - period_sum
+    change = displayed - period_start_balance  # == period_sum
+
+    if change > 0:
+        change_direction = "up"
+    elif change < 0:
+        change_direction = "down"
+    else:
+        change_direction = "unchanged"
+
+    return {
+        "account_id": account_id,
+        "current_balance": displayed,
+        "period_start_balance": period_start_balance,
+        "change": change,
+        "change_direction": change_direction,
+        "period": period,
+        "period_start": period_start.isoformat(),
+        "period_end": today.isoformat(),
+    }
