@@ -42,6 +42,7 @@ class AccountResponse(BaseModel):
     payment_due_day: int | None = None
     opened_at: date | None = None
     is_active: bool
+    last_transaction_date: date | None = None
 
     model_config = {"from_attributes": True}
 

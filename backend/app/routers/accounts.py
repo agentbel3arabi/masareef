@@ -1,12 +1,15 @@
+import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
 from app.dependencies_rbac import get_member_role, require_role
 from app.models.account import Account
 from app.models.enums import HouseholdRole
+from app.models.transaction import Transaction
 from app.schemas.account import AccountCreate, AccountResponse, AccountUpdate, ReconcileRequest
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
 from app.services import account as account_service
@@ -15,7 +18,11 @@ from app.services import installment as installment_service
 router = APIRouter(prefix="/api/v1/accounts", tags=["accounts"])
 
 
-def _account_to_response(account: Account, displayed_balance: int) -> AccountResponse:
+def _account_to_response(
+    account: Account,
+    displayed_balance: int,
+    last_transaction_date: "datetime.date | None" = None,
+) -> AccountResponse:
     """Build an AccountResponse from an Account ORM object."""
     # SQLite stores enum values as plain strings; PostgreSQL returns AccountType enum instances
     acct_type = account.type
@@ -33,6 +40,7 @@ def _account_to_response(account: Account, displayed_balance: int) -> AccountRes
         payment_due_day=account.payment_due_day,
         opened_at=account.opened_at,
         is_active=account.is_active,
+        last_transaction_date=last_transaction_date,
     )
 
 
@@ -45,11 +53,38 @@ async def list_accounts(
     role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
     accounts, total = await account_service.list_accounts(session, household_id, page, page_size)
+
+    # Batch fetch last transaction date per account
+    acct_ids = [a.id for a in accounts]
+    if acct_ids:
+        last_tx_stmt = (
+            select(
+                Transaction.account_id,
+                func.max(Transaction.date).label("last_date"),
+            )
+            .where(
+                Transaction.household_id == household_id,
+                Transaction.is_active.is_(True),
+                Transaction.account_id.in_(acct_ids),
+            )
+            .group_by(Transaction.account_id)
+        )
+        last_tx_result = await session.execute(last_tx_stmt)
+        last_tx_map: dict[int, datetime.date] = {
+            row.account_id: row.last_date for row in last_tx_result
+        }
+    else:
+        last_tx_map = {}
+
     # TODO: batch balance computation to avoid N+1 queries
     items = []
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)
-        items.append(_account_to_response(acct, displayed))
+        items.append(
+            _account_to_response(
+                acct, displayed, last_transaction_date=last_tx_map.get(acct.id)
+            )
+        )
     return SuccessResponse(
         data=[item.model_dump() for item in items],
         meta=PaginationMeta(total=total, page=page, page_size=page_size),
@@ -64,6 +99,27 @@ async def get_net_worth(
 ) -> SuccessResponse:
     data = await account_service.compute_net_worth(session, household_id)
     return SuccessResponse(data=data)
+
+
+@router.get("/{account_id}/balance-history")
+async def get_balance_history(
+    account_id: int,
+    period: str = Query("month", pattern="^(month|quarter|year)$"),
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(get_member_role),
+) -> SuccessResponse:
+    result = await account_service.get_balance_history(
+        session, household_id, account_id, period
+    )
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="NOT_FOUND", message="Account not found")
+            ).model_dump(),
+        )
+    return SuccessResponse(data=result)
 
 
 @router.get("/{account_id}")
