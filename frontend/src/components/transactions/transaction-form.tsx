@@ -173,7 +173,7 @@ export function TransactionForm({
                     : selectedCategory.name_en}
                 </span>
               ) : (
-                <SelectValue placeholder={t("transactions.uncategorized")} />
+                <span className="text-muted-foreground">{t("transactions.uncategorized")}</span>
               )}
             </SelectTrigger>
             <SelectContent>
