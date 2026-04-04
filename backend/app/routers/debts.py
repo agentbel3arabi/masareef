@@ -280,6 +280,7 @@ async def update_debt(
 @router.delete("/{debt_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_debt(
     debt_id: int,
+    delete_transactions: bool = Query(False),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
@@ -293,7 +294,9 @@ async def delete_debt(
             ).model_dump(),
         )
     _check_p2p_write(debt, role)
-    await debt_service.soft_delete_debt(session, debt)
+    await debt_service.soft_delete_debt(
+        session, debt, delete_transactions=delete_transactions
+    )
 
 
 @router.get("/{debt_id}/amortization")

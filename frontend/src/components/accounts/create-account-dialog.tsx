@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormSheet } from "@/components/shared/form-sheet";
+import { FieldError } from "@/components/shared/field-error";
 import { RequiredLabel } from "@/components/shared/required-label";
 import { Label } from "@/components/ui/label";
 import { useCreateAccount } from "@/hooks/use-accounts";
@@ -41,6 +42,7 @@ export function CreateAccountDialog({
   const [billingDay, setBillingDay] = useState("");
   const [paymentDueDay, setPaymentDueDay] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const createAccount = useCreateAccount();
 
@@ -57,6 +59,8 @@ export function CreateAccountDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!name.trim()) return;
     setError(null);
     try {
       await createAccount.mutateAsync({
@@ -92,6 +96,7 @@ export function CreateAccountDialog({
         <div className="space-y-2">
           <RequiredLabel required htmlFor="account-name">{t("accounts.name")}</RequiredLabel>
           <Input id="account-name" value={name} onChange={(e) => setName(e.target.value)} required />
+          <FieldError show={submitted && !name.trim()} message={t("common.fieldRequired")} />
         </div>
 
         <div className="space-y-2">

@@ -25,7 +25,9 @@
     "installmentCompleted": "Installment plan completed",
     "personCreated": "Person created successfully",
     "personUpdated": "Person updated successfully",
-    "personDeleted": "Person deleted successfully"
+    "personDeleted": "Person deleted successfully",
+    "bulkPastPaymentsRecorded": "Past payments recorded successfully",
+    "bulkPaymentRecorded": "Bulk payment recorded successfully"
   },
   "common": {
     "appName": "Masareef",
@@ -48,6 +50,7 @@
     "name": "Name",
     "unexpectedError": "An unexpected error occurred",
     "notFound": "Not found",
+    "fieldRequired": "This field is required",
     "date": "Date",
     "description": "Description",
     "amount": "Amount",
@@ -618,6 +621,10 @@
   "debts": {
     "title": "Debts Management",
     "subtitle": "Track and manage your loans and installments",
+    "manage": "Manage",
+    "cancel": "Cancel",
+    "selected": "{count} selected",
+    "deleteSelected": "Delete Selected",
     "tabs": {
       "loans": "Loans",
       "installments": "Installments",
@@ -660,7 +667,9 @@
       "noUpcoming": "All payments recorded",
       "matchFound": "Match Found — Review",
       "principalBreakdown": "Principal: {principal} + Interest: {interest}",
-      "viewFullDetails": "View Full Details"
+      "viewFullDetails": "View Full Details",
+      "editLoan": "Edit",
+      "deleteLoan": "Delete"
     },
     "p2p": {
       "lent": "You lent",
@@ -752,7 +761,7 @@
         "deleteOnly": "Delete Loan Only",
         "deleteOnlyHint": "Payment transactions will be kept for history",
         "deleteWithTransactions": "Delete Loan & Transactions",
-        "comingSoon": "Coming soon",
+        "deleteWithTransactionsHint": "All linked payment transactions will also be deleted",
         "cancel": "Cancel"
       }
     },

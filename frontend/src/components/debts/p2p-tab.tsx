@@ -216,7 +216,7 @@ export function P2PTab({ onAddClick }: P2PTabProps) {
               )
             }
             onEdit={(debt) => setEditingDebt(debt)}
-            onDelete={(id) => deleteMutation.mutate(id)}
+            onDelete={(id) => deleteMutation.mutate({ id })}
             onRecordPayment={(debt) => setPaymentDebt(debt)}
             onAddDebtForPerson={(personId) => setAddDebtForPersonId(personId)}
             isDeleting={deleteMutation.isPending}

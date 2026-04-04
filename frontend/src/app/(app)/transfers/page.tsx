@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { formatDate } from "@/lib/date";
-import { ArrowLeftRight, Trash2 } from "lucide-react";
+import { ArrowLeftRight, Trash2, Settings } from "lucide-react";
 import { useTransfers, useDeleteTransfer, type Transfer } from "@/hooks/use-transfers";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import { FAB } from "@/components/shared/fab";
@@ -43,6 +43,7 @@ export default function TransfersPage() {
     if (!bulkMode) {
       setActions(
         <Button variant="outline" size="sm" onClick={() => { setBulkMode(true); setSelectedTransferIds(new Set()); }}>
+          <Settings className="h-4 w-4 me-1" />
           {t("transactions.manage")}
         </Button>
       );

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { Settings, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LoansTab } from "@/components/debts/loans-tab";
 import { InstallmentsTab } from "@/components/debts/installments-tab";
@@ -10,7 +11,10 @@ import { BankLoanForm } from "@/components/debts/bank-loan-form";
 import { InstallmentForm } from "@/components/debts/installment-form";
 import { P2PDebtForm } from "@/components/debts/p2p-debt-form";
 import { useNavbarActions } from "@/contexts/navbar-actions-context";
+import { useBulkSelection } from "@/hooks/use-bulk-selection";
+import { useDeleteDebt } from "@/hooks/use-debts";
 import { FAB } from "@/components/shared/fab";
+import { Button } from "@/components/ui/button";
 
 const TAB_KEYS = ["loans", "installments", "p2p"] as const;
 
@@ -18,7 +22,12 @@ type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_COMPONENTS: Record<
   TabKey,
-  React.ComponentType<{ onAddClick?: () => void }>
+  React.ComponentType<{
+    onAddClick?: () => void;
+    manageMode?: boolean;
+    selectedIds?: Set<number>;
+    onSelect?: (id: number) => void;
+  }>
 > = {
   loans: LoansTab,
   installments: InstallmentsTab,
@@ -40,16 +49,99 @@ const FAB_TOOLTIP_KEYS: Record<TabKey, string> = {
 export default function DebtsPage() {
   const t = useTranslations();
   const tDebts = useTranslations("debts");
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<TabKey>("loans");
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [showInstallmentForm, setShowInstallmentForm] = useState(false);
   const [showP2PForm, setShowP2PForm] = useState(false);
   const { setActions } = useNavbarActions();
 
+  const {
+    bulkMode: manageMode,
+    selectedIds,
+    enterBulkMode: enterManageMode,
+    exitBulkMode: exitManageMode,
+    toggleSelect,
+    selectAll,
+  } = useBulkSelection();
+
+  const deleteMutation = useDeleteDebt();
+
+  // Exit manage mode when switching away from loans tab
   useEffect(() => {
-    setActions(null); // No navbar actions for debts page currently
-    return () => setActions(null);
-  }, [setActions]);
+    if (activeTab !== "loans" && manageMode) {
+      exitManageMode();
+    }
+  }, [activeTab, manageMode, exitManageMode]);
+
+  // Navbar actions
+  useEffect(() => {
+    if (activeTab !== "loans") {
+      setActions(null);
+      return;
+    }
+
+    if (!manageMode) {
+      setActions(
+        <Button variant="outline" size="sm" onClick={enterManageMode}>
+          <Settings className="h-4 w-4 me-1" />
+          {tDebts("manage")}
+        </Button>,
+      );
+    } else if (selectedIds.size === 0) {
+      setActions(
+        <Button variant="secondary" size="sm" onClick={exitManageMode}>
+          {tDebts("cancel")}
+        </Button>,
+      );
+    } else {
+      setActions(
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {tDebts("selected", { count: selectedIds.size })}
+          </span>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deleteMutation.isPending}
+            onClick={async () => {
+              const idsArray = [...selectedIds];
+              const results = await Promise.allSettled(
+                idsArray.map((id) =>
+                  deleteMutation.mutateAsync({ id }),
+                ),
+              );
+              const failedIds = new Set(
+                idsArray.filter(
+                  (_, i) => results[i].status === "rejected",
+                ),
+              );
+              if (failedIds.size === 0) {
+                exitManageMode();
+              } else {
+                selectAll([...failedIds]);
+              }
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5 me-1" />
+            {tDebts("deleteSelected")}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={exitManageMode}>
+            {tDebts("cancel")}
+          </Button>
+        </div>,
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    activeTab,
+    manageMode,
+    [...selectedIds].sort().join(","),
+    deleteMutation.isPending,
+    locale,
+  ]);
+
+  useEffect(() => () => setActions(null), [setActions]);
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 
@@ -88,31 +180,44 @@ export default function DebtsPage() {
 
       {/* Active tab content */}
       <div>
-        <ActiveComponent />
+        {activeTab === "loans" ? (
+          <LoansTab
+            manageMode={manageMode}
+            selectedIds={selectedIds}
+            onSelect={toggleSelect}
+          />
+        ) : (
+          <ActiveComponent />
+        )}
       </div>
 
-      {/* FAB — context-sensitive label based on active tab */}
-      <FAB
-        onClick={() => {
-          switch (activeTab) {
-            case "loans":
-              setShowLoanForm(true);
-              break;
-            case "installments":
-              setShowInstallmentForm(true);
-              break;
-            case "p2p":
-              setShowP2PForm(true);
-              break;
-          }
-        }}
-        ariaLabel={t(FAB_LABEL_KEYS[activeTab])}
-        tooltip={t(FAB_TOOLTIP_KEYS[activeTab])}
-      />
+      {/* FAB — hidden in manage mode */}
+      {!manageMode && (
+        <FAB
+          onClick={() => {
+            switch (activeTab) {
+              case "loans":
+                setShowLoanForm(true);
+                break;
+              case "installments":
+                setShowInstallmentForm(true);
+                break;
+              case "p2p":
+                setShowP2PForm(true);
+                break;
+            }
+          }}
+          ariaLabel={t(FAB_LABEL_KEYS[activeTab])}
+          tooltip={t(FAB_TOOLTIP_KEYS[activeTab])}
+        />
+      )}
 
       {/* Create form sheets */}
       <BankLoanForm open={showLoanForm} onOpenChange={setShowLoanForm} />
-      <InstallmentForm open={showInstallmentForm} onOpenChange={setShowInstallmentForm} />
+      <InstallmentForm
+        open={showInstallmentForm}
+        onOpenChange={setShowInstallmentForm}
+      />
       <P2PDebtForm open={showP2PForm} onOpenChange={setShowP2PForm} />
     </div>
   );

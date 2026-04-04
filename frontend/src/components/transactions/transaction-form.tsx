@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RequiredLabel } from "@/components/shared/required-label";
+import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { useCreateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
@@ -42,6 +43,7 @@ export function TransactionForm({
   const [notes, setNotes] = useState("");
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [selectedAccountId, setSelectedAccountId] = useState<number | "">(accountId ?? "");
+  const [submitted, setSubmitted] = useState(false);
 
   const { data: accountsData } = useAccounts();
   const accounts = accountsData?.data ?? [];
@@ -68,7 +70,8 @@ export function TransactionForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeAccountId) return;
+    setSubmitted(true);
+    if (!activeAccountId || !amount || !date) return;
     const amountMinor = Math.abs(parseMajorToMinor(amount, exponent));
     if (amountMinor === 0) return;
 
@@ -140,6 +143,7 @@ export function TransactionForm({
                   ))}
               </SelectContent>
             </Select>
+            <FieldError show={submitted && !selectedAccountId} message={t("common.fieldRequired")} />
           </div>
         )}
 
@@ -173,7 +177,7 @@ export function TransactionForm({
                     : selectedCategory.name_en}
                 </span>
               ) : (
-                <SelectValue placeholder={t("transactions.uncategorized")} />
+                <span className="text-muted-foreground">{t("transactions.uncategorized")}</span>
               )}
             </SelectTrigger>
             <SelectContent>
@@ -202,6 +206,7 @@ export function TransactionForm({
             onChange={(e) => setAmount(e.target.value)}
             required
           />
+          <FieldError show={submitted && !amount} message={t("common.fieldRequired")} />
         </div>
 
         <div className="space-y-2">
