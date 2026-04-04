@@ -11,8 +11,9 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 | 1.75 | Design System & Page Redesign | Full Stitch design fidelity — design tokens, page redesigns, UI consistency | Medium | — | ✅ Complete |
 | 2 | Import & Templates | Bank statement import pipeline with template system | Large | — | ✅ Complete |
 | 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large | — | ✅ Complete |
-| **3.5** | **UX Polish Sprint** | **Fix critical UX bugs, form consistency, card enhancements, date standardization** | **Medium** | **9 open** | **🔨 In Progress** |
-| 4 | Dashboard & Charts | Net worth, spending trends, category breakdown, Plotly | Medium | 21 open | ⏳ Pending |
+| 3.5 | UX Polish Sprint | Fix critical UX bugs, form consistency, card enhancements, date standardization | Medium | — | ✅ Complete |
+| 3.75 | UX Critique & Cleanup | Accessibility, mobile layout, form fixes, visual polish, dashboard widgets, command palette, navbar refactor | Medium | — | ✅ Complete |
+| 4 | Dashboard & Charts | Plotly charts, remaining dashboard stat cards, asset summary | Medium | 18 open | ⏳ Pending |
 | 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium | 1 open | ⏳ Pending |
 | 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium | — | ⏳ Pending |
 | 7 | Budgets & Savings Goals | Envelope budgeting, savings targets, auto-suggest | Medium | 1 open | ⏳ Pending |
@@ -356,6 +357,79 @@ Post-Phase 3 browser audit (April 2026) found 20+ UX issues across the app: crit
 Units 1–6, in order. See execution plan for full details.
 
 **Required reading:** `guides/09-design-tokens.md`, `docs/superpowers/specs/phase-3.5-ux-polish-sprint.md`
+
+**Status:** ✅ Complete (PR #51)
+
+---
+
+## Phase 3.75: UX Critique & Cleanup ✅
+**Unlocks:** Production-quality UX, accessibility compliance, real dashboard data, global search. Pulls forward transaction summary endpoint from Phase 4.
+
+> **Design spec:** `docs/superpowers/specs/2026-04-04-phase-3.75-ux-critique-design.md`
+> **Implementation plan:** `docs/superpowers/plans/2026-04-04-phase-3.75-ux-critique.md`
+
+### Background
+Post-Phase 3.5 UX critique audit (April 2026) identified 26 findings across accessibility, mobile layout, forms, visual hierarchy, dashboard, and technical debt.
+
+### Deliverables
+
+**Backend:**
+- `GET /api/v1/transactions/summary` — period + filter-aware transaction aggregation (BL-009, BL-015)
+- `GET /api/v1/accounts/{id}/balance-history` — balance trend indicator (BL-006)
+- `last_transaction_date` on AccountResponse (BL-007)
+- `GET /api/v1/transactions/last-used-account` (BL-008)
+- `debt_id` on TransactionResponse (BL-047)
+
+**Frontend — Accessibility:**
+- Skip-to-content link (WCAG 2.1 AA)
+- MoneyDisplay +/− prefix for color-blind users
+- Loan card semantic `<Link>` instead of `<div onClick>`
+- `<ComingSoon>` wrapper for consistent disabled patterns
+
+**Frontend — Mobile & Layout:**
+- `<ResponsiveActions>` overflow menu for navbar buttons on mobile
+- Net worth hero vertical stacking on small screens
+- Shared FAB component on Account Detail
+- Sidebar section label visibility increase
+
+**Frontend — Forms:**
+- Edit Transaction migrated from Dialog to FormSheet
+- Textarea for notes fields
+- CurrencyInput with inline currency symbol
+- DatePicker with calendar popover (dd/mm/yyyy)
+
+**Frontend — Visual Polish:**
+- StatCard tinted backgrounds (replaces heavy gradients)
+- Dark mode border contrast fix
+- Institution-based credit card gradients with dark mode variants
+- Mobile transaction row overflow menu
+- Transfers page subtitle
+
+**Frontend — Dashboard:**
+- Getting Started onboarding card (zero-data state)
+- Accounts at a Glance widget
+- Monthly Activity widget (uses transaction summary endpoint)
+- Live stat cards for monthly income/spending
+
+**Frontend — Search & Refactor:**
+- Cmd+K command palette (pages + accounts)
+- Declarative `<NavbarActions>` portal component (replaces imperative setActions)
+
+### Success Criteria
+- All 26 UX critique findings addressed
+- Skip-to-content link visible on Tab focus
+- Navbar buttons collapse on mobile (<640px)
+- Dashboard shows real data from transaction summary endpoint
+- All forms use FormSheet, DatePicker, CurrencyInput, Textarea
+- `pnpm build` + `pnpm lint` + `tsc --noEmit` pass
+- `pytest` passes for all new backend code
+
+### Backlog Items Resolved
+BL-006, BL-007, BL-008, BL-009, BL-015, BL-030 (pre-verified), BL-031 (pre-verified), BL-042 (pre-verified), BL-047
+
+**Required reading:** `docs/superpowers/specs/2026-04-04-phase-3.75-ux-critique-design.md`, `guides/09-design-tokens.md`
+
+**Status:** ✅ Complete (PR #53)
 
 ---
 
