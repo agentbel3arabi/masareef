@@ -6,6 +6,7 @@ import { NavbarActionsProvider } from "@/contexts/navbar-actions-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { CommandPalette } from "@/components/shared/command-palette";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         Skip to content
       </a>
+      <CommandPalette />
       <SidebarProvider>
         <div className="flex h-screen bg-surface dark:bg-background">
           <Sidebar />
