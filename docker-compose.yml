@@ -5,7 +5,6 @@ services:
       dockerfile: Dockerfile
     container_name: masareef-api
     restart: unless-stopped
-    env_file: ./backend/.env
     ports:
       - "8000:8000"
     networks:
@@ -17,7 +16,6 @@ services:
       dockerfile: Dockerfile
     container_name: masareef-web
     restart: unless-stopped
-    env_file: ./frontend/.env
     ports:
       - "3001:3000"
     depends_on:
