@@ -435,14 +435,22 @@ function LoanCard({
         )}
       >
         {manageMode ? (
-          <button
-            type="button"
+          <div
             className="w-full text-start block"
+            role="checkbox"
+            aria-checked={selected}
+            tabIndex={0}
             onClick={() => onSelect?.(loan.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect?.(loan.id);
+              }
+            }}
             aria-label={selected ? "Deselect loan" : "Select loan"}
           >
             {cardContent}
-          </button>
+          </div>
         ) : (
           <div
             onClick={handleCardClick}
