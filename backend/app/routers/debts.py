@@ -294,9 +294,7 @@ async def delete_debt(
             ).model_dump(),
         )
     _check_p2p_write(debt, role)
-    await debt_service.soft_delete_debt(
-        session, debt, delete_transactions=delete_transactions
-    )
+    await debt_service.soft_delete_debt(session, debt, delete_transactions=delete_transactions)
 
 
 @router.get("/{debt_id}/amortization")

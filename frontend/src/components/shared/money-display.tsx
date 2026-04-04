@@ -29,6 +29,14 @@ export function MoneyDisplay({
     ? formatAmountAr(amount, currency)
     : formatAmount(amount, currency);
 
+  const showSign = colorize && amount !== 0;
+  const displayFormatted = showSign
+    ? (effectiveLocale === "ar"
+        ? formatAmountAr(Math.abs(amount), currency)
+        : formatAmount(Math.abs(amount), currency))
+    : formatted;
+  const signPrefix = showSign ? (amount > 0 ? "+" : "\u2212") : "";
+
   const symbol = CURRENCIES[currency]?.symbol ?? currency;
 
   const sizeClasses = {
@@ -47,7 +55,7 @@ export function MoneyDisplay({
         className
       )}
     >
-      {formatted}
+      {signPrefix}{displayFormatted}
       {showCurrency && <span className="text-muted-foreground ms-1">{symbol}</span>}
     </span>
   );

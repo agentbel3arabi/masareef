@@ -77,5 +77,6 @@ class TransactionResponse(BaseModel):
     ai_categorized: bool | None = False
     ai_confidence: float | None = None
     notes: str | None = None
+    debt_id: int | None = None
 
     model_config = {"from_attributes": True}

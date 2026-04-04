@@ -16,11 +16,22 @@ import { formatAmount } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 
-// Credit card physical face gradient — alternates by account id
-function creditCardGradient(id: number): string {
-  return id % 2 === 1
-    ? "from-slate-800 to-slate-900"    // dark navy
-    : "from-emerald-800 to-emerald-900"; // dark green
+const INSTITUTION_GRADIENTS: Record<string, string> = {
+  HSBC: "from-red-800 to-red-900 dark:from-red-700 dark:to-red-800",
+  CIB: "from-blue-800 to-blue-900 dark:from-blue-700 dark:to-blue-800",
+  NBE: "from-emerald-800 to-emerald-900 dark:from-emerald-700 dark:to-emerald-800",
+  QNB: "from-orange-800 to-orange-900 dark:from-orange-700 dark:to-orange-800",
+  "Banque Misr": "from-cyan-800 to-cyan-900 dark:from-cyan-700 dark:to-cyan-800",
+};
+
+const DEFAULT_GRADIENT = "from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800";
+
+function creditCardGradient(institution: string | null | undefined): string {
+  if (!institution) return DEFAULT_GRADIENT;
+  const key = Object.keys(INSTITUTION_GRADIENTS).find(
+    (k) => institution.toLowerCase().startsWith(k.toLowerCase())
+  );
+  return key ? INSTITUTION_GRADIENTS[key] : DEFAULT_GRADIENT;
 }
 
 // Last 4 digits placeholder based on account id
@@ -47,7 +58,7 @@ export function CreditAccountCard({
 }: CreditAccountCardProps) {
   const t = useTranslations("accounts");
   const router = useRouter();
-  const gradient = creditCardGradient(account.id);
+  const gradient = creditCardGradient(account.institution);
   const last4 = maskedLast4(account.id);
   const available =
     account.credit_limit != null

@@ -568,9 +568,7 @@ async def test_delete_debt_with_transactions_soft_deletes_linked(client):
     assert tx_id is not None
 
     # Delete with transactions
-    resp = await client.delete(
-        f"/api/v1/debts/{debt_id}?delete_transactions=true"
-    )
+    resp = await client.delete(f"/api/v1/debts/{debt_id}?delete_transactions=true")
     assert resp.status_code == 204
 
     # Debt should be gone from list

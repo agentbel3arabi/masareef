@@ -80,7 +80,7 @@ export function Sidebar() {
       {/* Brand tagline — below logo */}
       {!collapsed && (
         <div className="px-4 pb-3">
-          <p className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wider">
+          <p className="text-[10px] text-muted-foreground/80 font-medium uppercase tracking-wider">
             {t("brand.tagline")}
           </p>
         </div>
@@ -105,7 +105,7 @@ export function Sidebar() {
         {NAV_SECTIONS.map((section) => (
           <div key={section.label} className="mb-4">
             {!collapsed && (
-              <p className="px-4 mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              <p className="px-4 mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
                 {t(section.label)}
               </p>
             )}

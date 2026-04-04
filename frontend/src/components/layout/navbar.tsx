@@ -4,10 +4,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { Settings, Moon, Sun, Globe, LogOut, Bell } from "lucide-react";
+import { Settings, Moon, Sun, Globe, LogOut, Bell, Search } from "lucide-react";
 import { MobileNavDrawer } from "./mobile-nav-drawer";
 import { LocaleToggle } from "./locale-toggle";
 import { ThemeToggle } from "./theme-toggle";
+import { ComingSoon } from "@/components/shared/coming-soon";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -69,15 +70,26 @@ export function Navbar() {
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
-        {actions}
         <button
-          className="rounded-full p-2 text-muted-foreground/40 cursor-not-allowed"
-          aria-label={t("notifications")}
-          disabled
-          aria-disabled="true"
+          onClick={() =>
+            document.dispatchEvent(
+              new KeyboardEvent("keydown", { key: "k", metaKey: true })
+            )
+          }
+          className="hidden sm:flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent transition-colors"
         >
-          <Bell className="h-4 w-4" />
+          <Search className="h-3.5 w-3.5" />
+          {t("search")}
+          <kbd className="ms-2 rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono">
+            ⌘K
+          </kbd>
         </button>
+        {actions}
+        <ComingSoon>
+          <span className="rounded-full p-2 text-muted-foreground" aria-label={t("notifications")}>
+            <Bell className="h-4 w-4" />
+          </span>
+        </ComingSoon>
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger aria-label="Open user menu" className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">

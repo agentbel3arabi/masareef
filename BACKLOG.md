@@ -3,7 +3,7 @@
 Centralized tracker for deferred features, tech debt, bugs, new ideas, and backend dependencies.
 Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive.md).
 
-**Active items:** 43 | **By phase:** Phase 3.5 (4) · Phase 4 (21) · Phase 5+ (6) · Unscheduled (12)
+**Active items:** 34 | **By phase:** Phase 3.5 (0) · Phase 4 (18) · Phase 5+ (6) · Unscheduled (10)
 
 ---
 
@@ -16,16 +16,16 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-003 | Transaction form missing account selector | bug | Phase 3.5 | Critical | ✅ Done |
 | BL-004 | Category dropdown shows raw `__uncategorized__` | bug | Phase 3.5 | Critical | ✅ Done |
 | BL-005 | Date format standardization (dd/mm/yyyy) | bug | Phase 3.5 | Critical | ✅ Done |
-| BL-006 | Account balance trend indicator (up/down arrow) | backend-dep | Phase 3.5 | Low | ⏳ Open |
-| BL-007 | Account last activity date | backend-dep | Phase 3.5 | Low | ⏳ Open |
-| BL-008 | Default account for new transaction | backend-dep | Phase 3.5 | Low | ⏳ Open |
-| BL-009 | Monthly spending stat card on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
+| BL-006 | Account balance trend indicator (up/down arrow) | backend-dep | Phase 3.75 | Low | ✅ Done |
+| BL-007 | Account last activity date | backend-dep | Phase 3.75 | Low | ✅ Done |
+| BL-008 | Default account for new transaction | backend-dep | Phase 3.75 | Low | ✅ Done |
+| BL-009 | Monthly spending stat card on Dashboard | backend-dep | Phase 3.75 | High | ✅ Done |
 | BL-010 | Active debts stat card on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
 | BL-011 | Upcoming payments stat card on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
 | BL-012 | Chart — Income vs Expenses (bar) on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
 | BL-013 | Chart — Spending by Category (donut) on Dashboard | backend-dep | Phase 4 | High | ⏳ Open |
 | BL-014 | Account stats (income/expenses/avg this month) | backend-dep | Phase 4 | Medium | ⏳ Open |
-| BL-015 | Accurate period totals on Transactions page | backend-dep | Phase 4 | Medium | ⏳ Open |
+| BL-015 | Accurate period totals on Transactions page | backend-dep | Phase 3.75 | Medium | ✅ Done |
 | BL-016 | Currency conversion for net worth (USD/SAR) | backend-dep | Phase 4 | Medium | ⏳ Open |
 | BL-017 | CC statement cycle (billing dates, min payment) | backend-dep | Phase 4 | Medium | ⏳ Open |
 | BL-018 | Transaction posting status (pending/posted) | backend-dep | Phase 4 | Medium | ⏳ Open |
@@ -40,8 +40,8 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-027 | N+1 FX queries in compute_persons_balances_bulk | tech-debt | Phase 4 | Low | ⏳ Open |
 | BL-028 | N+1 query in list_accounts (balance per account) | tech-debt | Phase 4 | Low | ⏳ Open |
 | BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 4 | Low | ⏳ Open |
-| BL-030 | Sync httpx.get in JWKS cache (blocks event loop) | tech-debt | Phase 4 | High | ⏳ Open |
-| BL-031 | FX transfer amount computed with float division | tech-debt | Phase 4 | Medium | ⏳ Open |
+| BL-030 | Sync httpx.get in JWKS cache (blocks event loop) | tech-debt | Phase 3.75 | High | ✅ Done |
+| BL-031 | FX transfer amount computed with float division | tech-debt | Phase 3.75 | Medium | ✅ Done |
 | BL-032 | RBAC guards on remaining routers | deferred | Phase 10 — Multi-User | Medium | ⏳ Open |
 | BL-033 | Frontend auth middleware (route protection) | deferred | Phase 13 — Settings & Polish | Medium | ⏳ Open |
 | BL-034 | Frontend test infrastructure | tech-debt | Unscheduled | Medium | ⏳ Open |
@@ -52,12 +52,12 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-039 | list_transfers account_id filter matches both legs | tech-debt | Unscheduled | Low | ⏳ Open |
 | BL-040 | TransactionResponse.is_split computed dynamically | tech-debt | Unscheduled | Low | ⏳ Open |
 | BL-041 | Category name locale-aware display (name_en/name_ar) | deferred | Unscheduled | Low | ⏳ Open |
-| BL-042 | Transaction/transfer mutation error toast feedback | deferred | Unscheduled | Low | ⏳ Open |
+| BL-042 | Transaction/transfer mutation error toast feedback | deferred | Phase 3.75 | Low | ✅ Done |
 | BL-043 | Import template format field unconstrained string | tech-debt | Unscheduled | Low | ⏳ Open |
 | BL-044 | Generic[T] response typing (uses Any) | tech-debt | Unscheduled | Low | ⏳ Open |
 | BL-045 | APScheduler job persistence | deferred | Phase 11 — Notifications | Low | ⏳ Open |
 | BL-046 | Category hierarchy reporting aggregation | deferred | Phase 7 — Budgets & Savings Goals | Medium | ⏳ Open |
-| BL-047 | Transaction → debt cross-link in UI | backend-dep | Phase 3.5 | Low | ⏳ Open |
+| BL-047 | Transaction → debt cross-link in UI | backend-dep | Phase 3.75 | Low | ✅ Done |
 | BL-048 | Debt remaining calculation uses principal not actual | tech-debt | Unscheduled | Low | ⏳ Open |
 
 ---

@@ -4,10 +4,13 @@ import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RequiredLabel } from "@/components/shared/required-label";
 import { FieldError } from "@/components/shared/field-error";
 import { FormSheet } from "@/components/shared/form-sheet";
+import { CurrencyInput } from "@/components/shared/currency-input";
+import { DatePicker } from "@/components/shared/date-picker";
 import { useCreateTransaction } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { useAccounts } from "@/hooks/use-accounts";
@@ -149,7 +152,7 @@ export function TransactionForm({
 
         <div className="space-y-2">
           <RequiredLabel required>{t("common.date")}</RequiredLabel>
-          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          <DatePicker value={date} onChange={setDate} />
         </div>
 
         <div className="space-y-2">
@@ -197,9 +200,9 @@ export function TransactionForm({
         </div>
 
         <div className="space-y-2">
-          <RequiredLabel required>{t("common.amount")} ({effectiveCurrency})</RequiredLabel>
-          <Input
-            type="number"
+          <RequiredLabel required>{t("common.amount")}</RequiredLabel>
+          <CurrencyInput
+            currency={effectiveCurrency}
             step={amountStep}
             min={amountStep}
             value={amount}
@@ -211,7 +214,7 @@ export function TransactionForm({
 
         <div className="space-y-2">
           <Label>{t("transactions.notes")}</Label>
-          <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="resize-y" />
         </div>
 
         <Button type="submit" className="w-full" disabled={createTx.isPending || !activeAccountId}>
