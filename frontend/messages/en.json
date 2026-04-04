@@ -942,6 +942,7 @@
         "tenure": "Tenure (months)",
         "startDate": "Start Date",
         "paymentDayOfMonth": "Payment Day of Month",
+        "paymentDayPlaceholder": "1–28",
         "linkedAccount": "Linked Account",
         "selectAccount": "Select account",
         "none": "None",

@@ -130,8 +130,11 @@ function InstallmentFormContent({
   /* eslint-disable react-hooks/set-state-in-effect -- intentional one-time sync from start_date */
   useEffect(() => {
     if (startDate && !paymentDayOfMonth) {
-      const day = new Date(startDate).getDate();
-      setPaymentDayOfMonth(String(Math.min(day, 28)));
+      const [, , dayPart] = startDate.split("-");
+      const day = Number.parseInt(dayPart ?? "", 10);
+      if (!Number.isNaN(day)) {
+        setPaymentDayOfMonth(String(Math.min(day, 28)));
+      }
     }
   }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -215,7 +218,7 @@ function InstallmentFormContent({
           total_months: parseInt(totalMonths, 10),
           start_month: startDate,
           currency,
-          annual_rate_bps: Math.round(parseFloat(annualRate || "0") * 100),
+          annual_rate_bps: Number.isFinite(parseFloat(annualRate)) ? Math.round(parseFloat(annualRate) * 100) : 0,
           payment_day_of_month: paymentDayOfMonth ? parseInt(paymentDayOfMonth, 10) : null,
           notes: notes || null,
         },
@@ -407,7 +410,7 @@ function InstallmentFormContent({
                 onValueChange={(v) => setPaymentDayOfMonth(v ?? "")}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="1-28" />
+                  <SelectValue placeholder={t("paymentDayPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (

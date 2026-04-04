@@ -77,7 +77,7 @@ async def create_installment(
 
     start_month = data.start_month.replace(day=1)
 
-    # Default payment_day_of_month from start_date if not provided
+    # Default payment_day_of_month from start_month if not provided
     payment_day = data.payment_day_of_month
     if payment_day is None:
         payment_day = min(data.start_month.day, 28)

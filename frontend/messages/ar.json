@@ -942,6 +942,7 @@
         "tenure": "المدة (أشهر)",
         "startDate": "تاريخ البداية",
         "paymentDayOfMonth": "يوم الدفع من الشهر",
+        "paymentDayPlaceholder": "١–٢٨",
         "linkedAccount": "الحساب المرتبط",
         "selectAccount": "اختر الحساب",
         "none": "بدون",
