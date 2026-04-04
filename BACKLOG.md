@@ -3,7 +3,7 @@
 Centralized tracker for deferred features, tech debt, bugs, new ideas, and backend dependencies.
 Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive.md).
 
-**Active items:** 48 | **By phase:** Phase 3.5 (9) · Phase 4 (21) · Phase 5+ (6) · Unscheduled (12)
+**Active items:** 43 | **By phase:** Phase 3.5 (4) · Phase 4 (21) · Phase 5+ (6) · Unscheduled (12)
 
 ---
 
@@ -11,11 +11,11 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 
 | ID | Item | Category | Target | Priority | Status |
 |----|------|----------|--------|----------|--------|
-| BL-001 | Net worth card green color for negative values | bug | Phase 3.5 | Critical | ⏳ Open |
-| BL-002 | Credit card available balance green for negative | bug | Phase 3.5 | Critical | ⏳ Open |
-| BL-003 | Transaction form missing account selector | bug | Phase 3.5 | Critical | ⏳ Open |
-| BL-004 | Category dropdown shows raw `__uncategorized__` | bug | Phase 3.5 | Critical | ⏳ Open |
-| BL-005 | Date format standardization (dd/mm/yyyy) | bug | Phase 3.5 | Critical | ⏳ Open |
+| BL-001 | Net worth card green color for negative values | bug | Phase 3.5 | Critical | ✅ Done |
+| BL-002 | Credit card available balance green for negative | bug | Phase 3.5 | Critical | ✅ Done |
+| BL-003 | Transaction form missing account selector | bug | Phase 3.5 | Critical | ✅ Done |
+| BL-004 | Category dropdown shows raw `__uncategorized__` | bug | Phase 3.5 | Critical | ✅ Done |
+| BL-005 | Date format standardization (dd/mm/yyyy) | bug | Phase 3.5 | Critical | ✅ Done |
 | BL-006 | Account balance trend indicator (up/down arrow) | backend-dep | Phase 3.5 | Low | ⏳ Open |
 | BL-007 | Account last activity date | backend-dep | Phase 3.5 | Low | ⏳ Open |
 | BL-008 | Default account for new transaction | backend-dep | Phase 3.5 | Low | ⏳ Open |
@@ -63,46 +63,6 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 ---
 
 ## Phase 3.5 — UX Polish Sprint
-
-### BL-001: Net worth card green color for negative values
-- **Category:** bug
-- **Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.1
-- **Priority:** Critical
-- **Context:** When net worth is negative, the card background is green (misleading). Must show red/destructive background when value < 0 and green/success when >= 0. Affects Dashboard and Accounts page net worth summary bar.
-- **Acceptance:** Negative net worth displays with destructive color; positive with success color.
-- **Status:** ⏳ Open
-
-### BL-002: Credit card available balance green for negative
-- **Category:** bug
-- **Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.2
-- **Priority:** Critical
-- **Context:** When credit card "AVAILABLE" balance is negative (e.g., -100,324.98), it displays in green. Must show red text when Available < 0.
-- **Acceptance:** Negative available balance renders in red/destructive; positive in green/success.
-- **Status:** ⏳ Open
-
-### BL-003: Transaction form missing account selector
-- **Category:** bug
-- **Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.3
-- **Priority:** Critical
-- **Context:** The New Transaction form has no Account dropdown. Users cannot select which account a transaction belongs to from the global transactions page. Needs an account selector after the Expense/Income toggle, defaulting to the most recent transaction's account.
-- **Acceptance:** Transaction form includes a required account selector populated with active accounts; default pre-selects last used account.
-- **Status:** ⏳ Open
-
-### BL-004: Category dropdown shows raw `__uncategorized__`
-- **Category:** bug
-- **Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.4
-- **Priority:** Critical
-- **Context:** Default category in the New Transaction form shows the raw internal value `__uncategorized__` instead of a human-readable label like "Uncategorized" or "Select category".
-- **Acceptance:** Category dropdown displays "Uncategorized" or "Select category" instead of raw internal value.
-- **Status:** ⏳ Open
-
-### BL-005: Date format standardization (dd/mm/yyyy)
-- **Category:** bug
-- **Origin:** Phase 3.5 UX Polish Sprint spec, Unit 1.5
-- **Priority:** Critical
-- **Context:** Date displays are inconsistent across the app: "Apr 3, 2026" on Dashboard, "2026-04-03" in transaction tables. All dates must standardize to dd/mm/yyyy format (Egyptian convention). Requires a shared `formatDate()` utility.
-- **Acceptance:** Every date display and date input across the entire frontend uses dd/mm/yyyy format consistently.
-- **Status:** ⏳ Open
 
 ### BL-006: Account balance trend indicator (up/down arrow)
 - **Category:** backend-dep
