@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Pencil, Trash2, RotateCcw } from "lucide-react";
+import { Pencil, Trash2, RotateCcw, CreditCard, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +41,7 @@ import {
   useReactivateDebt,
 } from "@/hooks/use-debts";
 import { useAccounts } from "@/hooks/use-accounts";
+import { useNavbarActions } from "@/contexts/navbar-actions-context";
 import type { ScheduleRowStatus } from "@/lib/types/debts";
 
 // ── Status mapping ─────────────────────────────────────────
@@ -106,6 +107,61 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
   const markPaid = useMarkDebtPaid();
   const deleteMutation = useDeleteDebt();
   const reactivateMutation = useReactivateDebt();
+  const { setActions } = useNavbarActions();
+
+  const debt = debtRes?.data;
+  const schedule = scheduleRes?.data ?? [];
+
+  useEffect(() => {
+    if (!debt) {
+      setActions(null);
+      return;
+    }
+    if (debt.status === "active") {
+      setActions(
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const nextRow = schedule.find((r) => r.status !== "paid");
+              setPaymentPrefill(nextRow ? {
+                amount: nextRow.payment_minor,
+                date: nextRow.date,
+                installmentNumber: nextRow.payment_number,
+              } : {});
+              setPaymentOpen(true);
+            }}
+          >
+            <CreditCard className="h-4 w-4 me-1" />
+            {tActions("recordPayment")}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCompleteDialogOpen(true)}
+          >
+            <CheckCircle className="h-4 w-4 me-1" />
+            {tActions("markPaid")}
+          </Button>
+        </div>
+      );
+    } else if (debt.status === "paid_off") {
+      setActions(
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setReactivateDialogOpen(true)}
+        >
+          <RotateCcw className="h-4 w-4 me-1" />
+          {tActions("reactivate")}
+        </Button>
+      );
+    } else {
+      setActions(null);
+    }
+    return () => setActions(null);
+  }, [debt?.status, debt?.id, schedule, tActions, setActions]);
 
   // Loading
   if (debtLoading) return <LoanDetailSkeleton />;
@@ -119,8 +175,6 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
     );
   }
 
-  const debt = debtRes?.data;
-
   // Not found
   if (!debt) {
     return (
@@ -129,8 +183,6 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
       </div>
     );
   }
-
-  const schedule = scheduleRes?.data ?? [];
   const payments = paymentsRes?.data ?? [];
   const accounts = accountsRes?.data ?? [];
 
@@ -273,40 +325,6 @@ export function LoanDetailContent({ debtId }: LoanDetailContentProps) {
           <span className="font-medium">{progressPercent}%</span>
         </div>
         <ProgressBar value={progressPercent} size="md" showLabel={false} />
-      </div>
-
-      {/* ── Actions ───────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3">
-        {debt.status === "active" && (
-          <>
-            <Button onClick={() => {
-              const nextRow = schedule.find((r) => r.status !== "paid");
-              setPaymentPrefill(nextRow ? {
-                amount: nextRow.payment_minor,
-                date: nextRow.date,
-                installmentNumber: nextRow.payment_number,
-              } : {});
-              setPaymentOpen(true);
-            }}>
-              {tActions("recordPayment")}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setCompleteDialogOpen(true)}
-            >
-              {tActions("markPaid")}
-            </Button>
-          </>
-        )}
-        {debt.status === "paid_off" && (
-          <Button
-            variant="outline"
-            onClick={() => setReactivateDialogOpen(true)}
-          >
-            <RotateCcw className="h-4 w-4 me-1.5" />
-            {tActions("reactivate")}
-          </Button>
-        )}
       </div>
 
       {/* ── Complete Dialog (Bug 1) ──────────────────── */}
