@@ -5,16 +5,19 @@ import { useTranslations, useLocale } from "next-intl";
 import { Trash2, Pencil, MoreVertical } from "lucide-react";
 import { CategoryIcon, getCategoryIcon } from "@/lib/category-icon";
 import { MoneyDisplay } from "@/components/shared/money-display";
+import { FormSheet } from "@/components/shared/form-sheet";
+import { CurrencyInput } from "@/components/shared/currency-input";
+import { DatePicker } from "@/components/shared/date-picker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import {
   Dialog,
@@ -263,124 +266,114 @@ export function TransactionRow({
         </DialogContent>
       </Dialog>
 
-      {/* Edit dialog */}
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("transactions.editTransaction")}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleEdit} className="space-y-4 mt-2">
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant={type === "debit" ? "default" : "outline"}
-                className="grow"
-                onClick={() => { setType("debit"); setCategoryId(""); }}
-              >
-                {t("transactions.expense")}
-              </Button>
-              <Button
-                type="button"
-                variant={type === "credit" ? "default" : "outline"}
-                className="grow"
-                onClick={() => { setType("credit"); setCategoryId(""); }}
-              >
-                {t("transactions.incomeType")}
-              </Button>
-            </div>
+      {/* Edit sheet */}
+      <FormSheet open={editOpen} onOpenChange={setEditOpen} title={t("transactions.editTransaction")}>
+        <form onSubmit={handleEdit} className="space-y-4">
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant={type === "debit" ? "default" : "outline"}
+              className="grow"
+              onClick={() => { setType("debit"); setCategoryId(""); }}
+            >
+              {t("transactions.expense")}
+            </Button>
+            <Button
+              type="button"
+              variant={type === "credit" ? "default" : "outline"}
+              className="grow"
+              onClick={() => { setType("credit"); setCategoryId(""); }}
+            >
+              {t("transactions.incomeType")}
+            </Button>
+          </div>
 
-            <div className="space-y-2">
-              <Label>{t("common.date")}</Label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>{t("common.date")}</Label>
+            <DatePicker value={date} onChange={setDate} required />
+          </div>
 
-            <div className="space-y-2">
-              <Label>{t("common.description")}</Label>
-              <Input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t("transactions.descriptionPlaceholder")}
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>{t("common.description")}</Label>
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t("transactions.descriptionPlaceholder")}
+              required
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label>{t("transactions.category")}</Label>
-              <Select
-                value={categoryId === "" ? "__uncategorized__" : String(categoryId)}
-                onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
-              >
-                <SelectTrigger className="w-full">
-                  {(() => {
-                    const selectedCategory =
-                      categoryId !== ""
-                        ? categoriesData?.data?.find((c) => c.id === categoryId) ??
-                          (transaction.category?.id === categoryId ? transaction.category : undefined)
-                        : undefined;
-                    if (selectedCategory) {
-                      return (
-                        <span className="flex items-center gap-2">
-                          <CategoryIcon icon={selectedCategory.icon} className="h-4 w-4 shrink-0" />
-                          {locale === "ar" && selectedCategory.name_ar
-                            ? selectedCategory.name_ar
-                            : selectedCategory.name_en}
-                        </span>
-                      );
-                    }
-                    return <span className="text-muted-foreground">{t("transactions.uncategorized")}</span>;
-                  })()}
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__uncategorized__">{t("transactions.uncategorized")}</SelectItem>
-                  {(categoriesData?.data || []).map((cat) => (
-                    <SelectItem key={cat.id} value={String(cat.id)}>
+          <div className="space-y-2">
+            <Label>{t("transactions.category")}</Label>
+            <Select
+              value={categoryId === "" ? "__uncategorized__" : String(categoryId)}
+              onValueChange={(val) => setCategoryId(val === "__uncategorized__" ? "" : Number(val))}
+            >
+              <SelectTrigger className="w-full">
+                {(() => {
+                  const selectedCategory =
+                    categoryId !== ""
+                      ? categoriesData?.data?.find((c) => c.id === categoryId) ??
+                        (transaction.category?.id === categoryId ? transaction.category : undefined)
+                      : undefined;
+                  if (selectedCategory) {
+                    return (
                       <span className="flex items-center gap-2">
-                        <CategoryIcon icon={cat.icon} className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                        <CategoryIcon icon={selectedCategory.icon} className="h-4 w-4 shrink-0" />
+                        {locale === "ar" && selectedCategory.name_ar
+                          ? selectedCategory.name_ar
+                          : selectedCategory.name_en}
                       </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                    );
+                  }
+                  return <span className="text-muted-foreground">{t("transactions.uncategorized")}</span>;
+                })()}
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__uncategorized__">{t("transactions.uncategorized")}</SelectItem>
+                {(categoriesData?.data || []).map((cat) => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    <span className="flex items-center gap-2">
+                      <CategoryIcon icon={cat.icon} className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-            <div className="space-y-2">
-              <Label>{t("common.amount")} ({transaction.currency})</Label>
-              <Input
-                type="number"
-                step={amountStep}
-                min={amountStep}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>{t("common.amount")}</Label>
+            <CurrencyInput
+              currency={transaction.currency}
+              step={amountStep}
+              min={amountStep}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label>{t("transactions.notes")}</Label>
-              <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
-            </div>
+          <div className="space-y-2">
+            <Label>{t("transactions.notes")}</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="resize-y" />
+          </div>
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setEditOpen(false)}
-              >
-                {t("common.cancel")}
-              </Button>
-              <Button type="submit" disabled={updateTx.isPending}>
-                {updateTx.isPending ? t("common.loading") : t("common.save")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setEditOpen(false)}
+            >
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" disabled={updateTx.isPending}>
+              {updateTx.isPending ? t("common.loading") : t("common.save")}
+            </Button>
+          </div>
+        </form>
+      </FormSheet>
     </>
   );
 }
