@@ -25,7 +25,9 @@
     "installmentCompleted": "Installment plan completed",
     "personCreated": "Person created successfully",
     "personUpdated": "Person updated successfully",
-    "personDeleted": "Person deleted successfully"
+    "personDeleted": "Person deleted successfully",
+    "bulkPastPaymentsRecorded": "Past payments recorded successfully",
+    "bulkPaymentRecorded": "Bulk payment recorded successfully"
   },
   "common": {
     "appName": "Masareef",
@@ -48,6 +50,7 @@
     "name": "Name",
     "unexpectedError": "An unexpected error occurred",
     "notFound": "Not found",
+    "fieldRequired": "This field is required",
     "date": "Date",
     "description": "Description",
     "amount": "Amount",

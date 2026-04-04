@@ -25,7 +25,9 @@
     "installmentCompleted": "تم إكمال خطة الأقساط",
     "personCreated": "تم إنشاء الشخص بنجاح",
     "personUpdated": "تم تحديث الشخص بنجاح",
-    "personDeleted": "تم حذف الشخص بنجاح"
+    "personDeleted": "تم حذف الشخص بنجاح",
+    "bulkPastPaymentsRecorded": "تم تسجيل المدفوعات السابقة بنجاح",
+    "bulkPaymentRecorded": "تم تسجيل الدفعة الجماعية بنجاح"
   },
   "common": {
     "appName": "مصاريف",
@@ -48,6 +50,7 @@
     "name": "الاسم",
     "unexpectedError": "حدث خطأ غير متوقع",
     "notFound": "غير موجود",
+    "fieldRequired": "هذا الحقل مطلوب",
     "date": "التاريخ",
     "description": "الوصف",
     "amount": "المبلغ",
