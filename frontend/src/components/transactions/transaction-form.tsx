@@ -71,7 +71,7 @@ export function TransactionForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    if (!amount || !date || (!accountId && !selectedAccountId)) return;
+    if (!activeAccountId || !amount || !date) return;
     const amountMinor = Math.abs(parseMajorToMinor(amount, exponent));
     if (amountMinor === 0) return;
 
