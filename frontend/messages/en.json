@@ -59,7 +59,9 @@
     "back": "Back",
     "total": "{count} total",
     "select": "Select...",
-    "permissionDenied": "You don't have permission to perform this action"
+    "permissionDenied": "You don't have permission to perform this action",
+    "skipToContent": "Skip to content",
+    "actions": "Actions"
   },
   "onboarding": {
     "step1": {

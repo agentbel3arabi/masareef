@@ -220,7 +220,7 @@ export function TransactionRow({
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" aria-label={t("common.actions")}>
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     }
@@ -290,7 +290,7 @@ export function TransactionRow({
 
           <div className="space-y-2">
             <Label>{t("common.date")}</Label>
-            <DatePicker value={date} onChange={setDate} required />
+            <DatePicker value={date} onChange={setDate} />
           </div>
 
           <div className="space-y-2">

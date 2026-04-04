@@ -26,7 +26,7 @@ export function ResponsiveActions({ primary, secondary, secondaryMenuItems }: Re
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="outline" size="icon" className="h-8 w-8">
+                <Button variant="outline" size="icon" className="h-8 w-8" aria-label="More actions">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               }

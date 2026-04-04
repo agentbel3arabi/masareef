@@ -231,6 +231,7 @@ async def get_balance_history(
         Transaction.is_active.is_(True),
         Transaction.applies_to_balance.is_(True),
         Transaction.date >= period_start,
+        Transaction.date <= today,
     )
     period_sum: int = (await session.execute(period_sum_q)).scalar_one()
 
@@ -252,4 +253,5 @@ async def get_balance_history(
         "change_direction": change_direction,
         "period": period,
         "period_start": period_start.isoformat(),
+        "period_end": today.isoformat(),
     }

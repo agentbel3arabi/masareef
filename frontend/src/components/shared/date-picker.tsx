@@ -13,7 +13,6 @@ interface DatePickerProps {
   value: string; // YYYY-MM-DD
   onChange: (value: string) => void;
   placeholder?: string;
-  required?: boolean;
 }
 
 export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {

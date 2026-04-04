@@ -90,7 +90,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Getting Started card for new users */}
-      {isNewUser && !dismissed && (
+      {!dismissed && (!hasAccounts || !hasTransactions) && (
         <GettingStartedCard
           hasAccounts={hasAccounts}
           hasTransactions={hasTransactions}

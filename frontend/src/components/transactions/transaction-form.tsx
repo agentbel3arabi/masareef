@@ -152,7 +152,7 @@ export function TransactionForm({
 
         <div className="space-y-2">
           <RequiredLabel required>{t("common.date")}</RequiredLabel>
-          <DatePicker value={date} onChange={setDate} required />
+          <DatePicker value={date} onChange={setDate} />
         </div>
 
         <div className="space-y-2">

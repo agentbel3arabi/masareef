@@ -59,7 +59,9 @@
     "back": "رجوع",
     "total": "{count} إجمالي",
     "select": "اختر...",
-    "permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء"
+    "permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء",
+    "skipToContent": "تخطي إلى المحتوى",
+    "actions": "إجراءات"
   },
   "onboarding": {
     "step1": {
