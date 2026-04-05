@@ -13,6 +13,7 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 | 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large | — | ✅ Complete |
 | 3.5 | UX Polish Sprint | Fix critical UX bugs, form consistency, card enhancements, date standardization | Medium | — | ✅ Complete |
 | 3.75 | UX Critique & Cleanup | Accessibility, mobile layout, form fixes, visual polish, dashboard widgets, command palette, navbar refactor | Medium | — | ✅ Complete |
+| 3.8 | Financial Institutions | Banking institution directory, account grouping, transaction-based balances, system categories | Large | 6 open | ⏳ Pending |
 | 4 | Dashboard & Charts | Plotly charts, remaining dashboard stat cards, asset summary | Medium | 18 open | ⏳ Pending |
 | 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium | 1 open | ⏳ Pending |
 | 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium | — | ⏳ Pending |
@@ -430,6 +431,45 @@ BL-006, BL-007, BL-008, BL-009, BL-015, BL-030 (pre-verified), BL-031 (pre-verif
 **Required reading:** `docs/superpowers/specs/2026-04-04-phase-3.75-ux-critique-design.md`, `guides/09-design-tokens.md`
 
 **Status:** ✅ Complete (PR #53)
+
+---
+
+## Phase 3.8: Financial Institutions
+**Unlocks:** Structured bank/BNPL/wallet provider directory, account grouping by institution, transaction-based balance tracking, bank detail pages.
+
+### Problem
+Accounts are flat — each bank account, credit card, and financing app is independent with a free-text `institution` field. No bank logos, no standardized names, no grouping. Users can't see all their CIB accounts in one view.
+
+### Deliverables
+- `financial_institutions` table with type discriminator (bank/bnpl/digital_wallet_provider)
+- Seeded Egyptian bank directory (~25 banks), BNPL providers (~11), digital wallet providers (~9)
+- Account FK to institution with type validation
+- Transaction-based balances (drop `balance_minor` seed column, Opening Balance as system transaction)
+- System categories (Opening Balance, Reconciliation Adjustment) — hidden from user picker, non-reassignable
+- Reconciliation flow creating adjustment transactions + audit records
+- IBAN validation (MOD97) with duplicate soft warning
+- Account metadata fields: iban, account_number, account_tier, branch
+- Institution selector combobox (bilingual search, logos, popular pinning, "Other" escape hatch)
+- Accounts page redesigned: bank-grouped collapsible sections, independent BNPL/wallet/cash sections with totals
+- Bank detail page (`/accounts/bank/[slug]`) with summary stats
+- Bundled institution logo SVGs
+
+### Success Criteria
+- All bank accounts and credit cards group under their institution on the accounts page
+- Opening Balance transaction created on account creation, balance fully transaction-derived
+- System categories cannot be manually assigned to transactions
+- Institution selector searches bilingually (Arabic + English simultaneously)
+- Bank detail page shows all accounts at one institution with total deposits/liabilities
+- IBAN validates with MOD97 check digits
+
+### Implementation Sequence
+See `docs/superpowers/plans/2026-04-05-financial-institutions.md` — 28 tasks across 8 units.
+
+**Migration strategy:** Clean slate — drop existing data, no backward compatibility.
+
+**Required reading:** `superpowers/specs/2026-04-05-financial-institutions-design.md`, `02-data-models.md`, `03-features/accounts.md`, `01-architecture.md`, `guides/09-design-tokens.md`
+
+**Status:** ⏳ Pending
 
 ---
 

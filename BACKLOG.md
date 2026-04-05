@@ -3,7 +3,7 @@
 Centralized tracker for deferred features, tech debt, bugs, new ideas, and backend dependencies.
 Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive.md).
 
-**Active items:** 34 | **By phase:** Phase 3.5 (0) · Phase 4 (18) · Phase 5+ (6) · Unscheduled (10)
+**Active items:** 40 | **By phase:** Phase 3.5 (0) · Phase 3.8 (6) · Phase 4 (18) · Phase 5+ (6) · Unscheduled (10)
 
 ---
 
@@ -59,6 +59,12 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-046 | Category hierarchy reporting aggregation | deferred | Phase 7 — Budgets & Savings Goals | Medium | ⏳ Open |
 | BL-047 | Transaction → debt cross-link in UI | backend-dep | Phase 3.75 | Low | ✅ Done |
 | BL-048 | Debt remaining calculation uses principal not actual | tech-debt | Unscheduled | Low | ⏳ Open |
+| BL-049 | Bank detail page: cross-account insights (option B) | deferred | Phase 12 — Reports & Export | Medium | ⏳ Open |
+| BL-050 | Bank detail page: full relationship dashboard (option C) | deferred | Phase 12 — Reports & Export | Low | ⏳ Open |
+| BL-051 | Drag-and-drop section reordering on accounts page | deferred | Phase 3.8 — Financial Institutions | Low | ⏳ Open |
+| BL-052 | >80% utilization red example in design reference | docs | Phase 3.8 — Financial Institutions | Low | ⏳ Open |
+| BL-053 | Digital wallet optional institution linking UI | deferred | Future | Low | ⏳ Open |
+| BL-054 | Branch field as dropdown from bank's branch list | deferred | Future | Low | ⏳ Open |
 
 ---
 
@@ -94,6 +100,58 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Low
 - **Context:** Transaction form should pre-select the account from the user's most recent transaction. Needs a query for the last transaction's `account_id` for the household.
 - **Acceptance:** New Transaction form pre-selects the most recently used account.
+- **Status:** ⏳ Open
+
+---
+
+## Phase 3.8 — Financial Institutions
+
+### BL-049: Bank detail page: cross-account insights (option B)
+- **Category:** deferred
+- **Origin:** Financial institutions design spec §8; brainstorming Q4 options B/C
+- **Priority:** Medium
+- **Context:** Bank detail page (Phase 3.8) only implements option A (summary + account list). Option B adds cross-account insights: combined transaction history across all accounts at a bank, spending breakdown by category across all accounts at the bank.
+- **Acceptance:** Bank detail page shows aggregated transaction history and category breakdown spanning all accounts at the institution.
+- **Status:** ⏳ Open
+
+### BL-050: Bank detail page: full relationship dashboard (option C)
+- **Category:** deferred
+- **Origin:** Financial institutions design spec §8; brainstorming Q4 options B/C
+- **Priority:** Low
+- **Context:** Extends option B with bank-specific reports, document storage (statement archives per bank), contact info, branch details.
+- **Acceptance:** Bank detail page includes reports, document storage, and branch/contact management.
+- **Status:** ⏳ Open
+
+### BL-051: Drag-and-drop section reordering on accounts page
+- **Category:** deferred
+- **Origin:** Financial institutions design spec §8; brainstorming discussion on section ordering
+- **Priority:** Low
+- **Context:** Data model supports `sort_order` for section reordering, but the drag-and-drop UI is deferred. Users should be able to reorder bank groups and independent sections via drag handles. Preference stored per household member.
+- **Acceptance:** Accounts page has a "Customize" mode with drag-and-drop reordering of sections, persisted per user.
+- **Status:** ⏳ Open
+
+### BL-052: >80% utilization red example in design reference
+- **Category:** docs
+- **Origin:** Financial institutions brainstorming — accounts page layout v3 feedback
+- **Priority:** Low
+- **Context:** The mockups show green (<50%) and amber (50-80%) utilization examples but no >80% red example. Should add a red utilization example to the design reference for visual completeness.
+- **Acceptance:** Design mockups include an example of >80% utilization with red color treatment.
+- **Status:** ⏳ Open
+
+### BL-053: Digital wallet optional institution linking UI
+- **Category:** deferred
+- **Origin:** Financial institutions design spec §8; brainstorming Q1
+- **Priority:** Low
+- **Context:** Digital wallets (Vodafone Cash, Fawry) can optionally link to a digital_wallet_provider institution via FK. The data model supports this but the UI for linking/displaying is deferred. Currently digital wallet cards show no institution branding.
+- **Acceptance:** Digital wallet cards show provider logo when institution is linked; account creation allows optional provider selection.
+- **Status:** ⏳ Open
+
+### BL-054: Branch field as dropdown from bank's branch list
+- **Category:** deferred
+- **Origin:** Financial institutions design spec §8; brainstorming Q6
+- **Priority:** Low
+- **Context:** Branch field on account creation is currently free-text. Future enhancement could make it a searchable dropdown populated from a bank's branch directory. Would require a `branches` table or external data source.
+- **Acceptance:** Branch field offers autocomplete from a per-bank branch list when available, with free-text fallback.
 - **Status:** ⏳ Open
 
 ---
