@@ -48,6 +48,7 @@ async function handleError(res: Response): Promise<never> {
   try {
     const json = await res.json();
     if (json?.error) body = json.error;
+    else if (json?.detail?.error) body = json.detail.error;
   } catch {
     // intentional: non-JSON error responses fall back to UNKNOWN_ERROR body
   }

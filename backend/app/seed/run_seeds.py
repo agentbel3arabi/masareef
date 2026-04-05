@@ -24,7 +24,7 @@ async def _upsert_institution(session, institution_data: dict, institution_type:
             type=institution_type,
             is_predefined=True,
             country="EG",
-            logo_url=f"/institutions/{institution_data['slug']}.svg",
+            logo_url=None,  # No logo SVGs yet — frontend uses initials fallback
             **institution_data,
         )
         session.add(inst)
