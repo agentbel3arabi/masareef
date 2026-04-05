@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -88,13 +88,6 @@ export function CreateAccountDialog({
   const balancePlaceholder = (0).toFixed(exponent);
   const isCreditType = CREDIT_TYPES.has(type);
   const needsInstitution = INSTITUTION_TYPES.has(type);
-
-  // When preselectedInstitution changes, sync it
-  useEffect(() => {
-    if (preselectedInstitution) {
-      setInstitution(preselectedInstitution);
-    }
-  }, [preselectedInstitution]);
 
   // Reset institution when account type changes if institution type changes
   const handleTypeChange = (newType: string) => {
