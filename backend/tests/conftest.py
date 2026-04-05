@@ -17,12 +17,14 @@ from app.models import (  # noqa: F401
     Debt,
     DebtPayment,
     ExchangeRate,
+    FinancialInstitution,  # noqa: F401
     Household,
     HouseholdMember,
     ImportTemplate,  # noqa: F401
     InstallmentPlan,
     P2PDebtSplit,
     Person,
+    ReconciliationRecord,  # noqa: F401
     Transaction,
     TransactionSplit,
 )

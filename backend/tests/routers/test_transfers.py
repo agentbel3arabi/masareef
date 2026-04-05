@@ -13,7 +13,7 @@ async def _create_accounts(client) -> tuple[int, int]:
             "name": "Bank",
             "type": "bank_account",
             "currency": "EGP",
-            "initial_balance": 1000000,
+            "opening_balance": 1000000,
         },
     )
     assert r1.status_code == 201, r1.text
@@ -23,7 +23,7 @@ async def _create_accounts(client) -> tuple[int, int]:
             "name": "Cash",
             "type": "cash_wallet",
             "currency": "EGP",
-            "initial_balance": 0,
+            "opening_balance": 0,
         },
     )
     assert r2.status_code == 201, r2.text
@@ -74,11 +74,11 @@ async def test_transfer_updates_both_balances(client):
 
     bank_resp = await client.get(f"/api/v1/accounts/{bank_id}")
     assert bank_resp.status_code == 200
-    assert bank_resp.json()["data"]["balance_minor"] == 500000
+    assert bank_resp.json()["data"]["displayed_balance_minor"] == 500000
 
     cash_resp = await client.get(f"/api/v1/accounts/{cash_id}")
     assert cash_resp.status_code == 200
-    assert cash_resp.json()["data"]["balance_minor"] == 500000
+    assert cash_resp.json()["data"]["displayed_balance_minor"] == 500000
 
 
 @pytest.mark.asyncio
@@ -123,10 +123,10 @@ async def test_delete_transfer_reverses_both_balances(client):
 
     # Check balances restored
     bank_resp = await client.get(f"/api/v1/accounts/{bank_id}")
-    assert bank_resp.json()["data"]["balance_minor"] == 1000000
+    assert bank_resp.json()["data"]["displayed_balance_minor"] == 1000000
 
     cash_resp = await client.get(f"/api/v1/accounts/{cash_id}")
-    assert cash_resp.json()["data"]["balance_minor"] == 0
+    assert cash_resp.json()["data"]["displayed_balance_minor"] == 0
 
 
 @pytest.mark.asyncio

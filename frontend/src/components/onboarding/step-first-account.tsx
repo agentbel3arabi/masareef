@@ -12,8 +12,8 @@ const CREDIT_TYPES = new Set(["credit_card", "financing_app"]);
 interface AccountData {
   name: string;
   type: string;
-  initial_balance: number;
-  institution?: string;
+  opening_balance: number;
+  institution_id?: number;
   opened_at?: string;
   credit_limit?: number;
   billing_cycle_day?: number;
@@ -38,7 +38,6 @@ export function StepFirstAccount({
   const t = useTranslations();
   const [name, setName] = useState("");
   const [type, setType] = useState("bank_account");
-  const [institution, setInstitution] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
   const [openedAt, setOpenedAt] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
@@ -54,8 +53,7 @@ export function StepFirstAccount({
     onNext({
       name,
       type,
-      initial_balance: initialBalance ? parseMajorToMinor(initialBalance, exponent) : 0,
-      institution: institution || undefined,
+      opening_balance: initialBalance ? parseMajorToMinor(initialBalance, exponent) : 0,
       opened_at: openedAt || undefined,
       credit_limit: isCreditType && creditLimit ? parseMajorToMinor(creditLimit, exponent) : undefined,
       billing_cycle_day: isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
@@ -94,16 +92,6 @@ export function StepFirstAccount({
             <option value="digital_wallet">{t("onboarding.step3.accountTypes.digitalWallet")}</option>
             <option value="financing_app">{t("accounts.financingApp")}</option>
           </select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="account-institution">{t("accounts.institution")}</Label>
-          <Input
-            id="account-institution"
-            value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-            placeholder={t("accounts.institutionPlaceholder")}
-          />
         </div>
 
         <div className="space-y-2">

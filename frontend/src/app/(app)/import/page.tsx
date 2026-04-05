@@ -186,7 +186,7 @@ export default function ImportPage() {
   // ── Preview step: user commits selected rows ─────────────────────────────
   async function handleCommit(selectedRows: ParsedRow[]) {
     if (state.step !== "preview") return;
-    const { accountId, currency } = state;
+    const { accountId } = state;
 
     try {
       await commitMutation.mutateAsync({

@@ -68,6 +68,8 @@ export function TransactionRow({
   const deleteTx = useDeleteTransaction();
   const updateTx = useUpdateTransaction();
 
+  const isSystemTransaction = transaction.category?.is_system === true;
+
   // Edit form state — pre-filled from the transaction
   const exponent = CURRENCIES[transaction.currency]?.exponent ?? 2;
   const initialAmount = (Math.abs(transaction.amount_minor) / Math.pow(10, exponent)).toFixed(exponent);
@@ -157,6 +159,7 @@ export function TransactionRow({
                 accountId={account.id}
                 accountName={account.name}
                 accountType={account.type}
+                institution={account.institution}
               />
             ) : null}
           </td>
@@ -192,7 +195,7 @@ export function TransactionRow({
           />
         </td>
         <td className="px-4 py-3">
-          {!bulkMode && (
+          {!bulkMode && !isSystemTransaction && (
             <>
               {/* Desktop: hover-reveal buttons */}
               <div className="hidden sm:flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">

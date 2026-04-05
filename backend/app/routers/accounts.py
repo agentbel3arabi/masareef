@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
@@ -10,38 +10,85 @@ from app.dependencies_rbac import get_member_role, require_role
 from app.models.account import Account
 from app.models.enums import HouseholdRole
 from app.models.transaction import Transaction
-from app.schemas.account import AccountCreate, AccountResponse, AccountUpdate, ReconcileRequest
-from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse
+from app.schemas.account import (
+    AccountCreate,
+    AccountDetailResponse,
+    AccountResponse,
+    AccountUpdate,
+    InstitutionEmbed,
+    MonthlyStats,
+    ReconcileRequest,
+)
+from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse, Warning
 from app.services import account as account_service
 from app.services import installment as installment_service
 
 router = APIRouter(prefix="/api/v1/accounts", tags=["accounts"])
 
 
-def _account_to_response(
+async def _build_account_response(
+    session: AsyncSession,
     account: Account,
     displayed_balance: int,
     last_transaction_date: "datetime.date | None" = None,
-) -> AccountResponse:
-    """Build an AccountResponse from an Account ORM object."""
+    monthly_stats: "MonthlyStats | None" = None,
+    *,
+    detail: bool = False,
+    institution_embed: "InstitutionEmbed | None" = None,
+) -> dict:
+    """Build account response dict with optional institution embed.
+
+    If institution_embed is not provided, it will be fetched from the DB.
+    Callers should pre-load institutions in bulk for list endpoints.
+    """
+    if institution_embed is None and account.institution_id is not None:
+        from app.services.financial_institution import get_institution_by_id
+
+        inst = await get_institution_by_id(
+            session,
+            account.household_id,
+            account.institution_id,
+        )
+        if inst:
+            institution_embed = InstitutionEmbed.model_validate(inst)
+
+    # Compute IBAN last 4
+    iban_last4 = account.iban[-4:] if account.iban else None
+
     # SQLite stores enum values as plain strings; PostgreSQL returns AccountType enum instances
     acct_type = account.type
-    return AccountResponse(
-        id=account.id,
-        name=account.name,
-        name_ar=account.name_ar,
-        type=acct_type.value if hasattr(acct_type, "value") else acct_type,
-        currency=account.currency,
-        balance_minor=account.balance_minor,
-        displayed_balance_minor=displayed_balance,
-        institution=account.institution,
-        credit_limit=account.credit_limit,
-        billing_cycle_day=account.billing_cycle_day,
-        payment_due_day=account.payment_due_day,
-        opened_at=account.opened_at,
-        is_active=account.is_active,
-        last_transaction_date=last_transaction_date,
-    )
+    type_str = acct_type.value if hasattr(acct_type, "value") else acct_type
+
+    base_data = {
+        "id": account.id,
+        "name": account.name,
+        "name_ar": account.name_ar,
+        "type": type_str,
+        "currency": account.currency,
+        "displayed_balance_minor": displayed_balance,
+        "institution": institution_embed,
+        "iban_last4": iban_last4,
+        "account_tier": account.account_tier,
+        "credit_limit": account.credit_limit,
+        "billing_cycle_day": account.billing_cycle_day,
+        "payment_due_day": account.payment_due_day,
+        "opened_at": account.opened_at,
+        "is_active": account.is_active,
+        "last_transaction_date": last_transaction_date,
+        "monthly_stats": monthly_stats,
+    }
+
+    if detail:
+        resp = AccountDetailResponse(
+            **base_data,
+            iban=account.iban,
+            account_number=account.account_number,
+            branch=account.branch,
+        )
+    else:
+        resp = AccountResponse(**base_data)
+
+    return resp.model_dump()
 
 
 @router.get("")
@@ -76,15 +123,72 @@ async def list_accounts(
     else:
         last_tx_map = {}
 
+    # Batch fetch current month stats per account
+    month_stats_map: dict[int, MonthlyStats] = {}
+    if acct_ids:
+        month_start = datetime.date.today().replace(day=1)
+        month_stats_stmt = (
+            select(
+                Transaction.account_id,
+                func.sum(
+                    case(
+                        (Transaction.amount_minor > 0, Transaction.amount_minor),
+                        else_=0,
+                    )
+                ).label("income"),
+                func.sum(
+                    case(
+                        (Transaction.amount_minor < 0, func.abs(Transaction.amount_minor)),
+                        else_=0,
+                    )
+                ).label("expense"),
+                func.count().label("tx_count"),
+            )
+            .where(
+                Transaction.household_id == household_id,
+                Transaction.is_active.is_(True),
+                Transaction.account_id.in_(acct_ids),
+                Transaction.date >= month_start,
+                Transaction.applies_to_balance.is_(True),
+            )
+            .group_by(Transaction.account_id)
+        )
+        month_result = await session.execute(month_stats_stmt)
+        for row in month_result:
+            month_stats_map[row.account_id] = MonthlyStats(
+                month_income_minor=int(row.income or 0),
+                month_expense_minor=int(row.expense or 0),
+                month_transaction_count=int(row.tx_count or 0),
+            )
+
+    # Batch preload institutions to avoid N+1 queries
+    institution_map: dict[int, InstitutionEmbed] = {}
+    inst_ids = {a.institution_id for a in accounts if a.institution_id is not None}
+    if inst_ids:
+        from app.models.financial_institution import FinancialInstitution
+
+        inst_stmt = select(FinancialInstitution).where(FinancialInstitution.id.in_(inst_ids))
+        inst_result = await session.execute(inst_stmt)
+        for inst in inst_result.scalars():
+            institution_map[inst.id] = InstitutionEmbed.model_validate(inst)
+
     # TODO: batch balance computation to avoid N+1 queries
     items = []
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)
-        items.append(
-            _account_to_response(acct, displayed, last_transaction_date=last_tx_map.get(acct.id))
+        item = await _build_account_response(
+            session,
+            acct,
+            displayed,
+            last_transaction_date=last_tx_map.get(acct.id),
+            monthly_stats=month_stats_map.get(acct.id),
+            institution_embed=institution_map.get(acct.institution_id)
+            if acct.institution_id
+            else None,
         )
+        items.append(item)
     return SuccessResponse(
-        data=[item.model_dump() for item in items],
+        data=items,
         meta=PaginationMeta(total=total, page=page, page_size=page_size),
     )
 
@@ -134,8 +238,8 @@ async def get_account(
             ).model_dump(),
         )
     displayed = await account_service.compute_displayed_balance(session, account)
-    resp = _account_to_response(account, displayed)
-    return SuccessResponse(data=resp.model_dump())
+    resp = await _build_account_response(session, account, displayed, detail=True)
+    return SuccessResponse(data=resp)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -145,10 +249,44 @@ async def create_account(
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
+    # Validate institution assignment
+    account_type_str = str(data.type.value) if hasattr(data.type, "value") else str(data.type)
+    try:
+        inst_warnings = await account_service.validate_institution(
+            session, household_id, account_type_str, data.institution_id
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+            ).model_dump(),
+        )
+
+    # Validate IBAN format if provided
+    warnings: list[dict] = list(inst_warnings)
+    if data.iban:
+        if not account_service.validate_iban(data.iban):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=ErrorResponse(
+                    error=ErrorDetail(code="INVALID_IBAN", message="IBAN format is invalid")
+                ).model_dump(),
+            )
+        # Check IBAN duplicate
+        iban_warnings = await account_service.check_iban_duplicate(session, household_id, data.iban)
+        warnings.extend(iban_warnings)
+
     account = await account_service.create_account(session, household_id, data)
     displayed = await account_service.compute_displayed_balance(session, account)
-    resp = _account_to_response(account, displayed)
-    return SuccessResponse(data=resp.model_dump())
+    resp = await _build_account_response(session, account, displayed)
+
+    if warnings:
+        return SuccessResponse(
+            data=resp,
+            warnings=[Warning(**w).model_dump() for w in warnings],
+        )
+    return SuccessResponse(data=resp)
 
 
 @router.put("/{account_id}")
@@ -167,10 +305,51 @@ async def update_account(
                 error=ErrorDetail(code="NOT_FOUND", message="Account not found")
             ).model_dump(),
         )
+
+    # Validate IBAN format if provided
+    warnings: list[dict] = []
+    update_fields = data.model_dump(exclude_unset=True)
+    if "iban" in update_fields and update_fields["iban"] is not None:
+        iban = update_fields["iban"]
+        if not account_service.validate_iban(iban):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=ErrorResponse(
+                    error=ErrorDetail(code="INVALID_IBAN", message="IBAN format is invalid")
+                ).model_dump(),
+            )
+        warnings = await account_service.check_iban_duplicate(
+            session, household_id, iban, exclude_account_id=account_id
+        )
+
+    # Validate institution if being changed
+    if "institution_id" in update_fields:
+        account_type_str = (
+            account.type.value if hasattr(account.type, "value") else str(account.type)
+        )
+        try:
+            inst_warnings = await account_service.validate_institution(
+                session, household_id, account_type_str, update_fields["institution_id"]
+            )
+            warnings.extend(inst_warnings)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=ErrorResponse(
+                    error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+                ).model_dump(),
+            )
+
     account = await account_service.update_account(session, account, data)
     displayed = await account_service.compute_displayed_balance(session, account)
-    resp = _account_to_response(account, displayed)
-    return SuccessResponse(data=resp.model_dump())
+    resp = await _build_account_response(session, account, displayed)
+
+    if warnings:
+        return SuccessResponse(
+            data=resp,
+            warnings=[Warning(**w).model_dump() for w in warnings],
+        )
+    return SuccessResponse(data=resp)
 
 
 @router.delete("/{account_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -207,10 +386,15 @@ async def reconcile_account(
                 error=ErrorDetail(code="NOT_FOUND", message="Account not found")
             ).model_dump(),
         )
-    discrepancy = await account_service.reconcile_account(
-        session, account, data.actual_balance, data.notes
+    result = await account_service.reconcile_account(
+        session,
+        household_id,
+        account,
+        data.actual_balance,
+        reconciliation_date=data.reconciliation_date,
+        notes=data.notes,
     )
-    return SuccessResponse(data={"discrepancy": discrepancy})
+    return SuccessResponse(data=result)
 
 
 @router.get("/{account_id}/obligations")

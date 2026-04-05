@@ -9,13 +9,12 @@ async def test_create_account_returns_201(client):
             "name": "CIB Savings",
             "type": "bank_account",
             "currency": "EGP",
-            "initial_balance": 1000000,
+            "opening_balance": 1000000,
         },
     )
     assert response.status_code == 201
     data = response.json()["data"]
     assert data["name"] == "CIB Savings"
-    assert data["balance_minor"] == 1000000
     assert data["displayed_balance_minor"] == 1000000
 
 
@@ -86,7 +85,7 @@ async def test_reconcile_account(client):
             "name": "Reconcile Test",
             "type": "bank_account",
             "currency": "EGP",
-            "initial_balance": 1000000,
+            "opening_balance": 1000000,
         },
     )
     account_id = create_resp.json()["data"]["id"]
@@ -95,4 +94,5 @@ async def test_reconcile_account(client):
         json={"actual_balance": 1200000},
     )
     assert recon_resp.status_code == 200
-    assert recon_resp.json()["data"]["discrepancy"] == 200000
+    data = recon_resp.json()["data"]
+    assert data["adjustment"] == 200000

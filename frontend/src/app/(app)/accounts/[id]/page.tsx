@@ -64,7 +64,6 @@ export default function AccountDetailPage() {
       {/* Obligations section — only renders for accounts with linked debts/installments */}
       <AccountObligationsSection
         accountId={account.id}
-        accountType={account.type}
         currency={account.currency}
       />
 
