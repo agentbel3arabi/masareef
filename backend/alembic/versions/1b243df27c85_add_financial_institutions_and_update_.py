@@ -170,7 +170,7 @@ def downgrade() -> None:
         "accounts",
         sa.Column("institution", sa.TEXT(), autoincrement=False, nullable=True),
     )
-    op.drop_constraint(None, "accounts", type_="foreignkey")
+    op.drop_constraint("accounts_institution_id_fkey", "accounts", type_="foreignkey")
     op.drop_column("accounts", "branch")
     op.drop_column("accounts", "account_tier")
     op.drop_column("accounts", "account_number")
