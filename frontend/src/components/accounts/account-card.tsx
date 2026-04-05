@@ -26,9 +26,10 @@ interface AccountCardProps {
   manageMode?: boolean;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  hideInstitution?: boolean;
 }
 
-export function AccountCard({ account, manageMode, selected, onSelect }: AccountCardProps) {
+export function AccountCard({ account, manageMode, selected, onSelect, hideInstitution }: AccountCardProps) {
   const t = useTranslations("accounts");
   const tCommon = useTranslations("common");
 
@@ -119,6 +120,7 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
           manageMode={manageMode}
           selected={selected}
           onSelect={onSelect}
+          hideInstitution={hideInstitution}
         />
       ) : isOther ? (
         <OtherAccountCard
@@ -128,6 +130,7 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
           manageMode={manageMode}
           selected={selected}
           onSelect={onSelect}
+          hideInstitution={hideInstitution}
         />
       ) : (
         <BankAccountCard
@@ -137,6 +140,7 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
           manageMode={manageMode}
           selected={selected}
           onSelect={onSelect}
+          hideInstitution={hideInstitution}
         />
       )}
 

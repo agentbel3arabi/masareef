@@ -23,6 +23,7 @@ interface OtherAccountCardProps {
   manageMode?: boolean;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  hideInstitution?: boolean;
 }
 
 export function OtherAccountCard({
@@ -32,6 +33,7 @@ export function OtherAccountCard({
   manageMode,
   selected,
   onSelect,
+  hideInstitution,
 }: OtherAccountCardProps) {
   const t = useTranslations("accounts");
   const locale = useLocale();
@@ -80,7 +82,7 @@ export function OtherAccountCard({
           )}
         </div>
         <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
-        {institutionName && (
+        {!hideInstitution && institutionName && (
           <p className="text-xs text-muted-foreground mb-3">{institutionName}</p>
         )}
         <MoneyDisplay

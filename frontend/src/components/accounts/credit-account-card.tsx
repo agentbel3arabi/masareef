@@ -46,6 +46,7 @@ interface CreditAccountCardProps {
   manageMode?: boolean;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  hideInstitution?: boolean;
 }
 
 export function CreditAccountCard({
@@ -55,6 +56,7 @@ export function CreditAccountCard({
   manageMode,
   selected,
   onSelect,
+  hideInstitution,
 }: CreditAccountCardProps) {
   const t = useTranslations("accounts");
   const locale = useLocale();
@@ -88,7 +90,7 @@ export function CreditAccountCard({
         )}
         <div className="flex items-start justify-between mb-6">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
-            {institutionName || account.name}
+            {hideInstitution ? account.name : (institutionName || account.name)}
           </p>
           <div className="flex gap-1">
             <div className="w-7 h-5 rounded bg-white/20" />

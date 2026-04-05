@@ -23,6 +23,7 @@ interface BankAccountCardProps {
   manageMode?: boolean;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  hideInstitution?: boolean;
 }
 
 export function BankAccountCard({
@@ -32,6 +33,7 @@ export function BankAccountCard({
   manageMode,
   selected,
   onSelect,
+  hideInstitution,
 }: BankAccountCardProps) {
   const t = useTranslations("accounts");
   const locale = useLocale();
@@ -61,15 +63,27 @@ export function BankAccountCard({
           {selected && <span className="text-xs font-bold">✓</span>}
         </div>
       )}
-      {institutionName && (
+      {!hideInstitution && institutionName && (
         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
           {institutionName}
         </p>
       )}
       <p className="text-sm font-medium text-foreground mb-1">{account.name}</p>
-      <p className="text-[10px] font-medium text-muted-foreground mb-3">
-        {formatEnumLabel(account.type)}
-      </p>
+      <div className="flex items-center gap-2 mb-3">
+        <p className="text-[10px] font-medium text-muted-foreground">
+          {formatEnumLabel(account.type)}
+        </p>
+        {account.account_tier && (
+          <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-medium bg-muted text-muted-foreground">
+            {account.account_tier}
+          </span>
+        )}
+        {account.iban_last4 && (
+          <span className="text-[10px] text-muted-foreground/60">
+            ****{account.iban_last4}
+          </span>
+        )}
+      </div>
       <MoneyDisplay
         amount={account.displayed_balance_minor}
         currency={account.currency}

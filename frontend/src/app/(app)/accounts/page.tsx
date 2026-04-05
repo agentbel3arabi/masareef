@@ -147,6 +147,7 @@ export default function AccountsPage() {
       {!isLoading && accounts.length > 0 && (
         <AccountGrid
           accounts={accounts}
+          baseCurrency={baseCurrency}
           manageMode={manageMode}
           selectedIds={selectedAccountIds}
           onSelect={toggleSelectAccount}
