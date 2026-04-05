@@ -12,6 +12,12 @@ export interface AccountInstitution {
   logo_url: string | null;
 }
 
+export interface MonthlyStats {
+  month_income_minor: number;
+  month_expense_minor: number;
+  month_transaction_count: number;
+}
+
 export interface Account {
   id: number;
   name: string;
@@ -27,6 +33,7 @@ export interface Account {
   payment_due_day: number | null;
   opened_at: string | null;
   is_active: boolean;
+  monthly_stats: MonthlyStats | null;
 }
 
 export interface CreateAccountInput {

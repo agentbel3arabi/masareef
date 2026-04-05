@@ -4,7 +4,7 @@ import uuid
 from datetime import date as date_type
 from datetime import datetime
 
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
@@ -258,7 +258,35 @@ async def soft_delete_account(
     session: AsyncSession,
     account: Account,
 ) -> None:
-    """Soft delete an account."""
+    """Soft delete an account and all its transactions (including splits)."""
+    from app.models.transaction import Transaction, TransactionSplit
+
+    # Soft-delete all transactions belonging to this account
+    tx_ids_stmt = select(Transaction.id).where(
+        Transaction.account_id == account.id,
+        Transaction.is_active == True,  # noqa: E712
+    )
+    tx_ids = (await session.execute(tx_ids_stmt)).scalars().all()
+
+    if tx_ids:
+        # Soft-delete splits first
+        await session.execute(
+            update(TransactionSplit)
+            .where(
+                TransactionSplit.transaction_id.in_(tx_ids),
+                TransactionSplit.is_active == True,  # noqa: E712
+            )
+            .values(is_active=False)
+        )
+        # Soft-delete transactions
+        await session.execute(
+            update(Transaction)
+            .where(
+                Transaction.id.in_(tx_ids),
+            )
+            .values(is_active=False)
+        )
+
     account.is_active = False
     await session.flush()
 

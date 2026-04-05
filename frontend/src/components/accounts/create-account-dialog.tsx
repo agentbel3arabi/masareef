@@ -74,7 +74,9 @@ export function CreateAccountDialog({
     preselectedInstitution ?? null
   );
   const [openingBalance, setOpeningBalance] = useState("");
-  const [openedAt, setOpenedAt] = useState("");
+  const [openedAt, setOpenedAt] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [creditLimit, setCreditLimit] = useState("");
   const [billingDay, setBillingDay] = useState("");
   const [paymentDueDay, setPaymentDueDay] = useState("");
@@ -112,7 +114,7 @@ export function CreateAccountDialog({
     setCurrency("EGP");
     setInstitution(preselectedInstitution ?? null);
     setOpeningBalance("");
-    setOpenedAt("");
+    setOpenedAt(new Date().toISOString().split("T")[0]);
     setCreditLimit("");
     setBillingDay("");
     setPaymentDueDay("");

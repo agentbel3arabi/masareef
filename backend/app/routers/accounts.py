@@ -16,6 +16,7 @@ from app.schemas.account import (
     AccountResponse,
     AccountUpdate,
     InstitutionEmbed,
+    MonthlyStats,
     ReconcileRequest,
 )
 from app.schemas.common import ErrorDetail, ErrorResponse, PaginationMeta, SuccessResponse, Warning
@@ -30,6 +31,7 @@ async def _build_account_response(
     account: Account,
     displayed_balance: int,
     last_transaction_date: "datetime.date | None" = None,
+    monthly_stats: "MonthlyStats | None" = None,
     *,
     detail: bool = False,
 ) -> dict:
@@ -70,6 +72,7 @@ async def _build_account_response(
         "opened_at": account.opened_at,
         "is_active": account.is_active,
         "last_transaction_date": last_transaction_date,
+        "monthly_stats": monthly_stats,
     }
 
     if detail:
@@ -117,12 +120,54 @@ async def list_accounts(
     else:
         last_tx_map = {}
 
+    # Batch fetch current month stats per account
+    month_stats_map: dict[int, MonthlyStats] = {}
+    if acct_ids:
+        month_start = datetime.date.today().replace(day=1)
+        month_stats_stmt = (
+            select(
+                Transaction.account_id,
+                func.sum(
+                    func.case(
+                        (Transaction.amount_minor > 0, Transaction.amount_minor),
+                        else_=0,
+                    )
+                ).label("income"),
+                func.sum(
+                    func.case(
+                        (Transaction.amount_minor < 0, func.abs(Transaction.amount_minor)),
+                        else_=0,
+                    )
+                ).label("expense"),
+                func.count().label("tx_count"),
+            )
+            .where(
+                Transaction.household_id == household_id,
+                Transaction.is_active.is_(True),
+                Transaction.account_id.in_(acct_ids),
+                Transaction.date >= month_start,
+                Transaction.applies_to_balance.is_(True),
+            )
+            .group_by(Transaction.account_id)
+        )
+        month_result = await session.execute(month_stats_stmt)
+        for row in month_result:
+            month_stats_map[row.account_id] = MonthlyStats(
+                month_income_minor=int(row.income or 0),
+                month_expense_minor=int(row.expense or 0),
+                month_transaction_count=int(row.tx_count or 0),
+            )
+
     # TODO: batch balance computation to avoid N+1 queries
     items = []
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)
         item = await _build_account_response(
-            session, acct, displayed, last_transaction_date=last_tx_map.get(acct.id)
+            session,
+            acct,
+            displayed,
+            last_transaction_date=last_tx_map.get(acct.id),
+            monthly_stats=month_stats_map.get(acct.id),
         )
         items.append(item)
     return SuccessResponse(

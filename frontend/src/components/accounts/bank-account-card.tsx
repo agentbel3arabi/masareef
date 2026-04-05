@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { MoreVertical, Eye, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Eye, Pencil, Trash2, TrendingUp, TrendingDown, Hash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { formatEnumLabel } from "@/lib/enum-labels";
+import { formatAmount, formatAmountAr } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -90,6 +91,40 @@ export function BankAccountCard({
         size="lg"
         colorize
       />
+      {/* Monthly transaction summary */}
+      {account.monthly_stats && account.monthly_stats.month_transaction_count > 0 && (
+        <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-border/40">
+          <div className="flex items-center gap-1.5">
+            <TrendingUp className="h-3 w-3 text-green-500 shrink-0" />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{t("monthIn")}</p>
+              <p className="text-xs font-semibold text-green-600 dark:text-green-400">
+                {locale === "ar"
+                  ? formatAmountAr(account.monthly_stats.month_income_minor, account.currency)
+                  : formatAmount(account.monthly_stats.month_income_minor, account.currency)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <TrendingDown className="h-3 w-3 text-red-500 shrink-0" />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{t("monthOut")}</p>
+              <p className="text-xs font-semibold text-red-600 dark:text-red-400">
+                {locale === "ar"
+                  ? formatAmountAr(account.monthly_stats.month_expense_minor, account.currency)
+                  : formatAmount(account.monthly_stats.month_expense_minor, account.currency)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Hash className="h-3 w-3 text-muted-foreground shrink-0" />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{t("monthTxns")}</p>
+              <p className="text-xs font-semibold">{account.monthly_stats.month_transaction_count}</p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
         <div
           className={cn(

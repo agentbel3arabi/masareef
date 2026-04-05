@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useLocale } from "next-intl";
 import type { AccountInstitution } from "@/hooks/use-accounts";
 
 const PILL_COLORS: Record<string, string> = {
@@ -18,20 +17,19 @@ interface AccountPillProps {
 }
 
 export function AccountPill({ accountId, accountName, accountType, institution }: AccountPillProps) {
-  const locale = useLocale();
   const colorClass = PILL_COLORS[accountType] || "bg-muted text-muted-foreground";
-  const instName = institution
-    ? (locale === "ar" ? institution.name_ar : institution.name_en)
-    : null;
+  const initials = institution?.name_en?.slice(0, 2).toUpperCase() ?? null;
   return (
     <Link href={`/accounts/${accountId}`}>
       <span
         className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${colorClass}`}
       >
-        {accountName}
-        {instName && (
-          <span className="opacity-60">· {instName}</span>
+        {initials && (
+          <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-current/10 text-[8px] font-bold shrink-0 opacity-70">
+            {initials}
+          </span>
         )}
+        {accountName}
       </span>
     </Link>
   );

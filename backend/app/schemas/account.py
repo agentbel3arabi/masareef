@@ -49,6 +49,14 @@ class InstitutionEmbed(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class MonthlyStats(BaseModel):
+    """Current month transaction summary for an account."""
+
+    month_income_minor: int = 0
+    month_expense_minor: int = 0
+    month_transaction_count: int = 0
+
+
 class AccountResponse(BaseModel):
     id: int
     name: str
@@ -65,6 +73,7 @@ class AccountResponse(BaseModel):
     opened_at: date | None = None
     is_active: bool = True
     last_transaction_date: date | None = None
+    monthly_stats: MonthlyStats | None = None
 
     model_config = {"from_attributes": True}
 

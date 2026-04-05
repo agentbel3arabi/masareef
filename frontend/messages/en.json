@@ -239,6 +239,9 @@
     "cardholder": "Cardholder",
     "accountStatusActive": "Active",
     "accountStatusInactive": "Inactive",
+    "monthIn": "In",
+    "monthOut": "Out",
+    "monthTxns": "Txns",
     "bnplBadge": "BNPL",
     "obligations": {
       "title": "Obligations",

@@ -239,6 +239,9 @@
     "cardholder": "حامل البطاقة",
     "accountStatusActive": "نشط",
     "accountStatusInactive": "غير نشط",
+    "monthIn": "وارد",
+    "monthOut": "صادر",
+    "monthTxns": "معاملات",
     "bnplBadge": "اشتر الآن",
     "obligations": {
       "title": "الالتزامات",
