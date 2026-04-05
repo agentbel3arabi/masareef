@@ -12,6 +12,12 @@ class PaginationMeta(BaseModel):
 class SuccessResponse(BaseModel):
     data: Any
     meta: PaginationMeta | None = None
+    warnings: list[Any] | None = None
+
+
+class Warning(BaseModel):
+    code: str
+    message: str
 
 
 class ErrorDetail(BaseModel):
