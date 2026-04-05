@@ -74,11 +74,20 @@ async def get_institution_summary(
 
     liability_types = {AccountType.CREDIT_CARD, AccountType.FINANCING_APP}
 
+    # Determine base currency from household's accounts (most common currency)
+    currency_counts: dict[str, int] = {}
+    for acct in accounts:
+        currency_counts[acct.currency] = currency_counts.get(acct.currency, 0) + 1
+    base_currency = max(currency_counts, key=currency_counts.get) if currency_counts else "EGP"  # type: ignore[arg-type]
+
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)
         item = await _build_account_response(session, acct, displayed)
         account_items.append(item)
 
+        # Only sum accounts in base currency to avoid mixing currencies
+        if acct.currency != base_currency:
+            continue
         acct_type = acct.type if isinstance(acct.type, AccountType) else AccountType(acct.type)
         if acct_type in liability_types:
             total_liabilities_minor += abs(displayed)
@@ -92,6 +101,7 @@ async def get_institution_summary(
         total_assets_minor=total_assets_minor,
         total_liabilities_minor=total_liabilities_minor,
         total_base_minor=net_position,
+        base_currency=base_currency,
         account_count=len(accounts),
     )
     summary = InstitutionSummary(

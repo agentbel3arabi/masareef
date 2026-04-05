@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
@@ -131,13 +131,13 @@ async def list_accounts(
             select(
                 Transaction.account_id,
                 func.sum(
-                    func.case(
+                    case(
                         (Transaction.amount_minor > 0, Transaction.amount_minor),
                         else_=0,
                     )
                 ).label("income"),
                 func.sum(
-                    func.case(
+                    case(
                         (Transaction.amount_minor < 0, func.abs(Transaction.amount_minor)),
                         else_=0,
                     )

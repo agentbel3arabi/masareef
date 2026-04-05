@@ -97,6 +97,13 @@ async def update_transaction(
     data: TransactionUpdate,
 ) -> Transaction:
     """Update transaction fields. Balance is computed from seed + all transactions."""
+    # Guard: system-category transactions cannot be modified
+    if tx.category_id is not None:
+        cat_stmt = select(Category).where(Category.id == tx.category_id)
+        current_cat = (await session.execute(cat_stmt)).scalar_one_or_none()
+        if current_cat and current_cat.is_system:
+            raise ValueError("System transactions cannot be modified")
+
     old_signed = int(tx.amount_minor)
     update_fields = data.model_dump(exclude_unset=True)
 
