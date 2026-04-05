@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MoreVertical, Eye, Pencil, FileText, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UtilizationBar } from "./utilization-bar";
-import { formatAmount } from "@/lib/money";
+import { formatAmount, formatAmountAr } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -26,10 +26,10 @@ const INSTITUTION_GRADIENTS: Record<string, string> = {
 
 const DEFAULT_GRADIENT = "from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800";
 
-function creditCardGradient(institution: string | null | undefined): string {
-  if (!institution) return DEFAULT_GRADIENT;
+function creditCardGradient(institutionName: string | null | undefined): string {
+  if (!institutionName) return DEFAULT_GRADIENT;
   const key = Object.keys(INSTITUTION_GRADIENTS).find(
-    (k) => institution.toLowerCase().startsWith(k.toLowerCase())
+    (k) => institutionName.toLowerCase().startsWith(k.toLowerCase())
   );
   return key ? INSTITUTION_GRADIENTS[key] : DEFAULT_GRADIENT;
 }
@@ -46,6 +46,7 @@ interface CreditAccountCardProps {
   manageMode?: boolean;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  hideInstitution?: boolean;
 }
 
 export function CreditAccountCard({
@@ -55,10 +56,19 @@ export function CreditAccountCard({
   manageMode,
   selected,
   onSelect,
+  hideInstitution,
 }: CreditAccountCardProps) {
   const t = useTranslations("accounts");
+  const locale = useLocale();
   const router = useRouter();
-  const gradient = creditCardGradient(account.institution);
+  const institutionName = account.institution
+    ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
+    : null;
+  const gradient = creditCardGradient(institutionName);
+  const fmt = (amount: number) =>
+    locale === "ar"
+      ? formatAmountAr(amount, account.currency)
+      : formatAmount(amount, account.currency);
   const last4 = maskedLast4(account.id);
   const available =
     account.credit_limit != null
@@ -84,7 +94,7 @@ export function CreditAccountCard({
         )}
         <div className="flex items-start justify-between mb-6">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
-            {account.institution || account.name}
+            {hideInstitution ? account.name : (institutionName || account.name)}
           </p>
           <div className="flex gap-1">
             <div className="w-7 h-5 rounded bg-white/20" />
@@ -120,7 +130,7 @@ export function CreditAccountCard({
             </p>
             <p className="text-xs font-semibold">
               {account.credit_limit != null
-                ? formatAmount(account.credit_limit, account.currency)
+                ? fmt(account.credit_limit)
                 : "—"}
             </p>
           </div>
@@ -129,10 +139,7 @@ export function CreditAccountCard({
               {t("amountDue")}
             </p>
             <p className="text-xs font-semibold text-destructive">
-              {formatAmount(
-                Math.abs(account.displayed_balance_minor),
-                account.currency
-              )}
+              {fmt(Math.abs(account.displayed_balance_minor))}
             </p>
           </div>
           <div>
@@ -141,7 +148,7 @@ export function CreditAccountCard({
             </p>
             <p className={cn("text-xs font-semibold", available != null && available < 0 ? "text-destructive" : "text-primary")}>
               {available != null
-                ? formatAmount(available, account.currency)
+                ? fmt(available)
                 : "—"}
             </p>
           </div>

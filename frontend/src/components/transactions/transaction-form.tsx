@@ -141,7 +141,7 @@ export function TransactionForm({
                   .filter((a) => a.is_active !== false)
                   .map((a) => (
                     <SelectItem key={a.id} value={String(a.id)}>
-                      {a.name}{a.institution ? ` · ${a.institution}` : ""} ({a.currency})
+                      {a.name}{a.institution ? ` · ${locale === "ar" ? a.institution.name_ar : a.institution.name_en}` : ""} ({a.currency})
                     </SelectItem>
                   ))}
               </SelectContent>

@@ -87,12 +87,10 @@ export function BNPLBulkPayment({ open, onOpenChange }: BNPLBulkPaymentProps) {
   const accounts = (accountsData?.data ?? []).filter((a) => a.is_active);
   const mutation = useBulkPayment();
 
-  const allPlans = installmentsData?.data ?? [];
-
   // Only show plans that have remaining months (unpaid)
   const activePlans = useMemo(
-    () => allPlans.filter((p) => p.remaining_months > 0),
-    [allPlans],
+    () => (installmentsData?.data ?? []).filter((p) => p.remaining_months > 0),
+    [installmentsData?.data],
   );
 
   const accountMap = useMemo(() => {

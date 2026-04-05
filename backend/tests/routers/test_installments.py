@@ -27,7 +27,7 @@ async def _create_account(client, *, account_type="credit_card", credit_limit=10
             "name": f"Test {account_type}",
             "type": account_type,
             "currency": "EGP",
-            "initial_balance": 0,
+            "opening_balance": 0,
             "credit_limit": credit_limit,
         },
     )

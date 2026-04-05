@@ -31,8 +31,8 @@ export default function OnboardingPage() {
     accountData: {
       name: string;
       type: string;
-      initial_balance: number;
-      institution?: string;
+      opening_balance: number;
+      institution_id?: number;
       opened_at?: string;
       credit_limit?: number;
       billing_cycle_day?: number;
@@ -56,8 +56,8 @@ export default function OnboardingPage() {
           name: accountData.name,
           type: accountData.type,
           currency,
-          initial_balance: accountData.initial_balance,
-          institution: accountData.institution,
+          opening_balance: accountData.opening_balance,
+          institution_id: accountData.institution_id,
           opened_at: accountData.opened_at,
           credit_limit: accountData.credit_limit,
           billing_cycle_day: accountData.billing_cycle_day,

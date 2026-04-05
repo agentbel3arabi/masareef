@@ -13,7 +13,7 @@ async def _create_account(client) -> int:
             "name": "Test",
             "type": "bank_account",
             "currency": "EGP",
-            "initial_balance": 1000000,
+            "opening_balance": 1000000,
         },
     )
     assert resp.status_code == 201, resp.text

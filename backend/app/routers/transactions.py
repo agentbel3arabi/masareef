@@ -293,7 +293,15 @@ async def update_transaction(
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
     if not tx:
         raise _not_found()
-    tx = await transaction_service.update_transaction(session, tx, data)
+    try:
+        tx = await transaction_service.update_transaction(session, tx, data)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="VALIDATION_ERROR", message=str(e))
+            ).model_dump(),
+        )
     return SuccessResponse(data=_tx_to_response(tx).model_dump())
 
 
@@ -308,7 +316,15 @@ async def delete_transaction(
     tx = await transaction_service.get_transaction(session, household_id, transaction_id)
     if not tx:
         raise _not_found()
-    await transaction_service.soft_delete_transaction(session, tx)
+    try:
+        await transaction_service.soft_delete_transaction(session, tx)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                error=ErrorDetail(code="SYSTEM_TRANSACTION", message=str(e))
+            ).model_dump(),
+        )
 
 
 @router.post("/{transaction_id}/split")

@@ -22,7 +22,7 @@ async def test_create_account(api_client: AsyncClient) -> None:
         "name": "Integration Test Account",
         "type": "bank_account",
         "currency": "EGP",
-        "initial_balance": 0,
+        "opening_balance": 0,
     }
     resp = await api_client.post("/api/v1/accounts", json=payload)
     assert resp.status_code == 201

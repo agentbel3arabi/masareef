@@ -219,7 +219,7 @@ async def list_transfers(
             "name": a.name,
             "currency": a.currency,
             "type": a.type.value if hasattr(a.type, "value") else a.type,
-            "institution": a.institution,
+            "institution_id": a.institution_id,
         }
 
     items: list[dict[str, Any]] = []

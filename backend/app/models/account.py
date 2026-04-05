@@ -35,8 +35,14 @@ class Account(TimestampMixin, SoftDeleteMixin, Base):
         SAEnum(AccountType, values_callable=_enum_values, create_type=False), nullable=False
     )
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
+    institution_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("financial_institutions.id"), nullable=True
+    )
+    iban: Mapped[str | None] = mapped_column(Text, nullable=True)
+    account_number: Mapped[str | None] = mapped_column(Text, nullable=True)
+    account_tier: Mapped[str | None] = mapped_column(Text, nullable=True)
+    branch: Mapped[str | None] = mapped_column(Text, nullable=True)
     balance_minor: Mapped[int] = mapped_column(BigInteger, nullable=False, server_default="0")
-    institution: Mapped[str | None] = mapped_column(Text, nullable=True)
     credit_limit: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     billing_cycle_day: Mapped[int | None] = mapped_column(Integer, nullable=True)
     payment_due_day: Mapped[int | None] = mapped_column(Integer, nullable=True)

@@ -48,6 +48,7 @@ async function handleError(res: Response): Promise<never> {
   try {
     const json = await res.json();
     if (json?.error) body = json.error;
+    else if (json?.detail?.error) body = json.detail.error;
   } catch {
     // intentional: non-JSON error responses fall back to UNKNOWN_ERROR body
   }
@@ -86,7 +87,7 @@ export async function apiPut<T>(path: string, body: unknown): Promise<ApiRespons
 export async function apiDelete(path: string): Promise<void> {
   const headers = await getAuthHeaders();
   const res = await fetch(`${API_BASE}${path}`, { method: "DELETE", headers });
-  if (!res.ok && res.status !== 204) await handleError(res);
+  if (!res.ok) await handleError(res);
 }
 
 /**

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { MoreVertical, Eye, Pencil, Trash2 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { MoreVertical, Eye, Pencil, Trash2, TrendingUp, TrendingDown, Hash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import { formatEnumLabel } from "@/lib/enum-labels";
+import { formatAmount, formatAmountAr } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -23,6 +24,7 @@ interface BankAccountCardProps {
   manageMode?: boolean;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  hideInstitution?: boolean;
 }
 
 export function BankAccountCard({
@@ -32,9 +34,14 @@ export function BankAccountCard({
   manageMode,
   selected,
   onSelect,
+  hideInstitution,
 }: BankAccountCardProps) {
   const t = useTranslations("accounts");
+  const locale = useLocale();
   const router = useRouter();
+  const institutionName = account.institution
+    ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
+    : null;
 
   const cardContent = (
     <div
@@ -57,21 +64,67 @@ export function BankAccountCard({
           {selected && <span className="text-xs font-bold">✓</span>}
         </div>
       )}
-      {account.institution && (
+      {!hideInstitution && institutionName && (
         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
-          {account.institution}
+          {institutionName}
         </p>
       )}
       <p className="text-sm font-medium text-foreground mb-1">{account.name}</p>
-      <p className="text-[10px] font-medium text-muted-foreground mb-3">
-        {formatEnumLabel(account.type)}
-      </p>
+      <div className="flex items-center gap-2 mb-3">
+        <p className="text-[10px] font-medium text-muted-foreground">
+          {formatEnumLabel(account.type)}
+        </p>
+        {account.account_tier && (
+          <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-medium bg-muted text-muted-foreground">
+            {account.account_tier}
+          </span>
+        )}
+        {account.iban_last4 && (
+          <span className="text-[10px] text-muted-foreground/60">
+            ****{account.iban_last4}
+          </span>
+        )}
+      </div>
       <MoneyDisplay
         amount={account.displayed_balance_minor}
         currency={account.currency}
         size="lg"
         colorize
       />
+      {/* Monthly transaction summary */}
+      {account.monthly_stats && account.monthly_stats.month_transaction_count > 0 && (
+        <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-border/40">
+          <div className="flex items-center gap-1.5">
+            <TrendingUp className="h-3 w-3 text-green-500 shrink-0" />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{t("monthIn")}</p>
+              <p className="text-xs font-semibold text-green-600 dark:text-green-400">
+                {locale === "ar"
+                  ? formatAmountAr(account.monthly_stats.month_income_minor, account.currency)
+                  : formatAmount(account.monthly_stats.month_income_minor, account.currency)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <TrendingDown className="h-3 w-3 text-red-500 shrink-0" />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{t("monthOut")}</p>
+              <p className="text-xs font-semibold text-red-600 dark:text-red-400">
+                {locale === "ar"
+                  ? formatAmountAr(account.monthly_stats.month_expense_minor, account.currency)
+                  : formatAmount(account.monthly_stats.month_expense_minor, account.currency)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Hash className="h-3 w-3 text-muted-foreground shrink-0" />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{t("monthTxns")}</p>
+              <p className="text-xs font-semibold">{account.monthly_stats.month_transaction_count}</p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
         <div
           className={cn(
