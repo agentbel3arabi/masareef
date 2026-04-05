@@ -9,7 +9,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import Settings
 from app.limiter import limiter
-from app.routers import accounts, categories, transactions, transfers
+from app.routers import accounts, categories, financial_institutions, transactions, transfers
 from app.routers.debts import router as debts_router
 from app.routers.financing_apps import router as financing_apps_router
 from app.routers.households import router as households_router
@@ -65,6 +65,7 @@ app.include_router(persons_router)
 app.include_router(debts_router)
 app.include_router(installments_router)
 app.include_router(financing_apps_router)
+app.include_router(financial_institutions.router)
 
 
 @app.get("/health")
