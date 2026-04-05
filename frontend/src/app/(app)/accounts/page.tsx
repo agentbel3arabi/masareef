@@ -16,6 +16,14 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ResponsiveActions } from "@/components/shared/responsive-actions";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatAmount, formatAmountAr } from "@/lib/money";
 
@@ -35,6 +43,7 @@ export default function AccountsPage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>("EGP");
   const {
     bulkMode: manageMode,
@@ -165,6 +174,44 @@ export default function AccountsPage() {
       <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
       <TransferForm open={transferOpen} onOpenChange={setTransferOpen} />
 
+      {/* Bulk delete confirmation */}
+      <Dialog open={bulkDeleteConfirmOpen} onOpenChange={setBulkDeleteConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("deleteSelected")}</DialogTitle>
+            <DialogDescription>
+              {t("bulkDeleteConfirm", { count: selectedAccountIds.size })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBulkDeleteConfirmOpen(false)}>
+              {t("cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={deleteAccount.isPending}
+              onClick={async () => {
+                const idsArray = [...selectedAccountIds];
+                const results = await Promise.allSettled(
+                  idsArray.map((id) => deleteAccount.mutateAsync(id))
+                );
+                const failedIds = new Set(
+                  idsArray.filter((_, i) => results[i].status === "rejected")
+                );
+                setBulkDeleteConfirmOpen(false);
+                if (failedIds.size === 0) {
+                  exitManageMode();
+                } else {
+                  selectAllAccounts([...failedIds]);
+                }
+              }}
+            >
+              {deleteAccount.isPending ? t("deleting") : t("confirmDelete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {!manageMode ? (
         <>
           <NavbarActions>
@@ -221,20 +268,7 @@ export default function AccountsPage() {
               variant="destructive"
               size="sm"
               disabled={deleteAccount.isPending}
-              onClick={async () => {
-                const idsArray = [...selectedAccountIds];
-                const results = await Promise.allSettled(
-                  idsArray.map((id) => deleteAccount.mutateAsync(id))
-                );
-                const failedIds = new Set(
-                  idsArray.filter((_, i) => results[i].status === "rejected")
-                );
-                if (failedIds.size === 0) {
-                  exitManageMode();
-                } else {
-                  selectAllAccounts([...failedIds]);
-                }
-              }}
+              onClick={() => setBulkDeleteConfirmOpen(true)}
             >
               <Trash2 className="h-3.5 w-3.5 me-1" />
               {t("deleteSelected")}

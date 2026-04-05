@@ -157,6 +157,7 @@ export function TransactionRow({
                 accountId={account.id}
                 accountName={account.name}
                 accountType={account.type}
+                institution={account.institution}
               />
             ) : null}
           </td>

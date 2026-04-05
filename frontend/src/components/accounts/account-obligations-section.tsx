@@ -10,7 +10,6 @@ import type { ObligationDebt, ObligationInstallment } from "@/lib/types/obligati
 
 interface AccountObligationsSectionProps {
   accountId: number;
-  accountType: string;
   currency: string;
 }
 
@@ -73,7 +72,7 @@ function InstallmentRow({ inst, currency }: { inst: ObligationInstallment; curre
   );
 }
 
-export function AccountObligationsSection({ accountId, accountType, currency }: AccountObligationsSectionProps) {
+export function AccountObligationsSection({ accountId, currency }: AccountObligationsSectionProps) {
   const t = useTranslations("accounts.obligations");
   const { data, isLoading } = useAccountObligations(accountId);
   const obligations = data?.data;

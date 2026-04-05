@@ -12,7 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoneyDisplay } from "@/components/shared/money-display";
+import { UtilizationBar } from "./utilization-bar";
 import { typeIcons, typeColors } from "./account-card.constants";
+import { formatAmount, formatAmountAr } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -39,6 +41,14 @@ export function OtherAccountCard({
   const locale = useLocale();
   const router = useRouter();
   const isBnpl = account.type === "financing_app";
+  const hasCreditLimit = isBnpl && account.credit_limit != null;
+  const available = hasCreditLimit
+    ? account.credit_limit! + account.displayed_balance_minor
+    : null;
+  const fmt = (amount: number) =>
+    locale === "ar"
+      ? formatAmountAr(amount, account.currency)
+      : formatAmount(amount, account.currency);
   const institutionName = account.institution
     ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
     : null;
@@ -91,6 +101,41 @@ export function OtherAccountCard({
           size="lg"
           colorize
         />
+        {hasCreditLimit && (
+          <div className="mt-3 space-y-2">
+            <UtilizationBar
+              balanceMinor={account.displayed_balance_minor}
+              creditLimitMinor={account.credit_limit!}
+              currency={account.currency}
+            />
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">
+                  {t("creditLimit")}
+                </p>
+                <p className="text-xs font-semibold">
+                  {fmt(account.credit_limit!)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">
+                  {t("amountDue")}
+                </p>
+                <p className="text-xs font-semibold text-destructive">
+                  {fmt(Math.abs(account.displayed_balance_minor))}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">
+                  {t("available")}
+                </p>
+                <p className={cn("text-xs font-semibold", available != null && available < 0 ? "text-destructive" : "text-primary")}>
+                  {available != null ? fmt(available) : "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="mt-3 pt-3 border-t border-border/40 flex items-center gap-2">
           <div
             className={cn(

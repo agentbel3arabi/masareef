@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { BankGroupSection } from "./bank-group-section";
 import { IndependentSection } from "./independent-section";
-import { AccountCard } from "./account-card";
 import type { Account } from "@/hooks/use-accounts";
 
 interface AccountGridProps {

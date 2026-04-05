@@ -5,6 +5,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FormSheet } from "@/components/shared/form-sheet";
 import { FieldError } from "@/components/shared/field-error";
 import { RequiredLabel } from "@/components/shared/required-label";
@@ -188,18 +195,18 @@ export function CreateAccountDialog({
           <RequiredLabel required htmlFor="account-type">
             {t("accounts.type")}
           </RequiredLabel>
-          <select
-            id="account-type"
-            value={type}
-            onChange={(e) => handleTypeChange(e.target.value)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            {ACCOUNT_TYPES.map((t_item) => (
-              <option key={t_item.value} value={t_item.value}>
-                {t(t_item.label)}
-              </option>
-            ))}
-          </select>
+          <Select value={type} onValueChange={(val) => val && handleTypeChange(val)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ACCOUNT_TYPES.map((t_item) => (
+                <SelectItem key={t_item.value} value={t_item.value}>
+                  {t(t_item.label)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Currency */}
@@ -207,18 +214,18 @@ export function CreateAccountDialog({
           <RequiredLabel required htmlFor="account-currency">
             {t("accounts.currency")}
           </RequiredLabel>
-          <select
-            id="account-currency"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            {Object.entries(CURRENCIES).map(([code, info]) => (
-              <option key={code} value={code}>
-                {code} — {locale === "ar" ? info.nameAr : info.name}
-              </option>
-            ))}
-          </select>
+          <Select value={currency} onValueChange={(val) => val && setCurrency(val)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(CURRENCIES).map(([code, info]) => (
+                <SelectItem key={code} value={code}>
+                  {code} — {locale === "ar" ? info.nameAr : info.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Institution Selector */}

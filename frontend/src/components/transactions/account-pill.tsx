@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useLocale } from "next-intl";
+import type { AccountInstitution } from "@/hooks/use-accounts";
 
-// Defined locally so this component is independent of 1.5I branch state
 const PILL_COLORS: Record<string, string> = {
   bank_account:   "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
   credit_card:    "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300",
@@ -13,16 +14,24 @@ interface AccountPillProps {
   accountId: number;
   accountName: string;
   accountType: string;
+  institution?: AccountInstitution | null;
 }
 
-export function AccountPill({ accountId, accountName, accountType }: AccountPillProps) {
+export function AccountPill({ accountId, accountName, accountType, institution }: AccountPillProps) {
+  const locale = useLocale();
   const colorClass = PILL_COLORS[accountType] || "bg-muted text-muted-foreground";
+  const instName = institution
+    ? (locale === "ar" ? institution.name_ar : institution.name_en)
+    : null;
   return (
     <Link href={`/accounts/${accountId}`}>
       <span
-        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${colorClass}`}
+        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${colorClass}`}
       >
         {accountName}
+        {instName && (
+          <span className="opacity-60">· {instName}</span>
+        )}
       </span>
     </Link>
   );

@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UtilizationBar } from "./utilization-bar";
-import { formatAmount } from "@/lib/money";
+import { formatAmount, formatAmountAr } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -65,6 +65,10 @@ export function CreditAccountCard({
     ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
     : null;
   const gradient = creditCardGradient(institutionName);
+  const fmt = (amount: number) =>
+    locale === "ar"
+      ? formatAmountAr(amount, account.currency)
+      : formatAmount(amount, account.currency);
   const last4 = maskedLast4(account.id);
   const available =
     account.credit_limit != null
@@ -126,7 +130,7 @@ export function CreditAccountCard({
             </p>
             <p className="text-xs font-semibold">
               {account.credit_limit != null
-                ? formatAmount(account.credit_limit, account.currency)
+                ? fmt(account.credit_limit)
                 : "—"}
             </p>
           </div>
@@ -135,10 +139,7 @@ export function CreditAccountCard({
               {t("amountDue")}
             </p>
             <p className="text-xs font-semibold text-destructive">
-              {formatAmount(
-                Math.abs(account.displayed_balance_minor),
-                account.currency
-              )}
+              {fmt(Math.abs(account.displayed_balance_minor))}
             </p>
           </div>
           <div>
@@ -147,7 +148,7 @@ export function CreditAccountCard({
             </p>
             <p className={cn("text-xs font-semibold", available != null && available < 0 ? "text-destructive" : "text-primary")}>
               {available != null
-                ? formatAmount(available, account.currency)
+                ? fmt(available)
                 : "—"}
             </p>
           </div>

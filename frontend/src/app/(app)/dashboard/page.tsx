@@ -74,8 +74,6 @@ export default function DashboardPage() {
   const hasAccounts = (accountsData?.data?.length ?? 0) > 0;
   const hasTransactions = (transactionsData?.meta?.total ?? 0) > 0;
   const hasDebts = activeDebtsCount > 0;
-  const isNewUser = !hasAccounts;
-
   const [dismissed, setDismissed] = useState(
     () =>
       typeof window !== "undefined" &&
