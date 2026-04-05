@@ -94,6 +94,7 @@ ALTER TABLE accounts DROP COLUMN institution;
 
 -- Add columns
 ALTER TABLE accounts ADD COLUMN institution_id INT REFERENCES financial_institutions(id);
+ALTER TABLE accounts ADD COLUMN name_ar TEXT;        -- Arabic account name (Arabic-first design)
 ALTER TABLE accounts ADD COLUMN iban TEXT;           -- validated at app layer (MOD97)
 ALTER TABLE accounts ADD COLUMN account_number TEXT;
 ALTER TABLE accounts ADD COLUMN account_tier TEXT;
@@ -118,6 +119,8 @@ Mismatch → 422 `INSTITUTION_TYPE_MISMATCH`.
 - Egyptian format: `EG` + 2 check digits + 4 bank code + 4 branch code + 17 account number = 29 chars
 - Only applicable to `bank_account` type
 - Duplicate IBAN: soft warning (not blocking) — response includes `warnings` array
+
+**`name_ar`:** Optional Arabic account name. Displayed when locale is Arabic; falls back to `name` (English) if not set. Consistent with Arabic-first design principle.
 
 **All four metadata fields** (iban, account_number, account_tier, branch) are purely informational. None drive balance, transaction, or reporting logic. All are editable after creation.
 
@@ -224,7 +227,7 @@ CREATE INDEX idx_reconciliation_account
 | suez-canal | Suez Canal Bank | بنك قناة السويس | false |
 | housing-development | Housing and Development Bank | بنك الإسكان والتعمير | false |
 | saib | Saib Bank | بنك saib | false |
-| ahli-united | Ahli United Bank | البنك الأهلي المتحد | false |
+| kfh-egypt | Kuwait Finance House Egypt | بيت التمويل الكويتي مصر | false |
 | mashreq | Mashreq Bank Egypt | بنك المشرق مصر | false |
 | emirates-nbd | Emirates NBD Egypt | بنك الإمارات دبي الوطني مصر | false |
 | attijariwafa | Attijariwafa Bank Egypt | التجاري وفا بنك مصر | false |
@@ -540,7 +543,7 @@ If `category_id` references a system category (`is_system = true`):
 - Independent sections with 1-2 cards: 2-column grid (half-width)
 - Mobile: all full-width
 
-**FAB:** present on accounts page — opens account creation dialog.
+**FAB:** present on accounts page — opens account creation dialog. See §6.5 for FAB as a project-wide pattern.
 
 ### 6.2 Bank Detail Page
 
@@ -604,6 +607,41 @@ Reusable combobox component filtered by institution type. Used in account creati
 
 **Opening balance for credit cards/BNPL:** entered as positive "amount owed", stored as negative Opening Balance transaction. Form handles the sign flip. Hint text: "Amount you currently owe. Creates a negative Opening Balance transaction."
 
+### 6.5 FAB (Floating Action Button) — Project-Wide Pattern
+
+The FAB is a cross-cutting reusable component used on every list/grid page in Masareef:
+
+- **Pages:** Accounts → add account, Account Detail → add transaction, Debts → add loan, Transfers → add transfer, Gam3eya → add gam3eya, Bank Detail → add account (pre-selected institution)
+- **Position:** fixed bottom-right using `inset-inline-end` for RTL support, above bottom navigation bar on mobile
+- **Behavior:** hides on scroll-down, reappears on scroll-up (standard Material-style)
+- **One reusable component** — shared across all pages, not implemented per-page with different styles
+- **Should be documented** in design tokens or UI patterns guide as a project-wide convention
+
+### 6.6 System Transaction Visual Styling
+
+Opening Balance and Reconciliation Adjustment transactions need visual distinction from regular transactions in the transaction list:
+
+- **Muted background:** subtle background tint or left-border accent to distinguish from user-created transactions
+- **System icon badge:** small system/gear icon overlay or inline badge next to the description
+- **Category chip:** "Opening Balance" / "Reconciliation Adjustment" rendered in a distinct color (e.g., slate/neutral palette) separate from the user category color palette
+- **Description styling:** auto-generated descriptions ("Opening balance" / "Reconciliation adjustment") shown in a slightly different style (e.g., italic or muted weight)
+- **Action buttons:** edit shows the appropriate warning for reconciliation transactions; delete is disabled with tooltip explaining why (per §5.4 guards)
+- **Non-reassignable indicator:** category chip is not clickable/editable on system transactions (no category picker on hover/click)
+
+### 6.7 IBAN Structure Reference
+
+Egyptian IBAN format (29 characters total):
+
+| Position | Length | Content |
+|---|---|---|
+| 1-2 | 2 | Country code: `EG` |
+| 3-4 | 2 | Check digits (MOD97 — ISO 7064) |
+| 5-8 | 4 | Bank code |
+| 9-12 | 4 | Branch code |
+| 13-29 | 17 | Account number |
+
+Validation at application layer using `python-stdnum` (backend) and a lightweight JS validator (frontend). No DB-level length constraint — supports non-Egyptian IBANs if MENA expansion happens.
+
 ## 7. Reconciliation Flow
 
 1. User clicks "Reconcile" on an account
@@ -628,11 +666,169 @@ Reusable combobox component filtered by institution type. Used in account creati
 | TBD | Digital wallet optional institution linking UI | feature | Future |
 | TBD | Branch field as dropdown from bank's branch list | feature | Future |
 
-## 9. Competitor Research Notes
+## 9. Competitor Research Findings
 
-Deferred to implementation phase. Key areas to research:
-- How YNAB, Mint, Money Lover, Wallet by BudgetBakers, Bluecoins handle bank grouping and logos
-- Multi-currency account display patterns under one institution
-- Credit card vs standalone BNPL visual treatment
-- Bank selector UX patterns (searchable dropdown with logos, autocomplete)
-- Mobile-first card layout patterns for grouped accounts
+Research completed independently. Key findings that informed the design:
+
+### Account Grouping & Bank Logos
+
+- **YNAB:** Flat list, no bank grouping. Category-centric model. Accounts are just containers — no institutional relationship.
+- **Wallet by BudgetBakers:** 15,000+ bank logos via third-party API. Prominent logo display on account cards. Supports group sharing. Closest to our visual direction for logos on cards.
+- **Bluecoins:** Hierarchical Assets/Liabilities model with account groups as an organizational layer. Users manually create groups — no auto-grouping by bank.
+- **Firefly III:** Separate `institutions` table with FK from accounts. Closest data model to our design. Open-source, well-documented schema.
+- **Money Lover:** Flat wallet list. No institutional grouping. Minimal metadata per account.
+
+### Opening Balance as Transaction
+
+Industry consensus: **opening balance as a special transaction** is the standard approach.
+- YNAB, Firefly III, GnuCash, hledger all use this pattern
+- Creates a self-documenting ledger where every balance change is traceable
+- Our design aligns with established best practice
+
+### Logo Sourcing Alternatives
+
+- **Bundled SVGs** (our choice): best for offline, performance, and quality control
+- **Brandfetch API:** 500K free requests/month. Extensive logo database. Viable fallback if manual sourcing is insufficient.
+- **Logo.dev** (Clearbit successor): similar API-based approach. Good quality but external dependency.
+- Decision: bundle SVGs for the ~45 seeded institutions. Consider API-based sourcing only for a future "auto-detect bank from IBAN bank code" feature.
+
+### Egyptian Banking Market
+
+- **36 CBE-licensed banks** operating in Egypt (Central Bank of Egypt registry)
+- Our seed list covers ~25 of the most commonly used — sufficient for launch
+- IBAN is 29 chars: EG + 2 check digits + 4 bank code + 4 branch code + 17 account number
+- **Ahli United Bank rebranded to KFH (Kuwait Finance House) Egypt in 2025** — seed data updated to reflect this
+
+### Design Patterns Adopted
+
+| Pattern | Source | How We Applied It |
+|---|---|---|
+| Institution FK from accounts | Firefly III | `financial_institutions` table with type discriminator |
+| Opening balance as transaction | YNAB, GnuCash, hledger | System "Opening Balance" category, auto-created on account creation |
+| Bank logos on cards | Wallet by BudgetBakers | Logos on bank group headers + independent cards (BNPL/wallet) |
+| Searchable bank selector | Banking apps generally | Combobox with bilingual search, popular pinning, "Other" escape hatch |
+| Hierarchical grouping | Bluecoins (manual) | Automatic grouping by institution FK (not manual) |
+
+## 10. Implementation Plan
+
+Eight units following the Plan → Execute → Review → UAT → Merge workflow. Dependencies flow top-down.
+
+### Unit 1: Data Model + Migrations + Seed Data
+
+**Scope:**
+- Create `financial_institutions` table with all indexes and constraints
+- Add `is_system` column to `categories` table
+- Modify `accounts` table: drop `balance_minor` and `institution`, add `institution_id`, `name_ar`, `iban`, `account_number`, `account_tier`, `branch`
+- Create/update `reconciliation_records` table
+- Seed ~25 Egyptian banks, ~11 BNPL providers, ~9 digital wallet providers
+- Seed system categories: Opening Balance, Reconciliation Adjustment
+- Update existing Transfer and Uncategorized categories to `is_system = true`
+
+**Dependencies:** None — foundational unit.
+
+### Unit 2: Backend API — Financial Institutions Endpoints
+
+**Scope:**
+- `GET /api/v1/financial-institutions` with type filtering, bilingual search, popular/all response structure
+- `POST /api/v1/financial-institutions` for custom institution creation with household scoping
+- `PUT /api/v1/financial-institutions/{slug}` for custom institution editing (slug immutable)
+- `DELETE /api/v1/financial-institutions/{slug}` with active-account guard
+- SQLAlchemy model, Pydantic schemas, service layer, router
+
+**Dependencies:** Unit 1 (tables must exist).
+
+### Unit 3: Backend API — Accounts + Reconciliation Changes
+
+**Scope:**
+- Modified account CRUD with `institution_id` FK validation (type matching)
+- IBAN validation with MOD97 (python-stdnum)
+- `warnings` array in success response envelope for IBAN duplicate detection
+- Opening Balance transaction auto-creation on account create
+- Balance calculation updated: `SUM(transactions)` only, no `balance_minor`
+- Reconciliation flow creating Reconciliation Adjustment transaction + record
+- System transaction guards: delete protection, edit with warning, category non-reassignable
+- `GET /api/v1/categories?assignable=true` filtering
+- `POST/PUT /api/v1/transactions` rejecting system category assignment
+
+**Dependencies:** Unit 1 (schema), Unit 2 (institution endpoints for FK validation).
+
+### Unit 4: Frontend — Institution Selector Component
+
+**Scope:**
+- Reusable `InstitutionSelector` combobox component
+- Logo display, bilingual search (queries both `name_en` and `name_ar`)
+- Popular section pinning for banks, flat list for BNPL/digital wallet providers
+- "Other" inline form flow (English + Arabic name fields)
+- Type-filtered behavior driven by account type
+- Label changes: "BANK" / "PROVIDER" / "WALLET PROVIDER"
+- Pre-selected state with "Change" link
+
+**Dependencies:** Unit 2 (institution API endpoints).
+
+### Unit 5: Frontend — Account Creation Flow
+
+**Scope:**
+- Updated `CreateAccountDialog` with institution selector integration
+- New metadata fields: IBAN (with three validation states), account number, tier, branch
+- Progressive disclosure: "Additional Details" collapsible section
+- Credit card/BNPL sign-flip handling for opening balance
+- Field visibility matrix by account type (show/hide based on type selection)
+- Type-change reset behavior (clear type-specific fields, reset institution_id)
+- IBAN validation UI: neutral, invalid (red), duplicate warning (amber)
+
+**Dependencies:** Unit 3 (account API changes), Unit 4 (institution selector component).
+
+### Unit 6: Frontend — Accounts Page Redesign
+
+**Scope:**
+- Replace type-based `AccountGrid` with institution-grouped layout
+- Bank group sections: collapsible headers with logo, name, total, account count
+- Multi-currency `≈` logic on group totals
+- Credit card/BNPL cards: limit + available amount + color-coded utilization
+- Independent sections (Financing Apps, Digital Wallets, Cash Wallets) with totals
+- Section ordering: bank groups → BNPL → digital wallets → cash wallets
+- Half-width (2-column grid) for sections with 1-2 cards
+- System transaction visual styling in transaction lists
+- FAB integration
+
+**Dependencies:** Unit 3 (updated account API response with embedded institution), Unit 4 (institution selector for any inline creation).
+
+### Unit 7: Frontend — Bank Detail Page
+
+**Scope:**
+- New route: `/accounts/bank/[slug]`
+- Bank header with larger logo (56px), both English + Arabic names
+- Summary stat cards: Total Deposits, Total Credit Used, Available Credit, Net Position
+- Account list with type labels, IBAN last 4, opened date
+- FAB with pre-selected institution
+- Back navigation to accounts page
+
+**Dependencies:** Unit 3 (institution summary API endpoint), Unit 6 (shared card components).
+
+### Unit 8: Logo Collection + SVG Optimization
+
+**Scope:**
+- Source SVG logos for all ~45 seeded institutions (banks + BNPL + digital wallets)
+- Normalize: consistent viewBox, square aspect ratio, transparent background
+- Optimize with SVGO
+- Create default placeholder SVG (`/institutions/default.svg`)
+- Store in `frontend/public/institutions/`
+
+**Dependencies:** None — can run in parallel with any unit. Should complete before Unit 6/7 for visual testing.
+
+### Unit Dependency Graph
+
+```
+Unit 1 (Data Model)
+  ├── Unit 2 (Institution API)
+  │     ├── Unit 4 (Institution Selector)
+  │     │     └── Unit 5 (Account Creation)
+  │     └── Unit 3 (Account API)
+  │           ├── Unit 5 (Account Creation)
+  │           ├── Unit 6 (Accounts Page)
+  │           │     └── Unit 7 (Bank Detail)
+  │           └── Unit 7 (Bank Detail)
+  └── Unit 3 (Account API)
+
+Unit 8 (Logos) — parallel, no dependencies
+```
