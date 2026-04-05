@@ -260,6 +260,7 @@
     "branch": "Branch",
     "branchPlaceholder": "e.g., Maadi Branch",
     "ibanPlaceholder": "EG00 0000 0000 0000 0000 0000 00000",
+    "otherAccounts": "Other Accounts",
     "multiCurrency": "multi-currency",
     "bankDetail": {
       "backToAccounts": "Back to Accounts",
@@ -281,11 +282,18 @@
     "searchPlaceholder": "Search / ابحث",
     "popular": "Popular",
     "allBanks": "All Banks",
+    "allProviders": "All Providers",
+    "allWalletProviders": "All Wallet Providers",
     "other": "Other bank...",
+    "otherProvider": "Other provider...",
+    "otherWalletProvider": "Other wallet provider...",
     "enterName": "Enter your bank's name",
+    "enterProviderName": "Enter your provider's name",
+    "enterWalletProviderName": "Enter your wallet provider's name",
     "nameEn": "English Name",
     "nameAr": "Arabic Name",
-    "change": "Change"
+    "change": "Change",
+    "add": "Add"
   },
   "transactions": {
     "title": "Transactions",

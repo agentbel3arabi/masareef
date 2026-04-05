@@ -338,7 +338,7 @@ export function CreateAccountDialog({
                   id="account-iban"
                   value={iban}
                   onChange={(e) => setIban(e.target.value)}
-                  placeholder="EG..."
+                  placeholder={t("accounts.ibanPlaceholder")}
                 />
               </div>
               <div className="space-y-2">
@@ -360,7 +360,7 @@ export function CreateAccountDialog({
                     id="account-tier"
                     value={accountTier}
                     onChange={(e) => setAccountTier(e.target.value)}
-                    placeholder="e.g. Gold, Platinum"
+                    placeholder={t("accounts.accountTierPlaceholder")}
                   />
                 </div>
                 <div className="space-y-2">
@@ -371,6 +371,7 @@ export function CreateAccountDialog({
                     id="account-branch"
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
+                    placeholder={t("accounts.branchPlaceholder")}
                   />
                 </div>
               </div>

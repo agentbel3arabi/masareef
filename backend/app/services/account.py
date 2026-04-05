@@ -66,9 +66,12 @@ async def validate_institution(
         if institution is None:
             raise ValueError("Institution not found")
         expected_type = ACCOUNT_TYPE_TO_INSTITUTION_TYPE.get(account_type)
-        if expected_type and institution.type.value != expected_type:
+        inst_type = (
+            institution.type.value if hasattr(institution.type, "value") else institution.type
+        )
+        if expected_type and inst_type != expected_type:
             raise ValueError(
-                f"Institution type mismatch: expected {expected_type}, got {institution.type.value}"
+                f"Institution type mismatch: expected {expected_type}, got {inst_type}"
             )
     return warnings
 
@@ -76,6 +79,13 @@ async def validate_institution(
 # ---------------------------------------------------------------------------
 # IBAN helpers
 # ---------------------------------------------------------------------------
+
+
+def normalize_iban(iban: str) -> str:
+    """Normalize IBAN by removing spaces and uppercasing."""
+    from stdnum import iban as iban_mod
+
+    return iban_mod.compact(iban).upper()
 
 
 def validate_iban(iban: str) -> bool:
@@ -96,10 +106,11 @@ async def check_iban_duplicate(
     exclude_account_id: int | None = None,
 ) -> list[dict]:
     """Check if IBAN is already in use. Returns list of warning dicts."""
+    normalized = normalize_iban(iban)
     stmt = select(Account).where(
         and_(
             Account.household_id == household_id,
-            Account.iban == iban,
+            Account.iban == normalized,
             Account.is_active.is_(True),
         )
     )
@@ -170,6 +181,7 @@ async def create_account(
     data: AccountCreate,
 ) -> Account:
     """Create a new account. If opening_balance != 0, creates an Opening Balance transaction."""
+    iban_value = normalize_iban(data.iban) if data.iban else data.iban
     account = Account(
         household_id=household_id,
         name=data.name,
@@ -178,7 +190,7 @@ async def create_account(
         currency=data.currency,
         balance_minor=0,
         institution_id=data.institution_id,
-        iban=data.iban,
+        iban=iban_value,
         account_number=data.account_number,
         account_tier=data.account_tier,
         branch=data.branch,
@@ -195,18 +207,18 @@ async def create_account(
     if opening_balance != 0:
         from app.models.category import Category
 
+        credit_types = {AccountType.CREDIT_CARD, AccountType.FINANCING_APP}
+        amount = -opening_balance if data.type in credit_types else opening_balance
+
         ob_stmt = select(Category).where(
             and_(Category.name_en == "Opening Balance", Category.is_system.is_(True))
         )
         ob_category = (await session.execute(ob_stmt)).scalar_one_or_none()
         if ob_category is None:
             # System categories not yet seeded — fall back to balance_minor
-            account.balance_minor = opening_balance
+            account.balance_minor = amount
             await session.flush()
             return account
-
-        credit_types = {AccountType.CREDIT_CARD, AccountType.FINANCING_APP}
-        amount = -opening_balance if data.type in credit_types else opening_balance
         ob_date = data.opened_at or date_type.today()
         tx_type = "credit" if amount >= 0 else "debit"
 
@@ -234,6 +246,8 @@ async def update_account(
 ) -> Account:
     """Update account fields. Currency and type are immutable."""
     update_data = data.model_dump(exclude_unset=True)
+    if "iban" in update_data and update_data["iban"]:
+        update_data["iban"] = normalize_iban(update_data["iban"])
     for field, value in update_data.items():
         setattr(account, field, value)
     await session.flush()

@@ -50,7 +50,8 @@ export function InstitutionSelector({
   const instType = institutionTypeFor(accountType);
   const { data: listResp, isLoading } = useInstitutions(
     instType ?? "bank",
-    search || undefined
+    search || undefined,
+    !!instType
   );
   const createInstitution = useCreateInstitution();
 
@@ -59,6 +60,26 @@ export function InstitutionSelector({
 
   const popular = listResp?.data?.popular ?? [];
   const all = listResp?.data?.all ?? [];
+
+  // Type-specific label keys
+  const allLabel =
+    instType === "bnpl"
+      ? t("allProviders")
+      : instType === "digital_wallet_provider"
+        ? t("allWalletProviders")
+        : t("allBanks");
+  const otherLabel =
+    instType === "bnpl"
+      ? t("otherProvider")
+      : instType === "digital_wallet_provider"
+        ? t("otherWalletProvider")
+        : t("other");
+  const enterNameLabel =
+    instType === "bnpl"
+      ? t("enterProviderName")
+      : instType === "digital_wallet_provider"
+        ? t("enterWalletProviderName")
+        : t("enterName");
 
   const displayName = (inst: Institution) =>
     locale === "ar" ? inst.name_ar : inst.name_en;
@@ -123,7 +144,7 @@ export function InstitutionSelector({
     return (
       <div className="space-y-3 rounded-md border border-input p-3">
         <p className="text-sm font-medium text-muted-foreground">
-          {t("enterName")}
+          {enterNameLabel}
         </p>
         <div className="space-y-2">
           <Label htmlFor="inst-name-en" className="text-xs">
@@ -159,7 +180,7 @@ export function InstitutionSelector({
               createInstitution.isPending
             }
           >
-            {createInstitution.isPending ? "..." : t("bank")}
+            {createInstitution.isPending ? "..." : t("add")}
           </Button>
           <Button
             type="button"
@@ -210,7 +231,7 @@ export function InstitutionSelector({
         {all.length > 0 && (
           <>
             <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("allBanks")}
+              {allLabel}
             </p>
             {all.map((inst) => (
               <InstitutionRow
@@ -230,7 +251,7 @@ export function InstitutionSelector({
           className="w-full px-3 py-2 text-start text-sm text-primary hover:bg-accent transition-colors"
           onClick={() => setOtherMode(true)}
         >
-          {t("other")}
+          {otherLabel}
         </button>
       </div>
     </div>

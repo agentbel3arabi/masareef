@@ -20,7 +20,11 @@ interface InstitutionListData {
   all: Institution[];
 }
 
-export function useInstitutions(type: string, search?: string) {
+export function useInstitutions(
+  type: string,
+  search?: string,
+  enabled = true
+) {
   const params = new URLSearchParams({ type });
   if (search) params.set("search", search);
   return useQuery({
@@ -29,6 +33,7 @@ export function useInstitutions(type: string, search?: string) {
       apiGet<InstitutionListData>(
         `/api/v1/financial-institutions?${params.toString()}`
       ),
+    enabled,
   });
 }
 

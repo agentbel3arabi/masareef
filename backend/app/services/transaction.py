@@ -100,8 +100,8 @@ async def update_transaction(
     old_signed = int(tx.amount_minor)
     update_fields = data.model_dump(exclude_unset=True)
 
-    category_id = update_fields.get("category_id")
-    if category_id is not None:
+    if "category_id" in update_fields:
+        category_id = update_fields["category_id"]
         # Guard: cannot reassign away from a system category
         if category_id != tx.category_id and tx.category_id is not None:
             cat_stmt = select(Category).where(Category.id == tx.category_id)
@@ -109,8 +109,9 @@ async def update_transaction(
             if current_cat and current_cat.is_system:
                 raise ValueError("SYSTEM_CATEGORY_NOT_REASSIGNABLE")
         # Guard: cannot assign a system category to a transaction
-        await _validate_category_assignable(session, category_id)
-        await validate_category_access(session, category_id, tx.household_id)
+        if category_id is not None:
+            await _validate_category_assignable(session, category_id)
+            await validate_category_access(session, category_id, tx.household_id)
 
     # Determine new signed amount before mutating the model.
     new_amount_minor: int | None = update_fields.get("amount_minor")

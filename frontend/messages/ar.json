@@ -260,6 +260,7 @@
     "branch": "الفرع",
     "branchPlaceholder": "مثال: فرع المعادي",
     "ibanPlaceholder": "EG00 0000 0000 0000 0000 0000 00000",
+    "otherAccounts": "حسابات أخرى",
     "multiCurrency": "متعدد العملات",
     "bankDetail": {
       "backToAccounts": "العودة للحسابات",
@@ -281,11 +282,18 @@
     "searchPlaceholder": "ابحث / Search",
     "popular": "الأكثر شيوعاً",
     "allBanks": "جميع البنوك",
+    "allProviders": "جميع مزودي الخدمة",
+    "allWalletProviders": "جميع مزودي المحفظة",
     "other": "بنك آخر...",
+    "otherProvider": "مزود خدمة آخر...",
+    "otherWalletProvider": "مزود محفظة آخر...",
     "enterName": "أدخل اسم البنك",
+    "enterProviderName": "أدخل اسم مزود الخدمة",
+    "enterWalletProviderName": "أدخل اسم مزود المحفظة",
     "nameEn": "الاسم بالإنجليزية",
     "nameAr": "الاسم بالعربية",
-    "change": "تغيير"
+    "change": "تغيير",
+    "add": "إضافة"
   },
   "transactions": {
     "title": "المعاملات",

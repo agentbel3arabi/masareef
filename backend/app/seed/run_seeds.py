@@ -11,37 +11,35 @@ from app.seed.institutions import BANKS, BNPL_PROVIDERS, DIGITAL_WALLET_PROVIDER
 from app.seed.system_categories import EXISTING_SYSTEM_CATEGORY_NAMES, SYSTEM_CATEGORIES
 
 
-async def seed_institutions(session) -> None:
-    """Insert predefined financial institutions (banks, BNPL, digital wallets)."""
-    for bank in BANKS:
+async def _upsert_institution(session, institution_data: dict, institution_type: str) -> None:
+    """Insert a single institution if it doesn't already exist (by slug + type)."""
+    existing = await session.execute(
+        select(FinancialInstitution).where(
+            FinancialInstitution.slug == institution_data["slug"],
+            FinancialInstitution.type == institution_type,
+        )
+    )
+    if existing.scalar_one_or_none() is None:
         inst = FinancialInstitution(
-            type="bank",
+            type=institution_type,
             is_predefined=True,
             country="EG",
-            logo_url=f"/institutions/{bank['slug']}.svg",
-            **bank,
+            logo_url=f"/institutions/{institution_data['slug']}.svg",
+            **institution_data,
         )
         session.add(inst)
+
+
+async def seed_institutions(session) -> None:
+    """Insert predefined financial institutions (banks, BNPL, digital wallets). Idempotent."""
+    for bank in BANKS:
+        await _upsert_institution(session, bank, "bank")
 
     for provider in BNPL_PROVIDERS:
-        inst = FinancialInstitution(
-            type="bnpl",
-            is_predefined=True,
-            country="EG",
-            logo_url=f"/institutions/{provider['slug']}.svg",
-            **provider,
-        )
-        session.add(inst)
+        await _upsert_institution(session, provider, "bnpl")
 
     for provider in DIGITAL_WALLET_PROVIDERS:
-        inst = FinancialInstitution(
-            type="digital_wallet_provider",
-            is_predefined=True,
-            country="EG",
-            logo_url=f"/institutions/{provider['slug']}.svg",
-            **provider,
-        )
-        session.add(inst)
+        await _upsert_institution(session, provider, "digital_wallet_provider")
 
     await session.flush()
 

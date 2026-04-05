@@ -83,7 +83,7 @@ export function AccountGrid({
       {/* Ungrouped bank/credit accounts (no institution) */}
       {ungrouped.length > 0 && (
         <IndependentSection
-          title={t("bankAccount")}
+          title={t("otherAccounts")}
           accounts={ungrouped}
           baseCurrency={baseCurrency}
           manageMode={manageMode}
