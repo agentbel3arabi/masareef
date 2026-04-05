@@ -11,7 +11,7 @@ async def _create_fa_account(client, *, name="ValU", credit_limit=5000000):
             "currency": "EGP",
             "initial_balance": 0,
             "credit_limit": credit_limit,
-            "institution": name,
+            # institution_id would be set in a real scenario
         },
     )
     assert resp.status_code == 201

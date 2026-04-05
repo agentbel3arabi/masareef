@@ -11,7 +11,11 @@ class AccountCreate(BaseModel):
     type: AccountType
     currency: str = Field(max_length=3)
     initial_balance: int = 0  # Minor units, integer only
-    institution: str | None = None
+    institution_id: int | None = None
+    iban: str | None = None
+    account_number: str | None = None
+    account_tier: str | None = None
+    branch: str | None = None
     credit_limit: int | None = None
     billing_cycle_day: int | None = Field(default=None, ge=1, le=31)
     payment_due_day: int | None = Field(default=None, ge=1, le=31)
@@ -21,7 +25,11 @@ class AccountCreate(BaseModel):
 class AccountUpdate(BaseModel):
     name: str | None = None
     name_ar: str | None = None
-    institution: str | None = None
+    institution_id: int | None = None
+    iban: str | None = None
+    account_number: str | None = None
+    account_tier: str | None = None
+    branch: str | None = None
     credit_limit: int | None = None
     billing_cycle_day: int | None = Field(default=None, ge=1, le=31)
     payment_due_day: int | None = Field(default=None, ge=1, le=31)
@@ -36,7 +44,11 @@ class AccountResponse(BaseModel):
     currency: str
     balance_minor: int
     displayed_balance_minor: int
-    institution: str | None = None
+    institution_id: int | None = None
+    iban: str | None = None
+    account_number: str | None = None
+    account_tier: str | None = None
+    branch: str | None = None
     credit_limit: int | None = None
     billing_cycle_day: int | None = None
     payment_due_day: int | None = None

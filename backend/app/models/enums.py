@@ -68,3 +68,9 @@ class PaymentFrequency(enum.StrEnum):
     QUARTERLY = "quarterly"
     SEMI_ANNUAL = "semi_annual"
     ANNUAL = "annual"
+
+
+class InstitutionType(enum.StrEnum):
+    BANK = "bank"
+    BNPL = "bnpl"
+    DIGITAL_WALLET_PROVIDER = "digital_wallet_provider"
