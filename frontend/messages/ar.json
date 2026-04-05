@@ -256,7 +256,22 @@
     "iban": "رقم IBAN",
     "accountNumber": "رقم الحساب",
     "accountTier": "فئة الحساب",
-    "branch": "الفرع"
+    "accountTierPlaceholder": "مثال: بريميير، جولد",
+    "branch": "الفرع",
+    "branchPlaceholder": "مثال: فرع المعادي",
+    "ibanPlaceholder": "EG00 0000 0000 0000 0000 0000 00000",
+    "multiCurrency": "متعدد العملات",
+    "bankDetail": {
+      "backToAccounts": "العودة للحسابات",
+      "notFound": "المؤسسة غير موجودة",
+      "account": "حساب",
+      "accounts": "حسابات",
+      "totalDeposits": "إجمالي الودائع",
+      "totalCreditUsed": "إجمالي الائتمان المستخدم",
+      "availableCredit": "الائتمان المتاح",
+      "netPosition": "صافي المركز",
+      "addAccount": "إضافة حساب"
+    }
   },
   "institutions": {
     "bank": "البنك",

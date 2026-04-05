@@ -256,7 +256,22 @@
     "iban": "IBAN",
     "accountNumber": "Account Number",
     "accountTier": "Account Tier",
-    "branch": "Branch"
+    "accountTierPlaceholder": "e.g., Premier, Gold",
+    "branch": "Branch",
+    "branchPlaceholder": "e.g., Maadi Branch",
+    "ibanPlaceholder": "EG00 0000 0000 0000 0000 0000 00000",
+    "multiCurrency": "multi-currency",
+    "bankDetail": {
+      "backToAccounts": "Back to Accounts",
+      "notFound": "Institution not found",
+      "account": "account",
+      "accounts": "accounts",
+      "totalDeposits": "Total Deposits",
+      "totalCreditUsed": "Total Credit Used",
+      "availableCredit": "Available Credit",
+      "netPosition": "Net Position",
+      "addAccount": "Add Account"
+    }
   },
   "institutions": {
     "bank": "Bank",
