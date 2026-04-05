@@ -249,7 +249,28 @@
       "viewAll": "عرض الكل",
       "activePlans": "{count} خطط نشطة",
       "perMonth": "/شهر"
-    }
+    },
+    "openingBalanceHint": "ينشئ معاملة 'رصيد افتتاحي'",
+    "currentBalanceDueHint": "أدخل المبلغ المستحق حالياً",
+    "additionalDetails": "تفاصيل إضافية",
+    "iban": "رقم IBAN",
+    "accountNumber": "رقم الحساب",
+    "accountTier": "فئة الحساب",
+    "branch": "الفرع"
+  },
+  "institutions": {
+    "bank": "البنك",
+    "provider": "مزود الخدمة",
+    "walletProvider": "مزود المحفظة",
+    "selectPlaceholder": "اختر البنك / Select bank",
+    "searchPlaceholder": "ابحث / Search",
+    "popular": "الأكثر شيوعاً",
+    "allBanks": "جميع البنوك",
+    "other": "بنك آخر...",
+    "enterName": "أدخل اسم البنك",
+    "nameEn": "الاسم بالإنجليزية",
+    "nameAr": "الاسم بالعربية",
+    "change": "تغيير"
   },
   "transactions": {
     "title": "المعاملات",

@@ -249,7 +249,28 @@
       "viewAll": "View All",
       "activePlans": "{count} active plans",
       "perMonth": "/mo"
-    }
+    },
+    "openingBalanceHint": "Creates an 'Opening Balance' transaction",
+    "currentBalanceDueHint": "Enter the amount currently owed",
+    "additionalDetails": "Additional Details",
+    "iban": "IBAN",
+    "accountNumber": "Account Number",
+    "accountTier": "Account Tier",
+    "branch": "Branch"
+  },
+  "institutions": {
+    "bank": "Bank",
+    "provider": "Provider",
+    "walletProvider": "Wallet Provider",
+    "selectPlaceholder": "Select bank / اختر البنك",
+    "searchPlaceholder": "Search / ابحث",
+    "popular": "Popular",
+    "allBanks": "All Banks",
+    "other": "Other bank...",
+    "enterName": "Enter your bank's name",
+    "nameEn": "English Name",
+    "nameAr": "Arabic Name",
+    "change": "Change"
   },
   "transactions": {
     "title": "Transactions",
