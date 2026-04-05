@@ -27,6 +27,8 @@ The table below lists every doc file and when to load it:
 | [backend-dependencies.md](./docs/backend-dependencies.md) | ⚠️ DEPRECATED — migrated to BACKLOG.md | Historical reference only |
 | [superpowers/handoff/](./docs/superpowers/handoff/) | Session handoff notes — what was completed, key decisions, known gaps, what's next | **Start of any implementation unit** — read the most recent handoff for the current phase before writing a single line of code |
 | [superpowers/specs/phase-3.5-ux-polish-sprint.md](./docs/superpowers/specs/phase-3.5-ux-polish-sprint.md) | Phase 3.5 UX polish sprint — 6-unit execution plan covering critical bugs, form UX, placeholders, card enhancements, navigation, misc polish | **Phase 3.5 implementation** — read before starting any Phase 3.5 unit |
+| [superpowers/specs/2026-04-05-financial-institutions-design.md](./docs/superpowers/specs/2026-04-05-financial-institutions-design.md) | Phase 3.8 Financial Institutions design spec — data model, API, frontend layout, seed data, 8-unit implementation plan | **Phase 3.8 implementation** — read before starting any Phase 3.8 unit |
+| [superpowers/plans/2026-04-05-financial-institutions.md](./docs/superpowers/plans/2026-04-05-financial-institutions.md) | Phase 3.8 implementation plan — 28 tasks across 8 units with exact file paths and code | **Phase 3.8 execution** — follow task-by-task during implementation |
 
 ```
 masareef/
@@ -95,6 +97,7 @@ Load only what's relevant. **Do not load all files at once.**
 | Planning / prioritization      | `CLAUDE.md` + `05-roadmap.md` + `06-research.md` + `docs/stitch-screen-map.md`                   | `BACKLOG.md`                                   |
 | Full-stack feature (Phase N)   | `CLAUDE.md` + `05-roadmap.md` (Phase N section) + feature spec(s) listed there                   | All files listed in phase's "Required Reading" |
 | Phase 3.5 UX polish            | `CLAUDE.md` + `docs/superpowers/specs/phase-3.5-ux-polish-sprint.md` + `guides/09-design-tokens.md` | Relevant feature specs for the unit being implemented |
+| Phase 3.8 Financial Institutions | `CLAUDE.md` + `docs/superpowers/specs/2026-04-05-financial-institutions-design.md` + `docs/superpowers/plans/2026-04-05-financial-institutions.md` | `02-data-models.md`, `03-features/accounts.md`, `guides/09-design-tokens.md` |
 | Starting any implementation unit | `CLAUDE.md` + plan file + feature spec                                                          | Most recent `docs/superpowers/handoff/phase-N-unit-X.md` — **always read this first**; `BACKLOG.md` — check for items tagged to current phase |
 
 ### Frontend Planning Rule
