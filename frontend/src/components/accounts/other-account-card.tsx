@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Wallet, MoreVertical, Eye, Pencil, Trash2, Smartphone } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,8 +34,12 @@ export function OtherAccountCard({
   onSelect,
 }: OtherAccountCardProps) {
   const t = useTranslations("accounts");
+  const locale = useLocale();
   const router = useRouter();
   const isBnpl = account.type === "financing_app";
+  const institutionName = account.institution
+    ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
+    : null;
   const Icon = isBnpl ? Smartphone : (typeIcons[account.type] ?? Wallet);
   const iconColor = isBnpl
     ? "bg-violet-100 text-violet-600 dark:bg-violet-950 dark:text-violet-400"
@@ -76,8 +80,8 @@ export function OtherAccountCard({
           )}
         </div>
         <p className="text-sm font-semibold text-foreground mb-0.5">{account.name}</p>
-        {account.institution && (
-          <p className="text-xs text-muted-foreground mb-3">{account.institution}</p>
+        {institutionName && (
+          <p className="text-xs text-muted-foreground mb-3">{institutionName}</p>
         )}
         <MoneyDisplay
           amount={account.displayed_balance_minor}

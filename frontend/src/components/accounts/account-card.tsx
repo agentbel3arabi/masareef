@@ -36,7 +36,6 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [name, setName] = useState(account.name);
-  const [institution, setInstitution] = useState(account.institution ?? "");
   const [creditLimit, setCreditLimit] = useState(
     account.credit_limit != null
       ? String(
@@ -62,7 +61,6 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
 
   const openEdit = () => {
     setName(account.name);
-    setInstitution(account.institution ?? "");
     setCreditLimit(
       account.credit_limit != null
         ? String(account.credit_limit / Math.pow(10, currencyExponent))
@@ -82,7 +80,6 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
     const payload: UpdateAccountInput = {
       id: account.id,
       name: name || undefined,
-      institution: institution === "" ? null : institution,
       credit_limit: isCreditType
         ? creditLimit === ""
           ? null
@@ -157,15 +154,6 @@ export function AccountCard({ account, manageMode, selected, onSelect }: Account
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-account-institution">{t("institution")}</Label>
-              <Input
-                id="edit-account-institution"
-                value={institution}
-                onChange={(e) => setInstitution(e.target.value)}
-                placeholder={t("institutionPlaceholder")}
               />
             </div>
             {isCreditType && (

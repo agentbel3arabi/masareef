@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MoneyDisplay } from "@/components/shared/money-display";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -18,15 +18,19 @@ interface AccountBalanceHeaderProps {
 
 export function AccountBalanceHeader({ account }: AccountBalanceHeaderProps) {
   const t = useTranslations("accounts");
+  const locale = useLocale();
   const typeLabel = t(TYPE_LABEL_KEYS[account.type] ?? "bankAccount");
+  const institutionName = account.institution
+    ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
+    : null;
 
   return (
     <div className="space-y-4">
       {/* Breadcrumb */}
       <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {typeLabel}
-        {account.institution && (
-          <span className="text-muted-foreground/50"> • {account.institution}</span>
+        {institutionName && (
+          <span className="text-muted-foreground/50"> • {institutionName}</span>
         )}
       </p>
 

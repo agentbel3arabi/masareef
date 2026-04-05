@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MoreVertical, Eye, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,7 +34,11 @@ export function BankAccountCard({
   onSelect,
 }: BankAccountCardProps) {
   const t = useTranslations("accounts");
+  const locale = useLocale();
   const router = useRouter();
+  const institutionName = account.institution
+    ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
+    : null;
 
   const cardContent = (
     <div
@@ -57,9 +61,9 @@ export function BankAccountCard({
           {selected && <span className="text-xs font-bold">✓</span>}
         </div>
       )}
-      {account.institution && (
+      {institutionName && (
         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
-          {account.institution}
+          {institutionName}
         </p>
       )}
       <p className="text-sm font-medium text-foreground mb-1">{account.name}</p>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MoreVertical, Eye, Pencil, FileText, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -26,10 +26,10 @@ const INSTITUTION_GRADIENTS: Record<string, string> = {
 
 const DEFAULT_GRADIENT = "from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800";
 
-function creditCardGradient(institution: string | null | undefined): string {
-  if (!institution) return DEFAULT_GRADIENT;
+function creditCardGradient(institutionName: string | null | undefined): string {
+  if (!institutionName) return DEFAULT_GRADIENT;
   const key = Object.keys(INSTITUTION_GRADIENTS).find(
-    (k) => institution.toLowerCase().startsWith(k.toLowerCase())
+    (k) => institutionName.toLowerCase().startsWith(k.toLowerCase())
   );
   return key ? INSTITUTION_GRADIENTS[key] : DEFAULT_GRADIENT;
 }
@@ -57,8 +57,12 @@ export function CreditAccountCard({
   onSelect,
 }: CreditAccountCardProps) {
   const t = useTranslations("accounts");
+  const locale = useLocale();
   const router = useRouter();
-  const gradient = creditCardGradient(account.institution);
+  const institutionName = account.institution
+    ? (locale === "ar" ? account.institution.name_ar : account.institution.name_en)
+    : null;
+  const gradient = creditCardGradient(institutionName);
   const last4 = maskedLast4(account.id);
   const available =
     account.credit_limit != null
@@ -84,7 +88,7 @@ export function CreditAccountCard({
         )}
         <div className="flex items-start justify-between mb-6">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">
-            {account.institution || account.name}
+            {institutionName || account.name}
           </p>
           <div className="flex gap-1">
             <div className="w-7 h-5 rounded bg-white/20" />

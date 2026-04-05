@@ -3,15 +3,25 @@ import { useTranslations } from "next-intl";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api-client";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 
+export interface AccountInstitution {
+  id: number;
+  slug: string;
+  name_en: string;
+  name_ar: string;
+  type: string;
+  logo_url: string | null;
+}
+
 export interface Account {
   id: number;
   name: string;
   name_ar: string | null;
   type: string;
   currency: string;
-  balance_minor: number;
   displayed_balance_minor: number;
-  institution: string | null;
+  institution: AccountInstitution | null;
+  iban_last4: string | null;
+  account_tier: string | null;
   credit_limit: number | null;
   billing_cycle_day: number | null;
   payment_due_day: number | null;
@@ -21,14 +31,19 @@ export interface Account {
 
 export interface CreateAccountInput {
   name: string;
+  name_ar?: string;
   type: string;
   currency: string;
-  initial_balance?: number;
-  institution?: string;
+  institution_id?: number;
+  opening_balance?: number;
+  opened_at?: string;
+  iban?: string;
+  account_number?: string;
+  account_tier?: string;
+  branch?: string;
   credit_limit?: number;
   billing_cycle_day?: number;
   payment_due_day?: number;
-  opened_at?: string;
 }
 
 export function useAccounts() {
@@ -89,7 +104,11 @@ export function useNetWorth() {
 export interface UpdateAccountInput {
   id: number;
   name?: string;
-  institution?: string | null;
+  institution_id?: number | null;
+  iban?: string | null;
+  account_number?: string | null;
+  account_tier?: string | null;
+  branch?: string | null;
   credit_limit?: number | null;
   billing_cycle_day?: number | null;
   payment_due_day?: number | null;
