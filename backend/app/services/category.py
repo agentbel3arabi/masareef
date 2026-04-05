@@ -14,10 +14,15 @@ async def list_categories(
     household_id: uuid.UUID,
     type: str | None = None,
     active_only: bool = True,
+    assignable: bool = False,
     page: int = 1,
     page_size: int = 50,
 ) -> tuple[list[Category], int]:
-    """List categories visible to a household (predefined + custom)."""
+    """List categories visible to a household (predefined + custom).
+
+    When assignable=True, system categories are excluded (they cannot be
+    manually assigned to transactions).
+    """
     base_filter = (Category.household_id == household_id) | (Category.household_id.is_(None))
     q = select(Category).where(base_filter)
     count_q = select(func.count(Category.id)).where(base_filter)
@@ -28,6 +33,9 @@ async def list_categories(
     if type:
         q = q.where(Category.type == type)
         count_q = count_q.where(Category.type == type)
+    if assignable:
+        q = q.where(Category.is_system.is_(False))
+        count_q = count_q.where(Category.is_system.is_(False))
 
     total = (await session.execute(count_q)).scalar_one()
     q = q.order_by(Category.sort_order).offset((page - 1) * page_size).limit(page_size)

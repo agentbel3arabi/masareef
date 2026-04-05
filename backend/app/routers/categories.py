@@ -22,6 +22,7 @@ router = APIRouter(prefix="/api/v1/categories", tags=["categories"])
 async def list_categories(
     type: CategoryType | None = None,
     active_only: bool = True,
+    assignable: bool = False,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
@@ -33,6 +34,7 @@ async def list_categories(
         household_id=household_id,
         type=type,
         active_only=active_only,
+        assignable=assignable,
         page=page,
         page_size=page_size,
     )
