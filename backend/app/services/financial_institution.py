@@ -139,6 +139,7 @@ async def soft_delete_institution(
 
 async def count_active_accounts(
     session: AsyncSession,
+    household_id: uuid.UUID,
     institution_id: int,
 ) -> int:
     from app.models.account import Account
@@ -146,6 +147,7 @@ async def count_active_accounts(
     stmt = select(func.count()).where(
         and_(
             Account.institution_id == institution_id,
+            Account.household_id == household_id,
             Account.is_active.is_(True),
         )
     )

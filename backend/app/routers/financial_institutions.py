@@ -2,6 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import and_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
@@ -123,7 +124,7 @@ async def create_institution(
         institution = await fi_service.create_custom_institution(
             session, household_id, data.name_en, data.name_ar, data.type
         )
-    except Exception:
+    except IntegrityError:
         raise HTTPException(status_code=409, detail="Duplicate institution name")
     return {"data": InstitutionResponse.model_validate(institution).model_dump()}
 
@@ -159,7 +160,7 @@ async def delete_institution(
     if institution.is_predefined:
         raise HTTPException(status_code=403, detail="Cannot delete predefined institutions")
 
-    active_count = await fi_service.count_active_accounts(session, institution.id)
+    active_count = await fi_service.count_active_accounts(session, household_id, institution.id)
     if active_count > 0:
         raise HTTPException(
             status_code=409,

@@ -212,7 +212,10 @@ async def create_account(
                 ).model_dump(),
             )
         # Check IBAN duplicate
-        warnings = await account_service.check_iban_duplicate(session, household_id, data.iban)
+        iban_warnings = await account_service.check_iban_duplicate(
+            session, household_id, data.iban
+        )
+        warnings.extend(iban_warnings)
 
     account = await account_service.create_account(session, household_id, data)
     displayed = await account_service.compute_displayed_balance(session, account)
