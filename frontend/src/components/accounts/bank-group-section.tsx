@@ -117,7 +117,8 @@ export function BankGroupSection({
           type="button"
           onClick={() => setExpanded((prev) => !prev)}
           className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors"
-          aria-label={expanded ? "Collapse" : "Expand"}
+          aria-expanded={expanded}
+          aria-label={expanded ? t("collapse") : t("expand")}
         >
           {expanded ? (
             <ChevronUp className="h-4 w-4" />

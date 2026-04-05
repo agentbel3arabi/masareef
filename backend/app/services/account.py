@@ -119,7 +119,7 @@ async def check_iban_duplicate(
     result = await session.execute(stmt)
     existing = result.scalar_one_or_none()
     if existing:
-        last4 = iban[-4:]
+        last4 = normalized[-4:]
         return [
             {
                 "code": "DUPLICATE_IBAN",
@@ -306,13 +306,17 @@ async def compute_displayed_balance(
     when system categories are not yet seeded. Once transfers are migrated to
     use applies_to_balance=True, balance_minor can be removed from this calc.
     """
-    stmt = select(func.coalesce(func.sum(Transaction.amount_minor), 0)).where(
-        and_(
-            Transaction.account_id == account.id,
-            Transaction.is_active.is_(True),
-            Transaction.applies_to_balance.is_(True),
-        )
-    )
+    cutoff_date = get_balance_cutoff_date(account)
+    filters = [
+        Transaction.account_id == account.id,
+        Transaction.household_id == account.household_id,
+        Transaction.is_active.is_(True),
+        Transaction.applies_to_balance.is_(True),
+    ]
+    if cutoff_date is not None:
+        filters.append(Transaction.date >= cutoff_date)
+
+    stmt = select(func.coalesce(func.sum(Transaction.amount_minor), 0)).where(and_(*filters))
     result = await session.execute(stmt)
     tx_sum = result.scalar_one()
     return account.balance_minor + tx_sum

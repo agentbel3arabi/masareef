@@ -124,8 +124,9 @@ async def create_institution(
         institution = await fi_service.create_custom_institution(
             session, household_id, data.name_en, data.name_ar, data.type
         )
-    except IntegrityError:
-        raise HTTPException(status_code=409, detail="Duplicate institution name")
+    except IntegrityError as exc:
+        await session.rollback()
+        raise HTTPException(status_code=409, detail="Institution already exists") from exc
     return {"data": InstitutionResponse.model_validate(institution).model_dump()}
 
 

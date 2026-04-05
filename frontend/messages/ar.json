@@ -243,6 +243,8 @@
     "monthOut": "صادر",
     "monthTxns": "معاملات",
     "bnplBadge": "اشتر الآن",
+    "collapse": "طي",
+    "expand": "توسيع",
     "obligations": {
       "title": "الالتزامات",
       "linkedLoans": "القروض المرتبطة",

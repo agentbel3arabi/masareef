@@ -34,11 +34,14 @@ async def _build_account_response(
     monthly_stats: "MonthlyStats | None" = None,
     *,
     detail: bool = False,
+    institution_embed: "InstitutionEmbed | None" = None,
 ) -> dict:
-    """Build account response dict with optional institution embed."""
-    # Resolve institution embed
-    institution_embed = None
-    if account.institution_id is not None:
+    """Build account response dict with optional institution embed.
+
+    If institution_embed is not provided, it will be fetched from the DB.
+    Callers should pre-load institutions in bulk for list endpoints.
+    """
+    if institution_embed is None and account.institution_id is not None:
         from app.services.financial_institution import get_institution_by_id
 
         inst = await get_institution_by_id(
@@ -158,6 +161,17 @@ async def list_accounts(
                 month_transaction_count=int(row.tx_count or 0),
             )
 
+    # Batch preload institutions to avoid N+1 queries
+    institution_map: dict[int, InstitutionEmbed] = {}
+    inst_ids = {a.institution_id for a in accounts if a.institution_id is not None}
+    if inst_ids:
+        from app.models.financial_institution import FinancialInstitution
+
+        inst_stmt = select(FinancialInstitution).where(FinancialInstitution.id.in_(inst_ids))
+        inst_result = await session.execute(inst_stmt)
+        for inst in inst_result.scalars():
+            institution_map[inst.id] = InstitutionEmbed.model_validate(inst)
+
     # TODO: batch balance computation to avoid N+1 queries
     items = []
     for acct in accounts:
@@ -168,6 +182,9 @@ async def list_accounts(
             displayed,
             last_transaction_date=last_tx_map.get(acct.id),
             monthly_stats=month_stats_map.get(acct.id),
+            institution_embed=institution_map.get(acct.institution_id)
+            if acct.institution_id
+            else None,
         )
         items.append(item)
     return SuccessResponse(

@@ -243,6 +243,8 @@
     "monthOut": "Out",
     "monthTxns": "Txns",
     "bnplBadge": "BNPL",
+    "collapse": "Collapse",
+    "expand": "Expand",
     "obligations": {
       "title": "Obligations",
       "linkedLoans": "Linked Loans",
