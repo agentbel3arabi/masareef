@@ -4,7 +4,7 @@ import datetime
 import uuid
 from typing import Any
 
-from sqlalchemy import func, or_, select, update
+from sqlalchemy import and_, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -13,6 +13,21 @@ from app.models.category import Category
 from app.models.transaction import Transaction, TransactionSplit
 from app.schemas.transaction import SplitItem, TransactionCreate, TransactionUpdate
 from app.services.balance import compute_balance_delta
+
+# ---------------------------------------------------------------------------
+# System category guards
+# ---------------------------------------------------------------------------
+
+
+async def _validate_category_assignable(session: AsyncSession, category_id: int | None) -> None:
+    """Raise ValueError if the category is a system category (not user-assignable)."""
+    if category_id is None:
+        return
+    stmt = select(Category).where(Category.id == category_id)
+    category = (await session.execute(stmt)).scalar_one_or_none()
+    if category and category.is_system:
+        raise ValueError("SYSTEM_CATEGORY_NOT_ASSIGNABLE")
+
 
 # ---------------------------------------------------------------------------
 # Core CRUD
@@ -31,6 +46,7 @@ async def create_transaction(
         raise ValueError(f"Account {data.account_id} not found")
 
     if data.category_id is not None:
+        await _validate_category_assignable(session, data.category_id)
         await validate_category_access(session, data.category_id, household_id)
 
     signed = compute_balance_delta(data.amount_minor, data.type)
@@ -86,6 +102,14 @@ async def update_transaction(
 
     category_id = update_fields.get("category_id")
     if category_id is not None:
+        # Guard: cannot reassign away from a system category
+        if category_id != tx.category_id and tx.category_id is not None:
+            cat_stmt = select(Category).where(Category.id == tx.category_id)
+            current_cat = (await session.execute(cat_stmt)).scalar_one_or_none()
+            if current_cat and current_cat.is_system:
+                raise ValueError("SYSTEM_CATEGORY_NOT_REASSIGNABLE")
+        # Guard: cannot assign a system category to a transaction
+        await _validate_category_assignable(session, category_id)
         await validate_category_access(session, category_id, tx.household_id)
 
     # Determine new signed amount before mutating the model.
@@ -117,7 +141,28 @@ async def soft_delete_transaction(
     session: AsyncSession,
     tx: Transaction,
 ) -> None:
-    """Soft-delete a transaction and its splits."""
+    """Soft-delete a transaction and its splits. Guards system category transactions."""
+    # Guard: protect system-category transactions from deletion
+    if tx.category_id:
+        cat_stmt = select(Category).where(Category.id == tx.category_id)
+        category = (await session.execute(cat_stmt)).scalar_one_or_none()
+        if category and category.is_system:
+            if category.name_en == "Opening Balance":
+                raise ValueError("Opening Balance transactions cannot be deleted")
+            if category.name_en == "Reconciliation Adjustment":
+                from app.models.reconciliation_record import ReconciliationRecord
+
+                rec_stmt = select(ReconciliationRecord).where(
+                    and_(
+                        ReconciliationRecord.transaction_id == tx.id,
+                        ReconciliationRecord.is_active.is_(True),
+                    )
+                )
+                if (await session.execute(rec_stmt)).scalar_one_or_none():
+                    raise ValueError(
+                        "Reconciliation transactions cannot be deleted while record exists"
+                    )
+
     await session.execute(
         update(TransactionSplit)
         .where(TransactionSplit.transaction_id == tx.id)
