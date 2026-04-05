@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormSheet } from "@/components/shared/form-sheet";
@@ -10,8 +11,16 @@ import { RequiredLabel } from "@/components/shared/required-label";
 import { Label } from "@/components/ui/label";
 import { useCreateAccount } from "@/hooks/use-accounts";
 import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
+import { InstitutionSelector } from "./institution-selector";
+import type { Institution } from "@/hooks/use-institutions";
 
 const CREDIT_TYPES = new Set(["credit_card", "financing_app"]);
+const INSTITUTION_TYPES = new Set([
+  "bank_account",
+  "credit_card",
+  "digital_wallet",
+  "financing_app",
+]);
 
 const ACCOUNT_TYPES = [
   { value: "bank_account", label: "accounts.bankAccount" },
@@ -21,26 +30,54 @@ const ACCOUNT_TYPES = [
   { value: "financing_app", label: "accounts.financingApp" },
 ];
 
+/** Map account type to institution API type for reset logic */
+function institutionApiType(
+  accountType: string
+): string | null {
+  switch (accountType) {
+    case "bank_account":
+    case "credit_card":
+      return "bank";
+    case "financing_app":
+      return "bnpl";
+    case "digital_wallet":
+      return "digital_wallet_provider";
+    default:
+      return null;
+  }
+}
+
 interface CreateAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  preselectedInstitution?: Institution;
 }
 
 export function CreateAccountDialog({
   open,
   onOpenChange,
+  preselectedInstitution,
 }: CreateAccountDialogProps) {
   const t = useTranslations();
   const locale = useLocale();
   const [name, setName] = useState("");
   const [type, setType] = useState("bank_account");
   const [currency, setCurrency] = useState("EGP");
-  const [institution, setInstitution] = useState("");
-  const [initialBalance, setInitialBalance] = useState("");
+  const [institution, setInstitution] = useState<Institution | null>(
+    preselectedInstitution ?? null
+  );
+  const [openingBalance, setOpeningBalance] = useState("");
   const [openedAt, setOpenedAt] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
   const [billingDay, setBillingDay] = useState("");
   const [paymentDueDay, setPaymentDueDay] = useState("");
+  // Additional details
+  const [showAdditional, setShowAdditional] = useState(false);
+  const [iban, setIban] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountTier, setAccountTier] = useState("");
+  const [branch, setBranch] = useState("");
+
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -50,11 +87,42 @@ export function CreateAccountDialog({
   const balanceStep = (1 / Math.pow(10, exponent)).toFixed(exponent);
   const balancePlaceholder = (0).toFixed(exponent);
   const isCreditType = CREDIT_TYPES.has(type);
+  const needsInstitution = INSTITUTION_TYPES.has(type);
+
+  // When preselectedInstitution changes, sync it
+  useEffect(() => {
+    if (preselectedInstitution) {
+      setInstitution(preselectedInstitution);
+    }
+  }, [preselectedInstitution]);
+
+  // Reset institution when account type changes if institution type changes
+  const handleTypeChange = (newType: string) => {
+    const oldInstType = institutionApiType(type);
+    const newInstType = institutionApiType(newType);
+    if (oldInstType !== newInstType && !preselectedInstitution) {
+      setInstitution(null);
+    }
+    setType(newType);
+  };
 
   const reset = () => {
-    setName(""); setType("bank_account"); setCurrency("EGP");
-    setInstitution(""); setInitialBalance(""); setOpenedAt("");
-    setCreditLimit(""); setBillingDay(""); setPaymentDueDay("");
+    setName("");
+    setType("bank_account");
+    setCurrency("EGP");
+    setInstitution(preselectedInstitution ?? null);
+    setOpeningBalance("");
+    setOpenedAt("");
+    setCreditLimit("");
+    setBillingDay("");
+    setPaymentDueDay("");
+    setShowAdditional(false);
+    setIban("");
+    setAccountNumber("");
+    setAccountTier("");
+    setBranch("");
+    setError(null);
+    setSubmitted(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,18 +135,32 @@ export function CreateAccountDialog({
         name,
         type,
         currency,
-        initial_balance: initialBalance ? parseMajorToMinor(initialBalance, exponent) : 0,
-        institution: institution || undefined,
+        opening_balance: openingBalance
+          ? parseMajorToMinor(openingBalance, exponent)
+          : undefined,
+        institution_id: institution?.id,
         opened_at: openedAt || undefined,
-        credit_limit: isCreditType && creditLimit
-          ? parseMajorToMinor(creditLimit, exponent) : undefined,
-        billing_cycle_day: isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
-        payment_due_day: isCreditType && paymentDueDay ? parseInt(paymentDueDay, 10) : undefined,
+        iban: iban || undefined,
+        account_number: accountNumber || undefined,
+        account_tier: accountTier || undefined,
+        branch: branch || undefined,
+        credit_limit:
+          isCreditType && creditLimit
+            ? parseMajorToMinor(creditLimit, exponent)
+            : undefined,
+        billing_cycle_day:
+          isCreditType && billingDay ? parseInt(billingDay, 10) : undefined,
+        payment_due_day:
+          isCreditType && paymentDueDay
+            ? parseInt(paymentDueDay, 10)
+            : undefined,
       });
       onOpenChange(false);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.unexpectedError"));
+      setError(
+        err instanceof Error ? err.message : t("common.unexpectedError")
+      );
     }
   };
 
@@ -89,22 +171,34 @@ export function CreateAccountDialog({
       title={t("accounts.addAccount")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
+        {/* Account Name */}
         <div className="space-y-2">
-          <RequiredLabel required htmlFor="account-name">{t("accounts.name")}</RequiredLabel>
-          <Input id="account-name" value={name} onChange={(e) => setName(e.target.value)} required />
-          <FieldError show={submitted && !name.trim()} message={t("common.fieldRequired")} />
+          <RequiredLabel required htmlFor="account-name">
+            {t("accounts.name")}
+          </RequiredLabel>
+          <Input
+            id="account-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <FieldError
+            show={submitted && !name.trim()}
+            message={t("common.fieldRequired")}
+          />
         </div>
 
+        {/* Account Type */}
         <div className="space-y-2">
-          <RequiredLabel required htmlFor="account-type">{t("accounts.type")}</RequiredLabel>
+          <RequiredLabel required htmlFor="account-type">
+            {t("accounts.type")}
+          </RequiredLabel>
           <select
             id="account-type"
             value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={(e) => handleTypeChange(e.target.value)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             {ACCOUNT_TYPES.map((t_item) => (
@@ -115,8 +209,11 @@ export function CreateAccountDialog({
           </select>
         </div>
 
+        {/* Currency */}
         <div className="space-y-2">
-          <RequiredLabel required htmlFor="account-currency">{t("accounts.currency")}</RequiredLabel>
+          <RequiredLabel required htmlFor="account-currency">
+            {t("accounts.currency")}
+          </RequiredLabel>
           <select
             id="account-currency"
             value={currency}
@@ -131,30 +228,41 @@ export function CreateAccountDialog({
           </select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="account-institution">{t("accounts.institution")}</Label>
-          <Input
-            id="account-institution"
-            value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-            placeholder={t("accounts.institutionPlaceholder")}
-          />
-        </div>
+        {/* Institution Selector */}
+        {needsInstitution && (
+          <div className="space-y-2">
+            <Label>{t("accounts.institution")}</Label>
+            <InstitutionSelector
+              accountType={type}
+              value={institution}
+              onChange={setInstitution}
+            />
+          </div>
+        )}
 
+        {/* Opening Balance */}
         <div className="space-y-2">
           <Label htmlFor="account-balance">
-            {type === "credit_card" ? t("accounts.currentBalanceDue") : t("accounts.openingBalance")}
+            {isCreditType
+              ? t("accounts.currentBalanceDue")
+              : t("accounts.openingBalance")}
           </Label>
           <Input
             id="account-balance"
             type="number"
             step={balanceStep}
-            value={initialBalance}
-            onChange={(e) => setInitialBalance(e.target.value)}
+            value={openingBalance}
+            onChange={(e) => setOpeningBalance(e.target.value)}
             placeholder={balancePlaceholder}
           />
+          <p className="text-xs text-muted-foreground">
+            {isCreditType
+              ? t("accounts.currentBalanceDueHint")
+              : t("accounts.openingBalanceHint")}
+          </p>
         </div>
 
+        {/* Opened At */}
         <div className="space-y-2">
           <Label htmlFor="account-opened-at">{t("accounts.openedAt")}</Label>
           <Input
@@ -165,10 +273,13 @@ export function CreateAccountDialog({
           />
         </div>
 
+        {/* Credit-specific fields */}
         {isCreditType && (
           <>
             <div className="space-y-2">
-              <Label htmlFor="account-credit-limit">{t("accounts.creditLimit")}</Label>
+              <Label htmlFor="account-credit-limit">
+                {t("accounts.creditLimit")}
+              </Label>
               <Input
                 id="account-credit-limit"
                 type="number"
@@ -181,7 +292,9 @@ export function CreateAccountDialog({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="account-billing-day">{t("accounts.billingCycleDay")}</Label>
+                <Label htmlFor="account-billing-day">
+                  {t("accounts.billingCycleDay")}
+                </Label>
                 <Input
                   id="account-billing-day"
                   type="number"
@@ -193,7 +306,9 @@ export function CreateAccountDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="account-payment-due-day">{t("accounts.paymentDueDay")}</Label>
+                <Label htmlFor="account-payment-due-day">
+                  {t("accounts.paymentDueDay")}
+                </Label>
                 <Input
                   id="account-payment-due-day"
                   type="number"
@@ -208,7 +323,73 @@ export function CreateAccountDialog({
           </>
         )}
 
-        <Button type="submit" className="w-full" disabled={createAccount.isPending}>
+        {/* Additional Details (collapsible) */}
+        <div className="border-t border-border/40 pt-3">
+          <button
+            type="button"
+            className="flex w-full items-center justify-between text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setShowAdditional(!showAdditional)}
+          >
+            {t("accounts.additionalDetails")}
+            {showAdditional ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+          {showAdditional && (
+            <div className="mt-3 space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="account-iban">{t("accounts.iban")}</Label>
+                <Input
+                  id="account-iban"
+                  value={iban}
+                  onChange={(e) => setIban(e.target.value)}
+                  placeholder="EG..."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="account-number">
+                  {t("accounts.accountNumber")}
+                </Label>
+                <Input
+                  id="account-number"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="account-tier">
+                    {t("accounts.accountTier")}
+                  </Label>
+                  <Input
+                    id="account-tier"
+                    value={accountTier}
+                    onChange={(e) => setAccountTier(e.target.value)}
+                    placeholder="e.g. Gold, Platinum"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="account-branch">
+                    {t("accounts.branch")}
+                  </Label>
+                  <Input
+                    id="account-branch"
+                    value={branch}
+                    onChange={(e) => setBranch(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={createAccount.isPending}
+        >
           {createAccount.isPending ? t("common.loading") : t("common.create")}
         </Button>
       </form>
