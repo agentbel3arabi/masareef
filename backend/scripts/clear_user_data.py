@@ -128,7 +128,7 @@ async def clear_data(household_id: str | None, dry_run: bool) -> None:
             total = 0
             for table_name, count_sql, delete_sql in steps:
                 result = await session.execute(text(count_sql), params)
-                count = result.scalar()
+                count = result.scalar() or 0
                 total += count
                 if count > 0:
                     action = "would delete" if dry_run else "deleted"

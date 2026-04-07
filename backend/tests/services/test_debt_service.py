@@ -95,14 +95,14 @@ def test_payment_amount_must_be_positive():
 
     # Negative amount must be rejected
     with pytest.raises(ValidationError):
-        PaymentCreate(date="2024-01-01", amount_minor=-50000, account_id=1)
+        PaymentCreate(date="2024-01-01", amount_minor=-50000, account_id=1)  # type: ignore[arg-type]
 
     # Zero amount must be rejected
     with pytest.raises(ValidationError):
-        PaymentCreate(date="2024-01-01", amount_minor=0, account_id=1)
+        PaymentCreate(date="2024-01-01", amount_minor=0, account_id=1)  # type: ignore[arg-type]
 
     # Positive amount must be accepted
-    valid = PaymentCreate(date="2024-01-01", amount_minor=50000, account_id=1)
+    valid = PaymentCreate(date="2024-01-01", amount_minor=50000, account_id=1)  # type: ignore[arg-type]
     assert valid.amount_minor == 50000
 
 
@@ -117,5 +117,5 @@ def test_debt_payment_is_integer_not_float():
         PaymentCreate(date="2024-01-01", amount_minor=1250.50, account_id=1)  # type: ignore[arg-type]
 
     # Valid integer amount works
-    valid = PaymentCreate(date="2024-01-01", amount_minor=125050, account_id=1)
+    valid = PaymentCreate(date="2024-01-01", amount_minor=125050, account_id=1)  # type: ignore[arg-type]
     assert isinstance(valid.amount_minor, int)

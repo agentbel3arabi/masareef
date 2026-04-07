@@ -34,7 +34,7 @@ def test_account_currency_is_not_nullable():
 def test_account_currency_max_length_is_3():
     """Currency code is stored as String(3) — ISO 4217."""
     col = Account.__table__.c.currency
-    assert col.type.length == 3
+    assert col.type.length == 3  # type: ignore[union-attr]
 
 
 def test_account_type_is_not_nullable():
@@ -81,7 +81,7 @@ def test_account_has_name_ar_column():
 def test_account_has_check_constraints():
     """Account table has check constraints for billing/payment days."""
     constraint_names = {
-        c.name for c in Account.__table__.constraints if hasattr(c, "name") and c.name
+        c.name for c in Account.__table__.constraints if hasattr(c, "name") and c.name  # type: ignore[union-attr]
     }
     assert "ck_accounts_billing_cycle_day" in constraint_names
     assert "ck_accounts_payment_due_day" in constraint_names
