@@ -3,7 +3,7 @@
 All amounts are in minor units. Multi-currency amounts are converted to
 the requested base_currency via the FX hub (USD).
 
-Uses func.strftime for month bucketing (SQLite-compatible).
+Month bucketing is done in Python (not SQL) for PostgreSQL + SQLite compatibility.
 """
 
 import datetime
@@ -11,7 +11,7 @@ import uuid
 from collections import defaultdict
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import case, func, select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
@@ -70,20 +70,8 @@ async def get_income_vs_expenses(
     stmt = (
         select(
             Transaction.currency,
-            func.strftime("%Y-%m", Transaction.date).label("month"),
-            func.coalesce(
-                func.sum(case((Transaction.amount_minor > 0, Transaction.amount_minor), else_=0)),
-                0,
-            ).label("income"),
-            func.coalesce(
-                func.sum(
-                    case(
-                        (Transaction.amount_minor < 0, func.abs(Transaction.amount_minor)),
-                        else_=0,
-                    )
-                ),
-                0,
-            ).label("expenses"),
+            Transaction.date,
+            Transaction.amount_minor,
         )
         .where(
             Transaction.household_id == household_id,
@@ -91,18 +79,21 @@ async def get_income_vs_expenses(
             Transaction.transfer_id.is_(None),
             Transaction.date >= start_date,
         )
-        .group_by(Transaction.currency, func.strftime("%Y-%m", Transaction.date))
     )
 
     rows = (await session.execute(stmt)).all()
 
-    # Group by month, then aggregate per-currency amounts via FX
+    # Group by month in Python (works on both PostgreSQL and SQLite)
     month_income: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     month_expense: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
     for row in rows:
-        month_income[row.month][row.currency] += int(row.income)
-        month_expense[row.month][row.currency] += int(row.expenses)
+        month_str = row.date.strftime("%Y-%m")
+        amount = int(row.amount_minor)
+        if amount > 0:
+            month_income[month_str][row.currency] += amount
+        elif amount < 0:
+            month_expense[month_str][row.currency] += abs(amount)
 
     all_months = sorted(set(list(month_income.keys()) + list(month_expense.keys())))
 
