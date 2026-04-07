@@ -42,7 +42,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 1 | Low | ✅ Done |
 | BL-030 | Sync httpx.get in JWKS cache (blocks event loop) | tech-debt | Phase 3.75 | High | ✅ Done |
 | BL-031 | FX transfer amount computed with float division | tech-debt | Phase 3.75 | Medium | ✅ Done |
-| BL-032 | RBAC guards on remaining routers | deferred | Phase 1 | Medium | ⏳ Open |
+| BL-032 | RBAC guards on remaining routers | deferred | Phase 1 | Medium | ✅ Done |
 | BL-033 | Frontend auth middleware (route protection) | deferred | Phase 13 — Settings & Polish | Medium | ⏳ Open |
 | BL-034 | Frontend test infrastructure | tech-debt | Unscheduled | Medium | ⏳ Open |
 | BL-035 | Partial payment tracking on P2P splits | deferred | Unscheduled | Low | ⏳ Open |
@@ -365,7 +365,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Medium
 - **Context:** Only `persons.py` and `debts.py` routers have RBAC guards via `require_role()`. Other routers (accounts, transactions, transfers, categories, installments, import) are unguarded. All users in a household have full access regardless of role.
 - **Acceptance:** All routers enforce role-based access control; viewer role cannot mutate data.
-- **Status:** ⏳ Open
+- **Status:** ✅ Done — Phase 01 Plan 06. All mutation endpoints guarded with require_role or inline checks.
 
 ---
 
