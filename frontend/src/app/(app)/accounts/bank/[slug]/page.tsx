@@ -80,7 +80,7 @@ export default function BankDetailPage() {
 
       {/* Bank header */}
       <div className="flex items-center gap-4">
-        <div className="shrink-0 flex items-center justify-center h-14 w-14 rounded-xl bg-muted text-muted-foreground font-bold text-lg overflow-hidden">
+        <div className="shrink-0 flex items-center justify-center h-14 w-14 rounded-xl bg-muted text-muted-foreground font-semibold text-lg overflow-hidden">
           {institution.logo_url ? (
             <img
               src={institution.logo_url}
@@ -92,7 +92,7 @@ export default function BankDetailPage() {
           )}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
+          <h1 className="text-2xl font-semibold text-foreground">{displayName}</h1>
           {secondaryName && (
             <p className="text-sm text-muted-foreground">{secondaryName}</p>
           )}

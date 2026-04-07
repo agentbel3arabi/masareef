@@ -91,7 +91,7 @@ export default function TransactionsPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">{t("nav.transactions")}</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t("nav.transactions")}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t("transactions.subtitle")}</p>
       </div>
 
@@ -129,7 +129,7 @@ export default function TransactionsPage() {
           <TransactionFilterBar filters={filters} onChange={setFilters} />
 
           {/* Section header */}
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {t("transactions.list")}
           </h2>
 

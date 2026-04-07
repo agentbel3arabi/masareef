@@ -148,7 +148,7 @@ export default function TransfersPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">{t("nav.transfers")}</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t("nav.transfers")}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t("transfers.subtitle")}</p>
       </div>
 

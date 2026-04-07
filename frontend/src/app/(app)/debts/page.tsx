@@ -78,7 +78,7 @@ export default function DebtsPage() {
       {/* Header */}
       <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {tDebts("title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -95,7 +95,7 @@ export default function DebtsPage() {
             type="button"
             onClick={() => setActiveTab(key)}
             className={cn(
-              "shrink-0 px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+              "shrink-0 px-5 py-3 text-sm font-normal border-b-2 transition-colors whitespace-nowrap",
               activeTab === key
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground",

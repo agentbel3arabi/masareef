@@ -42,6 +42,26 @@ from app.services.money import CURRENCIES
 logger = logging.getLogger(__name__)
 
 
+async def _get_account_or_404(
+    session: AsyncSession, account_id: int, household_id: uuid.UUID
+) -> Account:
+    """Verify account exists and belongs to household. Raises 404 if not found."""
+    result = await session.execute(
+        select(Account).where(
+            Account.id == account_id,
+            Account.household_id == household_id,
+            Account.is_active.is_(True),
+        )
+    )
+    account = result.scalar_one_or_none()
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
+        )
+    return account
+
+
 def _parse_error(fmt: str) -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -106,6 +126,159 @@ def _complete(rows: list[ParsedRow], preset_id: str | None) -> ParseCompleteResp
     )
 
 
+def _parse_rows_csv(
+    raw_bytes: bytes,
+    column_mapping: dict[str, str],
+    date_format: str,
+    skip_rows: int,
+    currency: str,
+    currency_exponent: int,
+) -> list[ParsedRow]:
+    """Parse CSV bytes into rows. Raises HTTPException on failure."""
+    try:
+        return parse_csv(
+            raw_bytes,
+            column_mapping,
+            date_format=date_format,
+            skip_rows=skip_rows,
+            currency=currency,
+            currency_exponent=currency_exponent,
+        )
+    except Exception:
+        raise _parse_error("CSV")
+
+
+def _parse_rows_excel(
+    raw_bytes: bytes,
+    column_mapping: dict[str, str],
+    date_format: str,
+    skip_rows: int,
+    currency: str,
+    currency_exponent: int,
+    sheet_name: str | None = None,
+) -> list[ParsedRow]:
+    """Parse Excel bytes into rows. Raises HTTPException on failure."""
+    try:
+        return parse_excel(
+            raw_bytes,
+            column_mapping,
+            sheet_name=sheet_name,
+            skip_rows=skip_rows,
+            date_format=date_format,
+            currency=currency,
+            currency_exponent=currency_exponent,
+        )
+    except Exception:
+        raise _parse_error("Excel")
+
+
+def _parse_rows(
+    fmt: str,
+    raw_bytes: bytes,
+    column_mapping: dict[str, str],
+    date_format: str,
+    skip_rows: int,
+    currency: str,
+    currency_exponent: int,
+    sheet_name: str | None = None,
+) -> list[ParsedRow]:
+    """Dispatch to CSV or Excel parser based on format."""
+    if fmt == "csv":
+        return _parse_rows_csv(
+            raw_bytes, column_mapping, date_format, skip_rows, currency, currency_exponent
+        )
+    return _parse_rows_excel(
+        raw_bytes,
+        column_mapping,
+        date_format,
+        skip_rows,
+        currency,
+        currency_exponent,
+        sheet_name=sheet_name,
+    )
+
+
+async def _dedup_and_complete(
+    rows: list[ParsedRow],
+    account_id: int,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    preset_id: str | None,
+) -> ParseCompleteResponse:
+    """Run duplicate detection and return a complete response."""
+    existing_hashes = await load_existing_hashes(session, account_id, household_id)
+    mark_duplicates(rows, account_id, existing_hashes)
+    return _complete(rows, preset_id)
+
+
+async def _parse_pdf(
+    raw_bytes: bytes,
+    account_id: int,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    currency: str,
+    currency_exponent: int,
+) -> ScannedResponse | ParseCompleteResponse:
+    """Handle PDF parsing: scanned check, preset detection, parse, dedup."""
+    try:
+        scanned = is_scanned(raw_bytes)
+    except Exception:
+        logger.warning(
+            "is_scanned() raised an unexpected error; treating PDF as parseable",
+            exc_info=True,
+        )
+        scanned = False
+    if scanned:
+        return ScannedResponse()
+
+    preset = detect_preset(raw_bytes)
+    if preset is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": {
+                    "code": "UNSUPPORTED_FORMAT",
+                    "message": "PDF format not recognized. Supported: HSBC Credit Card PDF",
+                }
+            },
+        )
+
+    try:
+        rows = preset.parse(raw_bytes, currency=currency, currency_exponent=currency_exponent)
+    except Exception:
+        raise _parse_error("PDF")
+    return await _dedup_and_complete(rows, account_id, session, household_id, preset.preset_id)
+
+
+async def _try_linked_template(
+    fmt: str,
+    raw_bytes: bytes,
+    account_id: int,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    currency: str,
+    currency_exponent: int,
+) -> ParseCompleteResponse | None:
+    """Try account-linked template. Returns None if no matching template."""
+    linked_template = await get_linked_template(session, account_id, household_id)
+    if not linked_template or linked_template.format != fmt:
+        return None
+    if fmt not in ("csv", "excel"):
+        return None
+
+    rows = _parse_rows(
+        fmt,
+        raw_bytes,
+        dict(linked_template.columns),
+        linked_template.date_format,
+        linked_template.skip_rows,
+        currency,
+        currency_exponent,
+        sheet_name=getattr(linked_template, "sheet_name", None),
+    )
+    return await _dedup_and_complete(rows, account_id, session, household_id, None)
+
+
 async def parse_upload(
     raw_bytes: bytes,
     filename: str,
@@ -121,157 +294,117 @@ async def parse_upload(
     """Orchestrate file parsing. Returns one of three response variants."""
     fmt = _detect_format(filename, content_type)
 
-    # Verify account belongs to this household before any parsing/dedup work
-    account_result = await session.execute(
-        select(Account).where(
-            Account.id == account_id,
-            Account.household_id == household_id,
-            Account.is_active.is_(True),
-        )
-    )
-    account = account_result.scalar_one_or_none()
-    if account is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
-        )
+    # Verify account belongs to this household
+    account = await _get_account_or_404(session, account_id, household_id)
 
-    # Derive currency and exponent from the account (authoritative source).
+    # Derive currency and exponent from the account (authoritative source)
     account_currency = account.currency
     currency_exponent = CURRENCIES.get(account_currency, {}).get("exponent", 2)
 
-    # NOTE: existing_hashes is intentionally NOT loaded here.
-    # It is deferred to just before each mark_duplicates() call so that
-    # early-return paths (ScannedResponse, NeedsMappingResponse) skip the DB
-    # query entirely.
-
-    # ── Check for account-linked template ─────────────────────────────────
+    # Try account-linked template first (when no explicit mapping provided)
     if not column_mapping:
-        linked_template = await get_linked_template(session, account_id, household_id)
-        if linked_template and linked_template.format != fmt:
-            linked_template = None  # format mismatch — fall through to normal flow
-        if linked_template and fmt in ("csv", "excel"):
-            if fmt == "csv":
-                try:
-                    rows = parse_csv(
-                        raw_bytes,
-                        dict(linked_template.columns),
-                        date_format=linked_template.date_format,
-                        skip_rows=linked_template.skip_rows,
-                        currency=account_currency,
-                        currency_exponent=currency_exponent,
-                    )
-                except Exception:
-                    raise _parse_error("CSV")
-            else:
-                try:
-                    rows = parse_excel(
-                        raw_bytes,
-                        dict(linked_template.columns),
-                        sheet_name=linked_template.sheet_name,
-                        skip_rows=linked_template.skip_rows,
-                        date_format=linked_template.date_format,
-                        currency=account_currency,
-                        currency_exponent=currency_exponent,
-                    )
-                except Exception:
-                    raise _parse_error("Excel")
-            existing_hashes = await load_existing_hashes(session, account_id, household_id)
-            mark_duplicates(rows, account_id, existing_hashes)
-            return _complete(rows, None)
+        template_result = await _try_linked_template(
+            fmt,
+            raw_bytes,
+            account_id,
+            session,
+            household_id,
+            account_currency,
+            currency_exponent,
+        )
+        if template_result is not None:
+            return template_result
 
-    # ── PDF path ───────────────────────────────────────────────────────────
+    # PDF path
     if fmt == "pdf":
-        try:
-            scanned = is_scanned(raw_bytes)
-        except Exception:
-            logger.warning(
-                "is_scanned() raised an unexpected error; treating PDF as parseable",
-                exc_info=True,
-            )
-            scanned = False
-        if scanned:
-            return ScannedResponse()
+        return await _parse_pdf(
+            raw_bytes,
+            account_id,
+            session,
+            household_id,
+            account_currency,
+            currency_exponent,
+        )
 
-        preset = detect_preset(raw_bytes)
-        if preset is None:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail={
-                    "error": {
-                        "code": "UNSUPPORTED_FORMAT",
-                        "message": "PDF format not recognized. Supported: HSBC Credit Card PDF",
-                    }
-                },
-            )
-
-        try:
-            rows = preset.parse(
-                raw_bytes, currency=account_currency, currency_exponent=currency_exponent
-            )
-        except Exception:
-            raise _parse_error("PDF")
-        existing_hashes = await load_existing_hashes(session, account_id, household_id)
-        mark_duplicates(rows, account_id, existing_hashes)
-        return _complete(rows, preset.preset_id)
-
-    # ── CSV / Excel with explicit mapping (second parse call) ──────────────
+    # CSV / Excel with explicit mapping (second parse call)
     if column_mapping:
-        if fmt == "csv":
-            try:
-                rows = parse_csv(
-                    raw_bytes,
-                    column_mapping,
-                    date_format=date_format,
-                    skip_rows=skip_rows,
-                    currency=account_currency,
-                    currency_exponent=currency_exponent,
-                )
-            except Exception:
-                raise _parse_error("CSV")
-        else:
-            try:
-                rows = parse_excel(
-                    raw_bytes,
-                    column_mapping,
-                    sheet_name=sheet_name,
-                    skip_rows=skip_rows,
-                    date_format=date_format,
-                    currency=account_currency,
-                    currency_exponent=currency_exponent,
-                )
-            except Exception:
-                raise _parse_error("Excel")
-        existing_hashes = await load_existing_hashes(session, account_id, household_id)
-        mark_duplicates(rows, account_id, existing_hashes)
-        return _complete(rows, None)
+        rows = _parse_rows(
+            fmt,
+            raw_bytes,
+            column_mapping,
+            date_format,
+            skip_rows,
+            account_currency,
+            currency_exponent,
+            sheet_name=sheet_name,
+        )
+        return await _dedup_and_complete(rows, account_id, session, household_id, None)
 
-    # ── CSV: try preset, else needs_mapping ────────────────────────────────
+    # CSV: try preset, else needs_mapping
     if fmt == "csv":
-        try:
-            headers = csv_headers(raw_bytes, skip_rows=skip_rows)
-        except Exception:
-            raise _parse_error("CSV")
-        preset = detect_preset(raw_bytes, headers)
-        if preset and preset.get_column_mapping():
-            try:
-                rows = parse_csv(
-                    raw_bytes,
-                    preset.get_column_mapping(),  # type: ignore[arg-type]
-                    date_format=preset.get_date_format(),
-                    skip_rows=skip_rows,
-                    currency=account_currency,
-                    currency_exponent=currency_exponent,
-                )
-            except Exception:
-                raise _parse_error("CSV")
-            existing_hashes = await load_existing_hashes(session, account_id, household_id)
-            mark_duplicates(rows, account_id, existing_hashes)
-            return _complete(rows, preset.preset_id)
-        auto_suggest = get_auto_suggest(headers)
-        return NeedsMappingResponse(headers=headers, auto_suggest=auto_suggest)
+        return await _parse_csv_auto(
+            raw_bytes,
+            account_id,
+            session,
+            household_id,
+            account_currency,
+            currency_exponent,
+            skip_rows,
+        )
 
-    # ── Excel: try preset, else needs_mapping with sheet info ─────────────
+    # Excel: try preset, else needs_mapping with sheet info
+    return await _parse_excel_auto(
+        raw_bytes,
+        account_id,
+        session,
+        household_id,
+        account_currency,
+        currency_exponent,
+        skip_rows,
+        sheet_name,
+    )
+
+
+async def _parse_csv_auto(
+    raw_bytes: bytes,
+    account_id: int,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    currency: str,
+    currency_exponent: int,
+    skip_rows: int,
+) -> NeedsMappingResponse | ParseCompleteResponse:
+    """CSV auto-detection: try preset, fall back to needs_mapping."""
+    try:
+        headers = csv_headers(raw_bytes, skip_rows=skip_rows)
+    except Exception:
+        raise _parse_error("CSV")
+    preset = detect_preset(raw_bytes, headers)
+    if preset and preset.get_column_mapping():
+        rows = _parse_rows_csv(
+            raw_bytes,
+            preset.get_column_mapping(),  # type: ignore[arg-type]
+            preset.get_date_format(),
+            skip_rows,
+            currency,
+            currency_exponent,
+        )
+        return await _dedup_and_complete(rows, account_id, session, household_id, preset.preset_id)
+    auto_suggest = get_auto_suggest(headers)
+    return NeedsMappingResponse(headers=headers, auto_suggest=auto_suggest)
+
+
+async def _parse_excel_auto(
+    raw_bytes: bytes,
+    account_id: int,
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    currency: str,
+    currency_exponent: int,
+    skip_rows: int,
+    sheet_name: str | None,
+) -> NeedsMappingResponse | ParseCompleteResponse:
+    """Excel auto-detection: try preset, fall back to needs_mapping."""
     try:
         sheets = get_sheet_names(raw_bytes)
         active_sheet = sheet_name or (sheets[0] if sheets else None)
@@ -280,21 +413,16 @@ async def parse_upload(
         raise _parse_error("Excel")
     preset = detect_preset(raw_bytes, headers)
     if preset and preset.get_column_mapping():
-        try:
-            rows = parse_excel(
-                raw_bytes,
-                preset.get_column_mapping(),  # type: ignore[arg-type]
-                sheet_name=active_sheet,
-                skip_rows=skip_rows,
-                date_format=preset.get_date_format(),
-                currency=account_currency,
-                currency_exponent=currency_exponent,
-            )
-        except Exception:
-            raise _parse_error("Excel")
-        existing_hashes = await load_existing_hashes(session, account_id, household_id)
-        mark_duplicates(rows, account_id, existing_hashes)
-        return _complete(rows, preset.preset_id)
+        rows = _parse_rows_excel(
+            raw_bytes,
+            preset.get_column_mapping(),  # type: ignore[arg-type]
+            preset.get_date_format(),
+            skip_rows,
+            currency,
+            currency_exponent,
+            sheet_name=active_sheet,
+        )
+        return await _dedup_and_complete(rows, account_id, session, household_id, preset.preset_id)
     auto_suggest = get_auto_suggest(headers)
     return NeedsMappingResponse(
         headers=headers,
@@ -311,22 +439,8 @@ async def commit_import(
 ) -> CommitResponse:
     """Atomically insert transactions. Does NOT update account.balance_minor
     (displayed balance is computed from seed + sum of transactions)."""
-    # Verify account belongs to household
-    result = await session.execute(
-        select(Account).where(
-            Account.id == data.account_id,
-            Account.household_id == household_id,
-            Account.is_active.is_(True),
-        )
-    )
-    account = result.scalar_one_or_none()
-    if account is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": {"code": "ACCOUNT_NOT_FOUND", "message": "Account not found"}},
-        )
-
-    account_currency = account.currency  # derive currency from account, not client
+    account = await _get_account_or_404(session, data.account_id, household_id)
+    account_currency = account.currency
 
     # Look up the predefined "Uncategorized" category once for the whole batch
     uncategorized_result = await session.execute(

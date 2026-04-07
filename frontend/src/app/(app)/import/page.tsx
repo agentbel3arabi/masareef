@@ -55,7 +55,7 @@ function StepIndicator({ current }: { current: "upload" | "mapping" | "preview" 
       {steps.map((step, idx) => (
         <div key={step.key} className="flex items-center gap-2">
           <div
-            className={`flex size-6 items-center justify-center rounded-full text-xs font-medium ${
+            className={`flex size-6 items-center justify-center rounded-full text-xs font-normal ${
               idx <= currentIdx
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground"
@@ -63,7 +63,7 @@ function StepIndicator({ current }: { current: "upload" | "mapping" | "preview" 
           >
             {idx + 1}
           </div>
-          <span className={idx <= currentIdx ? "font-medium" : "text-muted-foreground"}>
+          <span className={idx <= currentIdx ? "font-normal" : "text-muted-foreground"}>
             {step.label}
           </span>
           {idx < steps.length - 1 && <span className="text-muted-foreground">›</span>}

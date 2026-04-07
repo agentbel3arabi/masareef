@@ -18,7 +18,7 @@ export function LocaleToggle() {
 
   return (
     <Button variant="ghost" size="icon" onClick={toggleLocale}>
-      <span className="text-sm font-medium">
+      <span className="text-sm font-normal">
         {locale === "ar" ? "EN" : "ع"}
       </span>
       <span className="sr-only">

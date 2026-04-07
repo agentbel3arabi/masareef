@@ -109,13 +109,13 @@ export default function AccountsPage() {
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                 {t("assets")}
               </p>
-              <p className="text-xl font-bold text-primary">{assetsDisplay}</p>
+              <p className="text-xl font-semibold text-primary">{assetsDisplay}</p>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                 {t("liabilities")}
               </p>
-              <p className="text-xl font-bold text-destructive">{liabilitiesDisplay}</p>
+              <p className="text-xl font-semibold text-destructive">{liabilitiesDisplay}</p>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function AccountsPage() {
                 disabled={!isBase}
                 title={!isBase ? t("comingSoon") : undefined}
                 className={cn(
-                  "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+                  "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all",
                   cur === displayCurrency
                     ? "bg-background shadow-sm text-foreground"
                     : isBase

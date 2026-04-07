@@ -96,7 +96,7 @@ export default function SignupPage() {
       <div className="flex flex-col items-center text-center space-y-6 py-4">
         <CheckCircle className="w-16 h-16 text-primary" aria-hidden="true" />
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{t("auth.confirmTitle")}</h1>
+          <h1 className="text-2xl font-semibold">{t("auth.confirmTitle")}</h1>
           <p className="text-sm text-muted-foreground max-w-xs">
             {t("auth.confirmDescription", { email })}
           </p>
@@ -126,7 +126,7 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">{t("auth.createAccount")}</h1>
+        <h1 className="text-2xl font-semibold">{t("auth.createAccount")}</h1>
         <p className="text-sm text-muted-foreground">{t("auth.startJourney")}</p>
       </div>
 
@@ -275,7 +275,7 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={() => setLang("en")}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 py-2 text-sm font-normal transition-colors ${
                 lang === "en"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -286,7 +286,7 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={() => setLang("ar")}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 py-2 text-sm font-normal transition-colors ${
                 lang === "ar"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
