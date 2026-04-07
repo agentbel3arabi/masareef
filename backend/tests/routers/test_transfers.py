@@ -159,6 +159,67 @@ async def test_list_transfers(client):
 
 
 @pytest.mark.asyncio
+async def test_list_transfers_populates_account_names(client):
+    """Regression for BL-029: list_transfers JOIN loads both account names."""
+    bank_id, cash_id = await _create_accounts(client)
+    create_resp = await client.post(
+        "/api/v1/transfers",
+        json={
+            "from_account_id": bank_id,
+            "to_account_id": cash_id,
+            "amount_minor": 300000,
+            "date": "2024-02-10",
+        },
+    )
+    assert create_resp.status_code == 201
+
+    list_resp = await client.get("/api/v1/transfers")
+    assert list_resp.status_code == 200
+    body = list_resp.json()
+    assert body["meta"]["total"] >= 1
+
+    item = body["data"][0]
+
+    # Verify from_account is fully populated (not null, has name)
+    assert item["from_account"] is not None, "from_account should be populated by JOIN"
+    assert item["from_account"]["name"] == "Bank"
+    assert item["from_account"]["currency"] == "EGP"
+
+    # Verify to_account is fully populated (not null, has name)
+    assert item["to_account"] is not None, "to_account should be populated by JOIN"
+    assert item["to_account"]["name"] == "Cash"
+    assert item["to_account"]["currency"] == "EGP"
+
+
+@pytest.mark.asyncio
+async def test_list_transfers_multiple_returns_correct_count(client):
+    """Multiple transfers all have non-null from_account and to_account."""
+    bank_id, cash_id = await _create_accounts(client)
+    for amount in [100000, 200000, 300000]:
+        resp = await client.post(
+            "/api/v1/transfers",
+            json={
+                "from_account_id": bank_id,
+                "to_account_id": cash_id,
+                "amount_minor": amount,
+                "date": "2024-03-01",
+            },
+        )
+        assert resp.status_code == 201
+
+    list_resp = await client.get("/api/v1/transfers")
+    assert list_resp.status_code == 200
+    body = list_resp.json()
+    assert body["meta"]["total"] >= 3
+
+    for item in body["data"]:
+        assert item["from_account"] is not None, "Every transfer must have from_account"
+        assert item["to_account"] is not None, "Every transfer must have to_account"
+        assert "name" in item["from_account"]
+        assert "name" in item["to_account"]
+
+
+@pytest.mark.asyncio
 async def test_same_currency_transfer_rejects_fx_rate(client):
     """Providing fx_rate for same-currency transfer should return 400."""
     from_id, to_id = await _create_accounts(client)

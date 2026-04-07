@@ -39,7 +39,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-026 | Scanned PDF OCR import (Premium) | deferred | Phase 14 — Scanned PDF | Medium | ⏳ Open |
 | BL-027 | N+1 FX queries in compute_persons_balances_bulk | tech-debt | Phase 1 | Low | ⏳ Open |
 | BL-028 | N+1 query in list_accounts (balance per account) | tech-debt | Phase 1 | Low | ⏳ Open |
-| BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 1 | Low | ⏳ Open |
+| BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 1 | Low | ✅ Done |
 | BL-030 | Sync httpx.get in JWKS cache (blocks event loop) | tech-debt | Phase 3.75 | High | ✅ Done |
 | BL-031 | FX transfer amount computed with float division | tech-debt | Phase 3.75 | Medium | ✅ Done |
 | BL-032 | RBAC guards on remaining routers | deferred | Phase 1 | Medium | ⏳ Open |
@@ -180,7 +180,8 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Low
 - **Context:** `list_transfers` performs per-row credit leg + account lookups. Should use a joined query. TODO added during Phase 1E.
 - **Acceptance:** Transfer listing uses joined queries to avoid N+1.
-- **Status:** ⏳ Open
+- **Status:** ✅ Done
+- **Resolution:** Already fixed -- 4-way JOIN confirmed working (debit leg + credit leg + from_account + to_account). Stale TODO removed. Regression tests added in Phase 01 stabilization.
 
 ---
 
