@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Documentation audit and BACKLOG.md re-tagging
-- [ ] 01-02-PLAN.md — Verify BL-029 fix, remove stale TODO, close backlog item
+- [x] 01-02-PLAN.md — Verify BL-029 fix, remove stale TODO, close backlog item
 - [ ] 01-03-PLAN.md — N+1 query elimination (BL-027 FX batch, BL-028 balance batch)
 - [ ] 01-04-PLAN.md — Frontend test infrastructure setup + CI coverage thresholds
 - [ ] 01-05-PLAN.md — Frontend test writing (30-50 tests) + backend test expansion
