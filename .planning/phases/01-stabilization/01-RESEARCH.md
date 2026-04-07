@@ -102,7 +102,7 @@ Key directives that affect this phase:
 **Installation (frontend):**
 ```bash
 cd frontend
-pnpm add -D vitest @testing-library/react @testing-library/jest-dom @vitejs/plugin-react jsdom @vitest/coverage-v8
+pnpm add -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event @vitejs/plugin-react jsdom @vitest/coverage-v8
 ```
 
 ## Architecture Patterns
@@ -129,9 +129,12 @@ frontend/
 │       ├── layout/
 │       │   └── __tests__/
 │       │       └── app-shell.test.tsx
-│       └── accounts/
+│       ├── accounts/
+│       │   └── __tests__/
+│       │       └── account-form.test.tsx
+│       └── transactions/
 │           └── __tests__/
-│               └── account-card.test.tsx
+│               └── transaction-form.test.tsx
 ```
 
 ### Pattern 1: Vitest Configuration for Next.js 16
@@ -562,22 +565,25 @@ Based on code quality signals observed during research:
 | A3 | jsdom 29.0.2 handles Tailwind CSS v4 class utilities | Standard Stack | Unlikely to cause issues; Tailwind classes are just strings |
 | A4 | Coverage threshold of 50% is achievable with 30-50 tests | Validation Architecture | May need adjustment based on codebase size |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Debts and persons router RBAC status**
+1. **Debts and persons router RBAC status** (RESOLVED)
    - What we know: grep shows require_role exists in accounts, transactions, transfers, categories, installments
    - What's unclear: debts.py and persons.py are mentioned in CONCERNS.md as having "manual inline checks" and require_role respectively, but need full verification
    - Recommendation: Planner should include an audit task to verify all routers before applying fixes
+   - **Resolution:** Plan 06 Task 1 includes explicit audit of debts.py and persons.py with mandate to upgrade to require_role or document exemption rationale. Added as must_have truth.
 
-2. **financial_institutions.py mutation endpoints**
+2. **financial_institutions.py mutation endpoints** (RESOLVED)
    - What we know: Router exists with GET endpoint visible
    - What's unclear: Whether POST/PUT/DELETE endpoints exist and their RBAC status
    - Recommendation: Full endpoint audit during RBAC plan
+   - **Resolution:** Plan 06 Task 1 includes financial_institutions.py in the RBAC guard application. Research confirmed POST/PUT/DELETE endpoints exist at lines 127, 143, 162.
 
-3. **Balance cutoff date complexity in batch query**
+3. **Balance cutoff date complexity in batch query** (RESOLVED)
    - What we know: `get_balance_cutoff_date()` is per-account based on account type
    - What's unclear: How many account types have non-null cutoff dates in practice
    - Recommendation: Check the function to see if only credit cards use cutoff dates; if so, a simple CASE expression suffices
+   - **Resolution:** Plan 03 Task 2 implements batch balance with grouped queries by cutoff date. The approach handles arbitrary cutoff groups (typically 1-2: null + one date for credit cards).
 
 ## Environment Availability
 
