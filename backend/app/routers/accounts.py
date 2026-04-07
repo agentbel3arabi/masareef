@@ -172,10 +172,11 @@ async def list_accounts(
         for inst in inst_result.scalars():
             institution_map[inst.id] = InstitutionEmbed.model_validate(inst)
 
-    # TODO: batch balance computation to avoid N+1 queries
+    # Batch balance computation (single query instead of N+1)
+    balance_map = await account_service.compute_displayed_balances_batch(session, accounts)
     items = []
     for acct in accounts:
-        displayed = await account_service.compute_displayed_balance(session, acct)
+        displayed = balance_map.get(acct.id, 0)
         item = await _build_account_response(
             session,
             acct,
