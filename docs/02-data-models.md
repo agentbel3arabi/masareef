@@ -21,6 +21,8 @@ CREATE TYPE ai_provider AS ENUM ('claude', 'openai', 'azure_openai', 'ollama');
 CREATE TYPE household_role AS ENUM ('admin', 'member', 'viewer', 'child');
 CREATE TYPE person_relationship AS ENUM ('family', 'friend', 'colleague', 'business', 'other');
 CREATE TYPE repayment_mode AS ENUM ('lump_sum', 'equal_splits', 'custom_splits');
+CREATE TYPE payment_frequency AS ENUM ('monthly', 'quarterly', 'semi_annual', 'annual');
+CREATE TYPE institution_type AS ENUM ('bank', 'bnpl', 'digital_wallet_provider');
 CREATE TYPE notification_channel AS ENUM ('in_app', 'email', 'telegram', 'whatsapp');
 ```
 
@@ -107,10 +109,15 @@ Audit trail of mutations within a household. Visible to admin only.
 | id | SERIAL | PK | |
 | household_id | UUID | FK → households, NOT NULL | RLS scope |
 | name | TEXT | NOT NULL | |
+| name_ar | TEXT | | Optional Arabic name |
 | type | account_type | NOT NULL | |
-| currency | TEXT | NOT NULL | 'EGP', 'USD', 'SAR' |
+| currency | VARCHAR(3) | NOT NULL | 'EGP', 'USD', 'SAR' |
+| institution_id | INT | FK → financial_institutions | Links to institution directory |
+| iban | TEXT | | IBAN (validated with MOD97) |
+| account_number | TEXT | | Bank account number |
+| account_tier | TEXT | | e.g., "Gold", "Platinum" |
+| branch | TEXT | | Branch name |
 | balance_minor | BIGINT | NOT NULL, default 0 | Seed balance in minor units |
-| institution | TEXT | | Bank name |
 | credit_limit | BIGINT | | Credit card only, minor units |
 | billing_cycle_day | INT | CHECK (1-31) | Credit card only |
 | payment_due_day | INT | CHECK (1-31) | Credit card only |
@@ -119,7 +126,7 @@ Audit trail of mutations within a household. Visible to admin only.
 | created_at | TIMESTAMPTZ | NOT NULL, default now() | |
 | updated_at | TIMESTAMPTZ | NOT NULL, default now() | |
 
-**Indexes:** (household_id), (household_id, type)
+**Indexes:** (household_id)
 
 ### transactions
 
@@ -177,6 +184,7 @@ For splitting a single transaction across multiple categories.
 | icon | TEXT | | Lucide icon name |
 | color | TEXT | | Hex color (#RRGGBB) |
 | is_predefined | BOOLEAN | NOT NULL, default false | System defaults, immutable |
+| is_system | BOOLEAN | NOT NULL, default false | System categories (Opening Balance, Reconciliation) — hidden from user picker |
 | is_active | BOOLEAN | NOT NULL, default true | |
 | sort_order | INT | NOT NULL, default 0 | |
 | created_at | TIMESTAMPTZ | NOT NULL, default now() | |
@@ -185,6 +193,7 @@ For splitting a single transaction across multiple categories.
 - Expense (12): Food & Dining, Groceries, Transportation, Utilities, Housing/Rent, Healthcare, Shopping, Education, Entertainment, Telecommunications, Fuel, Government/Fees
 - Income (3): Salary, Freelance Income, Other Income
 - Special (3): Transfer, Uncategorized, Savings
+- System (2): Opening Balance, Reconciliation Adjustment — `is_system=true`, hidden from user category picker
 
 ---
 
@@ -206,6 +215,8 @@ For splitting a single transaction across multiple categories.
 | annual_rate_bps | INT | NOT NULL, default 0 | Basis points: 1450 = 14.5% |
 | tenure_months | INT | NOT NULL | |
 | start_date | DATE | NOT NULL | |
+| payment_day_of_month | INT | | Day of month payment is due |
+| payment_frequency | payment_frequency | NOT NULL, default 'monthly' | monthly, quarterly, semi_annual, annual |
 | monthly_payment_minor | BIGINT | NOT NULL | Pre-calculated via PMT |
 | repayment_mode | repayment_mode | | P2P only: lump_sum, equal_splits, custom_splits |
 | due_date | DATE | | P2P lump_sum: single payout date |
@@ -249,12 +260,16 @@ For splitting a single transaction across multiple categories.
 | total_months | INT | NOT NULL | |
 | start_month | DATE | NOT NULL | Always day 1 |
 | currency | TEXT | NOT NULL | |
+| annual_rate_bps | INT | NOT NULL, default 0 | Basis points: 1450 = 14.5% |
+| payment_day_of_month | INT | CHECK (1-28) | Day of month payment is due |
+| notes | TEXT | | |
 | status | lifecycle_status | NOT NULL, default 'active' | |
 | is_active | BOOLEAN | NOT NULL, default true | |
 | created_at | TIMESTAMPTZ | NOT NULL, default now() | |
 | updated_at | TIMESTAMPTZ | NOT NULL, default now() | |
 
 **Indexes:** (household_id, type), (household_id, source_account_id)
+**Constraint:** payment_day_of_month between 1 and 28
 
 ### persons
 Counterparties for P2P debts.
@@ -633,21 +648,6 @@ Tracks which plan a household is on.
 
 ---
 
-## Reconciliation
-
-### reconciliations
-
-| Column | Type | Constraints | Notes |
-|--------|------|-------------|-------|
-| id | SERIAL | PK | |
-| account_id | INT | FK → accounts, NOT NULL | |
-| computed_balance | BIGINT | NOT NULL | From transaction sum |
-| actual_balance | BIGINT | NOT NULL | User-entered |
-| discrepancy | BIGINT | NOT NULL | actual - computed |
-| currency | TEXT | NOT NULL | |
-| reconciled_at | TIMESTAMPTZ | NOT NULL, default now() | |
-| notes | TEXT | | |
-
 ---
 
 ## Async Jobs
@@ -669,6 +669,51 @@ Tracks async report generation requests. Replaces the in-memory `dict[UUID, JobS
 | expires_at | TIMESTAMPTZ | | Download link expiry (default: created_at + 1 hour) |
 
 **Index:** (household_id, created_at DESC), (status) WHERE status IN ('pending', 'processing')
+
+---
+
+## Financial Institutions
+
+### financial_institutions
+Directory of banks, BNPL providers, and digital wallet providers.
+
+| Column | Type | Constraints | Notes |
+|--------|------|-------------|-------|
+| id | SERIAL | PK | |
+| slug | TEXT | NOT NULL | URL-safe identifier |
+| name_en | TEXT | NOT NULL | English name |
+| name_ar | TEXT | NOT NULL | Arabic name |
+| type | institution_type | NOT NULL | bank, bnpl, digital_wallet_provider |
+| logo_url | TEXT | | SVG logo path |
+| bic_swift | TEXT | | BIC/SWIFT code (banks only) |
+| country | VARCHAR(3) | NOT NULL, default 'EG' | ISO country code |
+| is_predefined | BOOLEAN | NOT NULL, default false | Seeded institutions |
+| is_popular | BOOLEAN | NOT NULL, default false | Pinned to top of selector |
+| sort_order | INT | NOT NULL, default 0 | Display ordering |
+| household_id | UUID | FK → households | NULL for predefined institutions |
+| is_active | BOOLEAN | NOT NULL, default true | |
+| created_at | TIMESTAMPTZ | NOT NULL, default now() | |
+| updated_at | TIMESTAMPTZ | NOT NULL, default now() | |
+
+### reconciliation_records
+Audit trail for balance reconciliation events.
+
+| Column | Type | Constraints | Notes |
+|--------|------|-------------|-------|
+| id | SERIAL | PK | |
+| household_id | UUID | FK → households, NOT NULL | |
+| account_id | INT | FK → accounts, NOT NULL | |
+| transaction_id | INT | FK → transactions | Adjustment transaction created |
+| expected_balance_minor | BIGINT | NOT NULL | Computed from transactions |
+| actual_balance_minor | BIGINT | NOT NULL | User-entered actual balance |
+| adjustment_minor | BIGINT | NOT NULL | actual - expected |
+| reconciliation_date | DATE | NOT NULL | |
+| reconciled_at | TIMESTAMPTZ | NOT NULL, default now() | |
+| notes | TEXT | | |
+| is_active | BOOLEAN | NOT NULL, default true | |
+| created_at | TIMESTAMPTZ | NOT NULL, default now() | |
+
+**Index:** (account_id)
 
 ---
 
@@ -701,8 +746,11 @@ Household ─┬── Accounts ──── Transactions ──┬── Transa
            ├── Child Linked Accounts (account scoping for child role)
            └── Activity Log (audit trail, admin-visible)
 
+Financial Institutions ── shared predefined + per-household custom
+                         (Accounts linked via institution_id FK)
+Reconciliation Records ── per-account audit trail
 Exchange Rates ── global (no household scope)
-Categories ────── shared predefined + per-household custom
+Categories ────── shared predefined + per-household custom + system categories
 ```
 
 ## RLS Policy Pattern

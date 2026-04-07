@@ -5,7 +5,7 @@
 ```
 ┌─────────────────────────────────────────┐
 │           Next.js Frontend              │
-│  TypeScript · shadcn/ui · Tailwind v3   │
+│  TypeScript · shadcn/ui · Tailwind v4   │
 │  react-plotly.js · TanStack Query       │
 │  Supabase Client (auth + realtime)      │
 └──────────────────┬──────────────────────┘
@@ -123,73 +123,90 @@ masareef/
 │   │   ├── main.py              # FastAPI app, startup events, CORS
 │   │   ├── config.py            # Settings via Pydantic BaseSettings
 │   │   ├── database.py          # SQLAlchemy async engine + session factory
-│   │   ├── dependencies.py      # FastAPI Depends (auth, db session, current user)
+│   │   ├── dependencies.py      # FastAPI Depends (auth, db session, current user, household)
+│   │   ├── dependencies_rbac.py # RBAC Depends (get_member_role, require_role)
 │   │   ├── models/              # SQLAlchemy ORM models
 │   │   │   ├── account.py
 │   │   │   ├── transaction.py
 │   │   │   ├── category.py
 │   │   │   ├── debt.py
-│   │   │   ├── installment.py
-│   │   │   ├── gam3eya.py
-│   │   │   ├── asset.py
-│   │   │   ├── budget.py
-│   │   │   ├── recurring_rule.py
+│   │   │   ├── debt_payment.py
+│   │   │   ├── installment_plan.py
+│   │   │   ├── p2p_debt_split.py
 │   │   │   ├── exchange_rate.py
+│   │   │   ├── financial_institution.py
+│   │   │   ├── import_template.py
 │   │   │   ├── person.py
 │   │   │   ├── household.py
+│   │   │   ├── reconciliation_record.py
+│   │   │   ├── enums.py          # All enum types
 │   │   │   └── base.py          # Shared mixins (timestamps, soft delete)
-│   │   ├── schemas/             # Pydantic request/response models
+│   │   ├── schemas/             # Pydantic request/response models (14 files)
 │   │   │   ├── account.py
-│   │   │   ├── transaction.py
+│   │   │   ├── category.py
+│   │   │   ├── common.py        # ErrorResponse, pagination envelope
 │   │   │   ├── debt.py
-│   │   │   ├── asset.py
-│   │   │   └── ...
-│   │   ├── routers/             # API route handlers
+│   │   │   ├── exchange_rate.py
+│   │   │   ├── financial_institution.py
+│   │   │   ├── household.py
+│   │   │   ├── import_.py
+│   │   │   ├── import_template.py
+│   │   │   ├── installment.py
+│   │   │   ├── person.py
+│   │   │   ├── transaction.py
+│   │   │   ├── transaction_summary.py
+│   │   │   └── transfer.py
+│   │   ├── routers/             # API route handlers (12 modules)
 │   │   │   ├── accounts.py
 │   │   │   ├── transactions.py
-│   │   │   ├── debts.py
-│   │   │   ├── assets.py
-│   │   │   ├── gam3eyas.py
-│   │   │   ├── budgets.py
-│   │   │   ├── import_.py
-│   │   │   ├── forecasting.py
-│   │   │   ├── dashboard.py
+│   │   │   ├── transfers.py
 │   │   │   ├── categories.py
-│   │   │   ├── exchange_rates.py
-│   │   │   ├── recurring_rules.py
-│   │   │   ├── reports.py
-│   │   │   └── settings.py
+│   │   │   ├── debts.py
+│   │   │   ├── import_.py
+│   │   │   ├── import_templates.py
+│   │   │   ├── installments.py
+│   │   │   ├── persons.py
+│   │   │   ├── households.py
+│   │   │   ├── financing_apps.py
+│   │   │   └── financial_institutions.py
 │   │   ├── services/            # Business logic (no HTTP awareness)
+│   │   │   ├── account.py
 │   │   │   ├── amortization.py
 │   │   │   ├── balance.py
-│   │   │   ├── forecasting.py
+│   │   │   ├── category.py
+│   │   │   ├── debt.py
+│   │   │   ├── financial_institution.py
+│   │   │   ├── fx.py
+│   │   │   ├── household.py
+│   │   │   ├── import_template.py
+│   │   │   ├── installment.py
 │   │   │   ├── money.py
-│   │   │   ├── exchange_rates.py
-│   │   │   ├── billing.py
-│   │   │   ├── gam3eya.py
-│   │   │   ├── asset_valuation.py
+│   │   │   ├── person.py
+│   │   │   ├── transaction.py
+│   │   │   ├── transaction_summary.py
+│   │   │   ├── transfer.py
 │   │   │   └── import_/
-│   │   │       ├── parser.py
+│   │   │       ├── import_service.py
 │   │   │       ├── pdf_parser.py
 │   │   │       ├── csv_parser.py
 │   │   │       ├── excel_parser.py
 │   │   │       ├── encoding.py
 │   │   │       ├── duplicate_checker.py
 │   │   │       ├── amount_parser.py
-│   │   │       ├── date_parser.py
+│   │   │       ├── header_mapper.py
+│   │   │       ├── row_validator.py
 │   │   │       └── presets/
-│   │   │           ├── hsbc.py
-│   │   │           ├── cib.py
-│   │   │           ├── credit_agricole.py
+│   │   │           ├── base.py
+│   │   │           ├── hsbc_cc.py
 │   │   │           └── registry.py
-│   │   ├── ai/                  # Pluggable AI provider system
-│   │   │   ├── base.py          # Abstract provider interface
-│   │   │   ├── claude.py        # Anthropic SDK
-│   │   │   ├── openai_.py       # OpenAI SDK
-│   │   │   ├── azure_openai.py  # Azure OpenAI SDK
-│   │   │   ├── ollama.py        # Ollama HTTP API
-│   │   │   ├── router.py        # Provider selection + fallback logic
-│   │   │   └── prompts/         # Prompt templates for categorization, insights
+│   │   ├── ai/                  # Pluggable AI provider system [NOT YET IMPLEMENTED — Phase 3]
+│   │   │   ├── base.py          # Abstract provider interface (planned)
+│   │   │   ├── claude.py        # Anthropic SDK (planned)
+│   │   │   ├── openai_.py       # OpenAI SDK (planned)
+│   │   │   ├── azure_openai.py  # Azure OpenAI SDK (planned)
+│   │   │   ├── ollama.py        # Ollama HTTP API (planned)
+│   │   │   ├── router.py        # Provider selection + fallback logic (planned)
+│   │   │   └── prompts/         # Prompt templates for categorization, insights (planned)
 │   │   └── seed.py              # Seed data: 18 predefined categories, 7 supported currencies with exponents, sample exchange rates for development
 │   ├── alembic/                 # Database migrations
 │   ├── tests/                   # pytest test suite

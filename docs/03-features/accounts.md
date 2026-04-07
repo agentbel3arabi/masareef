@@ -133,6 +133,14 @@ Reconcile account balance against actual bank balance.
 
 Creates a reconciliation record and adjusts seed balance to correct discrepancy.
 
+### `GET /api/v1/accounts/{id}/balance-history`
+Returns balance history for an account over a time period.
+
+**Query params:** `period` (optional, e.g., 'month')
+
+### `GET /api/v1/accounts/{id}/obligations`
+Returns debts and installment plans linked to the specified account.
+
 ### `GET /api/v1/accounts/net-worth`
 Aggregated net worth across all accounts, grouped by currency, with optional base currency conversion.
 

@@ -23,24 +23,72 @@ backend/
 │   └── routers/
 └── tests/
     ├── conftest.py                     # Shared fixtures (session, household, auth)
-    ├── models/
+    ├── test_base_model.py
+    ├── test_config.py
+    ├── test_database.py
+    ├── test_dependencies.py
+    ├── test_health.py
+    ├── test_seed.py
+    ├── models/                          # Model validation & constraint tests
     │   ├── test_account.py
-    │   ├── test_transaction.py
-    │   └── ...
-    ├── services/
+    │   ├── test_category.py
+    │   ├── test_debt_models.py
+    │   ├── test_enums.py
+    │   ├── test_exchange_rate.py
+    │   ├── test_household.py
+    │   ├── test_import_template.py
+    │   └── test_transaction.py
+    ├── schemas/                         # Pydantic schema validation tests
+    │   ├── test_account_schema.py
+    │   ├── test_debt_schemas.py
+    │   ├── test_installment_schemas.py
+    │   ├── test_schemas.py
+    │   └── test_transaction_schema.py
+    ├── services/                        # Service-layer unit tests
+    │   ├── test_amortization.py
     │   ├── test_balance_service.py
-    │   ├── test_amortization_service.py
+    │   ├── test_fx.py
+    │   ├── test_installment_service.py
     │   ├── test_money_service.py
-    │   └── ...
-    ├── routers/
+    │   ├── test_p2p_splits.py
+    │   ├── test_person_balances.py
+    │   ├── test_person_balances_fx.py
+    │   ├── test_transaction_summary.py
+    │   └── import_/                     # Import service tests
+    ├── routers/                         # API endpoint tests (18 files)
     │   ├── test_accounts.py
-    │   ├── test_transactions.py
+    │   ├── test_account_enrichment.py
+    │   ├── test_account_obligations.py
+    │   ├── test_categories.py
     │   ├── test_debts.py
-    │   └── ...
-    └── e2e/
-        ├── test_onboarding_flow.py
-        ├── test_import_flow.py
-        └── test_transaction_crud.py
+    │   ├── test_financing_apps.py
+    │   ├── test_households.py
+    │   ├── test_import_.py
+    │   ├── test_import_templates.py
+    │   ├── test_installments.py
+    │   ├── test_p2p_debts.py
+    │   ├── test_persons.py
+    │   ├── test_rbac.py
+    │   ├── test_rbac_debts.py
+    │   ├── test_rbac_persons.py
+    │   ├── test_transactions.py
+    │   ├── test_transaction_summary.py
+    │   └── test_transfers.py
+    ├── unit/                            # Pure unit tests (no DB)
+    │   ├── test_account_service.py
+    │   ├── test_dependencies.py
+    │   ├── test_household_service.py
+    │   ├── test_import_template_service.py
+    │   ├── test_schemas.py
+    │   ├── test_transaction_service.py
+    │   └── test_transfer_service.py
+    └── integration/                     # Full-stack API integration tests
+        ├── conftest.py
+        ├── test_accounts_api.py
+        ├── test_categories_api.py
+        ├── test_households_api.py
+        ├── test_transactions_api.py
+        └── test_transfers_api.py
 ```
 
 ## What to Test Per Layer
