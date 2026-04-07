@@ -128,37 +128,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAB-05 | Phase 1 | Pending |
 | STAB-06 | Phase 1 | Pending |
 | STAB-07 | Phase 1 | Pending |
-| DASH-01 | TBD | Pending |
-| DASH-02 | TBD | Pending |
-| DASH-03 | TBD | Pending |
-| DASH-04 | TBD | Pending |
-| DASH-05 | TBD | Pending |
-| DASH-06 | TBD | Pending |
-| AICAT-01 | TBD | Pending |
-| AICAT-02 | TBD | Pending |
-| AICAT-03 | TBD | Pending |
-| AICAT-04 | TBD | Pending |
-| BUDG-01 | TBD | Pending |
-| BUDG-02 | TBD | Pending |
-| BUDG-03 | TBD | Pending |
-| BUDG-04 | TBD | Pending |
-| GAM-01 | TBD | Pending |
-| GAM-02 | TBD | Pending |
-| GAM-03 | TBD | Pending |
-| GAM-04 | TBD | Pending |
-| NOTF-01 | TBD | Pending |
-| NOTF-02 | TBD | Pending |
-| NOTF-03 | TBD | Pending |
-| NOTF-04 | TBD | Pending |
-| SETT-01 | TBD | Pending |
-| SETT-02 | TBD | Pending |
-| SETT-03 | TBD | Pending |
+| DASH-01 | Phase 2 | Pending |
+| DASH-02 | Phase 2 | Pending |
+| DASH-03 | Phase 2 | Pending |
+| DASH-04 | Phase 2 | Pending |
+| DASH-05 | Phase 2 | Pending |
+| DASH-06 | Phase 2 | Pending |
+| AICAT-01 | Phase 3 | Pending |
+| AICAT-02 | Phase 3 | Pending |
+| AICAT-03 | Phase 3 | Pending |
+| AICAT-04 | Phase 3 | Pending |
+| BUDG-01 | Phase 4 | Pending |
+| BUDG-02 | Phase 4 | Pending |
+| BUDG-03 | Phase 4 | Pending |
+| BUDG-04 | Phase 4 | Pending |
+| GAM-01 | Phase 5 | Pending |
+| GAM-02 | Phase 5 | Pending |
+| GAM-03 | Phase 5 | Pending |
+| GAM-04 | Phase 5 | Pending |
+| NOTF-01 | Phase 6 | Pending |
+| NOTF-02 | Phase 6 | Pending |
+| NOTF-03 | Phase 6 | Pending |
+| NOTF-04 | Phase 6 | Pending |
+| SETT-01 | Phase 7 | Pending |
+| SETT-02 | Phase 7 | Pending |
+| SETT-03 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 32 total
-- Mapped to phases: 7 (stabilization)
-- Unmapped: 25 ⚠️
+- Mapped to phases: 32/32 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-07*
-*Last updated: 2026-04-07 after initial definition*
+*Last updated: 2026-04-07 after roadmap creation*
