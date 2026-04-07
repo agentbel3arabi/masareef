@@ -458,7 +458,18 @@ async def commit_import(
 
     all_txs: list[Transaction] = []
     for commit_row in data.rows:
-        tx_type = TransactionType(commit_row.type)
+        try:
+            tx_type = TransactionType(commit_row.type)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "error": {
+                        "code": "INVALID_TRANSACTION_TYPE",
+                        "message": f"Unknown transaction type: {commit_row.type!r}",
+                    }
+                },
+            )
         # Enforce correct sign based on transaction type (server-side, not client-trusted)
         if tx_type == TransactionType.DEBIT:
             signed_amount = -abs(commit_row.amount_minor)
