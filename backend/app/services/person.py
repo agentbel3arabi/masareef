@@ -11,7 +11,7 @@ from app.models.enums import DebtStatus, DebtType
 from app.models.household import Household
 from app.models.person import Person
 from app.schemas.person import PersonBalances, PersonCreate, PersonUpdate
-from app.services.fx import convert_to_base
+from app.services.fx import convert_to_base, get_latest_rates
 
 
 async def list_persons(
@@ -311,6 +311,14 @@ async def compute_persons_balances_bulk(
     )
     base_currency = hh_row.scalar_one_or_none() or "EGP"
 
+    # Pre-fetch FX rates once for all currencies across all persons
+    all_currencies: set[str] = set()
+    for by_currency in result.values():
+        all_currencies.update(by_currency.keys())
+    rates = await get_latest_rates(session, all_currencies) if len(all_currencies) > 1 or (
+        len(all_currencies) == 1 and next(iter(all_currencies)) != base_currency
+    ) else None
+
     # Convert each person's balances to base currency
     final: dict[int, PersonBalances] = {}
     for pid, by_currency in result.items():
@@ -318,6 +326,7 @@ async def compute_persons_balances_bulk(
             session=session,
             balances=by_currency,
             base_currency=base_currency,
+            rates=rates,
         )
         final[pid] = PersonBalances(
             by_currency=by_currency,

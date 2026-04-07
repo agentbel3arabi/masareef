@@ -37,7 +37,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-024 | BNPL account detail FAB speed dial | deferred | Phase 4 | Low | ⏳ Open |
 | BL-025 | Account Statements button backend | backend-dep | Phase 5 — Gam3eya | Low | ⏳ Open |
 | BL-026 | Scanned PDF OCR import (Premium) | deferred | Phase 14 — Scanned PDF | Medium | ⏳ Open |
-| BL-027 | N+1 FX queries in compute_persons_balances_bulk | tech-debt | Phase 1 | Low | ⏳ Open |
+| BL-027 | N+1 FX queries in compute_persons_balances_bulk | tech-debt | Phase 1 | Low | ✅ Done |
 | BL-028 | N+1 query in list_accounts (balance per account) | tech-debt | Phase 1 | Low | ⏳ Open |
 | BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 1 | Low | ✅ Done |
 | BL-030 | Sync httpx.get in JWKS cache (blocks event loop) | tech-debt | Phase 3.75 | High | ✅ Done |

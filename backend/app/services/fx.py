@@ -70,6 +70,8 @@ async def convert_to_base(
     session: AsyncSession,
     balances: dict[str, int],
     base_currency: str,
+    *,
+    rates: dict[str, int] | None = None,
 ) -> FXResult:
     """Convert per-currency minor-unit balances to a single base currency.
 
@@ -94,7 +96,8 @@ async def convert_to_base(
             if base_currency != "USD":
                 currencies_needed.add(base_currency)
 
-    rates = await get_latest_rates(session, currencies_needed) if currencies_needed else {}
+    if rates is None:
+        rates = await get_latest_rates(session, currencies_needed) if currencies_needed else {}
 
     total = 0
     warnings: list[str] = []
