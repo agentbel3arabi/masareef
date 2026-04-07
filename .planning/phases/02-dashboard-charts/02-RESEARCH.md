@@ -443,19 +443,19 @@ async def get_stat_cards(
 | A2 | `plotly.js-dist-min` includes bar, pie, and scatter chart types | Standard Stack | Medium -- if missing a chart type, would need to switch to `plotly.js-dist` (larger bundle). Verified: plotly.js-dist-min includes all "basic" traces which covers bar, scatter, pie. |
 | A3 | 5,000 transactions with 12-month net worth reconstruction completes in < 500ms | Common Pitfalls - Pitfall 4 | Medium -- if slow, would need the deferred snapshot table approach. Can mitigate with single-query cumulative sum approach. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Household base_currency update endpoint**
+1. RESOLVED: **Household base_currency update endpoint** — Use `PATCH /api/v1/households` with `{ base_currency: "USD" }`. Implemented in Plan 02-01, Task 1.
    - What we know: `households` table has `base_currency` column, no PATCH endpoint exists
    - What's unclear: Should this be `PATCH /api/v1/households/settings` with arbitrary key-value, or a dedicated `PATCH /api/v1/households` with specific fields?
    - Recommendation: Add `PATCH /api/v1/households` that accepts `{ base_currency: "USD" }` -- follows REST convention, simple, and the `households` model already has the field.
 
-2. **Upcoming payments computation (DASH-04)**
+2. RESOLVED: **Upcoming payments computation (DASH-04)** — Use `payment_day_of_month` + 30-day window for debts/installments, `due_date` filter for P2P splits. Implemented in Plan 02-01, Task 2 (get_stat_cards).
    - What we know: Debts have `payment_day_of_month`, installments have `payment_day_of_month`, P2P splits have `due_date`
    - What's unclear: Should we compute full amortization schedules to find next payment, or just use `payment_day_of_month` relative to today?
    - Recommendation: Simple approach -- for each active debt/installment, next payment date = next occurrence of `payment_day_of_month` in the next 30 days. For P2P splits, query `WHERE paid = false AND due_date BETWEEN today AND today + 30`. Avoid recomputing full amortization schedules in the dashboard query.
 
-3. **Net worth timeline -- debts component**
+3. RESOLVED: **Net worth timeline -- debts component** — Return `accounts_minor` and `debts_minor` per month, `assets_minor=0`. Extend when asset tracking added. Implemented in Plan 02-01, Task 2 (get_net_worth_trend).
    - What we know: D-08 says net worth from transactions on-the-fly, feature spec shows stacked areas (accounts, assets, debts)
    - What's unclear: Assets are deferred (D-03), so the net worth timeline will only show accounts and debts initially
    - Recommendation: Build the endpoint to return `accounts_minor` and `debts_minor` per month. Omit `assets_minor` (return 0). When asset tracking is added later, extend the endpoint.
