@@ -40,8 +40,8 @@ Plans:
 - [x] 01-03-PLAN.md — N+1 query elimination (BL-027 FX batch, BL-028 balance batch)
 - [x] 01-04-PLAN.md — Frontend test infrastructure setup + CI coverage thresholds
 - [x] 01-05-PLAN.md — Frontend test writing (30-50 tests) + backend test expansion
-- [ ] 01-06-PLAN.md — RBAC hardening (BL-032) + light auth audit
-- [ ] 01-07-PLAN.md — Code refactor, dead code removal, font weight consolidation
+- [x] 01-06-PLAN.md — RBAC hardening (BL-032) + light auth audit
+- [x] 01-07-PLAN.md — Code refactor, dead code removal, font weight consolidation
 
 ### Phase 2: Dashboard & Charts
 **Goal**: Users can see their financial picture at a glance through Plotly-powered charts and stat cards on the dashboard
