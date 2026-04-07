@@ -13,14 +13,14 @@ Phased delivery plan. Each phase ships a usable increment. Dependencies flow top
 | 3 | Debts & Installments | Loans, P2P, CC installments, store plans, amortization | Large | — | ✅ Complete |
 | 3.5 | UX Polish Sprint | Fix critical UX bugs, form consistency, card enhancements, date standardization | Medium | — | ✅ Complete |
 | 3.75 | UX Critique & Cleanup | Accessibility, mobile layout, form fixes, visual polish, dashboard widgets, command palette, navbar refactor | Medium | — | ✅ Complete |
-| 3.8 | Financial Institutions | Banking institution directory, account grouping, transaction-based balances, system categories | Large | 6 open | ⏳ Pending |
-| 4 | Dashboard & Charts | Plotly charts, remaining dashboard stat cards, asset summary | Medium | 18 open | ⏳ Pending |
+| 3.8 | Financial Institutions | Banking institution directory, account grouping, transaction-based balances, system categories | Large | 6 open | ✅ Complete |
+| 4 | Dashboard & Charts | Plotly charts, remaining dashboard stat cards, asset summary | Medium | 15 open | ⏳ Pending |
 | 5 | Gam3eya | Rotating savings clubs with payment scheduling | Medium | 1 open | ⏳ Pending |
 | 6 | Assets | Asset tracking, valuation, transaction linking, cost of ownership | Medium | — | ⏳ Pending |
 | 7 | Budgets & Savings Goals | Envelope budgeting, savings targets, auto-suggest | Medium | 1 open | ⏳ Pending |
 | 8 | Forecasting | 12-month cash flow, debt payoff, non-recurring estimation | Medium | — | ⏳ Pending |
 | 9 | AI Categorization | Multi-provider AI, rule engine, feedback loop | Medium | — | ⏳ Pending |
-| 10 | Multi-User & Household | Roles, invitations, child accounts, activity log | Large | 1 open | ⏳ Pending |
+| 10 | Multi-User & Household | Roles, invitations, child accounts, activity log | Large | — | ⏳ Pending |
 | 11 | Notifications | Bill reminders, budget alerts, Telegram bot, email | Medium | 1 open | ⏳ Pending |
 | 12 | Reports & Export | 7 report types, PDF/Excel/CSV export | Medium | — | ⏳ Pending |
 | 13 | Settings & Polish | Settings pages, locale, data management, onboarding wizard | Medium | 1 open | ⏳ Pending |
@@ -434,7 +434,7 @@ BL-006, BL-007, BL-008, BL-009, BL-015, BL-030 (pre-verified), BL-031 (pre-verif
 
 ---
 
-## Phase 3.8: Financial Institutions
+## Phase 3.8: Financial Institutions ✅
 **Unlocks:** Structured bank/BNPL/wallet provider directory, account grouping by institution, transaction-based balance tracking, bank detail pages.
 
 ### Problem
@@ -806,9 +806,11 @@ Phase 1 (Foundation) ✅
         └── Phase 1.75 (Design System & Page Redesign) ✅
               ├── Phase 2 (Import) ✅
               ├── Phase 3 (Debts) ✅
-              │     └── Phase 3.5 (UX Polish Sprint) 🔨 ← YOU ARE HERE
-              │           └── Phase 4 (Dashboard & Charts)
-              │                 └── Phase 8 (Forecasting) ←── also needs Phase 5, 7
+              │     └── Phase 3.5 (UX Polish Sprint) ✅
+              │           └── Phase 3.75 (UX Critique & Cleanup) ✅
+              │                 └── Phase 3.8 (Financial Institutions) ✅
+              │                       └── Phase 4 (Dashboard & Charts)
+              │                             └── Phase 8 (Forecasting) ←── also needs Phase 5, 7
               ├── Phase 5 (Gam3eya)
               ├── Phase 6 (Assets)
               ├── Phase 7 (Budgets)

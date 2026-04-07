@@ -3,7 +3,7 @@
 Centralized tracker for deferred features, tech debt, bugs, new ideas, and backend dependencies.
 Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive.md).
 
-**Active items:** 40 | **By phase:** Phase 3.5 (0) · Phase 3.8 (6) · Phase 4 (18) · Phase 5+ (6) · Unscheduled (10)
+**Active items:** 40 | **By phase:** Phase 1 (4) · Phase 3.5 (0) · Phase 3.8 (6) · Phase 4 (15) · Phase 5+ (6) · Unscheduled (10)
 
 ---
 
@@ -37,12 +37,12 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-024 | BNPL account detail FAB speed dial | deferred | Phase 4 | Low | ⏳ Open |
 | BL-025 | Account Statements button backend | backend-dep | Phase 5 — Gam3eya | Low | ⏳ Open |
 | BL-026 | Scanned PDF OCR import (Premium) | deferred | Phase 14 — Scanned PDF | Medium | ⏳ Open |
-| BL-027 | N+1 FX queries in compute_persons_balances_bulk | tech-debt | Phase 4 | Low | ⏳ Open |
-| BL-028 | N+1 query in list_accounts (balance per account) | tech-debt | Phase 4 | Low | ⏳ Open |
-| BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 4 | Low | ⏳ Open |
+| BL-027 | N+1 FX queries in compute_persons_balances_bulk | tech-debt | Phase 1 | Low | ⏳ Open |
+| BL-028 | N+1 query in list_accounts (balance per account) | tech-debt | Phase 1 | Low | ⏳ Open |
+| BL-029 | N+1 query in list_transfers (per-row credit leg) | tech-debt | Phase 1 | Low | ⏳ Open |
 | BL-030 | Sync httpx.get in JWKS cache (blocks event loop) | tech-debt | Phase 3.75 | High | ✅ Done |
 | BL-031 | FX transfer amount computed with float division | tech-debt | Phase 3.75 | Medium | ✅ Done |
-| BL-032 | RBAC guards on remaining routers | deferred | Phase 10 — Multi-User | Medium | ⏳ Open |
+| BL-032 | RBAC guards on remaining routers | deferred | Phase 1 | Medium | ⏳ Open |
 | BL-033 | Frontend auth middleware (route protection) | deferred | Phase 13 — Settings & Polish | Medium | ⏳ Open |
 | BL-034 | Frontend test infrastructure | tech-debt | Unscheduled | Medium | ⏳ Open |
 | BL-035 | Partial payment tracking on P2P splits | deferred | Unscheduled | Low | ⏳ Open |
@@ -152,6 +152,34 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Priority:** Low
 - **Context:** Branch field on account creation is currently free-text. Future enhancement could make it a searchable dropdown populated from a bank's branch directory. Would require a `branches` table or external data source.
 - **Acceptance:** Branch field offers autocomplete from a per-bank branch list when available, with free-text fallback.
+- **Status:** ⏳ Open
+
+---
+
+## Phase 1 — Stabilization (N+1 queries)
+
+### BL-027: N+1 FX queries in compute_persons_balances_bulk
+- **Category:** tech-debt
+- **Origin:** Phase 3D-4 handoff (Copilot review); Phase 3D-3 handoff
+- **Priority:** Low
+- **Context:** `compute_persons_balances_bulk()` in `backend/app/services/person.py` calls `convert_to_base()` per person inside a loop. Should prefetch FX rates once for all currencies. Pure performance optimization, no correctness issue.
+- **Acceptance:** FX rates are fetched once and reused across all person balance computations.
+- **Status:** ⏳ Open
+
+### BL-028: N+1 query in list_accounts (balance per account)
+- **Category:** tech-debt
+- **Origin:** Phase 1D handoff, Known Improvements
+- **Priority:** Low
+- **Context:** `list_accounts` calls `compute_displayed_balance` per account in a loop. TODO comment exists in code. Should use a single aggregation query.
+- **Acceptance:** Account listing uses a single query or batch approach for balance computation.
+- **Status:** ⏳ Open
+
+### BL-029: N+1 query in list_transfers (per-row credit leg)
+- **Category:** tech-debt
+- **Origin:** Phase 1E handoff, Known Improvements
+- **Priority:** Low
+- **Context:** `list_transfers` performs per-row credit leg + account lookups. Should use a joined query. TODO added during Phase 1E.
+- **Acceptance:** Transfer listing uses joined queries to avoid N+1.
 - **Status:** ⏳ Open
 
 ---
@@ -286,30 +314,6 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Acceptance:** BNPL account detail FAB shows a speed dial menu with both options.
 - **Status:** ⏳ Open
 
-### BL-027: N+1 FX queries in compute_persons_balances_bulk
-- **Category:** tech-debt
-- **Origin:** Phase 3D-4 handoff (Copilot review); Phase 3D-3 handoff
-- **Priority:** Low
-- **Context:** `compute_persons_balances_bulk()` in `backend/app/services/person.py` calls `convert_to_base()` per person inside a loop. Should prefetch FX rates once for all currencies. Pure performance optimization, no correctness issue.
-- **Acceptance:** FX rates are fetched once and reused across all person balance computations.
-- **Status:** ⏳ Open
-
-### BL-028: N+1 query in list_accounts (balance per account)
-- **Category:** tech-debt
-- **Origin:** Phase 1D handoff, Known Improvements
-- **Priority:** Low
-- **Context:** `list_accounts` calls `compute_displayed_balance` per account in a loop. TODO comment exists in code. Should use a single aggregation query.
-- **Acceptance:** Account listing uses a single query or batch approach for balance computation.
-- **Status:** ⏳ Open
-
-### BL-029: N+1 query in list_transfers (per-row credit leg)
-- **Category:** tech-debt
-- **Origin:** Phase 1E handoff, Known Improvements
-- **Priority:** Low
-- **Context:** `list_transfers` performs per-row credit leg + account lookups. Should use a joined query. TODO added during Phase 1E.
-- **Acceptance:** Transfer listing uses joined queries to avoid N+1.
-- **Status:** ⏳ Open
-
 ### BL-030: Sync httpx.get in JWKS cache (blocks event loop)
 - **Category:** tech-debt
 - **Origin:** Phase 2 cleanup handoff, Section 3 (Copilot audit PR #34 finding)
@@ -352,7 +356,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 
 ---
 
-## Phase 10 — Multi-User & Household
+## Phase 1 — Stabilization
 
 ### BL-032: RBAC guards on remaining routers
 - **Category:** deferred
