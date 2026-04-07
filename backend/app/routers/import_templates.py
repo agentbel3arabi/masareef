@@ -7,7 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import require_role
 from app.models.account import Account
+from app.models.enums import HouseholdRole
 from app.schemas.common import SuccessResponse
 from app.schemas.import_template import (
     ImportTemplateCreate,
@@ -55,6 +57,7 @@ async def create_template(
     data: ImportTemplateCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     if data.link_to_account_id is not None:
         acct_result = await session.execute(
@@ -77,6 +80,7 @@ async def update_template(
     data: ImportTemplateUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     template = await template_service.get_template(session, household_id, template_id)
     if not template:
@@ -92,6 +96,7 @@ async def delete_template(
     template_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> None:
     template = await template_service.get_template(session, household_id, template_id)
     if not template:
@@ -105,6 +110,7 @@ async def link_template_to_account(
     account_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     template = await template_service.get_template(session, household_id, template_id)
     if not template:
@@ -129,6 +135,7 @@ async def unlink_template_from_account(
     account_id: int,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> None:
     template = await template_service.get_template(session, household_id, template_id)
     if not template:

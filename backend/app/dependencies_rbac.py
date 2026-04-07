@@ -47,9 +47,15 @@ def require_role(
         role: HouseholdRole = Depends(get_member_role),
     ) -> HouseholdRole:
         if role not in allowed:
+            required = ", ".join(r.value for r in allowed)
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Role '{role.value}' is not permitted for this action",
+                detail={
+                    "error": {
+                        "code": "FORBIDDEN",
+                        "message": f"Requires {required} role",
+                    }
+                },
             )
         return role
 

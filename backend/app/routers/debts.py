@@ -207,11 +207,11 @@ async def create_debt(
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
 ) -> SuccessResponse:
+    if role == HouseholdRole.VIEWER:
+        raise HTTPException(status_code=403, detail="Viewers cannot create debts")
     if data.type in ("personal_lent", "personal_borrowed"):
         if role == HouseholdRole.CHILD:
             raise HTTPException(status_code=403, detail="Children cannot create P2P debts")
-        if role == HouseholdRole.VIEWER:
-            raise HTTPException(status_code=403, detail="Viewers cannot create debts")
     try:
         if data.type == "bank_loan":
             debt = await debt_service.create_bank_loan(session, household_id, data)
