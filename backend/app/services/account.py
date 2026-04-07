@@ -684,14 +684,14 @@ async def get_balance_history(
     household_id: uuid.UUID,
     account_id: int,
     period: str = "month",
-) -> dict:
+) -> dict | None:
     """Compute balance change over the current period for an account.
 
     Returns current balance, period-start balance, change amount, and direction.
     """
     account = await get_account(session, household_id, account_id)
     if account is None:
-        return None  # type: ignore[return-value]
+        return None
 
     today = datetime.now().date()
     if period == "year":
