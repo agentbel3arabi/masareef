@@ -4,14 +4,19 @@ import uuid
 from datetime import date as date_type
 from datetime import datetime
 
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_, case, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
 from app.models.enums import AccountType
 from app.models.household import Household
 from app.models.transaction import Transaction
-from app.schemas.account import AccountCreate, AccountUpdate
+from app.schemas.account import (
+    AccountCreate,
+    AccountUpdate,
+    InstitutionEmbed,
+    MonthlyStats,
+)
 
 
 def get_balance_cutoff_date(account: Account) -> date_type | None:
@@ -485,6 +490,190 @@ async def reconcile_account(
         "transaction_id": tx.id,
         "reconciliation_record_id": record.id,
     }
+
+
+# ---------------------------------------------------------------------------
+# List accounts with stats (batch queries for router)
+# ---------------------------------------------------------------------------
+
+
+async def list_accounts_with_stats(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    page: int = 1,
+    page_size: int = 50,
+) -> tuple[list[dict], int]:
+    """List accounts with balance, last tx date, monthly stats, and institution.
+
+    Performs all batch queries in the service layer so the router stays thin.
+    Returns (list of account response dicts, total count).
+    """
+    accounts, total = await list_accounts(session, household_id, page, page_size)
+
+    acct_ids = [a.id for a in accounts]
+
+    # Batch fetch last transaction date per account
+    last_tx_map: dict[int, date_type] = {}
+    if acct_ids:
+        last_tx_stmt = (
+            select(
+                Transaction.account_id,
+                func.max(Transaction.date).label("last_date"),
+            )
+            .where(
+                Transaction.household_id == household_id,
+                Transaction.is_active.is_(True),
+                Transaction.account_id.in_(acct_ids),
+            )
+            .group_by(Transaction.account_id)
+        )
+        last_tx_result = await session.execute(last_tx_stmt)
+        last_tx_map = {row.account_id: row.last_date for row in last_tx_result}
+
+    # Batch fetch current month stats per account
+    month_stats_map: dict[int, MonthlyStats] = {}
+    if acct_ids:
+        month_start = date_type.today().replace(day=1)
+        month_stats_stmt = (
+            select(
+                Transaction.account_id,
+                func.sum(
+                    case(
+                        (Transaction.amount_minor > 0, Transaction.amount_minor),
+                        else_=0,
+                    )
+                ).label("income"),
+                func.sum(
+                    case(
+                        (Transaction.amount_minor < 0, func.abs(Transaction.amount_minor)),
+                        else_=0,
+                    )
+                ).label("expense"),
+                func.count().label("tx_count"),
+            )
+            .where(
+                Transaction.household_id == household_id,
+                Transaction.is_active.is_(True),
+                Transaction.account_id.in_(acct_ids),
+                Transaction.date >= month_start,
+                Transaction.applies_to_balance.is_(True),
+            )
+            .group_by(Transaction.account_id)
+        )
+        month_result = await session.execute(month_stats_stmt)
+        for row in month_result:
+            month_stats_map[row.account_id] = MonthlyStats(
+                month_income_minor=int(row.income or 0),
+                month_expense_minor=int(row.expense or 0),
+                month_transaction_count=int(row.tx_count or 0),
+            )
+
+    # Batch preload institutions to avoid N+1 queries
+    institution_map: dict[int, InstitutionEmbed] = {}
+    inst_ids = {a.institution_id for a in accounts if a.institution_id is not None}
+    if inst_ids:
+        from app.models.financial_institution import FinancialInstitution
+
+        inst_stmt = select(FinancialInstitution).where(FinancialInstitution.id.in_(inst_ids))
+        inst_result = await session.execute(inst_stmt)
+        for inst in inst_result.scalars():
+            institution_map[inst.id] = InstitutionEmbed.model_validate(inst)
+
+    # Batch balance computation
+    balance_map = await compute_displayed_balances_batch(session, accounts)
+
+    items = []
+    for acct in accounts:
+        displayed = balance_map.get(acct.id, 0)
+        inst_embed = (
+            institution_map.get(acct.institution_id) if acct.institution_id else None
+        )
+        item = _build_account_dict(
+            acct,
+            displayed,
+            last_transaction_date=last_tx_map.get(acct.id),
+            monthly_stats=month_stats_map.get(acct.id),
+            institution_embed=inst_embed,
+        )
+        items.append(item)
+
+    return items, total
+
+
+async def get_account_detail(
+    session: AsyncSession,
+    household_id: uuid.UUID,
+    account_id: int,
+) -> dict | None:
+    """Get a single account with full detail and balance.
+
+    Returns None if account not found.
+    """
+    account = await get_account(session, household_id, account_id)
+    if not account:
+        return None
+    displayed = await compute_displayed_balance(session, account)
+
+    # Fetch institution if linked
+    inst_embed: InstitutionEmbed | None = None
+    if account.institution_id is not None:
+        from app.services.financial_institution import get_institution_by_id
+
+        inst = await get_institution_by_id(session, household_id, account.institution_id)
+        if inst:
+            inst_embed = InstitutionEmbed.model_validate(inst)
+
+    return _build_account_dict(account, displayed, detail=True, institution_embed=inst_embed)
+
+
+def _build_account_dict(
+    account: Account,
+    displayed_balance: int,
+    last_transaction_date: "date_type | None" = None,
+    monthly_stats: "MonthlyStats | None" = None,
+    *,
+    detail: bool = False,
+    institution_embed: "InstitutionEmbed | None" = None,
+) -> dict:
+    """Build account response dict. Pure function, no DB access."""
+    from app.schemas.account import AccountDetailResponse, AccountResponse
+
+    iban_last4 = account.iban[-4:] if account.iban else None
+
+    # SQLite stores enum values as plain strings; PostgreSQL returns AccountType enum instances
+    acct_type = account.type
+    type_str = acct_type.value if hasattr(acct_type, "value") else acct_type
+
+    base_data = {
+        "id": account.id,
+        "name": account.name,
+        "name_ar": account.name_ar,
+        "type": type_str,
+        "currency": account.currency,
+        "displayed_balance_minor": displayed_balance,
+        "institution": institution_embed,
+        "iban_last4": iban_last4,
+        "account_tier": account.account_tier,
+        "credit_limit": account.credit_limit,
+        "billing_cycle_day": account.billing_cycle_day,
+        "payment_due_day": account.payment_due_day,
+        "opened_at": account.opened_at,
+        "is_active": account.is_active,
+        "last_transaction_date": last_transaction_date,
+        "monthly_stats": monthly_stats,
+    }
+
+    if detail:
+        resp = AccountDetailResponse(
+            **base_data,
+            iban=account.iban,
+            account_number=account.account_number,
+            branch=account.branch,
+        )
+    else:
+        resp = AccountResponse(**base_data)
+
+    return resp.model_dump()
 
 
 # ---------------------------------------------------------------------------
