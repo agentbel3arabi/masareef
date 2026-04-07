@@ -56,8 +56,8 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Backend dashboard aggregation endpoints + Pydantic schemas + household PATCH + tests
-- [ ] 02-02-PLAN.md — Frontend dependencies, TypeScript types, TanStack Query hooks, supporting UI components, i18n
+- [x] 02-01-PLAN.md — Backend dashboard aggregation endpoints + Pydantic schemas + household PATCH + tests
+- [x] 02-02-PLAN.md — Frontend dependencies, TypeScript types, TanStack Query hooks, supporting UI components, i18n
 - [ ] 02-03-PLAN.md — Plotly chart components + dashboard page restructure + visual verification
 **UI hint**: yes
 
