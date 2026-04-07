@@ -26,7 +26,7 @@ Users can track all their money — across accounts, currencies, debts, and hous
 
 ### Active
 
-- [ ] Codebase stabilization — bug fixes, tech debt cleanup, refactor, test coverage
+- ✓ Codebase stabilization — bug fixes, tech debt cleanup, refactor, test coverage — Phase 01
 - [ ] Dashboard & Charts — Plotly visualizations, spending insights, stat cards
 - [ ] Gam3eya — rotating savings clubs with payment scheduling
 - [ ] Asset tracking — valuation, transaction linking, cost of ownership
@@ -56,8 +56,8 @@ Users can track all their money — across accounts, currencies, debts, and hous
 
 - **Market:** No Arabic-first personal finance app combines these features for Egypt/MENA
 - **Stack:** FastAPI + Next.js 16 + Supabase monorepo, Docker deployment with Traefik reverse proxy
-- **Existing code:** ~7 phases complete (1 through 3.8), 14 backend routers, 16 SQLAlchemy models, full RTL frontend
-- **Known issues:** 40 backlog items (bugs, tech debt, deferred features), N+1 query patterns, no frontend tests, incomplete features in shipped phases
+- **Existing code:** ~8 phases complete (1 through 3.8 + Phase 01 stabilization), 12 backend routers, 16 SQLAlchemy models, full RTL frontend
+- **Known issues:** Backlog items reduced after Phase 01 cleanup (BL-027/028/029/032 closed), frontend test infrastructure established, RBAC enforced on all mutation endpoints
 - **Target:** MVP launch — enough features and stability to onboard real users
 - **Design:** 32 Stitch design screens exist as HTML + PNG reference, design tokens defined
 
@@ -74,7 +74,7 @@ Users can track all their money — across accounts, currencies, debts, and hous
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Stabilization phase before new features | User wants to fix bugs, tech debt, and incomplete features before adding more — foundation quality matters | — Pending |
+| Stabilization phase before new features | User wants to fix bugs, tech debt, and incomplete features before adding more — foundation quality matters | ✓ Complete (Phase 01) |
 | Dashboard & Charts as first new feature post-stabilization | Daily engagement hook — visual spending insights drive user retention | — Pending |
 | MVP launch as project goal | Ship enough to get real users (roughly through Phase 8), iterate from feedback | — Pending |
 | All remaining phases managed by GSD | Full roadmap (stabilization + phases 4–20) tracked in GSD for structured execution | — Pending |
@@ -98,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-07 after initialization*
+*Last updated: 2026-04-07 after Phase 01 (stabilization) completion*
