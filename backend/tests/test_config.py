@@ -3,6 +3,7 @@ from app.config import Settings
 
 def test_settings_loads_defaults():
     settings = Settings(
+        _env_file=None,  # type: ignore[call-arg]
         DATABASE_URL="postgresql+asyncpg://user:pass@localhost:5432/test",
         SUPABASE_URL="https://test.supabase.co",
         SUPABASE_ANON_KEY="test-anon-key",
