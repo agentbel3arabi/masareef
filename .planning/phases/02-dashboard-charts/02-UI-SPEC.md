@@ -36,15 +36,14 @@ Declared values (multiples of 4 only):
 | Token | Value | Usage in this phase |
 |-------|-------|---------------------|
 | xs | 4px | Icon-to-text gap within stat card trend line, legend dot spacing |
-| sm | 8px | Gap between paired bar chart columns, inner stat card padding between rows |
-| md | 16px | Card internal padding, chart container padding, gap between legend items |
+| sm | 8px | Gap between paired bar chart columns, inner stat card padding between rows, time range toggle vertical padding (`py-2`) |
+| md | 16px | Card internal padding, chart container padding, gap between legend items, time range toggle horizontal padding (`px-4`) |
 | lg | 24px | Gap between stat cards (grid gap), gap between chart sections |
 | xl | 32px | Chart area internal padding (`p-8` = 32px) |
 | 2xl | 48px | Page-level vertical spacing between major sections (stat cards -> charts -> bottom widgets) |
 | 3xl | 64px | Not used in this phase |
 
 Exceptions:
-- Time range toggle buttons: 6px vertical padding, 12px horizontal padding (non-standard but matching existing currency selector pattern from Stitch design)
 - Chart SVG area height: 256px (`h-64`) for all chart containers on desktop
 
 Source: Existing dashboard page uses `space-y-6` (24px), `gap-4` (16px), `gap-6` (24px). Stitch design uses `p-6` (24px) for stat cards, `p-8` (32px) for chart containers.
@@ -55,18 +54,18 @@ Source: Existing dashboard page uses `space-y-6` (24px), `gap-4` (16px), `gap-6`
 
 | Role | Size | Weight | Line Height | Usage in this phase |
 |------|------|--------|-------------|---------------------|
-| Body | 14px (`text-sm`) | 400 (normal) | 1.5 | Chart legends, upcoming payment descriptions, secondary labels |
-| Label | 12px (`text-xs`) | 500 (medium) | 1.5 | Stat card labels, trend text, chart axis labels, time range toggle text, category percentages |
+| Body | 14px (`text-sm`) | 400 (normal) | 1.5 | Chart legends, upcoming payment descriptions, secondary labels, currency suffix adjacent to display values (`text-muted-foreground`) |
+| Label | 12px (`text-xs`) | 400 (normal) | 1.5 | Stat card labels, chart axis labels, category percentages, time range toggle text (inactive) |
 | Heading | 20px (`text-xl`) | 700 (bold) | 1.2 | Chart section titles ("Net Worth Trajectory", "Cash Flow", "Monthly Allocation") |
-| Display | 24px (`text-2xl`) | 800 (extrabold) | 1.2 | Stat card primary values (formatted money amounts) |
+| Display | 24px (`text-2xl`) | 700 (bold) | 1.2 | Stat card primary values (formatted money amounts) |
 
 Additional constraints:
-- Currency suffix (e.g., "EGP") adjacent to display values: 14px (`text-sm`), weight 500, `text-muted-foreground`
 - Trend delta text: 12px (`text-xs`), weight 700 (bold), color determined by direction (green up / red down)
-- Time range toggle active button: 10px, weight 700 (bold), `text-primary`
-- Time range toggle inactive button: 10px, weight 600 (semibold), `text-muted-foreground`
+- Time range toggle active button: 12px (`text-xs`), weight 700 (bold), `text-primary`
+- Time range toggle inactive button: 12px (`text-xs`), weight 400 (normal), `text-muted-foreground`
+- Time range toggle button padding: `py-2 px-4` (8px vertical, 16px horizontal)
 
-Source: Stitch design uses `text-2xl font-black` for values, `text-xl font-bold` for headings. Normalized to project weights (400/700/800).
+Source: Stitch design uses `text-2xl font-black` for values, `text-xl font-bold` for headings. Collapsed to 2 weights: 400 (normal) for body/secondary text, 700 (bold) for all emphasis (display values, headings, active states, trend deltas).
 
 ---
 
@@ -151,29 +150,31 @@ Source: `globals.css` chart variables, `09-design-tokens.md` semantic usage tabl
 
 ## Layout Contract
 
+Primary focal point: the 4-column stat cards row is the first visual anchor; the net worth chart is the secondary focal point.
+
 ### Desktop Layout (>= 1024px)
 
 ```
-┌──────────────────────────────────────────────────────┐
-│  GettingStartedCard (conditional)                    │
-├──────────────────────────────────────────────────────┤
-│  [BaseCurrencySelector]  [TimeRangeToggle: 1M 3M 6M 1Y All]  │
-├──────────────────────────────────────────────────────┤
-│  Stat Cards Row (grid-cols-4, gap-6)                 │
-│  [Net Worth] [This Month Spent] [Active Debts] [Due 30d] │
-├────────────────────────────┬─────────────────────────┤
-│  Net Worth Timeline        │  Income vs Expenses     │
-│  (col-span-8)              │  (col-span-4)           │
-│  Area chart, h-64          │  Bar chart, h-64        │
-│                            │  [Compare toggle]       │
-├────────────────────────────┼─────────────────────────┤
-│  Spending by Category      │  (empty — reserved for  │
-│  (col-span-5)              │   future Upcoming       │
-│  Donut chart + legend      │   Payments, col-span-7) │
-├────────────────────────────┴─────────────────────────┤
-│  grid-cols-1 lg:grid-cols-3 gap-6                    │
-│  [AccountsGlance col-span-2] [RecentTransactions]    │
-└──────────────────────────────────────────────────────┘
++---------------------------------------------------------+
+|  GettingStartedCard (conditional)                       |
++---------------------------------------------------------+
+|  [BaseCurrencySelector]  [TimeRangeToggle: 1M 3M 6M 1Y All]  |
++---------------------------------------------------------+
+|  Stat Cards Row (grid-cols-4, gap-6)                    |
+|  [Net Worth] [This Month Spent] [Active Debts] [Due 30d] |
++-------------------------------+-------------------------+
+|  Net Worth Timeline           |  Income vs Expenses     |
+|  (col-span-8)                 |  (col-span-4)           |
+|  Area chart, h-64             |  Bar chart, h-64        |
+|                               |  [Compare toggle]       |
++-------------------------------+-------------------------+
+|  Spending by Category         |  (empty -- reserved for |
+|  (col-span-5)                 |   future Upcoming       |
+|  Donut chart + legend         |   Payments, col-span-7) |
++-------------------------------+-------------------------+
+|  grid-cols-1 lg:grid-cols-3 gap-6                       |
+|  [AccountsGlance col-span-2] [RecentTransactions]       |
++---------------------------------------------------------+
 ```
 
 Note: The bottom-right slot (Upcoming Payments / Obligation Watchlist) is **omitted entirely** per D-03. The Spending by Category chart takes `col-span-5` and the remaining `col-span-7` is empty space that will be filled when Upcoming Payments data sources exist (Phase 5-6). Alternatively, the spending chart can take full width (`col-span-12`) until that section is needed.
@@ -183,26 +184,26 @@ Note: The bottom-right slot (Upcoming Payments / Obligation Watchlist) is **omit
 ### Mobile Layout (< 1024px)
 
 ```
-┌──────────────────────┐
-│ GettingStartedCard   │
-├──────────────────────┤
-│ BaseCurrencySelector │
-├──────────────────────┤
-│ Stat cards (2-col)   │
-│ scroll or wrap       │
-├──────────────────────┤
-│ TimeRangeToggle      │
-├──────────────────────┤
-│ Net Worth (full)     │
-├──────────────────────┤
-│ Income vs Expenses   │
-├──────────────────────┤
-│ Spending by Category │
-├──────────────────────┤
-│ AccountsGlance      │
-├──────────────────────┤
-│ RecentTransactions   │
-└──────────────────────┘
++----------------------+
+| GettingStartedCard   |
++----------------------+
+| BaseCurrencySelector |
++----------------------+
+| Stat cards (2-col)   |
+| scroll or wrap       |
++----------------------+
+| TimeRangeToggle      |
++----------------------+
+| Net Worth (full)     |
++----------------------+
+| Income vs Expenses   |
++----------------------+
+| Spending by Category |
++----------------------+
+| AccountsGlance      |
++----------------------+
+| RecentTransactions   |
++----------------------+
 ```
 
 - Stat cards: `grid-cols-2` on mobile (current behavior preserved)
@@ -219,7 +220,8 @@ Source: D-02 (layout spec), D-04 (mobile pattern), existing dashboard page grid 
 - **Trigger:** Click any of 1M, 3M, 6M, 1Y, All buttons
 - **Affected charts:** Net Worth Timeline AND Income vs Expenses bar chart
 - **NOT affected:** Spending by Category donut (always current month)
-- **Visual:** Active button gets `bg-card shadow-sm rounded-md text-primary` styling. Inactive gets transparent background, `text-muted-foreground`.
+- **Visual:** Active button gets `bg-card shadow-sm rounded-md text-primary font-bold` styling. Inactive gets transparent background, `text-muted-foreground font-normal`.
+- **Button sizing:** `py-2 px-4` (8px vertical, 16px horizontal), `text-xs` (12px)
 - **Default:** 6M
 - **State:** Local component state (`useState`). Not persisted.
 - **Data fetching:** Re-fetches dashboard endpoints with `months` param matching selected range (1, 3, 6, 12, or omit for all).
