@@ -53,15 +53,12 @@ Plans:
   3. User can see stat cards showing active debts and upcoming payment amounts
   4. User can toggle between current month and previous month to compare spending
   5. User can see a net worth trend chart that correctly handles multi-currency balances
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 02-01: Dashboard aggregation endpoints — `/api/v1/dashboard/*` with SQL GROUP BY aggregations
-- [ ] 02-02: Income vs. expenses chart — Plotly bar chart with lazy-loading (plotly.js-dist, ssr:false)
-- [ ] 02-03: Spending by category chart — donut chart wired to category aggregation endpoint
-- [ ] 02-04: Stat cards — active debts and upcoming payments using existing debt/transaction data
-- [ ] 02-05: Net worth trend — multi-currency net worth computation and Plotly line chart
-- [ ] 02-06: Month comparison toggle — UI control to switch period and re-fetch chart data
+- [ ] 02-01-PLAN.md — Backend dashboard aggregation endpoints + Pydantic schemas + household PATCH + tests
+- [ ] 02-02-PLAN.md — Frontend dependencies, TypeScript types, TanStack Query hooks, supporting UI components, i18n
+- [ ] 02-03-PLAN.md — Plotly chart components + dashboard page restructure + visual verification
 **UI hint**: yes
 
 ### Phase 3: AI Categorization
@@ -166,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Stabilization | 0/7 | Planning complete | - |
-| 2. Dashboard & Charts | 0/6 | Not started | - |
+| 2. Dashboard & Charts | 0/3 | Planning complete | - |
 | 3. AI Categorization | 0/5 | Not started | - |
 | 4. Budgets & Savings | 0/5 | Not started | - |
 | 5. Gam3eya | 0/5 | Not started | - |
