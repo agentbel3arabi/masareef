@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { TrendingUp, ShoppingCart, HandCoins, Clock } from "lucide-react";
@@ -51,17 +51,21 @@ export default function DashboardPage() {
 
   // Sync base currency from household data on first load
   const initialCurrency = nw?.base_currency;
-  const [syncedCurrency, setSyncedCurrency] = useState(false);
-  if (initialCurrency && !syncedCurrency) {
-    setBaseCurrency(initialCurrency);
-    setSyncedCurrency(true);
-  }
+  useEffect(() => {
+    if (initialCurrency) {
+      setBaseCurrency(initialCurrency);
+    }
+  }, [initialCurrency]);
 
   const updateHouseholdSettings = useUpdateHouseholdSettings();
 
   const handleCurrencyChange = (newCurrency: string) => {
+    const previousCurrency = baseCurrency;
     setBaseCurrency(newCurrency);
-    updateHouseholdSettings.mutate({ base_currency: newCurrency });
+    updateHouseholdSettings.mutate(
+      { base_currency: newCurrency },
+      { onError: () => setBaseCurrency(previousCurrency) }
+    );
   };
 
   // --- Dashboard data hooks ---

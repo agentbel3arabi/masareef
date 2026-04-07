@@ -22,7 +22,7 @@ def test_household_update_invalid_long_currency():
     from app.schemas.household import HouseholdUpdate
 
     with pytest.raises(ValidationError):
-        HouseholdUpdate(base_currency="INVALID_LONG")
+        HouseholdUpdate(base_currency="INVALID_LONG")  # type: ignore[arg-type]
 
 
 def test_dashboard_schemas_instantiate():

@@ -439,7 +439,8 @@
       "3M": "3M",
       "6M": "6M",
       "1Y": "1Y",
-      "All": "All"
+      "All": "All",
+      "label": "Time range"
     }
   },
   "brand": {

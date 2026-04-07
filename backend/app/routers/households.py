@@ -2,7 +2,7 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,18 +62,21 @@ async def update_household(
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN)),
-) -> SuccessResponse:
+) -> Any:
     """Update household settings. Admin-only."""
     result = await session.execute(select(Household).where(Household.id == household_id))
     household = result.scalar_one_or_none()
     if household is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"error": {"code": "NOT_FOUND", "message": "Household not found"}},
+        )
 
     update_data = data.model_dump(exclude_none=True)
     if not update_data:
-        raise HTTPException(
+        return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="No fields to update",
+            content={"error": {"code": "NO_FIELDS", "message": "No fields to update"}},
         )
 
     for key, value in update_data.items():

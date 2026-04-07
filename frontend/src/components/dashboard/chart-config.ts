@@ -52,11 +52,10 @@ export const CHART_COLORS = {
   ],
 } as const;
 
-/** Convert minor units to major using currency exponent */
+import { CURRENCIES } from "@/lib/money";
+
+/** Convert minor units to major using the shared currency exponent from money.ts */
 export function minorToMajor(amountMinor: number, currency: string): number {
-  const EXPONENTS: Record<string, number> = {
-    EGP: 2, USD: 2, EUR: 2, GBP: 2, SAR: 2, AED: 2, KWD: 3,
-  };
-  const exp = EXPONENTS[currency] ?? 2;
+  const exp = CURRENCIES[currency]?.exponent ?? 2;
   return amountMinor / Math.pow(10, exp);
 }

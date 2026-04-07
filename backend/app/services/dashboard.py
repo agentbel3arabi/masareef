@@ -29,7 +29,7 @@ from app.schemas.dashboard import (
     StatCardsData,
     StatCardTrend,
 )
-from app.services.fx import convert_to_base
+from app.services.fx import convert_to_base, get_latest_rates
 
 
 def _compute_trend(
@@ -244,6 +244,19 @@ async def get_net_worth_trend(
         for p in payments:
             payments_by_debt[p.debt_id].append(p)
 
+    # Pre-fetch FX rates once for all currencies used across accounts and debts
+    all_currencies: set[str] = {acc.currency for acc in accounts} | {d.currency for d in debts}
+    currencies_for_fx: set[str] = set()
+    for c in all_currencies:
+        if c != base_currency:
+            if c != "USD":
+                currencies_for_fx.add(c)
+            if base_currency != "USD":
+                currencies_for_fx.add(base_currency)
+    prefetched_rates = (
+        await get_latest_rates(session, currencies_for_fx) if currencies_for_fx else {}
+    )
+
     result: list[NetWorthTrendPoint] = []
 
     for i in range(months):
@@ -258,14 +271,19 @@ async def get_net_worth_trend(
 
         month_str = ref_date.strftime("%Y-%m")
 
-        # Accounts component: current balance (simplified — use current balance as proxy)
+        # Accounts component: uses current balance as a historical proxy.
+        # NOTE: This produces a flat accounts line across months. True historical
+        # balances would require back-calculating by reversing post-month transactions,
+        # which is deferred to a future enhancement.
         account_balances: dict[str, int] = defaultdict(int)
         for acc in accounts:
             account_balances[acc.currency] += acc.balance_minor
 
-        accounts_fx = await convert_to_base(session, dict(account_balances), base_currency)
+        accounts_fx = await convert_to_base(
+            session, dict(account_balances), base_currency, rates=prefetched_rates
+        )
 
-        # Debts component: remaining principal
+        # Debts component: remaining principal as of month_end
         debt_balances: dict[str, int] = defaultdict(int)
         for debt in debts:
             paid = sum(
@@ -274,7 +292,9 @@ async def get_net_worth_trend(
             remaining = max(0, debt.principal_minor - paid)
             debt_balances[debt.currency] += remaining
 
-        debts_fx = await convert_to_base(session, dict(debt_balances), base_currency)
+        debts_fx = await convert_to_base(
+            session, dict(debt_balances), base_currency, rates=prefetched_rates
+        )
 
         result.append(
             NetWorthTrendPoint(
@@ -445,23 +465,21 @@ async def get_stat_cards(
                 upcoming_total[inst.currency] += inst.monthly_amount_minor
                 upcoming_count += 1
 
-    # Check P2P splits
-    p2p_stmt = select(P2PDebtSplit).where(
-        P2PDebtSplit.paid.is_(False),
-        P2PDebtSplit.due_date <= cutoff,
-        P2PDebtSplit.due_date >= today,
+    # Check P2P splits — join Debt to scope to this household (prevents cross-tenant leak)
+    p2p_stmt = (
+        select(P2PDebtSplit, Debt.currency)
+        .join(Debt, P2PDebtSplit.debt_id == Debt.id)
+        .where(
+            Debt.household_id == household_id,
+            P2PDebtSplit.paid.is_(False),
+            P2PDebtSplit.due_date <= cutoff,
+            P2PDebtSplit.due_date >= today,
+        )
     )
-    p2p_splits = (await session.execute(p2p_stmt)).scalars().all()
-    if p2p_splits:
-        # Need debt currency for each split
-        p2p_debt_ids = [s.debt_id for s in p2p_splits]
-        p2p_debts_stmt = select(Debt.id, Debt.currency).where(Debt.id.in_(p2p_debt_ids))
-        p2p_debt_rows = (await session.execute(p2p_debts_stmt)).all()
-        p2p_currency_map = {row.id: row.currency for row in p2p_debt_rows}
-        for split in p2p_splits:
-            currency = p2p_currency_map.get(split.debt_id, base_currency)
-            upcoming_total[currency] += split.amount_minor
-            upcoming_count += 1
+    p2p_rows = (await session.execute(p2p_stmt)).all()
+    for row in p2p_rows:
+        upcoming_total[row.currency] += row.P2PDebtSplit.amount_minor
+        upcoming_count += 1
 
     upcoming_fx = await convert_to_base(session, dict(upcoming_total), base_currency)
 

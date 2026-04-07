@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
@@ -11,15 +12,17 @@ interface TimeRangeToggleProps {
 }
 
 const RANGES: TimeRange[] = ["1M", "3M", "6M", "1Y", "All"];
-const MONTHS_MAP: Record<TimeRange, number | undefined> = {
+
+/** "All" maps to 60 (backend max) — not unbounded. */
+const MONTHS_MAP: Record<TimeRange, number> = {
   "1M": 1,
   "3M": 3,
   "6M": 6,
   "1Y": 12,
-  "All": undefined,
+  "All": 60,
 };
 
-export function timeRangeToMonths(range: TimeRange): number | undefined {
+export function timeRangeToMonths(range: TimeRange): number {
   return MONTHS_MAP[range];
 }
 
@@ -33,19 +36,36 @@ const I18N_KEYS: Record<TimeRange, string> = {
 
 export function TimeRangeToggle({ value, onChange }: TimeRangeToggleProps) {
   const t = useTranslations("dashboard.timeRange");
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   return (
     <div
       className="inline-flex items-center gap-1 rounded-lg bg-muted p-1"
       role="radiogroup"
-      aria-label="Time range"
+      aria-label={t("label")}
     >
-      {RANGES.map((range) => (
+      {RANGES.map((range, idx) => (
         <button
           key={range}
+          ref={(el) => { buttonRefs.current[idx] = el; }}
           role="radio"
           aria-checked={value === range}
+          tabIndex={value === range ? 0 : -1}
           onClick={() => onChange(range)}
+          onKeyDown={(e) => {
+            let nextIdx = idx;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+              e.preventDefault();
+              nextIdx = (idx + 1) % RANGES.length;
+            } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+              e.preventDefault();
+              nextIdx = (idx - 1 + RANGES.length) % RANGES.length;
+            } else {
+              return;
+            }
+            onChange(RANGES[nextIdx]);
+            buttonRefs.current[nextIdx]?.focus();
+          }}
           className={cn(
             "py-2 px-4 text-xs rounded-md transition-colors",
             value === range

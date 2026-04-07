@@ -11,7 +11,7 @@ class HouseholdCreate(BaseModel):
 
 
 class HouseholdUpdate(BaseModel):
-    base_currency: str | None = Field(None, max_length=3)
+    base_currency: Literal["EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"] | None = None
 
 
 class HouseholdResponse(BaseModel):

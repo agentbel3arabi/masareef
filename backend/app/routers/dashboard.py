@@ -2,7 +2,7 @@
 
 import uuid
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
@@ -13,11 +13,27 @@ from app.services import dashboard as dashboard_service
 
 router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
 
+SUPPORTED_CURRENCIES = frozenset({"EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"})
+
+
+def _validate_currency(base_currency: str = Query("EGP", max_length=3)) -> str:
+    if base_currency not in SUPPORTED_CURRENCIES:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": {
+                    "code": "INVALID_CURRENCY",
+                    "message": f"Unsupported currency: {base_currency}",
+                }
+            },
+        )
+    return base_currency
+
 
 @router.get("/income-vs-expenses")
 async def get_income_vs_expenses(
     months: int = Query(6, ge=1, le=60),
-    base_currency: str = Query("EGP", max_length=3),
+    base_currency: str = Depends(_validate_currency),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
@@ -32,7 +48,7 @@ async def get_income_vs_expenses(
 
 @router.get("/spending-by-category")
 async def get_spending_by_category(
-    base_currency: str = Query("EGP", max_length=3),
+    base_currency: str = Depends(_validate_currency),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
@@ -48,7 +64,7 @@ async def get_spending_by_category(
 @router.get("/net-worth-trend")
 async def get_net_worth_trend(
     months: int = Query(6, ge=1, le=60),
-    base_currency: str = Query("EGP", max_length=3),
+    base_currency: str = Depends(_validate_currency),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
@@ -63,7 +79,7 @@ async def get_net_worth_trend(
 
 @router.get("/stat-cards")
 async def get_stat_cards(
-    base_currency: str = Query("EGP", max_length=3),
+    base_currency: str = Depends(_validate_currency),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(get_member_role),
