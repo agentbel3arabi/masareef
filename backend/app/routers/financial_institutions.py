@@ -67,8 +67,6 @@ async def get_institution_summary(
     accounts = list(result.scalars().all())
 
     # Build account responses with balances
-    from app.routers.accounts import _build_account_response
-
     account_items = []
     total_assets_minor = 0
     total_liabilities_minor = 0
@@ -83,7 +81,7 @@ async def get_institution_summary(
 
     for acct in accounts:
         displayed = await account_service.compute_displayed_balance(session, acct)
-        item = await _build_account_response(session, acct, displayed)
+        item = account_service._build_account_dict(acct, displayed)
         account_items.append(item)
 
         # Only sum accounts in base currency to avoid mixing currencies
