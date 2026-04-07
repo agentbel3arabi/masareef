@@ -52,13 +52,15 @@ Exceptions: Button touch targets use Tailwind height utilities (h-6 through h-9 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px (text-sm) | 400 (normal) | 1.43 (Tailwind default for text-sm) |
-| Label | 14px (text-sm) | 500 (medium) | 1.43 |
+| Label | 14px (text-sm) | 400 (normal) | 1.43 |
 | Heading | 20px (text-xl) | 600 (semibold) | 1.4 |
-| Display | 28px (text-2xl) | 700 (bold) | 1.33 |
+| Display | 28px (text-2xl) | 600 (semibold) | 1.33 |
+
+Labels are differentiated from body text via uppercase tracking (`uppercase tracking-wide`) or contextual placement (adjacent to form controls), not font weight. Display text is differentiated from headings by size alone, not weight.
 
 Font stack: `var(--font-inter), var(--font-noto-arabic), system-ui, sans-serif` defined in `globals.css` as `--font-sans` and `--font-heading`.
 
-**Weights used in codebase:** 400 (normal body text), 500 (medium for labels and button text), 600 (semibold for headings and stat values), 700 (bold for display/page titles).
+**Canonical weights: 400 and 600.** The codebase currently uses 4 weights (400, 500, 600, 700). During stabilization refactoring, consolidate to the 2 canonical weights: 400 (body, labels, secondary text) and 600 (headings, display, stat values, emphasis). Existing `font-medium` (500) classes should migrate to `font-normal` (400). Existing `font-bold` (700) classes should migrate to `font-semibold` (600). Track this consolidation as part of the refactoring unit.
 
 **Test verification:** Tests should assert text content renders correctly. Do not test computed font sizes -- trust Tailwind classes. Test that `font-sans` CSS variable resolves (verifies font loading setup).
 
