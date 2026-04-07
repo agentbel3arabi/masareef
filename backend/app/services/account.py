@@ -376,7 +376,14 @@ async def compute_net_worth(
     household_id: uuid.UUID,
 ) -> dict:
     """Compute net worth across all active accounts. Uses a single bulk query."""
-    accounts, _ = await list_accounts(session, household_id, page=1, page_size=1000)
+    # Fetch ALL active accounts directly — no pagination cap
+    result = await session.execute(
+        select(Account).where(
+            Account.household_id == household_id,
+            Account.is_active.is_(True),
+        )
+    )
+    accounts = list(result.scalars().all())
 
     # Single aggregate query for all accounts — balance is purely transaction-based now
     acct_ids = [a.id for a in accounts]
