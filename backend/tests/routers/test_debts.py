@@ -1,12 +1,6 @@
 import pytest
 
-
-async def _create_test_account(client, name="Test Account", currency="EGP"):
-    resp = await client.post(
-        "/api/v1/accounts",
-        json={"name": name, "type": "bank_account", "currency": currency},
-    )
-    return resp.json()["data"]["id"]
+from tests.factories import create_test_account as _create_test_account
 
 
 def _create_loan_payload(**overrides):

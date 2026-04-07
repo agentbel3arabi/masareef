@@ -1,51 +1,10 @@
 import pytest
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-async def _create_account(client) -> int:
-    """Create a test account and return its id."""
-    resp = await client.post(
-        "/api/v1/accounts",
-        json={
-            "name": "Test",
-            "type": "bank_account",
-            "currency": "EGP",
-            "opening_balance": 1000000,
-        },
-    )
-    assert resp.status_code == 201, resp.text
-    return resp.json()["data"]["id"]
-
-
-async def _create_category(client, name: str = "Test Category") -> int:
-    """Create a custom category and return its id."""
-    resp = await client.post(
-        "/api/v1/categories",
-        json={"name_en": name, "name_ar": "فئة", "type": "expense"},
-    )
-    assert resp.status_code == 201, resp.text
-    return resp.json()["data"]["id"]
-
-
-async def _create_tx(client, account_id: int, amount_minor: int = 50000) -> dict:
-    """Create a debit transaction and return response data."""
-    resp = await client.post(
-        "/api/v1/transactions",
-        json={
-            "account_id": account_id,
-            "date": "2024-01-15",
-            "description": "Test Transaction",
-            "amount_minor": amount_minor,
-            "type": "debit",
-            "currency": "EGP",
-        },
-    )
-    assert resp.status_code == 201, resp.text
-    return resp.json()["data"]
-
+from tests.factories import (
+    create_test_account as _create_account,
+    create_test_category as _create_category,
+    create_test_transaction as _create_tx,
+)
 
 # ---------------------------------------------------------------------------
 # Tests
