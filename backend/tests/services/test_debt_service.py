@@ -90,28 +90,34 @@ async def test_soft_delete_debt_with_delete_transactions_no_linked_tx():
 
 
 def test_payment_amount_must_be_positive():
-    """Debt payments must always be positive integers (per CLAUDE.md rules)."""
-    # This tests the convention: debt_payments.amount_minor is always positive
-    # The service enforces this implicitly by accepting amount_minor as int > 0
-    amount = 50000  # 500.00 EGP
-    assert amount > 0
-    assert isinstance(amount, int)
+    """PaymentCreate schema rejects negative and zero amounts."""
+    from pydantic import ValidationError
 
-    # Negative amounts should never be stored
-    negative_amount = -50000
-    assert negative_amount < 0  # This would be rejected
+    from app.schemas.debt import PaymentCreate
 
-    # Zero amounts should be rejected
-    zero_amount = 0
-    assert zero_amount == 0  # This would also be rejected
+    # Negative amount must be rejected
+    with pytest.raises(ValidationError):
+        PaymentCreate(date="2024-01-01", amount_minor=-50000, account_id=1)
+
+    # Zero amount must be rejected
+    with pytest.raises(ValidationError):
+        PaymentCreate(date="2024-01-01", amount_minor=0, account_id=1)
+
+    # Positive amount must be accepted
+    valid = PaymentCreate(date="2024-01-01", amount_minor=50000, account_id=1)
+    assert valid.amount_minor == 50000
 
 
 def test_debt_payment_is_integer_not_float():
-    """Payment amounts must be integers (minor units), never floats."""
-    valid_amount = 125050  # 1,250.50 EGP in piasters
-    assert isinstance(valid_amount, int)
+    """PaymentCreate schema rejects float amounts."""
+    from pydantic import ValidationError
 
-    # Float would violate money rules
-    float_amount = 1250.50
-    assert isinstance(float_amount, float)
-    assert not isinstance(float_amount, int)
+    from app.schemas.debt import PaymentCreate
+
+    # Float that is not a whole number should be rejected by gt=0 int field
+    with pytest.raises(ValidationError):
+        PaymentCreate(date="2024-01-01", amount_minor=1250.50, account_id=1)  # type: ignore[arg-type]
+
+    # Valid integer amount works
+    valid = PaymentCreate(date="2024-01-01", amount_minor=125050, account_id=1)
+    assert isinstance(valid.amount_minor, int)
