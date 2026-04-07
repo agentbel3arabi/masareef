@@ -32,15 +32,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. N+1 query patterns (BL-027, BL-028, BL-029) are eliminated and database query count is verifiable in dev
   4. Frontend test infrastructure runs in CI — Vitest + React Testing Library installed, at least one test per major component
   5. All backend routers have RBAC guards applied and unauthorized access returns 403
-**Plans**: TBD
+**Plans:** 6 plans
 
 Plans:
-- [ ] 01-01: Documentation cleanup — CLAUDE.md, roadmap, feature specs aligned with current state
-- [ ] 01-02: Bug fixes — all open BACKLOG.md bugs resolved
-- [ ] 01-03: N+1 query elimination — BL-027, BL-028, BL-029 fixed with SQL aggregation
-- [ ] 01-04: Frontend test infrastructure — Vitest + RTL setup, CI integration, initial test coverage
-- [ ] 01-05: RBAC hardening — BL-032 RBAC guards applied to all routers
-- [ ] 01-06: Code refactor and dead code removal — consistent patterns, unused code purged
+- [ ] 01-01-PLAN.md — Documentation audit and BACKLOG.md re-tagging
+- [ ] 01-02-PLAN.md — Verify BL-029 fix, remove stale TODO, close backlog item
+- [ ] 01-03-PLAN.md — N+1 query elimination (BL-027 FX batch, BL-028 balance batch)
+- [ ] 01-04-PLAN.md — Frontend test infrastructure + backend test expansion (30-50 tests)
+- [ ] 01-05-PLAN.md — RBAC hardening (BL-032) + light auth audit
+- [ ] 01-06-PLAN.md — Code refactor, dead code removal, font weight consolidation
 
 ### Phase 2: Dashboard & Charts
 **Goal**: Users can see their financial picture at a glance through Plotly-powered charts and stat cards on the dashboard
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Stabilization | 0/6 | Not started | - |
+| 1. Stabilization | 0/6 | Planning complete | - |
 | 2. Dashboard & Charts | 0/6 | Not started | - |
 | 3. AI Categorization | 0/5 | Not started | - |
 | 4. Budgets & Savings | 0/5 | Not started | - |
