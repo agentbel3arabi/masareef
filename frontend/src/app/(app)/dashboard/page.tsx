@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { TrendingUp, ShoppingCart, HandCoins, Clock } from "lucide-react";
@@ -44,27 +44,23 @@ export default function DashboardPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>("6M");
   const [compareEnabled, setCompareEnabled] = useState(false);
 
-  // Get initial base currency from net worth endpoint (household's base currency)
+  // Get initial base currency from household data
   const { data: nwResponse } = useNetWorth();
   const nw = nwResponse?.data;
-  const [baseCurrency, setBaseCurrency] = useState("EGP");
+  const householdCurrency = nw?.base_currency;
 
-  // Sync base currency from household data on first load
-  const initialCurrency = nw?.base_currency;
-  useEffect(() => {
-    if (initialCurrency) {
-      setBaseCurrency(initialCurrency);
-    }
-  }, [initialCurrency]);
+  // User override wins; falls back to household currency, then "EGP"
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const baseCurrency = currencyOverride ?? householdCurrency ?? "EGP";
 
   const updateHouseholdSettings = useUpdateHouseholdSettings();
 
   const handleCurrencyChange = (newCurrency: string) => {
-    const previousCurrency = baseCurrency;
-    setBaseCurrency(newCurrency);
+    const prevOverride = currencyOverride;
+    setCurrencyOverride(newCurrency);
     updateHouseholdSettings.mutate(
       { base_currency: newCurrency },
-      { onError: () => setBaseCurrency(previousCurrency) }
+      { onError: () => setCurrencyOverride(prevOverride) }
     );
   };
 
