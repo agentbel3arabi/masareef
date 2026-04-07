@@ -6,8 +6,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import require_role
 from app.models.account import Account
-from app.models.enums import AccountType
+from app.models.enums import AccountType, HouseholdRole
 from app.schemas.financial_institution import (
     InstitutionCreate,
     InstitutionListResponse,
@@ -129,6 +130,7 @@ async def create_institution(
     data: InstitutionCreate,
     session: AsyncSession = Depends(get_db_session),
     household_id=Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ):
     try:
         institution = await fi_service.create_custom_institution(
@@ -146,6 +148,7 @@ async def update_institution(
     data: InstitutionUpdate,
     session: AsyncSession = Depends(get_db_session),
     household_id=Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ):
     institution = await fi_service.get_institution_by_slug(session, household_id, slug)
     if not institution:
@@ -164,6 +167,7 @@ async def delete_institution(
     slug: str,
     session: AsyncSession = Depends(get_db_session),
     household_id=Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ):
     institution = await fi_service.get_institution_by_slug(session, household_id, slug)
     if not institution:

@@ -9,7 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings
 from app.dependencies import get_db_session, get_household_id
+from app.dependencies_rbac import require_role
 from app.limiter import limiter
+from app.models.enums import HouseholdRole
 from app.schemas.common import SuccessResponse
 from app.schemas.import_ import CommitRequest, PresetInfo
 from app.services.import_ import import_service
@@ -42,6 +44,7 @@ async def parse_file(
     skip_rows: int = Form(default=0, ge=0),
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Parse and preview a bank statement file."""
     raw_bytes = await file.read()
@@ -106,6 +109,7 @@ async def commit_import(
     data: CommitRequest,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Atomically commit confirmed rows to the database."""
     result = await import_service.commit_import(data, session, household_id)
