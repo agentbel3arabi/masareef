@@ -80,6 +80,8 @@ def test_account_has_name_ar_column():
 
 def test_account_has_check_constraints():
     """Account table has check constraints for billing/payment days."""
-    constraint_names = {c.name for c in Account.__table__.constraints if hasattr(c, "name") and c.name}
+    constraint_names = {
+        c.name for c in Account.__table__.constraints if hasattr(c, "name") and c.name
+    }
     assert "ck_accounts_billing_cycle_day" in constraint_names
     assert "ck_accounts_payment_due_day" in constraint_names

@@ -315,9 +315,12 @@ async def compute_persons_balances_bulk(
     all_currencies: set[str] = set()
     for by_currency in result.values():
         all_currencies.update(by_currency.keys())
-    rates = await get_latest_rates(session, all_currencies) if len(all_currencies) > 1 or (
-        len(all_currencies) == 1 and next(iter(all_currencies)) != base_currency
-    ) else None
+    rates = (
+        await get_latest_rates(session, all_currencies)
+        if len(all_currencies) > 1
+        or (len(all_currencies) == 1 and next(iter(all_currencies)) != base_currency)
+        else None
+    )
 
     # Convert each person's balances to base currency
     final: dict[int, PersonBalances] = {}

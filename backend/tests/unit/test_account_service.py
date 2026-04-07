@@ -1,12 +1,13 @@
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 
 @pytest.mark.asyncio
 async def test_compute_net_worth_uses_bulk_query():
-    """compute_net_worth must issue exactly two aggregate queries (accounts + tx_sums), not one per account."""
+    """compute_net_worth must issue exactly two aggregate queries (accounts + tx_sums),
+    not one per account."""
     from app.services.account import compute_net_worth
 
     household_id = uuid.uuid4()

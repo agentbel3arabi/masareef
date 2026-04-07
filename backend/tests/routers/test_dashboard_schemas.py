@@ -6,7 +6,6 @@ from pydantic import ValidationError
 from app.models.household import Household
 from tests.conftest import TEST_HOUSEHOLD_ID
 
-
 # -- Schema validation tests --
 
 

@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.account import Account
 from app.models.category import Category
-from app.models.debt import Debt
 from app.models.exchange_rate import ExchangeRate
 from app.models.household import Household
 from app.models.transaction import Transaction

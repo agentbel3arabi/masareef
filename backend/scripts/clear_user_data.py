@@ -29,17 +29,17 @@ def _build_steps(household_id: str | None) -> list[tuple[str, str, str]]:
 
     # Subqueries for tables without household_id
     debt_sub = (
-        f"(SELECT id FROM debts WHERE household_id = :hid)"
+        "(SELECT id FROM debts WHERE household_id = :hid)"
         if household_id
         else "(SELECT id FROM debts)"
     )
     txn_sub = (
-        f"(SELECT id FROM transactions WHERE household_id = :hid)"
+        "(SELECT id FROM transactions WHERE household_id = :hid)"
         if household_id
         else "(SELECT id FROM transactions)"
     )
     acct_sub = (
-        f"(SELECT id FROM accounts WHERE household_id = :hid)"
+        "(SELECT id FROM accounts WHERE household_id = :hid)"
         if household_id
         else "(SELECT id FROM accounts)"
     )
@@ -52,10 +52,8 @@ def _build_steps(household_id: str | None) -> list[tuple[str, str, str]]:
         ),
         (
             "account_import_templates",
-            f"SELECT COUNT(*) FROM account_import_templates "
-            f"WHERE account_id IN {acct_sub}",
-            f"DELETE FROM account_import_templates "
-            f"WHERE account_id IN {acct_sub}",
+            f"SELECT COUNT(*) FROM account_import_templates WHERE account_id IN {acct_sub}",
+            f"DELETE FROM account_import_templates WHERE account_id IN {acct_sub}",
         ),
         (
             "import_templates",
@@ -104,7 +102,8 @@ def _build_steps(household_id: str | None) -> list[tuple[str, str, str]]:
         ),
         (
             "categories (custom)",
-            f"SELECT COUNT(*) FROM categories WHERE is_predefined = FALSE AND is_system = FALSE{hid_and}",
+            f"SELECT COUNT(*) FROM categories WHERE is_predefined = FALSE"
+            f" AND is_system = FALSE{hid_and}",
             f"DELETE FROM categories WHERE is_predefined = FALSE AND is_system = FALSE{hid_and}",
         ),
         (

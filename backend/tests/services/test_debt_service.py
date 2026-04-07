@@ -1,12 +1,10 @@
 """Tests for debt service — soft delete and payment validation."""
 
-import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.services.debt import soft_delete_debt
-
 
 # ---------------------------------------------------------------------------
 # soft_delete_debt

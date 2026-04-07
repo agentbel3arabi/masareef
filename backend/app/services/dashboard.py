@@ -67,18 +67,15 @@ async def get_income_vs_expenses(
     today = datetime.date.today()
     start_date = today.replace(day=1) - relativedelta(months=months - 1)
 
-    stmt = (
-        select(
-            Transaction.currency,
-            Transaction.date,
-            Transaction.amount_minor,
-        )
-        .where(
-            Transaction.household_id == household_id,
-            Transaction.is_active.is_(True),
-            Transaction.transfer_id.is_(None),
-            Transaction.date >= start_date,
-        )
+    stmt = select(
+        Transaction.currency,
+        Transaction.date,
+        Transaction.amount_minor,
+    ).where(
+        Transaction.household_id == household_id,
+        Transaction.is_active.is_(True),
+        Transaction.transfer_id.is_(None),
+        Transaction.date >= start_date,
     )
 
     rows = (await session.execute(stmt)).all()

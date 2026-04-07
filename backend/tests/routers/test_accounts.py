@@ -165,9 +165,7 @@ async def test_list_balance_matches_single_get(client):
     # Get list account balance
     list_resp = await client.get("/api/v1/accounts")
     list_balance = next(
-        a["displayed_balance_minor"]
-        for a in list_resp.json()["data"]
-        if a["id"] == acct_id
+        a["displayed_balance_minor"] for a in list_resp.json()["data"] if a["id"] == acct_id
     )
 
     assert list_balance == single_balance
