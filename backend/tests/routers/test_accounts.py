@@ -96,3 +96,78 @@ async def test_reconcile_account(client):
     assert recon_resp.status_code == 200
     data = recon_resp.json()["data"]
     assert data["adjustment"] == 200000
+
+
+@pytest.mark.asyncio
+async def test_list_accounts_batch_balance(client):
+    """List accounts returns correct displayed_balance_minor via batch computation."""
+    # Create bank account with opening balance
+    resp1 = await client.post(
+        "/api/v1/accounts",
+        json={
+            "name": "Bank A",
+            "type": "bank_account",
+            "currency": "EGP",
+            "opening_balance": 500000,
+        },
+    )
+    assert resp1.status_code == 201
+    acct1_id = resp1.json()["data"]["id"]
+
+    # Create empty account (no opening balance)
+    resp2 = await client.post(
+        "/api/v1/accounts",
+        json={"name": "Cash B", "type": "cash_wallet", "currency": "EGP"},
+    )
+    assert resp2.status_code == 201
+    acct2_id = resp2.json()["data"]["id"]
+
+    # List accounts and check balances
+    list_resp = await client.get("/api/v1/accounts")
+    assert list_resp.status_code == 200
+    accounts = list_resp.json()["data"]
+    balance_map = {a["id"]: a["displayed_balance_minor"] for a in accounts}
+    assert balance_map[acct1_id] == 500000
+    assert balance_map[acct2_id] == 0
+
+
+@pytest.mark.asyncio
+async def test_list_balance_matches_single_get(client):
+    """Balance in list endpoint matches single-account GET endpoint."""
+    create_resp = await client.post(
+        "/api/v1/accounts",
+        json={
+            "name": "Consistency Check",
+            "type": "bank_account",
+            "currency": "EGP",
+            "opening_balance": 750000,
+        },
+    )
+    acct_id = create_resp.json()["data"]["id"]
+
+    # Add a transaction via the transaction endpoint
+    await client.post(
+        "/api/v1/transactions",
+        json={
+            "account_id": acct_id,
+            "date": "2026-01-15",
+            "description": "Salary",
+            "amount_minor": 200000,
+            "currency": "EGP",
+            "type": "credit",
+        },
+    )
+
+    # Get single account balance
+    single_resp = await client.get(f"/api/v1/accounts/{acct_id}")
+    single_balance = single_resp.json()["data"]["displayed_balance_minor"]
+
+    # Get list account balance
+    list_resp = await client.get("/api/v1/accounts")
+    list_balance = next(
+        a["displayed_balance_minor"]
+        for a in list_resp.json()["data"]
+        if a["id"] == acct_id
+    )
+
+    assert list_balance == single_balance
