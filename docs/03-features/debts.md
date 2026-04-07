@@ -332,6 +332,9 @@ Full amortization schedule for a bank loan.
 }
 ```
 
+#### `GET /api/v1/debts/{id}/payments`
+List all payments recorded against a debt.
+
 #### `POST /api/v1/debts/{id}/payments`
 Record a payment against a debt.
 
@@ -345,6 +348,15 @@ Record a payment against a debt.
 }
 ```
 For bank loans, backend auto-computes principal/interest split from amortization schedule.
+
+#### `POST /api/v1/debts/{id}/bulk-past-payments`
+Record multiple past payments at once for a debt (e.g., backfilling payment history).
+
+#### `POST /api/v1/debts/bulk-payment`
+Record a single payment spread across multiple debts.
+
+#### `POST /api/v1/debts/{id}/reactivate`
+Reactivate a previously paid-off debt (change status from `paid_off` back to `active`).
 
 #### `GET /api/v1/debts/{id}/match-suggestions`
 Auto-match suggestions for a loan with linked account.

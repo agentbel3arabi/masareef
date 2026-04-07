@@ -190,10 +190,10 @@ Update a category. Predefined categories: only icon and color editable. Custom: 
 Soft delete. Predefined categories cannot be deleted. Transactions using this category retain the link but display as "Deleted Category" in UI.
 
 ### `GET /api/v1/categorization-rules`
-List all rules for the household, sorted by confidence then hit_count.
+[NOT YET IMPLEMENTED -- Phase 3] List all rules for the household, sorted by confidence then hit_count.
 
 ### `POST /api/v1/categorization-rules`
-Manually create a categorization rule.
+[NOT YET IMPLEMENTED -- Phase 3] Manually create a categorization rule.
 
 **Request:**
 ```json
@@ -205,10 +205,10 @@ Manually create a categorization rule.
 ```
 
 ### `DELETE /api/v1/categorization-rules/{id}`
-Delete a rule. Future transactions will fall through to AI.
+[NOT YET IMPLEMENTED -- Phase 3] Delete a rule. Future transactions will fall through to AI.
 
 ### `POST /api/v1/transactions/categorize-batch`
-Trigger AI categorization for a set of uncategorized transactions.
+[NOT YET IMPLEMENTED -- Phase 3] Trigger AI categorization for a set of uncategorized transactions.
 
 **Request:**
 ```json

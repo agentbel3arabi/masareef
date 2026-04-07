@@ -169,8 +169,16 @@ Bulk category assignment.
 { "ids": [42, 43, 44], "category_id": 5 }
 ```
 
+### `GET /api/v1/transactions/last-used-account`
+Returns the account_id of the most recent transaction for the household. Used to pre-select account in new transaction form.
+
+### `GET /api/v1/transactions/summary`
+Returns aggregated income, expenses, and net flow for the household, respecting active filters.
+
+**Query params:** `period`, `account_id`, `category_id`, `start_date`, `end_date`
+
 ### `GET /api/v1/transactions/{id}/page`
-Utility: returns the page number containing this transaction for a given page_size. Used for deep-link highlighting (e.g., after import, navigate to the first imported transaction).
+[NOT YET IMPLEMENTED] Utility: returns the page number containing this transaction for a given page_size. Used for deep-link highlighting (e.g., after import, navigate to the first imported transaction).
 
 ## Acceptance Criteria
 - [ ] Manual transaction creation correctly updates account balance

@@ -671,7 +671,7 @@ An AI-powered personal finance platform for Egyptian/MENA users. Built with Fast
 - Used by: Browser clients only
 - Purpose: Route HTTP requests, validate inputs via schemas, enforce auth/RLS, coordinate business logic
 - Location: `backend/app/routers/`
-- Contains: FastAPI routers (14 route modules), each prefixed with `/api/v1/`; dependency injection for auth/session/household scoping
+- Contains: FastAPI routers (12 route modules), each prefixed with `/api/v1/`; dependency injection for auth/session/household scoping
 - Depends on: SQLAlchemy ORM models, Pydantic schemas, service layer functions
 - Used by: Frontend (exclusively) and external integrations
 - Purpose: Execute domain logic (calculations, transformations, validations) with zero HTTP awareness
