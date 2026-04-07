@@ -10,6 +10,10 @@ class HouseholdCreate(BaseModel):
     base_currency: Literal["EGP", "USD", "EUR", "GBP", "SAR", "AED", "KWD"] = "EGP"
 
 
+class HouseholdUpdate(BaseModel):
+    base_currency: str | None = Field(None, max_length=3)
+
+
 class HouseholdResponse(BaseModel):
     id: uuid.UUID
     name: str

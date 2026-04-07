@@ -2,12 +2,17 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_current_user, get_db_session
-from app.schemas.household import HouseholdCreate
+from app.dependencies import get_current_user, get_db_session, get_household_id
+from app.dependencies_rbac import require_role
+from app.models.enums import HouseholdRole
+from app.models.household import Household
+from app.schemas.common import SuccessResponse
+from app.schemas.household import HouseholdCreate, HouseholdUpdate
 from app.services import household as household_service
 
 router = APIRouter(prefix="/api/v1", tags=["households"])
@@ -49,3 +54,36 @@ async def create_household(
             "base_currency": household.base_currency,
         }
     }
+
+
+@router.patch("/households")
+async def update_household(
+    data: HouseholdUpdate,
+    session: AsyncSession = Depends(get_db_session),
+    household_id: uuid.UUID = Depends(get_household_id),
+    role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN)),
+) -> SuccessResponse:
+    """Update household settings. Admin-only."""
+    result = await session.execute(select(Household).where(Household.id == household_id))
+    household = result.scalar_one_or_none()
+    if household is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
+
+    update_data = data.model_dump(exclude_none=True)
+    if not update_data:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="No fields to update",
+        )
+
+    for key, value in update_data.items():
+        setattr(household, key, value)
+
+    await session.flush()
+    return SuccessResponse(
+        data={
+            "id": str(household.id),
+            "name": household.name,
+            "base_currency": household.base_currency,
+        }
+    )
