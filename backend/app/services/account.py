@@ -585,9 +585,7 @@ async def list_accounts_with_stats(
     items = []
     for acct in accounts:
         displayed = balance_map.get(acct.id, 0)
-        inst_embed = (
-            institution_map.get(acct.institution_id) if acct.institution_id else None
-        )
+        inst_embed = institution_map.get(acct.institution_id) if acct.institution_id else None
         item = _build_account_dict(
             acct,
             displayed,

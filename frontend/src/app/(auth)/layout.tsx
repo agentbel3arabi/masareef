@@ -25,7 +25,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             <Logo variant="horizontal" width={380} height={152} colorScheme="dark" />
           </div>
           <div>
-            <h1 className="text-4xl font-bold leading-tight">
+            <h1 className="text-4xl font-semibold leading-tight">
               {t("marketingHeadline")}
             </h1>
             <p className="mt-3 text-lg text-white/70">{t("marketingSubheadline")}</p>

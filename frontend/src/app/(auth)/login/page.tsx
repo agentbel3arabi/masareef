@@ -36,7 +36,7 @@ export default function LoginPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">{t("auth.welcomeBack")}</h1>
+        <h1 className="text-2xl font-semibold">{t("auth.welcomeBack")}</h1>
         <p className="text-sm text-muted-foreground">{t("auth.loginSubtitle")}</p>
       </div>
 

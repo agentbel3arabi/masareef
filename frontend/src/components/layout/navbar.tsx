@@ -94,7 +94,7 @@ export function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger aria-label="Open user menu" className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Avatar size="default">
-                <AvatarFallback className="text-xs font-medium">
+                <AvatarFallback className="text-xs font-normal">
                   {initials}
                 </AvatarFallback>
               </Avatar>

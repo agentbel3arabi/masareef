@@ -80,7 +80,7 @@ export function Sidebar() {
       {/* Brand tagline — below logo */}
       {!collapsed && (
         <div className="px-4 pb-3">
-          <p className="text-[10px] text-muted-foreground/80 font-medium uppercase tracking-wider">
+          <p className="text-[10px] text-muted-foreground/80 font-normal uppercase tracking-wider">
             {t("brand.tagline")}
           </p>
         </div>
@@ -164,8 +164,8 @@ export function Sidebar() {
                         : "gap-3 px-3 py-2 border-s-2",
                       isActive
                         ? collapsed
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "border-primary bg-primary/10 text-primary font-medium"
+                          ? "bg-primary/10 text-primary font-normal"
+                          : "border-primary bg-primary/10 text-primary font-normal"
                         : collapsed
                           ? "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                           : "border-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground"

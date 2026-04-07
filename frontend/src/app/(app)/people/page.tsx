@@ -28,7 +28,7 @@ export default function PeoplePage() {
       {/* Header */}
       <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("title")}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("title")}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{t("subtitle")}</p>
         </div>
         <Button size="sm" onClick={() => { setEditPerson(null); setFormOpen(true); }}>
