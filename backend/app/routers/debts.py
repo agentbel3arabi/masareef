@@ -35,12 +35,12 @@ def _check_p2p_read(debt, role: HouseholdRole) -> None:
 
 
 def _check_p2p_write(debt, role: HouseholdRole) -> None:
-    """Block CHILD+VIEWER from mutating P2P debts, VIEWER from all mutations."""
+    """Block CHILD+VIEWER from mutating any debts (P2P or non-P2P)."""
     if debt.type in (DebtType.PERSONAL_LENT, DebtType.PERSONAL_BORROWED):
         if role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
             raise HTTPException(status_code=403, detail="Insufficient permissions for P2P debts")
-    elif role == HouseholdRole.VIEWER:
-        raise HTTPException(status_code=403, detail="Viewers cannot modify debts")
+    elif role in (HouseholdRole.CHILD, HouseholdRole.VIEWER):
+        raise HTTPException(status_code=403, detail="Insufficient permissions to modify debts")
 
 
 def _debt_to_response(
