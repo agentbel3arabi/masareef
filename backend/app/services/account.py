@@ -322,6 +322,50 @@ async def compute_displayed_balance(
     return account.balance_minor + tx_sum
 
 
+async def compute_displayed_balances_batch(
+    session: AsyncSession,
+    accounts: list[Account],
+) -> dict[int, int]:
+    """Batch compute displayed balances for all accounts in one query.
+
+    Handles per-account cutoff dates (e.g. opened_at) via grouped queries.
+    Returns dict mapping account.id -> displayed balance in minor units.
+    """
+    if not accounts:
+        return {}
+
+    # Group accounts by cutoff date
+    cutoffs: dict[date_type | None, list[int]] = {}
+    for acct in accounts:
+        cutoff = get_balance_cutoff_date(acct)
+        cutoffs.setdefault(cutoff, []).append(acct.id)
+
+    # Build one query per cutoff group (usually 1-2 groups: None + one date)
+    tx_sums: dict[int, int] = {}
+    for cutoff_date, ids in cutoffs.items():
+        conditions = [
+            Transaction.account_id.in_(ids),
+            Transaction.is_active.is_(True),
+            Transaction.applies_to_balance.is_(True),
+        ]
+        if cutoff_date is not None:
+            conditions.append(Transaction.date >= cutoff_date)
+
+        stmt = (
+            select(
+                Transaction.account_id,
+                func.coalesce(func.sum(Transaction.amount_minor), 0).label("tx_sum"),
+            )
+            .where(and_(*conditions))
+            .group_by(Transaction.account_id)
+        )
+        result = await session.execute(stmt)
+        for row in result:
+            tx_sums[row.account_id] = int(row.tx_sum)
+
+    return {a.id: a.balance_minor + tx_sums.get(a.id, 0) for a in accounts}
+
+
 async def compute_net_worth(
     session: AsyncSession,
     household_id: uuid.UUID,
