@@ -13,7 +13,8 @@ from app.models import (
     Person,
 )
 from app.models.enums import DebtType, HouseholdRole
-from app.services.person import compute_person_balances
+from app.services.fx import convert_to_base, get_latest_rates
+from app.services.person import compute_person_balances, compute_persons_balances_bulk
 from tests.conftest import TEST_HOUSEHOLD_ID, TEST_USER_ID
 
 
@@ -171,3 +172,77 @@ async def test_missing_rate_adds_warning(db_session: AsyncSession) -> None:
     result = await compute_person_balances(db_session, TEST_HOUSEHOLD_ID, person_id)
     assert result.total_base_minor == 0
     assert "JPY" in result.fx_warnings
+
+
+@pytest.mark.asyncio
+async def test_convert_to_base_with_prefetched_rates(db_session: AsyncSession) -> None:
+    """convert_to_base with explicit rates param returns same result as DB fetch."""
+    await _seed_household(db_session, "EGP")
+    await _seed_rates(db_session)
+
+    balances = {"GBP": 10_000, "EGP": 5_000}
+
+    # Without pre-fetched rates (DB fetch)
+    result_db = await convert_to_base(db_session, balances, "EGP")
+
+    # With pre-fetched rates
+    rates = await get_latest_rates(db_session, {"GBP", "EGP"})
+    result_prefetched = await convert_to_base(db_session, balances, "EGP", rates=rates)
+
+    assert result_prefetched.total_base_minor == result_db.total_base_minor
+    assert result_prefetched.fx_warnings == result_db.fx_warnings
+
+
+@pytest.mark.asyncio
+async def test_convert_to_base_rates_none_falls_back(db_session: AsyncSession) -> None:
+    """convert_to_base with rates=None still works (backward compat)."""
+    await _seed_household(db_session, "EGP")
+    await _seed_rates(db_session)
+
+    balances = {"GBP": 10_000}
+    result = await convert_to_base(db_session, balances, "EGP", rates=None)
+    # Should compute via DB — GBP→USD→EGP
+    expected = 10_000 * 10_000 // 7_900 * 485_000 // 10_000
+    assert result.total_base_minor == expected
+
+
+@pytest.mark.asyncio
+async def test_bulk_balances_uses_batch_fx(db_session: AsyncSession) -> None:
+    """compute_persons_balances_bulk with mixed currencies works correctly."""
+    await _seed_household(db_session, "EGP")
+    await _seed_rates(db_session)
+
+    # Create 3 persons with different currency debts
+    persons = []
+    for name, currency in [("Ali", "EGP"), ("Sara", "GBP"), ("Mona", "EGP")]:
+        p = Person(household_id=TEST_HOUSEHOLD_ID, name=name)
+        db_session.add(p)
+        await db_session.flush()
+        persons.append((p.id, currency))
+
+        db_session.add(
+            Debt(
+                household_id=TEST_HOUSEHOLD_ID,
+                type=DebtType.PERSONAL_LENT,
+                name=f"{name} debt",
+                person_id=p.id,
+                principal_minor=10_000,
+                currency=currency,
+                annual_rate_bps=0,
+                tenure_months=0,
+                monthly_payment_minor=0,
+                start_date=dt.date.today(),
+            )
+        )
+    await db_session.flush()
+
+    person_ids = [pid for pid, _ in persons]
+    results = await compute_persons_balances_bulk(db_session, TEST_HOUSEHOLD_ID, person_ids)
+
+    # Ali: 10_000 EGP (same as base)
+    assert results[persons[0][0]].total_base_minor == 10_000
+    # Sara: 10_000 GBP converted to EGP
+    gbp_in_egp = 10_000 * 10_000 // 7_900 * 485_000 // 10_000
+    assert results[persons[1][0]].total_base_minor == gbp_in_egp
+    # Mona: 10_000 EGP (same as base)
+    assert results[persons[2][0]].total_base_minor == 10_000
