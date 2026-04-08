@@ -1,10 +1,5 @@
 {
-  "models": {
-    "planner": "opus",
-    "executor": "sonnet",
-    "verifier": "sonnet"
-  },
-  "model_profile": "quality",
+  "model_profile": "balanced",
   "commit_docs": true,
   "parallelization": false,
   "search_gitignored": false,
@@ -12,7 +7,7 @@
   "firecrawl": false,
   "exa_search": false,
   "git": {
-    "branching_strategy": "none",
+    "branching_strategy": "phase",
     "phase_branch_template": "gsd/phase-{phase}-{slug}",
     "milestone_branch_template": "gsd/{milestone}-{slug}",
     "quick_branch_template": null
@@ -33,6 +28,7 @@
     "skip_discuss": false,
     "code_review": true,
     "code_review_depth": "standard",
+    "use_worktrees": true,
     "_auto_chain_active": false
   },
   "hooks": {

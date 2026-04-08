@@ -14,7 +14,6 @@ from app.services.account import (
     validate_iban,
 )
 
-
 # ---------------------------------------------------------------------------
 # get_balance_cutoff_date
 # ---------------------------------------------------------------------------
@@ -145,7 +144,7 @@ async def test_batch_matches_individual():
     batch_result.__iter__ = MagicMock(return_value=iter(batch_rows))
     session.execute.return_value = batch_result
 
-    result = await compute_displayed_balances_batch(session, accounts)
+    result = await compute_displayed_balances_batch(session, accounts)  # type: ignore[arg-type]
     assert result[1] == 110000  # 100000 + 10000
     assert result[2] == 195000  # 200000 + (-5000)
 
@@ -165,7 +164,7 @@ async def test_batch_groups_by_cutoff_date():
     empty_result.__iter__ = MagicMock(return_value=iter([]))
     session.execute.return_value = empty_result
 
-    result = await compute_displayed_balances_batch(session, accounts)
+    result = await compute_displayed_balances_batch(session, accounts)  # type: ignore[arg-type]
     # Two groups (None and 2024-06-01) -> two execute calls
     assert session.execute.call_count == 2
     # Both return balance_minor since no transactions

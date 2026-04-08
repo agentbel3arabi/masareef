@@ -9,6 +9,7 @@ interface StatCardProps {
   trend?: {
     direction: "up" | "down" | "flat";
     text: string;
+    percentChange?: number | null;
   };
   variant?: "default" | "accent" | "success" | "destructive";
   className?: string;
@@ -85,6 +86,9 @@ export function StatCard({ icon: Icon, label, value, trend, variant = "default",
           {trend.direction === "up" && "↑ "}
           {trend.direction === "down" && "↓ "}
           {trend.text}
+          {trend.percentChange != null && (
+            <span className="ms-1">({trend.percentChange > 0 ? "+" : ""}{Math.round(trend.percentChange)}%)</span>
+          )}
         </p>
       )}
     </Card>

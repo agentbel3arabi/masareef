@@ -16,7 +16,6 @@ from sqlalchemy import text
 
 from app.database import async_session_factory, engine
 
-
 # Delete order: children before parents, respecting FK constraints.
 # Tuples of (table_name, count_sql, delete_sql) with :hid parameter.
 DELETE_STEPS: list[tuple[str, str, str]] = [
@@ -94,8 +93,7 @@ DELETE_STEPS: list[tuple[str, str, str]] = [
         "financial_institutions (custom)",
         "SELECT COUNT(*) FROM financial_institutions "
         "WHERE household_id = :hid AND is_predefined = FALSE",
-        "DELETE FROM financial_institutions "
-        "WHERE household_id = :hid AND is_predefined = FALSE",
+        "DELETE FROM financial_institutions WHERE household_id = :hid AND is_predefined = FALSE",
     ),
 ]
 
@@ -152,7 +150,7 @@ async def delete_user(email: str, dry_run: bool) -> None:
                 params = {"hid": str(hid)}
                 for table_name, count_sql, delete_sql in DELETE_STEPS:
                     result = await session.execute(text(count_sql), params)
-                    count = result.scalar()
+                    count = result.scalar() or 0
                     if count > 0:
                         action = "would delete" if dry_run else "deleted"
                         print(f"  {table_name}: {action} {count} row(s)")
@@ -193,9 +191,7 @@ async def delete_user(email: str, dry_run: bool) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Delete all data for a user by email address"
-    )
+    parser = argparse.ArgumentParser(description="Delete all data for a user by email address")
     parser.add_argument("email", help="Email address of the user to delete")
     parser.add_argument(
         "--dry-run",

@@ -354,7 +354,7 @@ async def compute_displayed_balances_batch(
             Transaction.applies_to_balance.is_(True),
         ]
         if cutoff_date is not None:
-            conditions.append(Transaction.date >= cutoff_date)
+            conditions.append(Transaction.date >= cutoff_date)  # type: ignore[arg-type]
 
         stmt = (
             select(
