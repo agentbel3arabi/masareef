@@ -13,10 +13,9 @@ from app.ai.budget_guard import check_budget, get_or_create_usage, record_usage
 HOUSEHOLD_ID = uuid.uuid4()
 
 
-def _make_usage(tokens_used: int, monthly_limit: int | None):
-    from app.models.ai_usage_tracking import AIUsageTracking
-
-    usage = AIUsageTracking.__new__(AIUsageTracking)
+def _make_usage(tokens_used: int, monthly_limit: int | None) -> MagicMock:
+    """Create a mock AIUsageTracking instance — avoids SQLAlchemy ORM __new__ pitfalls."""
+    usage = MagicMock()
     usage.household_id = HOUSEHOLD_ID
     usage.year_month = "2026-04"
     usage.tokens_used = tokens_used
