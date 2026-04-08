@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Trash2, X } from "lucide-react";
+import { Trash2, X, CheckCheck, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -25,18 +26,22 @@ import {
   useBulkDeleteTransactions,
   useBulkCategorizeTransactions,
 } from "@/hooks/use-transactions";
+import { useApproveBatch } from "@/hooks/use-categorization";
 
 interface BulkToolbarProps {
   selectedIds: number[];
   onCancel: () => void;
+  needsReview?: boolean;
 }
 
-export function BulkToolbar({ selectedIds, onCancel }: BulkToolbarProps) {
+export function BulkToolbar({ selectedIds, onCancel, needsReview }: BulkToolbarProps) {
   const t = useTranslations("transactions");
+  const tCat = useTranslations("categorization");
   const locale = useLocale();
   const { data: categoriesData } = useCategories();
   const bulkDelete = useBulkDeleteTransactions();
   const bulkCategorize = useBulkCategorizeTransactions();
+  const approveBatch = useApproveBatch();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -81,6 +86,35 @@ export function BulkToolbar({ selectedIds, onCancel }: BulkToolbarProps) {
             ))}
           </SelectContent>
         </Select>
+        {needsReview && (
+          <Button
+            variant="default"
+            size="sm"
+            onClick={async () => {
+              try {
+                const result = await approveBatch.mutateAsync({ transaction_ids: selectedIds });
+                toast.success(tCat("approveSuccess", { count: result.data.approved }));
+                onCancel();
+              } catch {
+                toast.error(tCat("approveFailed"));
+              }
+            }}
+            disabled={approveBatch.isPending}
+            className="gap-1.5"
+          >
+            {approveBatch.isPending ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                {tCat("approving")}
+              </>
+            ) : (
+              <>
+                <CheckCheck className="h-3.5 w-3.5" />
+                {tCat("approveAll")}
+              </>
+            )}
+          </Button>
+        )}
         <Button
           variant="destructive"
           size="sm"
