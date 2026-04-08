@@ -63,3 +63,8 @@ class AIUsageResponse(BaseModel):
     year_month: str
 
     model_config = {"from_attributes": True}
+
+
+class CorrectionRequest(BaseModel):
+    transaction_id: int
+    category_id: int
