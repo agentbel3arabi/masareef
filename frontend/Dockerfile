@@ -4,7 +4,7 @@ FROM node:22-slim AS builder
 WORKDIR /app
 
 # Enable corepack for pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
 
 # Copy dependency files first for layer caching
 COPY package.json pnpm-lock.yaml ./
