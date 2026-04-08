@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.ai.budget_guard import check_budget, record_usage
 from app.ai.llm_client import suggest_categories_batch
 from app.ai.merchant_extractor import extract_merchant_name
-from app.ai.rule_engine import apply_rule_engine, upsert_rule
+from app.ai.rule_engine import increment_hit_count, load_active_rules, match_rules, upsert_rule
 from app.config import Settings
 from app.database import async_session_factory
 from app.models.transaction import Transaction
@@ -63,17 +63,21 @@ async def categorize_transactions(
     )
     available_categories = [{"id": c.id, "name_en": c.name_en} for c in cats]
 
+    # Load rules once — avoids N+1 queries (one load per batch, not per transaction)
+    active_rules = await load_active_rules(session, household_id)
+
     categorization_results: list[CategorizationResult] = []
     unmatched: list[Transaction] = []
+    matched_rule_ids: list[int] = []
 
     for tx in transactions:
-        category_id, confidence = await apply_rule_engine(
-            session, household_id, tx.description or ""
-        )
+        category_id, confidence, rule_id = match_rules(active_rules, tx.description or "")
         if category_id is not None:
             tx.category_id = category_id
             tx.ai_categorized = True
             tx.ai_confidence = confidence
+            if rule_id is not None:
+                matched_rule_ids.append(rule_id)
             categorization_results.append(
                 CategorizationResult(
                     transaction_id=tx.id,
@@ -84,6 +88,10 @@ async def categorize_transactions(
             )
         else:
             unmatched.append(tx)
+
+    # Batch hit_count increments — one UPDATE per matched rule (household-scoped)
+    for rule_id in matched_rule_ids:
+        await increment_hit_count(session, rule_id, household_id)
 
     if unmatched:
         budget_ok = await check_budget(session, household_id)

@@ -40,7 +40,7 @@ export function AiBadge({ confidence }: AiBadgeProps) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{badge}</TooltipTrigger>
+        <TooltipTrigger render={<span />}>{badge}</TooltipTrigger>
         <TooltipContent>
           <p className="text-xs">{t("aiBadgeTooltip")}</p>
         </TooltipContent>

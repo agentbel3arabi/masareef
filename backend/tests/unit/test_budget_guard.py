@@ -95,7 +95,7 @@ class TestGetOrCreateUsage:
         from app.models.ai_usage_tracking import AIUsageTracking
         assert isinstance(result, AIUsageTracking)
         assert result.tokens_used == 0
-        assert result.monthly_limit is None  # starts unlimited
+        assert result.monthly_limit == 500000  # initialized from AI_MONTHLY_TOKEN_LIMIT
 
     @pytest.mark.asyncio
     async def test_returns_existing_row(self) -> None:

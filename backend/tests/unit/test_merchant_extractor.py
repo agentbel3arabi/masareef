@@ -54,7 +54,7 @@ def test_merchant_name_uppercased():
 
 
 def test_max_tokens_limit():
-    """Default max_tokens=2 limits output."""
+    """Default max_tokens=1 limits output to a single token."""
     result = extract_merchant_name("UBER EATS DELIVERY SERVICE")
     tokens = result.split()
     assert len(tokens) <= 2

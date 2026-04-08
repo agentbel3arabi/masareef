@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import Settings
 from app.models.ai_usage_tracking import AIUsageTracking
 
 logger = logging.getLogger(__name__)
@@ -40,11 +41,12 @@ async def get_or_create_usage(
     result = await session.execute(q)
     usage = result.scalar_one_or_none()
     if usage is None:
+        settings = Settings()  # type: ignore[call-arg]
         usage = AIUsageTracking(
             household_id=household_id,
             year_month=ym,
             tokens_used=0,
-            monthly_limit=None,  # None = unlimited until configured in Phase 7
+            monthly_limit=settings.AI_MONTHLY_TOKEN_LIMIT,
         )
         session.add(usage)
         await session.flush()

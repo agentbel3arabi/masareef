@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -41,6 +41,7 @@ interface EditRulePopoverProps {
 
 function EditRulePopover({ rule }: EditRulePopoverProps) {
   const t = useTranslations("categorization");
+  const locale = useLocale();
   const { data: categoriesData } = useCategories();
   const updateRule = useUpdateRule(rule.id);
   const [open, setOpen] = React.useState(false);
@@ -100,7 +101,7 @@ function EditRulePopover({ rule }: EditRulePopoverProps) {
             >
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.name_en}
+                  {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
                 </option>
               ))}
             </select>
@@ -187,9 +188,11 @@ function DeleteRuleDialog({ rule }: DeleteRuleDialogProps) {
 // ---------------------------------------------------------------------------
 
 function useCategoryName(categoryId: number): string {
+  const locale = useLocale();
   const { data } = useCategories();
   const cat = data?.data?.find((c) => c.id === categoryId);
-  return cat?.name_en ?? String(categoryId);
+  if (!cat) return String(categoryId);
+  return locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en;
 }
 
 // ---------------------------------------------------------------------------

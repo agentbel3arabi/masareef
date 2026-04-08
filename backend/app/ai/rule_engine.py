@@ -37,6 +37,38 @@ async def load_active_rules(
     return list(result.scalars().all())
 
 
+def match_rules(
+    rules: list[CategorizationRule],
+    description: str,
+) -> tuple[int | None, float | None, int | None]:
+    """Match description against preloaded rules in memory.
+
+    Returns (category_id, confidence, rule_id) for the first matching rule,
+    or (None, None, None). Caller is responsible for incrementing hit_count.
+    """
+    for rule in rules:
+        if rule.match_type == "contains" and rule.pattern.lower() in description.lower():
+            return rule.category_id, rule.confidence, rule.id
+    return None, None, None
+
+
+async def increment_hit_count(
+    session: AsyncSession,
+    rule_id: int,
+    household_id: uuid.UUID,
+) -> None:
+    """Atomically increment hit_count for a rule. Household-scoped (T-3-01)."""
+    await session.execute(
+        update(CategorizationRule)
+        .where(
+            CategorizationRule.id == rule_id,
+            CategorizationRule.household_id == household_id,
+            CategorizationRule.is_active.is_(True),
+        )
+        .values(hit_count=CategorizationRule.hit_count + 1)
+    )
+
+
 async def apply_rule_engine(
     session: AsyncSession,
     household_id: uuid.UUID,
@@ -45,19 +77,15 @@ async def apply_rule_engine(
     """Match transaction description against household rules.
 
     Returns (category_id, confidence) for the first matching rule, or (None, None).
-    Increments hit_count on match.
+    Loads rules from DB and increments hit_count on match.
+
+    Prefer match_rules() + increment_hit_count() for batch use to avoid N+1 queries.
     """
     rules = await load_active_rules(session, household_id)
-    for rule in rules:
-        if rule.match_type == "contains" and rule.pattern.lower() in description.lower():
-            # Increment hit_count for this rule
-            await session.execute(
-                update(CategorizationRule)
-                .where(CategorizationRule.id == rule.id)
-                .values(hit_count=CategorizationRule.hit_count + 1)
-            )
-            return rule.category_id, rule.confidence
-    return None, None
+    category_id, confidence, rule_id = match_rules(rules, description)
+    if rule_id is not None:
+        await increment_hit_count(session, rule_id, household_id)
+    return category_id, confidence
 
 
 async def upsert_rule(
