@@ -77,7 +77,7 @@ Plans:
 - [x] 03-02: LLM fallback pipeline — litellm + instructor integration, multi-provider routing
 - [x] 03-03: Background categorization job — BackgroundTasks trigger after import commit
 - [x] 03-04: User review interface — approve/reject suggestions UI with batch actions
-- [ ] 03-05: Rules management page — view, edit, delete categorization rules
+- [x] 03-05: Rules management page — view, edit, delete categorization rules
 **UI hint**: yes
 
 ### Phase 4: Budgets & Savings
