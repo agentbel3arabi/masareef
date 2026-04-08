@@ -54,8 +54,6 @@ def extract_merchant_name(description: str, max_tokens: int = 1) -> str:
 
     if not significant:
         # Fall back to any remaining non-blocklisted tokens (length >= 2)
-        significant = [
-            t for t in cleaned.split() if len(t) >= 2 and t.upper() not in _BLOCKLIST
-        ]
+        significant = [t for t in cleaned.split() if len(t) >= 2 and t.upper() not in _BLOCKLIST]
 
     return " ".join(significant[:max_tokens]).upper()

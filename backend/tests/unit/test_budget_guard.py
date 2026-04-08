@@ -73,6 +73,7 @@ class TestRecordUsage:
         call_arg = session.execute.call_args[0][0]
         # Verify it's an UPDATE statement (SQLAlchemy Update object)
         from sqlalchemy.sql.dml import Update
+
         assert isinstance(call_arg, Update)
 
 
@@ -92,6 +93,7 @@ class TestGetOrCreateUsage:
         session.add.assert_called_once()
         session.flush.assert_called_once()
         from app.models.ai_usage_tracking import AIUsageTracking
+
         assert isinstance(result, AIUsageTracking)
         assert result.tokens_used == 0
         assert result.monthly_limit == 500000  # initialized from AI_MONTHLY_TOKEN_LIMIT

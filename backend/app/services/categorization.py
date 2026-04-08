@@ -104,10 +104,7 @@ async def categorize_transactions(
             # Process in batches of AI_BATCH_SIZE
             for i in range(0, len(unmatched), batch_size):
                 batch = unmatched[i : i + batch_size]
-                batch_dicts = [
-                    {"id": tx.id, "description": tx.description or ""}
-                    for tx in batch
-                ]
+                batch_dicts = [{"id": tx.id, "description": tx.description or ""} for tx in batch]
                 suggestions = await suggest_categories_batch(
                     batch_dicts, available_categories, model, max_concurrency
                 )

@@ -22,9 +22,7 @@ def _current_year_month() -> str:
     return datetime.now(UTC).strftime("%Y-%m")
 
 
-async def get_or_create_usage(
-    session: AsyncSession, household_id: uuid.UUID
-) -> AIUsageTracking:
+async def get_or_create_usage(session: AsyncSession, household_id: uuid.UUID) -> AIUsageTracking:
     """Get or create the current month's usage row for a household.
 
     Uses SELECT FOR UPDATE to prevent race conditions (RESEARCH.md Pitfall 4).
@@ -81,9 +79,7 @@ async def record_usage(session: AsyncSession, household_id: uuid.UUID, tokens: i
     )
 
 
-async def get_usage(
-    session: AsyncSession, household_id: uuid.UUID
-) -> AIUsageTracking | None:
+async def get_usage(session: AsyncSession, household_id: uuid.UUID) -> AIUsageTracking | None:
     """Get current month usage record for display. Returns None if no usage yet."""
     ym = _current_year_month()
     q = select(AIUsageTracking).where(

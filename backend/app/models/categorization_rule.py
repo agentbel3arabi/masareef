@@ -21,15 +21,7 @@ class CategorizationRule(TimestampMixin, SoftDeleteMixin, Base):
         nullable=False,
     )
     pattern: Mapped[str] = mapped_column(Text, nullable=False)
-    match_type: Mapped[str] = mapped_column(
-        Text, nullable=False, server_default="contains"
-    )
-    category_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("categories.id"), nullable=False
-    )
-    confidence: Mapped[float] = mapped_column(
-        Float, nullable=False, server_default="1.0"
-    )
-    hit_count: Mapped[int] = mapped_column(
-        Integer, nullable=False, server_default="0"
-    )
+    match_type: Mapped[str] = mapped_column(Text, nullable=False, server_default="contains")
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id"), nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, server_default="1.0")
+    hit_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
