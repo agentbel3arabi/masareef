@@ -1,5 +1,7 @@
 from app.models.account import Account
+from app.models.ai_usage_tracking import AIUsageTracking
 from app.models.base import Base
+from app.models.categorization_rule import CategorizationRule
 from app.models.category import Category
 from app.models.debt import Debt
 from app.models.debt_payment import DebtPayment
@@ -27,6 +29,8 @@ from app.models.reconciliation_record import ReconciliationRecord
 from app.models.transaction import Transaction, TransactionSplit
 
 __all__ = [
+    "AIUsageTracking",
+    "CategorizationRule",
     "Base",
     "AccountType",
     "CategoryType",
