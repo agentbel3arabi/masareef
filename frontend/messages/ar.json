@@ -1168,6 +1168,27 @@
     "categorizeFailed": "فشل التصنيف. تحقق من إعدادات الذكاء الاصطناعي وحاول مجددًا.",
     "budgetExhausted": "استُنفد حد الذكاء الاصطناعي لهذا الشهر. ستُصنَّف المعاملات ضمن 'غير مصنف'.",
     "allCaughtUpTitle": "أنت على ما يرام",
-    "allCaughtUpBody": "لا توجد معاملات تحتاج إلى مراجعة. صنّف الذكاء الاصطناعي كل ما يستطيع."
+    "allCaughtUpBody": "لا توجد معاملات تحتاج إلى مراجعة. صنّف الذكاء الاصطناعي كل ما يستطيع.",
+    "rulesPageTitle": "قواعد التصنيف",
+    "patternColumn": "النمط",
+    "matchTypeColumn": "نوع المطابقة",
+    "categoryColumn": "الفئة",
+    "hitCountColumn": "عدد المطابقات",
+    "confidenceColumn": "الثقة",
+    "actionsColumn": "الإجراءات",
+    "editRuleAriaLabel": "تعديل القاعدة",
+    "deleteRuleAriaLabel": "حذف القاعدة",
+    "noRulesTitle": "لا توجد قواعد بعد",
+    "noRulesBody": "تُنشأ القواعد تلقائيًا عند تصحيح فئة. سيظهر تصحيحك الأول هنا.",
+    "deleteRuleTitle": "حذف هذه القاعدة؟",
+    "deleteRuleBody": "سيتم حذف القاعدة الخاصة بـ '{pattern}'. لن يتم تصنيف المعاملات المستقبلية تلقائيًا بهذه القاعدة.",
+    "deleteRuleConfirm": "حذف القاعدة",
+    "cancel": "إلغاء",
+    "backfillButton": "تصنيف المعاملات السابقة",
+    "saveRule": "حفظ",
+    "ruleUpdated": "تم تحديث القاعدة",
+    "ruleUpdateFailed": "فشل تحديث القاعدة. يرجى المحاولة مجددًا.",
+    "ruleDeleted": "تم حذف القاعدة",
+    "ruleDeleteFailed": "فشل حذف القاعدة. يرجى المحاولة مجددًا."
   }
 }

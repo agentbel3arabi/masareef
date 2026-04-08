@@ -1168,6 +1168,27 @@
     "categorizeFailed": "Categorization failed. Check your AI settings and try again.",
     "budgetExhausted": "AI budget exhausted for this month. Transactions will be marked as Uncategorized.",
     "allCaughtUpTitle": "All caught up",
-    "allCaughtUpBody": "No transactions need review. AI has categorized everything it can."
+    "allCaughtUpBody": "No transactions need review. AI has categorized everything it can.",
+    "rulesPageTitle": "Categorization Rules",
+    "patternColumn": "Pattern",
+    "matchTypeColumn": "Match Type",
+    "categoryColumn": "Category",
+    "hitCountColumn": "Hit Count",
+    "confidenceColumn": "Confidence",
+    "actionsColumn": "Actions",
+    "editRuleAriaLabel": "Edit rule",
+    "deleteRuleAriaLabel": "Delete rule",
+    "noRulesTitle": "No rules yet",
+    "noRulesBody": "Rules are created automatically when you correct a category. Your first correction will appear here.",
+    "deleteRuleTitle": "Delete this rule?",
+    "deleteRuleBody": "The rule for '{pattern}' will be deleted. Future transactions won't be auto-categorized by this rule.",
+    "deleteRuleConfirm": "Delete Rule",
+    "cancel": "Cancel",
+    "backfillButton": "Categorize Past Transactions",
+    "saveRule": "Save",
+    "ruleUpdated": "Rule updated",
+    "ruleUpdateFailed": "Failed to update rule. Please try again.",
+    "ruleDeleted": "Rule deleted",
+    "ruleDeleteFailed": "Failed to delete rule. Please try again."
   }
 }
