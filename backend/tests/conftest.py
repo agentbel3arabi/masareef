@@ -10,9 +10,9 @@ from app.main import app
 
 # Import all models so Base.metadata knows about every table
 from app.models import (  # noqa: F401
-    AIUsageTracking,  # noqa: F401
     Account,
     AccountImportTemplate,  # noqa: F401
+    AIUsageTracking,  # noqa: F401
     Base,  # noqa: F401
     CategorizationRule,  # noqa: F401
     Category,

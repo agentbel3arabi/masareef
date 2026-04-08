@@ -1,8 +1,7 @@
 """Unit tests for LLM client — llm_client.py (Plan 03-02, TDD RED)."""
 
 import asyncio
-import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -12,7 +11,6 @@ from app.ai.llm_client import (
     suggest_categories_batch,
     suggest_category,
 )
-
 
 SAMPLE_CATEGORIES = [
     {"id": 1, "name_en": "Groceries"},
