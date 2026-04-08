@@ -6,7 +6,7 @@ check the budget concurrently (RESEARCH.md Pitfall 4 mitigation).
 
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def _current_year_month() -> str:
     """Return current UTC month as 'YYYY-MM' string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m")
+    return datetime.now(UTC).strftime("%Y-%m")
 
 
 async def get_or_create_usage(

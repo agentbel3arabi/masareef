@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { TrendingUp, ShoppingCart, HandCoins, Clock } from "lucide-react";
@@ -101,10 +101,8 @@ export default function DashboardPage() {
   // --- Existing data for getting started ---
   const { data: accountsData } = useAccounts();
   const { data: transactionsData } = useTransactions({ page_size: 1 });
-  const { data: debtsData, isLoading: debtsLoading } = useDebts({ status: "active" });
-  const { data: installmentsData, isLoading: installmentsLoading } = useInstallments({
-    status: "active",
-  });
+  const { data: debtsData } = useDebts({ status: "active" });
+  const { data: installmentsData } = useInstallments({ status: "active" });
 
   const activeDebtsCount =
     (debtsData?.data?.length ?? 0) + (installmentsData?.data?.length ?? 0);
@@ -112,14 +110,16 @@ export default function DashboardPage() {
   const hasAccounts = (accountsData?.data?.length ?? 0) > 0;
   const hasTransactions = (transactionsData?.meta?.total ?? 0) > 0;
   const hasDebts = activeDebtsCount > 0;
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    setDismissed(localStorage.getItem("masareef_onboarding_dismissed") === "true");
-  }, []);
+  const dismissedFromStorage = useSyncExternalStore(
+    () => () => {},
+    () => localStorage.getItem("masareef_onboarding_dismissed") === "true",
+    () => false,
+  );
+  const [manualDismissed, setManualDismissed] = useState(false);
+  const dismissed = dismissedFromStorage || manualDismissed;
 
   const handleDismiss = () => {
-    setDismissed(true);
+    setManualDismissed(true);
     localStorage.setItem("masareef_onboarding_dismissed", "true");
   };
 

@@ -1,11 +1,11 @@
 """Unit tests for rule engine — mocked DB, no actual Postgres connection."""
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, call
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.ai.rule_engine import apply_rule_engine, load_active_rules, upsert_rule
+from app.ai.rule_engine import apply_rule_engine, upsert_rule
 from app.models.categorization_rule import CategorizationRule
 
 
@@ -103,7 +103,7 @@ async def test_rule_hit_count_increments():
 
 @pytest.mark.asyncio
 async def test_rule_engine_case_insensitive():
-    """apply_rule_engine matches case-insensitively (rule.pattern.lower() in description.lower())."""
+    """match_rules matches case-insensitively (pattern.lower() in description.lower())."""
     rule = _make_rule(pattern="carrefour", category_id=5, confidence=1.0)
     household_id = uuid.uuid4()
 
@@ -137,7 +137,7 @@ async def test_upsert_rule_creates_new():
 
     session.execute.return_value = scalar_mock
 
-    result = await upsert_rule(session, household_id, "UBER", "contains", 7, 1.0)
+    await upsert_rule(session, household_id, "UBER", "contains", 7, 1.0)
 
     session.add.assert_called_once()
     added = session.add.call_args[0][0]
@@ -175,7 +175,7 @@ async def test_correction_creates_rule_with_full_confidence():
 
     session.execute.return_value = scalar_mock
 
-    result = await upsert_rule(session, household_id, "CARREFOUR", "contains", 5, confidence=1.0)
+    await upsert_rule(session, household_id, "CARREFOUR", "contains", 5, confidence=1.0)
 
     added = session.add.call_args[0][0]
     assert added.confidence == 1.0

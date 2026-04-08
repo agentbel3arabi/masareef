@@ -58,7 +58,9 @@ async def suggest_category(
         result = await _client.chat.completions.create(
             model=model,
             response_model=CategorySuggestion,
-            messages=[{"role": "user", "content": _build_prompt(description, available_categories)}],
+            messages=[
+                {"role": "user", "content": _build_prompt(description, available_categories)}
+            ],
         )
         # Validate category_id against available list (RESEARCH.md Pitfall 2)
         if result.category_id not in valid_ids:

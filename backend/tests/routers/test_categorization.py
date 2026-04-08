@@ -9,14 +9,12 @@ Tests for:
 All service calls mocked — tests verify HTTP contract and routing only.
 """
 
-import uuid
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from tests.factories import create_test_account as _create_account
 from tests.factories import create_test_transaction as _create_tx
-
 
 # ---------------------------------------------------------------------------
 # POST /api/v1/categorization-rules/categorize-batch
@@ -170,7 +168,7 @@ async def test_needs_review_filter_true(client):
 async def test_needs_review_filter_false_no_change(client):
     """?needs_review=false (default) still returns all non-review transactions."""
     account_id = await _create_account(client)
-    tx = await _create_tx(client, account_id)
+    await _create_tx(client, account_id)
     resp = await client.get(
         "/api/v1/transactions",
         params={"account_id": account_id},

@@ -1,14 +1,13 @@
 """Unit tests for budget guard — budget_guard.py (Plan 03-02, TDD RED)."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.budget_guard import check_budget, get_or_create_usage, record_usage
-
 
 HOUSEHOLD_ID = uuid.uuid4()
 
@@ -20,7 +19,7 @@ def _make_usage(tokens_used: int, monthly_limit: int | None) -> MagicMock:
     usage.year_month = "2026-04"
     usage.tokens_used = tokens_used
     usage.monthly_limit = monthly_limit
-    usage.updated_at = datetime.now(timezone.utc)
+    usage.updated_at = datetime.now(UTC)
     return usage
 
 
