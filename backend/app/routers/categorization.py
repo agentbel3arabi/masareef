@@ -138,7 +138,7 @@ async def list_rules(
     rules = [RuleResponse.model_validate(r).model_dump() for r in result.scalars().all()]
     return SuccessResponse(
         data=rules,
-        meta=PaginationMeta(total=total, page=page, page_size=page_size).model_dump(),
+        meta=PaginationMeta(total=total, page=page, page_size=page_size),
     )
 
 
