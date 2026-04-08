@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { TrendingUp, ShoppingCart, HandCoins, Clock } from "lucide-react";
@@ -112,11 +112,11 @@ export default function DashboardPage() {
   const hasAccounts = (accountsData?.data?.length ?? 0) > 0;
   const hasTransactions = (transactionsData?.meta?.total ?? 0) > 0;
   const hasDebts = activeDebtsCount > 0;
-  const [dismissed, setDismissed] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      localStorage.getItem("masareef_onboarding_dismissed") === "true"
-  );
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    setDismissed(localStorage.getItem("masareef_onboarding_dismissed") === "true");
+  }, []);
 
   const handleDismiss = () => {
     setDismissed(true);
