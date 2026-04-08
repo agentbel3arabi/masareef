@@ -5,6 +5,7 @@ status: draft
 shadcn_initialized: true
 preset: base-nova
 created: 2026-04-08
+revised: 2026-04-08
 ---
 
 # Phase 3 — UI Design Contract
@@ -51,16 +52,19 @@ Source: existing `transaction-row.tsx` (`px-4 py-3`), `transaction-filters.tsx` 
 
 ## Typography
 
+Exactly 2 weights. Labels and body both use 400 — weight contrast is achieved via size and color, not additional weight steps.
+
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Body | 14px (`text-sm`) | 400 | 1.5 |
-| Label | 12px (`text-xs`) | 500 (`font-medium`) | 1.4 |
+| Body | 14px (`text-sm`) | 400 (`font-normal`) | 1.5 |
+| Label | 12px (`text-xs`) | 400 (`font-normal`) | 1.4 |
 | Heading | 20px (`text-xl`) | 700 (`font-bold`) | 1.2 |
 | Badge/Chip | 10px (`text-[10px]`) | 700 (`font-bold`) | 1.0 |
 
 Notes:
 - 4 sizes total — body, label, heading, badge. No display size needed this phase.
-- Badge tier maps to existing badge pattern from `transaction-row.tsx` (`text-[10px]` + `font-medium`).
+- `font-medium` (weight 500) is not used anywhere in this phase. All body and label text uses `font-normal`.
+- Badge tier maps to existing badge pattern from `transaction-row.tsx` (`text-[10px]` + `font-bold`).
 - Arabic text uses Noto Sans Arabic at the same size scale; `font-sans` CSS variable already includes Noto Sans Arabic.
 
 Source: `globals.css` (`--font-sans` includes both fonts), `transaction-row.tsx` (existing size usage)
@@ -109,6 +113,22 @@ Arabic label: `ذكاء اصطناعي {confidence%}` — uses same badge struct
 Placement: inline, immediately after the category chip in the category column of the transaction table. Separator: 4px gap (`gap-1`).
 
 Source: CONTEXT.md D-08, RESEARCH.md Pattern 6
+
+---
+
+## Visual Focal Point
+
+### Transactions Page (Extended)
+
+**Primary focal point:** The "Needs Review" filter toggle is the entry point to the AI workflow. It is the first element users activate to enter AI review mode. Its active state (filled `bg-primary text-primary-foreground`) should be visually distinct from all other filter buttons, making it the clear call-to-action anchor on the filter bar.
+
+**Secondary focal point:** The `AiBadge` column is the sustained visual anchor once the filter is active — the color-coded badges (green/yellow/red) across transaction rows guide the user's eye to confidence tiers and required actions.
+
+**Hierarchy rule:** When `needs_review` filter is inactive, the `AiBadge` instances that appear are supplementary indicators, not focal points — they must not compete visually with the category chip they annotate. When active, the badge becomes primary signal.
+
+### Settings — Categorization Rules Page
+
+**Primary focal point:** The rules table is the dominant element. The "Backfill Past Transactions" button is a secondary action and must not visually compete with the table content.
 
 ---
 
@@ -180,7 +200,8 @@ Design references:
 
 - Layout: settings two-column (secondary sidebar + main canvas), matching `19c-settings-categories.html` pattern
 - Main canvas: table with columns — Pattern, Match Type, Category, Hit Count, Confidence, Actions
-- Row actions: Edit (inline, opens popover), Delete (shows `AlertDialog` confirmation)
+- Row actions: Edit (pencil icon, inline, opens popover), Delete (trash icon, shows `AlertDialog` confirmation)
+- **Row action icon accessibility:** Both edit and delete actions are icon-only buttons. Each must carry an `aria-label` attribute — no visible label is shown. Required `aria-label` values: edit button → `"Edit rule"` / `"تعديل القاعدة"` (AR); delete button → `"Delete rule"` / `"حذف القاعدة"` (AR). Implement as `<button aria-label="Edit rule">` with the lucide `Pencil` icon as child.
 - "Backfill Past Transactions" button: secondary placement below table header, `variant="outline"`, triggers on-demand batch
 - Empty state: no table shown; centered illustration placeholder + copy (see Copywriting section)
 - Loading state: `Skeleton` rows (5 rows), same column structure
@@ -229,6 +250,8 @@ Design references:
 | Delete rule — confirmation body | "The rule for '{pattern}' will be deleted. Future transactions won't be auto-categorized by this rule." | "سيتم حذف القاعدة الخاصة بـ '{pattern}'. لن يتم تصنيف المعاملات المستقبلية تلقائيًا بهذه القاعدة." |
 | Delete rule — confirm button | "Delete Rule" | "حذف القاعدة" |
 | Backfill button | "Categorize Past Transactions" | "تصنيف المعاملات السابقة" |
+| Edit rule aria-label | "Edit rule" | "تعديل القاعدة" |
+| Delete rule aria-label | "Delete rule" | "حذف القاعدة" |
 
 ---
 
@@ -236,7 +259,7 @@ Design references:
 
 | Action | Trigger | Confirmation Pattern |
 |--------|---------|---------------------|
-| Delete categorization rule | Trash icon button in rules table row | `AlertDialog` — title + body copy above; confirm button `variant="destructive"` ("Delete Rule"); cancel ("Cancel" / "إلغاء") |
+| Delete categorization rule | Trash icon button in rules table row (icon-only, `aria-label="Delete rule"`) | `AlertDialog` — title + body copy above; confirm button `variant="destructive"` ("Delete Rule"); cancel ("Cancel" / "إلغاء") |
 
 No other destructive actions in this phase. Rule edits are non-destructive (can be re-edited).
 
