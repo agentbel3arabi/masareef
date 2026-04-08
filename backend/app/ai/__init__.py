@@ -1,1 +1,1 @@
-# AI categorization package — rule engine, merchant extractor, LLM integration
+"""AI categorization module — litellm + instructor + rule engine + budget guard."""

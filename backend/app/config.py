@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     import_parse_rate_limit: int = Field(default=20)
     import_commit_rate_limit: int = Field(default=5)
 
+    # AI Categorization (Phase 3)
+    AI_MODEL: str = "claude-3-5-haiku-20241022"
+    LITELLM_API_KEY: str = ""
+    AI_MONTHLY_TOKEN_LIMIT: int = 500000  # default 500k tokens/month per household
+    AI_BATCH_SIZE: int = 20
+    AI_MAX_CONCURRENCY: int = 5
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
     @field_validator("CORS_ORIGINS", mode="before")

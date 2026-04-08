@@ -70,14 +70,14 @@ Plans:
   2. For merchants with no existing rule, the system calls an LLM provider and applies the returned category
   3. User can review a list of AI-suggested categorizations and approve or reject each one individually
   4. User can view all saved categorization rules and delete or edit any of them
-**Plans:** 5 plans
+**Plans**: TBD
 
 Plans:
-- [ ] 03-01-PLAN.md — DB migration (categorization_rules + ai_usage_tracking), ORM models, rule engine, merchant extractor, unit tests
-- [ ] 03-02-PLAN.md — litellm + instructor install, LLM client with structured output, budget guard, AI config settings
-- [ ] 03-03-PLAN.md — Categorization service orchestrator, API router, import trigger wiring, needs_review filter, schema push
-- [ ] 03-04-PLAN.md — Frontend AI badges, needs_review filter toggle, bulk approve, categorize-now button, i18n
-- [ ] 03-05-PLAN.md — Rules management page (CRUD), backfill button, settings page, i18n
+- [ ] 03-01: Categorization rules schema and service — `categorization_rules` table, rule match engine
+- [ ] 03-02: LLM fallback pipeline — litellm + instructor integration, multi-provider routing
+- [ ] 03-03: Background categorization job — BackgroundTasks trigger after import commit
+- [ ] 03-04: User review interface — approve/reject suggestions UI with batch actions
+- [ ] 03-05: Rules management page — view, edit, delete categorization rules
 **UI hint**: yes
 
 ### Phase 4: Budgets & Savings
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Stabilization | 0/7 | Planning complete | - |
 | 2. Dashboard & Charts | 0/3 | Planning complete | - |
-| 3. AI Categorization | 0/5 | Planning complete | - |
+| 3. AI Categorization | 0/5 | Not started | - |
 | 4. Budgets & Savings | 0/5 | Not started | - |
 | 5. Gam3eya | 0/5 | Not started | - |
 | 6. Notifications | 0/5 | Not started | - |
