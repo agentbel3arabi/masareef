@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     AI_BATCH_SIZE: int = 20
     AI_MAX_CONCURRENCY: int = 5
 
+    # Azure OpenAI (optional — used by litellm when AI_MODEL starts with "azure/")
+    azure_api_key: str = ""
+    azure_api_base: str = ""
+    azure_api_version: str = ""
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
     @field_validator("CORS_ORIGINS", mode="before")
