@@ -71,3 +71,4 @@ docs/superpowers/reports/screenshots/
 # PDF comparison outputs (may contain PII)
 # =========================
 data/HSBC/comparison/output/
+!.env.dev.example

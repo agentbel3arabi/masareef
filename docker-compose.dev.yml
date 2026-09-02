@@ -1,0 +1,24 @@
+# Local development database. The app itself runs natively (uv / pnpm) — see README Quick Start.
+# Auth stays on Supabase; only data lives here.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#   docker compose -f docker-compose.dev.yml down -v   # full reset (drops the volume)
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: masareef
+    ports:
+      - "54322:5432"
+    volumes:
+      - masareef-dev-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  masareef-dev-db:

@@ -107,7 +107,7 @@ def upgrade() -> None:
         ),
         sa.Column(
             "role",
-            sa.Enum(
+            postgresql.ENUM(
                 "admin",
                 "member",
                 "viewer",
@@ -141,7 +141,7 @@ def upgrade() -> None:
         sa.Column("name", sa.Text, nullable=False),
         sa.Column(
             "type",
-            sa.Enum(
+            postgresql.ENUM(
                 "bank_account",
                 "credit_card",
                 "cash_wallet",
@@ -198,7 +198,7 @@ def upgrade() -> None:
         sa.Column("name_ar", sa.Text, nullable=True),
         sa.Column(
             "type",
-            sa.Enum(
+            postgresql.ENUM(
                 "expense",
                 "income",
                 "special",
@@ -257,7 +257,7 @@ def upgrade() -> None:
         sa.Column("currency", sa.Text, nullable=False),
         sa.Column(
             "type",
-            sa.Enum(
+            postgresql.ENUM(
                 "debit",
                 "credit",
                 name="transactiontype",
