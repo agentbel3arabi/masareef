@@ -51,7 +51,7 @@ from app.services.transfer import create_transfer
 
 RNG_SEED = 20260327  # the repo's birthday
 MONTHS = 18
-DEMO_EMAIL = "demo@example.com"
+DEMO_EMAIL = "agentbel3araby@agharib.com"
 DEMO_PASSWORD = "masareef-demo"
 
 DEBIT = TransactionType.DEBIT
