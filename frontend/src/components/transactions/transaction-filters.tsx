@@ -162,6 +162,17 @@ export function TransactionFilterBar({ filters, onChange, hideAccountFilter = fa
         min="0"
       />
 
+      {/* Needs Review toggle */}
+      <Button
+        variant={filters.needs_review ? "default" : "outline"}
+        size="sm"
+        onClick={() =>
+          onChange({ ...filters, needs_review: !filters.needs_review || undefined, page: 1 })
+        }
+      >
+        {t("categorization.needsReview")}
+      </Button>
+
       {/* Reset */}
       {hasActiveFilters && (
         <Button variant="ghost" size="sm" onClick={reset} className="gap-1">

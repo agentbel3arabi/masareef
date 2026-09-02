@@ -30,7 +30,7 @@ Requirements for MVP launch. Each maps to roadmap phases.
 
 - [ ] **AICAT-01**: System auto-applies rules from user corrections (3+ corrections = auto-rule)
 - [ ] **AICAT-02**: System falls back to LLM (Claude/OpenAI) for unknown merchants
-- [ ] **AICAT-03**: User can review and approve/reject AI categorization suggestions
+- [x] **AICAT-03**: User can review and approve/reject AI categorization suggestions
 - [ ] **AICAT-04**: User can manage categorization rules (view, edit, delete)
 
 ### Budgets & Savings
@@ -136,7 +136,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-06 | Phase 2 | Pending |
 | AICAT-01 | Phase 3 | Pending |
 | AICAT-02 | Phase 3 | Pending |
-| AICAT-03 | Phase 3 | Pending |
+| AICAT-03 | Phase 3 | Complete |
 | AICAT-04 | Phase 3 | Pending |
 | BUDG-01 | Phase 4 | Pending |
 | BUDG-02 | Phase 4 | Pending |

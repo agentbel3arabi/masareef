@@ -4,7 +4,17 @@ import json
 import logging
 import uuid
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings
@@ -107,12 +117,13 @@ async def parse_file(
 async def commit_import(
     request: Request,
     data: CommitRequest,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_db_session),
     household_id: uuid.UUID = Depends(get_household_id),
     role: HouseholdRole = Depends(require_role(HouseholdRole.ADMIN, HouseholdRole.MEMBER)),
 ) -> SuccessResponse:
     """Atomically commit confirmed rows to the database."""
-    result = await import_service.commit_import(data, session, household_id)
+    result = await import_service.commit_import(data, session, household_id, background_tasks)
     return SuccessResponse(data=result.model_dump())
 
 

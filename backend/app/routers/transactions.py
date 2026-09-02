@@ -194,6 +194,9 @@ async def list_transactions(
     amount_max: int | None = Query(None),
     has_category: bool | None = Query(None),
     asset_id: int | None = Query(None),
+    needs_review: bool = Query(
+        False, description="Filter to AI-categorized transactions with confidence < 0.95"
+    ),  # noqa: E501
     sort: str = Query("-date", description="Sort order: -date | date | -amount | amount"),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
@@ -215,6 +218,7 @@ async def list_transactions(
         amount_max=amount_max,
         has_category=has_category,
         asset_id=asset_id,
+        needs_review=needs_review,
         sort=sort,
         page=page,
         page_size=page_size,

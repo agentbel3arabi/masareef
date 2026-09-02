@@ -38,6 +38,7 @@ export interface TransactionFilters {
   amount_min?: number;
   amount_max?: number;
   has_category?: boolean;
+  needs_review?: boolean;
   sort?: string;
   page?: number;
   page_size?: number;

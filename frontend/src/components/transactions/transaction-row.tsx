@@ -39,6 +39,7 @@ import { CURRENCIES, parseMajorToMinor } from "@/lib/money";
 import { formatDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { AccountPill } from "./account-pill";
+import { AiBadge } from "./ai-badge";
 import type { Transaction } from "@/hooks/use-transactions";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -165,26 +166,31 @@ export function TransactionRow({
           </td>
         )}
         <td className="px-4 py-3">
-          {transaction.category ? (
-            <span className="inline-flex items-center gap-1.5 text-sm">
-              <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-muted text-muted-foreground shrink-0">
-                {transaction.category.icon && getCategoryIcon(transaction.category.icon) ? (
-                  <CategoryIcon icon={transaction.category.icon} className="h-3.5 w-3.5" />
-                ) : transaction.category.color ? (
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: transaction.category.color }} />
-                ) : (
-                  <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-                )}
+          <div className="flex items-center gap-1">
+            {transaction.category ? (
+              <span className="inline-flex items-center gap-1.5 text-sm">
+                <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-muted text-muted-foreground shrink-0">
+                  {transaction.category.icon && getCategoryIcon(transaction.category.icon) ? (
+                    <CategoryIcon icon={transaction.category.icon} className="h-3.5 w-3.5" />
+                  ) : transaction.category.color ? (
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: transaction.category.color }} />
+                  ) : (
+                    <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+                  )}
+                </span>
+                <span className="truncate max-w-[100px]">
+                  {locale === "ar" && transaction.category.name_ar
+                    ? transaction.category.name_ar
+                    : transaction.category.name_en}
+                </span>
               </span>
-              <span className="truncate max-w-[100px]">
-                {locale === "ar" && transaction.category.name_ar
-                  ? transaction.category.name_ar
-                  : transaction.category.name_en}
-              </span>
-            </span>
-          ) : (
-            <span className="text-xs text-muted-foreground">—</span>
-          )}
+            ) : (
+              <span className="text-xs text-muted-foreground">—</span>
+            )}
+            {transaction.ai_categorized && transaction.ai_confidence !== null && (
+              <AiBadge confidence={transaction.ai_confidence} />
+            )}
+          </div>
         </td>
         <td className="px-4 py-3 text-end">
           <MoneyDisplay

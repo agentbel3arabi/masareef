@@ -10,6 +10,7 @@ from slowapi.errors import RateLimitExceeded
 from app.config import Settings
 from app.limiter import limiter
 from app.routers import accounts, categories, financial_institutions, transactions, transfers
+from app.routers.categorization import router as categorization_router
 from app.routers.dashboard import router as dashboard_router
 from app.routers.debts import router as debts_router
 from app.routers.financing_apps import router as financing_apps_router
@@ -57,6 +58,7 @@ app.add_middleware(
 
 app.include_router(households_router)
 app.include_router(dashboard_router)
+app.include_router(categorization_router)
 app.include_router(accounts.router)
 app.include_router(categories.router)
 app.include_router(transactions.router)

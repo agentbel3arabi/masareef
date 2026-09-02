@@ -12,7 +12,9 @@ from app.main import app
 from app.models import (  # noqa: F401
     Account,
     AccountImportTemplate,  # noqa: F401
+    AIUsageTracking,  # noqa: F401
     Base,  # noqa: F401
+    CategorizationRule,  # noqa: F401
     Category,
     Debt,
     DebtPayment,
