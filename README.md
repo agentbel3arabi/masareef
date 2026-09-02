@@ -16,22 +16,33 @@ AI-powered personal finance platform for Egyptian and MENA users. Arabic-first b
 
 ## Quick Start
 
-### Backend
+Prerequisites: Docker, [uv](https://docs.astral.sh/uv/), [pnpm](https://pnpm.io), and a free
+[Supabase](https://supabase.com) project. Supabase is used for **auth only** — data lives in the
+local Postgres below.
 
 ```bash
+# 1. Database
+docker compose -f docker-compose.dev.yml up -d
+
+# 2. Backend
 cd backend
-cp .env.example .env    # Edit with your Supabase credentials
-uv sync                 # Install dependencies
-uv run uvicorn app.main:app --reload  # Start dev server
-```
+cp .env.dev.example .env          # fill in the four SUPABASE_* values from your project settings
+uv sync
+uv run alembic upgrade head
+uv run python -m scripts.seed_demo   # reference data + demo user + 18 months of activity
+uv run uvicorn app.main:app --reload
 
-### Frontend
-
-```bash
+# 3. Frontend (second terminal)
 cd frontend
-pnpm install            # Install dependencies
-pnpm dev                # Start dev server
+cp .env.local.example .env.local  # same Supabase URL + anon key
+pnpm install
+pnpm dev
 ```
+
+Open http://localhost:3000 and sign in with the demo credentials the seeder printed.
+
+Reset to a clean state: `docker compose -f docker-compose.dev.yml down -v`, then repeat step 2
+from `alembic upgrade head`. Pass `--anchor YYYY-MM-DD` to `seed_demo` for a reproducible dataset.
 
 ## Running Tests
 
