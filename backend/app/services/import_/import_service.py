@@ -12,7 +12,7 @@ account model (balance is computed dynamically: seed + sum of transactions).
 import logging
 import uuid
 
-from fastapi import HTTPException, status
+from fastapi import BackgroundTasks, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -436,6 +436,7 @@ async def commit_import(
     data: CommitRequest,
     session: AsyncSession,
     household_id: uuid.UUID,
+    background_tasks: BackgroundTasks | None = None,
 ) -> CommitResponse:
     """Atomically insert transactions. Does NOT update account.balance_minor
     (displayed balance is computed from seed + sum of transactions)."""
@@ -496,10 +497,15 @@ async def commit_import(
 
     first_tx_id = all_txs[0].id if all_txs else 0
 
-    # AI categorization stub — Phase 9 implements this.
-    # Before activating: add `background_tasks: BackgroundTasks` to this function's
-    # signature and plumb it through the router call site.
-    # background_tasks.add_task(ai_categorize_batch, str(batch_id))
+    # Fire background categorization after commit
+    if background_tasks is not None:
+        from app.services.categorization import categorize_batch_background
+
+        background_tasks.add_task(
+            categorize_batch_background,
+            str(batch_id),
+            str(household_id),
+        )
 
     return CommitResponse(
         batch_id=str(batch_id),

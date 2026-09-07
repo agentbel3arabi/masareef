@@ -3,22 +3,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Trash2, Settings } from "lucide-react";
-import { useTransactions, useBulkDeleteTransactions, useBulkCategorizeTransactions, type TransactionFilters } from "@/hooks/use-transactions";
+import { Receipt, Search, TrendingUp, TrendingDown, ArrowLeftRight, Hash, Settings } from "lucide-react";
+import { useTransactions, type TransactionFilters } from "@/hooks/use-transactions";
 import { useBulkSelection } from "@/hooks/use-bulk-selection";
 import { useAccounts } from "@/hooks/use-accounts";
-import { useCategories } from "@/hooks/use-categories";
 import { NavbarActions } from "@/components/layout/navbar-actions-portal";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import { TransactionFilterBar } from "@/components/transactions/transaction-filters";
+import { BulkToolbar } from "@/components/transactions/bulk-toolbar";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionTableSkeleton, FilterBarSkeleton } from "@/components/shared/skeletons";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatCard } from "@/components/shared/stat-card";
 import { FAB } from "@/components/shared/fab";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CategoryIcon } from "@/lib/category-icon";
 import { formatAmount, formatAmountAr } from "@/lib/money";
 import type { Account } from "@/hooks/use-accounts";
 
@@ -48,10 +46,6 @@ export default function TransactionsPage() {
   });
   const [createOpen, setCreateOpen] = useState(false);
   const { bulkMode, selectedIds, enterBulkMode, exitBulkMode, toggleSelect, selectAll } = useBulkSelection();
-
-  const { data: categoriesData } = useCategories();
-  const bulkDelete = useBulkDeleteTransactions();
-  const bulkCategorize = useBulkCategorizeTransactions();
 
   const { data, isLoading } = useTransactions(filters);
   const { data: accountsData } = useAccounts();
@@ -126,6 +120,13 @@ export default function TransactionsPage() {
         </>
       ) : (
         <>
+          {bulkMode && selectedIds.size > 0 && (
+            <BulkToolbar
+              selectedIds={[...selectedIds]}
+              onCancel={exitBulkMode}
+              needsReview={!!filters.needs_review}
+            />
+          )}
           <TransactionFilterBar filters={filters} onChange={setFilters} />
 
           {/* Section header */}
@@ -189,63 +190,11 @@ export default function TransactionsPage() {
             {t("transactions.manage")}
           </Button>
         </NavbarActions>
-      ) : selectedIds.size === 0 ? (
+      ) : (
         <NavbarActions>
           <Button variant="secondary" size="sm" onClick={exitBulkMode}>
             {t("transactions.cancel")}
           </Button>
-        </NavbarActions>
-      ) : (
-        <NavbarActions>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {t("transactions.selectedCount", { count: selectedIds.size })}
-            </span>
-            <Select
-              onValueChange={async (val) => {
-                try {
-                  await bulkCategorize.mutateAsync({ ids: [...selectedIds], category_id: Number(val) });
-                  exitBulkMode();
-                } catch (error) {
-                  console.error("Bulk categorize failed:", error);
-                }
-              }}
-              disabled={bulkCategorize.isPending}
-            >
-              <SelectTrigger className="h-8 w-40 text-xs">
-                <SelectValue placeholder={t("transactions.recategorize")} />
-              </SelectTrigger>
-              <SelectContent>
-                {(categoriesData?.data || []).map((cat) => (
-                  <SelectItem key={cat.id} value={String(cat.id)}>
-                    <span className="flex items-center gap-2">
-                      <CategoryIcon icon={cat.icon} className="h-3.5 w-3.5 shrink-0" />
-                      {locale === "ar" && cat.name_ar ? cat.name_ar : cat.name_en}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={bulkDelete.isPending}
-              onClick={async () => {
-                try {
-                  await bulkDelete.mutateAsync({ ids: [...selectedIds] });
-                  exitBulkMode();
-                } catch (error) {
-                  console.error("Bulk delete failed:", error);
-                }
-              }}
-            >
-              <Trash2 className="h-3.5 w-3.5 me-1" />
-              {t("transactions.deleteSelected")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={exitBulkMode}>
-              {t("transactions.cancel")}
-            </Button>
-          </div>
         </NavbarActions>
       )}
     </div>

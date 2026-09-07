@@ -65,6 +65,7 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 | BL-052 | >80% utilization red example in design reference | docs | Phase 3.8 — Financial Institutions | Low | ⏳ Open |
 | BL-053 | Digital wallet optional institution linking UI | deferred | Future | Low | ⏳ Open |
 | BL-054 | Branch field as dropdown from bank's branch list | deferred | Future | Low | ⏳ Open |
+| BL-055 | Server-side backfill endpoint for AI categorization | tech-debt | Phase 4 | Medium | ⏳ Open |
 
 ---
 
@@ -145,6 +146,16 @@ Completed items are archived in [`docs/backlog-archive.md`](docs/backlog-archive
 - **Context:** Digital wallets (Vodafone Cash, Fawry) can optionally link to a digital_wallet_provider institution via FK. The data model supports this but the UI for linking/displaying is deferred. Currently digital wallet cards show no institution branding.
 - **Acceptance:** Digital wallet cards show provider logo when institution is linked; account creation allows optional provider selection.
 - **Status:** ⏳ Open
+
+### BL-055: Server-side backfill endpoint for AI categorization
+- **Category:** tech-debt
+- **Origin:** Phase 03 PR #57 Copilot review — backfill button fetches max 100 uncategorized transactions client-side (API page_size cap)
+- **Priority:** Medium
+- **Context:** `/settings/categorization` backfill button calls `POST /categorization-rules/categorize-batch` with IDs fetched from the first page (≤100). A dedicated `POST /categorization-rules/backfill` endpoint should trigger server-side pagination, walking all uncategorized transactions for the household without client enumeration.
+- **Acceptance:** Backfill endpoint processes all uncategorized transactions regardless of count; returns a job ID or count; UI polls or shows completion toast.
+- **Status:** ⏳ Open
+
+---
 
 ### BL-054: Branch field as dropdown from bank's branch list
 - **Category:** deferred

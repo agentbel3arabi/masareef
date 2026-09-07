@@ -207,6 +207,7 @@ async def list_transactions(
     amount_max: int | None = None,
     has_category: bool | None = None,
     asset_id: int | None = None,
+    needs_review: bool = False,
     sort: str = "-date",
     page: int = 1,
     page_size: int = 50,
@@ -254,6 +255,10 @@ async def list_transactions(
 
     if asset_id is not None:
         base_filters.append(Transaction.asset_id == asset_id)
+
+    if needs_review:
+        base_filters.append(Transaction.ai_categorized.is_(True))
+        base_filters.append(Transaction.ai_confidence < 0.95)
 
     # Count
     count_q = select(func.count(Transaction.id)).where(*base_filters)
