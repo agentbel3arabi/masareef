@@ -3,10 +3,10 @@ name: Backend CI
 on:
   push:
     branches: [main]
-    paths: ['backend/**', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'supabase/**', '.github/workflows/backend.yml']
   pull_request:
     branches: [main]
-    paths: ['backend/**', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'supabase/**', '.github/workflows/backend.yml']
 
 jobs:
   test:
@@ -77,7 +77,7 @@ jobs:
       - name: Set up Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.121.0
 
       - name: Start local Supabase
         working-directory: .
@@ -87,7 +87,9 @@ jobs:
         working-directory: .
         run: |
           supabase status -o env > "$RUNNER_TEMP/supabase.env"
+          set -euo pipefail
           set -a; . "$RUNNER_TEMP/supabase.env"; set +a
+          : "${API_URL:?}" "${ANON_KEY:?}" "${SERVICE_ROLE_KEY:?}" "${JWT_SECRET:?}"
           {
             echo "SUPABASE_URL=$API_URL"
             echo "SUPABASE_ANON_KEY=$ANON_KEY"
