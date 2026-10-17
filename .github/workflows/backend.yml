@@ -59,26 +59,46 @@ jobs:
         working-directory: backend
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
         run: uv sync
 
+      # Local Supabase stack (Postgres + GoTrue auth + Kong) replaces the
+      # old hosted-project secrets. Only auth and db are needed.
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase
+        working-directory: .
+        run: supabase start -x realtime,storage-api,imgproxy,inbucket,postgrest,edge-runtime,logflare,vector,supavisor,studio,postgres-meta
+
+      - name: Export local Supabase env
+        working-directory: .
+        run: |
+          supabase status -o env > "$RUNNER_TEMP/supabase.env"
+          set -a; . "$RUNNER_TEMP/supabase.env"; set +a
+          {
+            echo "SUPABASE_URL=$API_URL"
+            echo "SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "SUPABASE_JWT_SECRET=$JWT_SECRET"
+            echo "DATABASE_URL=postgresql+asyncpg://postgres:postgres@127.0.0.1:54322/postgres"
+            echo "APP_ENV=testing"
+          } >> "$GITHUB_ENV"
+
+      - name: Run migrations
+        run: uv run alembic upgrade head
+
       - name: Run integration tests
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
-          SUPABASE_JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          APP_ENV: testing
         run: uv run pytest tests/integration/ -v --tb=short
