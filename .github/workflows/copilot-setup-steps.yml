@@ -112,7 +112,7 @@ jobs:
       # to interact with the running app for visual validation and E2E testing
       - name: Install Playwright browsers
         working-directory: frontend
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm dlx playwright install --with-deps chromium
 
       # Also install Python Playwright for backend E2E tests
       - name: Install Python Playwright
