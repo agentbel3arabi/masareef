@@ -100,5 +100,21 @@ jobs:
       - name: Run migrations
         run: uv run alembic upgrade head
 
+      # seed_categories() no-ops after the migration's two predefined rows, so
+      # reuse the by-name inserter from the demo seeder to reach the 18 the tests expect.
+      - name: Seed predefined categories
+        run: |
+          uv run python -c "
+          import asyncio
+          from app.database import async_session_factory
+          from scripts.seed_demo import seed_predefined_categories
+
+          async def main():
+              async with async_session_factory() as session, session.begin():
+                  await seed_predefined_categories(session)
+
+          asyncio.run(main())
+          "
+
       - name: Run integration tests
         run: uv run pytest tests/integration/ -v --tb=short
